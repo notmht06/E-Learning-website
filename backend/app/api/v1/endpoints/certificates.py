@@ -35,12 +35,40 @@ async def issue_certificate(
 ) -> Dict[str, Any]:
     """
     Issues an official certificate for a student who completed a course.
+    Enforces active enrollment check and server-side score normalization.
     """
+    from backend.app.models.models import Enrollment
+    from sqlalchemy import select
+    from backend.app.core.exceptions import AppException
+
+    if user.get("role") != "admin":
+        res_enr = await db.execute(
+            select(Enrollment).where(
+                Enrollment.user_id == user["id"],
+                Enrollment.course_id == req.course_id,
+                Enrollment.status == "active",
+            )
+        )
+        if not res_enr.scalar_one_or_none():
+            raise AppException(
+                message="شما در این دوره ثبت‌نام فعال ندارید. صدور گواهی‌نامه منوط به ثبت‌نام و گذراندن دوره است.",
+                code="NOT_ENROLLED_FOR_CERTIFICATE",
+                status_code=403,
+            )
+
+    approved_scores = {
+        "عالی (۱۰۰ از ۱۰۰)",
+        "بسیار خوب (۸۵ از ۱۰۰)",
+        "خوب (۷۵ از ۱۰۰)",
+        "قبول (۷۰ از ۱۰۰)",
+    }
+    safe_score = req.score if (user.get("role") == "admin" or req.score in approved_scores) else "عالی (۱۰۰ از ۱۰۰)"
+
     cert = await certificate_service.issue_certificate_tx(
         db=db,
         user_id=user["id"],
         course_id=req.course_id,
-        score=req.score,
+        score=safe_score,
     )
     await db.commit()
     return cert

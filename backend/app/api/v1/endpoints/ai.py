@@ -21,7 +21,7 @@ from backend.app.services.ai_service import ai_service
 from backend.app.services.rag_engine import rag_engine
 from backend.app.core.rate_limiter import ai_token_bucket_limiter
 from backend.app.core.config import settings
-from backend.app.api.deps import get_optional_user, get_current_admin
+from backend.app.api.deps import get_optional_user, get_current_user, get_current_admin
 
 router = APIRouter()
 
@@ -97,18 +97,31 @@ async def stream_chat_with_assistant(
 
 
 @router.post("/transcribe", response_model=AITranscribeResponse, summary="Transcribe Persian voice queries")
-async def transcribe_voice(req: AITranscribeRequest):
+async def transcribe_voice(
+    req: AITranscribeRequest,
+    request: Request,
+    user: dict = Depends(get_current_user),
+):
     """
     Transcribes audio speech to text for hands-free scholarly inquiries.
+    Requires authenticated user and enforces AI rate limits.
     """
+    _check_ai_rate_limit(request, user)
     return ai_service.transcribe_audio(req.audio_base64)
 
 
 @router.post("/analyze-document", response_model=AIDocumentAnalysisResponse, summary="Analyze uploaded treatise or document")
-async def analyze_document(req: AIDocumentAnalysisRequest):
+async def analyze_document(
+    req: AIDocumentAnalysisRequest,
+    request: Request,
+    user: dict = Depends(get_current_user),
+):
     """
     Extracts dialectic theses and philosophical critique from user-uploaded texts.
+    Requires authenticated user and enforces AI rate limits.
     """
+    _validate_prompt_length(req.document_text)
+    _check_ai_rate_limit(request, user)
     return ai_service.analyze_document(req.document_text, req.title)
 
 

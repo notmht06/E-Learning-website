@@ -53,6 +53,11 @@ export interface Course {
   tags: string[];
   syllabus: Chapter[];
   media_type?: 'audio' | 'video' | 'hybrid';
+  course_type?: 'online' | 'offline' | 'hybrid';
+  capacity?: number;
+  enrolled_count?: number;
+  skyroom_url?: string;
+  schedule?: string;
 }
 
 export interface BookChapterTOC {

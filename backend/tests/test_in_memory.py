@@ -200,10 +200,12 @@ def test_ai_chat_assistant():
     print("✅ AI Scholarly Assistant RAG Chat passed.")
 
     # Test document analysis
+    login_res = client.post("/api/v1/auth/login", json={"phone": "09123456789", "password": "pass"})
+    auth_hdr = {"Authorization": f"Bearer {login_res.json()['access_token']}"}
     doc_res = client.post("/api/v1/ai/analyze-document", json={
         "document_text": "رساله در باب ماهیت و وجود و انوار سهروردی",
         "title": "رساله نور"
-    })
+    }, headers=auth_hdr)
     assert doc_res.status_code == 200
     doc_data = doc_res.json()
     assert "dialectic_theses" in doc_data
@@ -1799,6 +1801,7 @@ def test_phase6_payment_gateway_and_certificate_issuance(student_token: str):
     assert login_res.status_code == 200
     fresh_token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {fresh_token}"}
+    client.post("/api/v1/courses/course-asfar-1/enroll", headers=headers)
     issue_res = client.post("/api/v1/certificates/issue", json={
         "course_id": "course-asfar-1",
         "score": "عالی (۱۰۰ از ۱۰۰)"
