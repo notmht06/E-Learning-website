@@ -64,6 +64,7 @@ export function AudioVideoPlayerEngine({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mediaMode, setMediaMode] = useState<'audio' | 'video'>('audio');
   const [drmToken, setDrmToken] = useState<string | null>(null);
+  const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
   const [serverWatermark, setServerWatermark] = useState<string | null>(null);
   const [syncIndicator, setSyncIndicator] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState<
@@ -97,12 +98,15 @@ export function AudioVideoPlayerEngine({
   // 1. Issue DRM Token on course/chapter change
   useEffect(() => {
     let mounted = true;
+    setDrmStreamUrl(null);
     const uid = user?.id || 'guest-scholar';
     apiClient.stream
       .getToken(uid, courseId, chapterId)
       .then((res) => {
-        if (mounted && res) {
+        if (mounted && res && res.token) {
           setDrmToken(res.token);
+          const secureUrl = `/api/v1/stream/audio/${courseId}/${chapterId}?token=${encodeURIComponent(res.token)}`;
+          setDrmStreamUrl(secureUrl);
           if (res.forensic_watermark) {
             setServerWatermark(res.forensic_watermark);
           }
@@ -332,7 +336,7 @@ export function AudioVideoPlayerEngine({
       {/* Hidden or Active HTML5 Media Elements */}
       <audio
         ref={audioRef}
-        src={audioUrl || '/audio/sample_lecture.wav'}
+        src={drmStreamUrl || audioUrl || '/audio/sample_lecture.wav'}
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
