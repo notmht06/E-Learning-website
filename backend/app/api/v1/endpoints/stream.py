@@ -4,6 +4,7 @@ Complies with BACKEND_SYSTEM_DESIGN.md (Security Guardian & Performance Engine).
 Supports token generation, heartbeat tracking, HLS manifests, and HTTP Range partial requests.
 """
 import os
+import logging
 import hmac
 import hashlib
 import time
@@ -26,6 +27,7 @@ from backend.app.api.deps import get_current_user
 from backend.app.models.database import get_db
 from backend.app.models.models import AnalyticsLog, Enrollment
 
+logger = logging.getLogger("platform.stream")
 router = APIRouter()
 
 # Default physical sample audio file path
@@ -46,7 +48,29 @@ async def issue_stream_token(
     and records the playback audit log in SQLite/PostgreSQL.
     Requires authentication and active course enrollment (or admin role).
     """
-    if user.get("role") != "admin":
+    # Check if the requested chapter is an open free preview
+    is_preview_chapter = False
+    from backend.app.services.course_service import course_service
+    course_data = course_service.get_course_by_id(req.course_id)
+    if course_data and "syllabus" in course_data:
+        for ch in course_data["syllabus"]:
+            if ch.get("id") == req.chapter_id:
+                if ch.get("is_preview") or ch.get("is_free_sample"):
+                    is_preview_chapter = True
+                break
+    if not is_preview_chapter:
+        from backend.app.models.models import Lesson
+        res_lesson = await db.execute(
+            select(Lesson).where(
+                Lesson.course_id == req.course_id,
+                Lesson.session_number == req.chapter_id,
+            )
+        )
+        lesson_obj = res_lesson.scalar_one_or_none()
+        if lesson_obj and lesson_obj.is_free_sample:
+            is_preview_chapter = True
+
+    if not is_preview_chapter and user.get("role") != "admin":
         res_enr = await db.execute(
             select(Enrollment).where(
                 Enrollment.user_id == user["id"],
@@ -81,8 +105,8 @@ async def issue_stream_token(
             )
         )
         await db.flush()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Failed to record analytics log: %s", exc)
 
     return token_data
 

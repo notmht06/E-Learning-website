@@ -86,8 +86,6 @@ async def _seed_users_tx(session: AsyncSession):
     else:
         student.role = "student"
         student.is_active = True
-        if settings.ENVIRONMENT != "production":
-            student.hashed_password = hash_password(student_initial_password)
         if not student.id:
             student.id = "usr-140301"
 
@@ -109,8 +107,6 @@ async def _seed_users_tx(session: AsyncSession):
         admin.role = "admin"
         admin.full_name = "حجت الاسلام دکتر زنجیر زن حسینی"
         admin.is_active = True
-        if settings.ENVIRONMENT != "production":
-            admin.hashed_password = hash_password(admin_initial_password)
         if not admin.id:
             admin.id = "adm-001"
 

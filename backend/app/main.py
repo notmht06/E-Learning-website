@@ -22,11 +22,17 @@ from backend.app.models.database import init_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize SQLite/PostgreSQL tables on startup
+    # Initialize SQLite/PostgreSQL tables on startup with fail-fast validation in production
     try:
         await init_db()
         print("[INFO] Database tables initialized successfully.")
+    except RuntimeError as e:
+        print(f"[FATAL] Critical startup configuration failure: {e}")
+        raise e
     except Exception as e:
+        if settings.ENVIRONMENT == "production":
+            print(f"[FATAL] Production database initialization failed: {e}")
+            raise e
         print(f"[WARNING] Note on database init: {e}")
     yield
 
