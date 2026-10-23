@@ -493,3 +493,38 @@ class Subscriber(Base):
             "contact": self.contact,
             "created_at": self.created_at.isoformat() if self.created_at else datetime.utcnow().isoformat(),
         }
+
+
+class PaymentTransaction(Base):
+    __tablename__ = "payment_transactions"
+
+    authority = Column(String(100), primary_key=True, index=True)
+    order_id = Column(String(50), nullable=False, index=True)
+    user_id = Column(String(50), nullable=True, index=True)
+    gateway = Column(String(50), default="zarinpal")
+    amount = Column(Integer, nullable=False, default=0)
+    return_url = Column(String(500), nullable=False)
+    status = Column(String(20), nullable=False, default="pending", index=True)  # pending | verifying | paid | failed
+    reference_id = Column(String(100), nullable=True, index=True)
+    tracking_code = Column(String(100), nullable=True, unique=True, index=True)
+    card_mask = Column(String(50), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    paid_at = Column(DateTime, nullable=True)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "authority": self.authority,
+            "payment_token": self.authority,
+            "order_id": self.order_id,
+            "user_id": self.user_id,
+            "gateway": self.gateway,
+            "amount": self.amount,
+            "return_url": self.return_url,
+            "status": self.status,
+            "reference_id": self.reference_id,
+            "tracking_code": self.tracking_code,
+            "card_mask": self.card_mask,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "paid_at": self.paid_at.isoformat() if self.paid_at else None,
+        }
+

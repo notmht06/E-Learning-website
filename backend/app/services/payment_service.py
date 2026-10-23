@@ -7,7 +7,10 @@ from typing import Dict, Any, Optional, Set
 import random
 import threading
 from datetime import datetime
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.core.exceptions import AppException
+from backend.app.models.models import PaymentTransaction
 
 
 class PaymentService:
@@ -121,6 +124,64 @@ class PaymentService:
                     "card_mask": "6037-99**-****-1403",
                     "paid_at": paid_timestamp
                 }
+
+    async def record_transaction_tx(
+        self,
+        db: AsyncSession,
+        authority: str,
+        order_id: str,
+        gateway: str,
+        amount: int,
+        return_url: str,
+        user_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Persists transaction to database and syncs with in-memory state tracker."""
+        with self._lock:
+            tx_data = {
+                "payment_token": authority,
+                "authority": authority,
+                "order_id": order_id,
+                "user_id": user_id,
+                "gateway": gateway,
+                "amount": amount,
+                "return_url": return_url,
+                "status": "pending",
+                "reference_id": None,
+                "tracking_code": None,
+                "created_at": datetime.utcnow().isoformat(),
+                "paid_at": None,
+            }
+            self.transactions[authority] = tx_data
+
+        db_tx = PaymentTransaction(
+            authority=authority,
+            order_id=order_id,
+            user_id=user_id,
+            gateway=gateway,
+            amount=amount,
+            return_url=return_url,
+            status="pending",
+            created_at=datetime.utcnow(),
+        )
+        db.add(db_tx)
+        await db.commit()
+        return tx_data
+
+    async def get_transaction_tx(
+        self,
+        db: AsyncSession,
+        authority: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Retrieves transaction from database or in-memory state tracker."""
+        stmt = select(PaymentTransaction).where(PaymentTransaction.authority == authority)
+        res = await db.execute(stmt)
+        record = res.scalar_one_or_none()
+        if record:
+            with self._lock:
+                self.transactions[authority] = record.to_dict()
+            return record.to_dict()
+        with self._lock:
+            return self.transactions.get(authority)
 
 
 payment_service = PaymentService()
