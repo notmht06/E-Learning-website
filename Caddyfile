@@ -1,0 +1,39 @@
+zanjirzan.ir, www.zanjirzan.ir {
+    encode zstd gzip
+
+    # Security Headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    # Route API & Swagger Docs to FastAPI Backend
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    handle /docs* {
+        reverse_proxy backend:8000
+    }
+
+    handle /redoc* {
+        reverse_proxy backend:8000
+    }
+
+    handle /openapi.json {
+        reverse_proxy backend:8000
+    }
+
+    # Serve Uploaded Media & Audio Transcripts
+    handle /static/* {
+        reverse_proxy backend:8000
+    }
+
+    # Route all other traffic to Next.js Frontend
+    handle {
+        reverse_proxy frontend:3000
+    }
+}

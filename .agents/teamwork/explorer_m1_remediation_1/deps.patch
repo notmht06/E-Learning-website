@@ -1,0 +1,26 @@
+--- a/backend/app/api/deps.py
++++ b/backend/app/api/deps.py
+@@ -46,16 +46,13 @@
+     if not user_id:
+         raise HTTPException(
+             status_code=status.HTTP_401_UNAUTHORIZED,
+-            detail="اطلاعات شناسه کاربر در توکن مفقود است.",
++            detail="نشست نامعتبر است یا کاربر در سامانه یافت نشد.",
+         )
+ 
+     user = await auth_service.get_user_by_id(user_id=user_id, db=db)
+     if not user:
+-        return {
+-            "id": user_id,
+-            "phone": payload.get("phone", "09123456789"),
+-            "role": payload.get("role", "student"),
+-            "full_name": "کاربر احرازشده",
+-            "wallet_balance": "0 Tomans",
+-            "enrolled_courses_count": 0,
+-        }
++        raise HTTPException(
++            status_code=status.HTTP_401_UNAUTHORIZED,
++            detail="نشست نامعتبر است یا کاربر در سامانه یافت نشد.",
++        )
+ 
+     return user

@@ -1,0 +1,337 @@
+"""
+DRM Audio Stream Protection API Endpoints.
+Complies with BACKEND_SYSTEM_DESIGN.md (Security Guardian & Performance Engine).
+Supports token generation, heartbeat tracking, HLS manifests, and HTTP Range partial requests.
+"""
+import os
+import hmac
+import hashlib
+import time
+import base64
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Response, Request, Header, Query, Depends
+from starlette.responses import StreamingResponse
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from backend.app.core.config import settings
+from backend.app.schemas.stream import (
+    DRMTokenRequest,
+    DRMTokenResponse,
+    DRMHeartbeatRequest,
+    DRMHeartbeatResponse,
+)
+from backend.app.services.drm_service import drm_service
+from backend.app.core.security import verify_drm_token, decode_drm_token
+from backend.app.api.deps import get_current_user
+from backend.app.models.database import get_db
+from backend.app.models.models import AnalyticsLog, Enrollment
+
+router = APIRouter()
+
+# Default physical sample audio file path
+DEFAULT_AUDIO_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../../../frontend/public/audio/sample_lecture.wav")
+)
+
+
+@router.post("/token", response_model=DRMTokenResponse, summary="Issue secure DRM streaming token")
+async def issue_stream_token(
+    req: DRMTokenRequest,
+    request: Request,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Generates an encrypted, time-limited playback token with forensic student watermark
+    and records the playback audit log in SQLite/PostgreSQL.
+    Requires authentication and active course enrollment (or admin role).
+    """
+    if user.get("role") != "admin":
+        res_enr = await db.execute(
+            select(Enrollment).where(
+                Enrollment.user_id == user["id"],
+                Enrollment.course_id == req.course_id,
+                Enrollment.status == "active",
+            )
+        )
+        enrollment = res_enr.scalar_one_or_none()
+        if not enrollment:
+            raise HTTPException(
+                status_code=403,
+                detail="شما در این دوره ثبت‌نام نکرده‌اید. دسترسی به استریم صوت نیازمند ثبت‌نام در دوره است."
+            )
+
+    effective_user_id = user["id"]
+    token_data = drm_service.issue_token(
+        user_id=effective_user_id,
+        course_id=req.course_id,
+        chapter_id=req.chapter_id,
+    )
+
+    try:
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        user_agent = request.headers.get("user-agent", "browser")[:250]
+        db.add(
+            AnalyticsLog(
+                event_type="play_audio",
+                resource_id=f"{req.course_id}:ch-{req.chapter_id}",
+                user_id=effective_user_id,
+                ip_address=client_ip,
+                user_agent=user_agent,
+            )
+        )
+        await db.flush()
+    except Exception:
+        pass
+
+    return token_data
+
+
+@router.post("/heartbeat", response_model=DRMHeartbeatResponse, summary="Playback security heartbeat")
+async def verify_heartbeat(req: DRMHeartbeatRequest):
+    """
+    Verifies active playback session every 30 seconds to prevent concurrent stream abuse.
+    """
+    try:
+        return drm_service.verify_heartbeat(
+            token=req.token,
+            user_id=req.user_id,
+            course_id=req.course_id,
+            chapter_id=req.chapter_id,
+            pos_sec=req.playback_position_sec
+        )
+    except Exception as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
+@router.get("/hls/{course_id}/{chapter_id}/master.m3u8", summary="HLS master playlist descriptor")
+async def get_hls_playlist(course_id: str, chapter_id: int, token: str):
+    """
+    Serves standard HLS M3U8 manifest with AES-128 segment protection headers.
+    """
+    if not verify_drm_token(token, course_id, chapter_id):
+        raise HTTPException(status_code=403, detail="توکن استریم DRM نامعتبر یا منقضی شده است.")
+
+    playlist = f"""#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:10
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-KEY:METHOD=AES-128,URI="/api/v1/stream/key?token={token}"
+#EXTINF:10.0,
+segment0.ts
+#EXTINF:10.0,
+segment1.ts
+#EXT-X-ENDLIST
+"""
+    headers = {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+        "Pragma": "no-cache"
+    }
+    return Response(content=playlist, media_type="application/vnd.apple.mpegurl", headers=headers)
+
+
+@router.get("/key", summary="DRM AES-128 encryption key service")
+async def get_stream_key(token: str = Query(..., description="Encrypted DRM playback token")):
+    """
+    Security Guardian: Serves 16-byte AES-128 encryption key required to decrypt HLS media segments.
+    Strictly verifies token signature and expiration before releasing the key.
+    Enforces no-store caching headers to prevent disk persistence.
+    """
+    try:
+        parts = token.split(".")
+        if len(parts) != 2:
+            raise HTTPException(status_code=403, detail="فرمت توکن امنیتی DRM نامعتبر است.")
+        b64_payload, signature = parts
+
+        expected_sig = hmac.new(
+            settings.SECRET_KEY.encode("utf-8"),
+            b64_payload.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(signature, expected_sig):
+            raise HTTPException(status_code=403, detail="امضای امنیتی توکن DRM معتبر نیست.")
+
+        padding = "=" * (4 - (len(b64_payload) % 4)) if len(b64_payload) % 4 != 0 else ""
+        raw_payload = base64.urlsafe_b64decode((b64_payload + padding).encode("utf-8")).decode("utf-8")
+        token_uid, token_cid, token_chid, token_exp = raw_payload.split(":")
+
+        if time.time() > int(token_exp):
+            raise HTTPException(status_code=403, detail="توکن استریم DRM منقضی شده است.")
+
+        key_material = f"{settings.SECRET_KEY}:{token_cid}:{token_chid}:AES128_DRM"
+        key_bytes = hashlib.sha256(key_material.encode("utf-8")).digest()[:16]
+
+        headers = {
+            "Content-Type": "application/octet-stream",
+            "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        }
+        return Response(content=key_bytes, media_type="application/octet-stream", headers=headers)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=403, detail=f"خطا در صدور کلید امنیتی استریم: {str(e)}")
+
+
+def parse_rfc7233_range(range_header: str, total_len: int) -> tuple[int, int, int]:
+    """
+    Parses RFC 7233 Range header and returns (start, end, chunk_size).
+    Raises HTTPException(416) with Content-Range header if not satisfiable.
+    """
+    if not range_header.startswith("bytes="):
+        raise HTTPException(
+            status_code=416,
+            detail="Range Not Satisfiable",
+            headers={"Content-Range": f"bytes */{total_len}"}
+        )
+
+    range_spec = range_header[len("bytes="):].strip()
+    if not range_spec or "," in range_spec:
+        raise HTTPException(
+            status_code=416,
+            detail="Range Not Satisfiable",
+            headers={"Content-Range": f"bytes */{total_len}"}
+        )
+
+    parts = range_spec.split("-", 1)
+    if len(parts) != 2:
+        raise HTTPException(
+            status_code=416,
+            detail="Range Not Satisfiable",
+            headers={"Content-Range": f"bytes */{total_len}"}
+        )
+
+    part0, part1 = parts[0].strip(), parts[1].strip()
+
+    try:
+        if part0 == "":
+            # Suffix range: bytes=-500 -> last 500 bytes
+            suffix_len = int(part1)
+            if suffix_len <= 0:
+                raise ValueError("Suffix length must be positive")
+            start = max(0, total_len - suffix_len)
+            end = total_len - 1
+        elif part1 == "":
+            # Open-ended range: bytes=500- -> from 500 to end
+            start = int(part0)
+            end = total_len - 1
+        else:
+            # Explicit range: bytes=100-200
+            start = int(part0)
+            end = int(part1)
+    except ValueError:
+        raise HTTPException(
+            status_code=416,
+            detail="Range Not Satisfiable",
+            headers={"Content-Range": f"bytes */{total_len}"}
+        )
+
+    if start < 0 or start >= total_len or start > end:
+        raise HTTPException(
+            status_code=416,
+            detail="Range Not Satisfiable",
+            headers={"Content-Range": f"bytes */{total_len}"}
+        )
+
+    end = min(end, total_len - 1)
+    chunk_size = (end - start) + 1
+    return start, end, chunk_size
+
+
+@router.get("/audio/{course_id}/{chapter_id}", summary="Stream audio chunk with HTTP Range header support")
+async def stream_audio_range(
+    course_id: str,
+    chapter_id: int,
+    token: str = Query(..., description="Cryptographically signed DRM token"),
+    range_header: Optional[str] = Header(None, alias="Range")
+):
+    """
+    Performance Engine: Streams protected lecture audio supporting HTTP Range requests (RFC 7233).
+    Enables low-latency seek buffering and playback scrubbing without downloading the full audio file.
+    """
+    # 1. Verify DRM Security Shield
+    decoded = decode_drm_token(token)
+    if not decoded:
+        raise HTTPException(
+            status_code=403,
+            detail="توکن استریم DRM نامعتبر یا منقضی شده است. دسترسی به رسانه صوتی رد شد."
+        )
+
+    if not verify_drm_token(token, course_id, chapter_id, user_id=decoded["user_id"]):
+        raise HTTPException(
+            status_code=403,
+            detail="توکن استریم DRM نامعتبر یا منقضی شده است. دسترسی به رسانه صوتی رد شد."
+        )
+
+    # 2. Locate or synthesize audio source
+    file_path = DEFAULT_AUDIO_PATH
+    if os.path.exists(file_path):
+        file_size = os.path.getsize(file_path)
+        media_type = "audio/wav"
+
+        # Handle Range Header
+        if range_header:
+            start, end, chunk_size = parse_rfc7233_range(range_header, file_size)
+
+            def iter_file():
+                with open(file_path, "rb") as f:
+                    f.seek(start)
+                    bytes_left = chunk_size
+                    while bytes_left > 0:
+                        read_len = min(64 * 1024, bytes_left)
+                        data = f.read(read_len)
+                        if not data:
+                            break
+                        bytes_left -= len(data)
+                        yield data
+
+            headers = {
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Accept-Ranges": "bytes",
+                "Content-Length": str(chunk_size),
+                "Content-Type": media_type,
+                "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+            }
+            return StreamingResponse(iter_file(), status_code=206, headers=headers)
+
+        # Full content response
+        def iter_full_file():
+            with open(file_path, "rb") as f:
+                while chunk := f.read(64 * 1024):
+                    yield chunk
+
+        headers = {
+            "Accept-Ranges": "bytes",
+            "Content-Length": str(file_size),
+            "Content-Type": media_type,
+            "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        }
+        return StreamingResponse(iter_full_file(), status_code=200, headers=headers)
+    else:
+        # Fallback synthetic buffer for testing
+        synthetic_payload = b"RIFF____WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x88\x58\x01\x00\x02\x00\x10\x00data" + (b"\x00" * 4096)
+        total_len = len(synthetic_payload)
+
+        if range_header:
+            start, end, chunk_size = parse_rfc7233_range(range_header, total_len)
+            chunk = synthetic_payload[start:end+1]
+            headers = {
+                "Content-Range": f"bytes {start}-{end}/{total_len}",
+                "Accept-Ranges": "bytes",
+                "Content-Length": str(len(chunk)),
+                "Content-Type": "audio/wav",
+                "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+            }
+            return Response(content=chunk, status_code=206, headers=headers)
+
+        headers = {
+            "Accept-Ranges": "bytes",
+            "Content-Length": str(total_len),
+            "Content-Type": "audio/wav",
+            "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        }
+        return Response(content=synthetic_payload, status_code=200, headers=headers)

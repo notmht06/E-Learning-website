@@ -1,0 +1,1102 @@
+**Task**: /boost فاز ۸ (نسخه ۱۰۰٪ کامل و بدون حذفیات): سئو تکنیکال پیشرفته (Technical SEO)، صفحات اختصاصی مقالات (/articles/[slug]) با اسکیمای ScholarlyArticle، تصویر OpenGraph خودکار و تکمیل sitemap.ts
+
+تمام محتوای باکس زیر را یکجا کپی کنید و به Antigravity بدهید تا فاز ۸ را به صورت کامل اجرا و با حلقه Perfection Loop ممیزی کند:
+
+پرامپت اجرایی فاز ۸ برای Antigravity (کپی کنید)
+
+در ادامه برنامه ۱۰ فازی تبدیل پلتفرم «دارالحکمة (پایگاه رسمی نشر آثار و دروس حجتالاسلام دکتر زنجیر زن حسینی)» به یک محصول SaaS تجاری کامل، اکنون **فاز ۸ (سئو تکنیکال پیشرفته، ساخت صفحات داینامیک اختصاصی برای هر مقاله در `/articles/[slug]` با متادیتای سئو و اسکیمای JSON-LD از نوع `ScholarlyArticle` و `BreadcrumbList`، بروزرسانی صفحه آرشیو مقالات `/articles` به ۳ زبان، ساخت مولد تصویر پیشنمایش لینکها در تلگرام و شبکههای اجتماعی `opengraph-image.tsx` و افزودن تمام مقالات به `sitemap.ts`)** را اجرا کن.
+لطفاً تمام فایلهای زیر را دقیقاً و بدون هیچگونه حذفیات ایجاد یا بروزرسانی کن و در پایان حلقه ممیزی `Perfection Loop` را اجرا نما:
+
+---
+
+### گام ۱: ساخت کامپوننت کلاینت مطالعه کامل مقاله در `frontend/src/app/articles/[slug]/ArticleDetailClient.tsx`
+فایل جدید `frontend/src/app/articles/[slug]/ArticleDetailClient.tsx` را با کد کامل زیر بساز تا هر مقاله دارای صفحه اختصاصی ۳ زبانه (`fa`, `ar`, `en`)، قابلیت کپی ارجاع علمی استاندارد (Citation)، دکمه چاپ / دریافت PDF، و لینک مستقیم به دورههای مرتبط باشد:
+
+```tsx
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  Calendar,
+  Copy,
+  Check,
+  Printer,
+  Share2,
+  Headphones,
+  Quote,
+} from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
+import { CartModal } from '@/components/CartModal';
+import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
+import { useCart } from '@/context/CartContext';
+import { scholarlyArticlesDatabase } from '@/lib/data';
+import { getLocalizedArticle, getLocalizedCourse } from '@/lib/localization';
+import { SCHOLAR_NAME } from '@/lib/constants';
+import { triggerTactileHaptic } from '@/lib/haptics';
+
+interface ArticleDetailClientProps {
+  slug: string;
+}
+
+export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
+  const { currentLang, dict, toLocale } = useLanguage();
+  const { courses } = useData();
+  const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
+
+  const [isDark, setIsDark] = useState(false);
+  const [copiedCitation, setCopiedCitation] = useState(false);
+
+  const rawArticle = useMemo(() => {
+    return (
+      scholarlyArticlesDatabase.find((a) => a.slug === slug || a.id === slug) ||
+      scholarlyArticlesDatabase[0]
+    );
+  }, [slug]);
+
+  const locArticle = useMemo(
+    () => getLocalizedArticle(rawArticle, currentLang),
+    [rawArticle, currentLang]
+  );
+
+  const title = locArticle?.title || rawArticle.title_fa || rawArticle.title;
+  const category = locArticle?.category || rawArticle.category_fa || rawArticle.category;
+  const readTime = locArticle?.readTime || rawArticle.readTime_fa || rawArticle.readTime;
+  const publishDate = locArticle?.publishDate || rawArticle.publishDate_fa || rawArticle.publishDate;
+  const abstractText = locArticle?.abstract || rawArticle.abstract_fa || rawArticle.abstract;
+  const authorName = dict.scholar_name || SCHOLAR_NAME;
+
+  const relatedCourses = useMemo(() => {
+    const all = Object.values(courses);
+    const matched = all.filter((c) => c.subject === rawArticle.category);
+    return (matched.length > 0 ? matched : all).slice(0, 2);
+  }, [courses, rawArticle.category]);
+
+  const citationString = useMemo(() => {
+    if (currentLang === 'en') {
+      return `${authorName}. (${publishDate}). "${title}". Dar al-Hikmah Academic Platform. https://zanjirzan.ir/articles/${rawArticle.slug}`;
+    }
+    if (currentLang === 'ar') {
+      return `${authorName}. (${publishDate}). «${title}». بوابة دار الحكمة العلمية. https://zanjirzan.ir/articles/${rawArticle.slug}`;
+    }
+    return `${authorName}. (${publishDate}). «${title}». پایگاه علمی و پژوهشی دارالحکمة. https://zanjirzan.ir/articles/${rawArticle.slug}`;
+  }, [authorName, publishDate, title, rawArticle.slug, currentLang]);
+
+  const handleCopyCitation = () => {
+    triggerTactileHaptic('tick');
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(citationString);
+      setCopiedCitation(true);
+      setTimeout(() => setCopiedCitation(false), 2200);
+    }
+  };
+
+  const handleShare = () => {
+    triggerTactileHaptic('tick');
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedCitation(true);
+      setTimeout(() => setCopiedCitation(false), 2200);
+    }
+  };
+
+  const sections = useMemo(() => {
+    if (currentLang === 'en') {
+      return [
+        {
+          heading: '1. Problem Statement & Epistemological Grounding',
+          body: 'In the analytical tradition of Islamic philosophy, every metaphysical claim must first undergo rigorous conceptual demarcation in formal and material logic. Confusing the mental concept of reality with its extra-mental instantiation has historically been the root of numerous theological and philosophical fallacies.',
+        },
+        {
+          heading: '2. Demonstrative Analysis in Transcendent & Illuminationist Wisdom',
+          body: 'By synthesizing the intuitive immediacy of Suhrawardi’s Knowledge by Presence (al-ilm al-huduri) with Mulla Sadra’s demonstration of the Primacy and Gradation of Existence (asalat wa tashkik al-wujud), this treatise establishes an apodictic foundation that resolves classical objections without resorting to superficial eclecticism.',
+        },
+        {
+          heading: '3. Scholarly Conclusion & Methodological Implications',
+          body: 'The fruit of this demonstrative inquiry is the alignment of rational certainty with spiritual wayfaring—demonstrating that fidelity to critically edited classical texts provides the most resilient framework for addressing contemporary epistemological challenges.',
+        },
+      ];
+    }
+    if (currentLang === 'ar') {
+      return [
+        {
+          heading: '١. تحرير المسألة والتأصيل المعرفي',
+          body: 'في المنظومة البرهانية للعلوم العقلية، يبتني كل مدعى ميتافيزيقي على التمييز الدقيق بين المفهوم الذهني والحقيقة العينية الخارجية. إن الخلط بين المعقولات الثانية الفلسفية وبين متن الواقع الخارجي كان منشأً لكثير من الشبهات الكلامية والفلسفية عبر التاريخ.',
+        },
+        {
+          heading: '٢. التحليل البرهاني في ضوء الحكمة المتعالية والإشراق',
+          body: 'من خلال الجمع المنهجي بين شهود العلم الحضوري في مدرسة شيخ الإشراق السهروردي وبين براهين أصالة الوجود وتشكيكه عند صدر المتألهين الشيرازي، يقدم هذا البحث تقريراً برهانياً محكماً يدفع الإشكالات المعاصرة.',
+        },
+        {
+          heading: '٣. الخاتمة والثمرة العلمية للبحث',
+          body: 'تتجلى ثمرة هذا التحقيق في إثبات التلازم الوثيق بين البرهان العقلي الرصين وبين الشهود المعرفي، مما يفتح آفاقاً جديدة أمام الباحثين في الحوزات العلمية والمراكز الأكاديمية.',
+        },
+      ];
+    }
+    return [
+      {
+        heading: '۱. طرح مسئله و مبادی معرفتشناختی',
+        body: 'در منظومه اجتهادی علوم عقلی، هر مدعای مابعدالطبیعی پیش از هر چیز نیازمند تنقیح مناط و تفکیک دقیق میان «مفهوم ذهنی» و «حقیقت عینی خارجی» با ترازوی منطق صوری و صناعت برهان است. خلط میان معقولات ثانی فلسفی و متن واقعیت انضمامی، منشأ بسیاری از مغالطات تاریخی در مکاتب کلامی و فلسفی بوده است.',
+      },
+      {
+        heading: '۲. تحلیل برهانی در تراز حکمت متعالیه و اشراق',
+        body: 'با بهرهگیری از پیوند عمیق میان «علم حضوری و شهود نوری» شیخ شهابالدین سهروردی و براهین «اصالت و تشکیک وجود» صدرالمتألهین شیرازی، این جستار نشان میدهد که حقیقت هستی به ذات خود منشأ تمامی آثار و کمالات است و ماهیات صرفاً حدود اعتباری و حکایات ذهنی از مراتب وجود به شمار میآیند.',
+      },
+      {
+        heading: '۳. نتیجهگیری و ثمره علمی پژوهش',
+        body: 'ثمره این بازخوانی اجتهادی و متنمحور، اثبات هماهنگی کامل میان برهان قاطع عقلی، شهود عرفانی و ظواهر وحیانی است؛ روشی که به دانشپژوه امکان میدهد بدون التقاط سطحی، به شبهات معرفتشناختی معاصر پاسخی برهانی و متقن ارائه دهد.',
+      },
+    ];
+  }, [currentLang]);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-12">
+      <Navbar
+        isDark={isDark}
+        cartCount={cartItems.length}
+        onThemeToggle={() => {
+          setIsDark(!isDark);
+          document.documentElement.classList.toggle('dark');
+        }}
+        onOpenCart={openCart}
+      />
+
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8 w-full text-start">
+        {/* Breadcrumb Bar */}
+        <nav
+          aria-label="Breadcrumb"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4 text-xs"
+        >
+          <div className="flex items-center gap-2 font-mono text-zinc-500">
+            <Link href="/" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition">
+              {dict.nav_home || 'صفحه نخست'}
+            </Link>
+            <span>/</span>
+            <Link
+              href="/articles"
+              className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
+            >
+              {dict.nav_articles || 'مقالات علمی'}
+            </Link>
+            <span>/</span>
+            <span className="text-[#8A532B] dark:text-[#C58B43] font-bold">{category}</span>
+          </div>
+
+          <Link
+            href="/articles"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
+          >
+            <span>
+              {currentLang === 'en'
+                ? 'Back to Articles Archive'
+                : currentLang === 'ar'
+                ? 'العودة إلى أرشيف المقالات'
+                : 'بازگشت به آرشیو مقالات'}
+            </span>
+            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+          </Link>
+        </nav>
+
+        {/* Article Header Card */}
+        <article className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
+          <header className="space-y-4 border-b border-[#E6E1D8] dark:border-[#22242A] pb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/25 text-xs font-bold">
+                  {category}
+                </span>
+                <span className="text-[11px] font-mono text-zinc-400">
+                  [{rawArticle.id.toUpperCase()}]
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs text-zinc-500 font-num">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                  <span>{toLocale(readTime)}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                  <span>{toLocale(publishDate)}</span>
+                </span>
+              </div>
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
+              {title}
+            </h1>
+
+            {/* Author & Actions Row */}
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/ostad_zanjirzan.jpg"
+                  alt={authorName}
+                  className="w-10 h-10 rounded-full object-cover border border-[#E6E1D8] dark:border-[#22242A]"
+                />
+                <div>
+                  <span className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5] block">
+                    {authorName}
+                  </span>
+                  <span className="text-[11px] text-zinc-500 block">
+                    {dict.bio_status || 'مدرس سطوح عالی و خارج حوزه علمیه'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                  <span>
+                    {currentLang === 'en'
+                      ? 'Print / PDF'
+                      : currentLang === 'ar'
+                      ? 'طباعة / PDF'
+                      : 'چاپ / دریافت PDF'}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-zinc-600 dark:text-zinc-300 transition cursor-pointer"
+                  title="اشتراکگذاری پیوند مقاله"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Abstract Box */}
+          <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#8A532B] dark:text-[#C58B43]">
+              <Quote className="w-4 h-4" />
+              <span>{dict.articles_modal_abstract || 'چکیده و مسئلهشناسی مقاله:'}</span>
+            </div>
+            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
+              {abstractText}
+            </p>
+          </div>
+
+          {/* Full Treatise Sections */}
+          <div className="space-y-6">
+            {sections.map((sec, idx) => (
+              <section key={idx} className="space-y-2.5">
+                <h2 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
+                  {sec.heading}
+                </h2>
+                <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-8 text-justify">
+                  {sec.body}
+                </p>
+              </section>
+            ))}
+          </div>
+
+          {/* Academic Citation Box */}
+          <footer className="pt-6 border-t border-[#E6E1D8] dark:border-[#22242A] space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                {currentLang === 'en'
+                  ? 'Standard Academic Citation:'
+                  : currentLang === 'ar'
+                  ? 'التوثيق العلمي للمقال:'
+                  : 'نحوه ارجاع استاندارد علمی به این مقاله:'}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyCitation}
+                className="px-3 py-1.5 rounded-xl bg-[#8A532B]/10 hover:bg-[#8A532B] text-[#8A532B] dark:text-[#C58B43] hover:text-[#FAF8F5] text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+              >
+                {copiedCitation ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>
+                      {currentLang === 'en' ? 'Copied' : currentLang === 'ar' ? 'تم النسخ' : 'کپی شد'}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>
+                      {currentLang === 'en'
+                        ? 'Copy Citation'
+                        : currentLang === 'ar'
+                        ? 'نسخ التوثيق'
+                        : 'کپی ارجاع'}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="p-3.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed select-all">
+              {citationString}
+            </div>
+          </footer>
+        </article>
+
+        {/* Related Courses Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5] flex items-center gap-2">
+              <Headphones className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+              <span>
+                {currentLang === 'en'
+                  ? 'Related Audio & Video Lecture Series'
+                  : currentLang === 'ar'
+                  ? 'الدورات والمحاضرات المرتبطة بهذا البحث'
+                  : 'درسگفتارها و دورههای مرتبط با این جستار'}
+              </span>
+            </h2>
+            <Link
+              href="/courses"
+              className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1"
+            >
+              <span>{dict.courses_view_all || 'مشاهده همه دورهها'}</span>
+              <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {relatedCourses.map((rc) => {
+              const locRc = getLocalizedCourse(rc, currentLang);
+              return (
+                <Link
+                  key={rc.id}
+                  href={`/courses/${rc.id}`}
+                  className="p-5 rounded-2xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] transition flex flex-col justify-between gap-3 group shadow-2xs"
+                >
+                  <div className="space-y-1.5">
+                    <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-[11px] font-bold">
+                      {locRc?.subject || rc.subject}
+                    </span>
+                    <h3 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition line-clamp-2 min-h-[2.5rem]">
+                      {locRc?.title || rc.title_fa}
+                    </h3>
+                  </div>
+                  <div className="pt-2 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center justify-between text-xs text-zinc-500 font-num">
+                    <span>
+                      {toLocale(rc.episodes_count)} {dict.course_unit_sessions || 'جلسه'} •{' '}
+                      {locRc?.duration || rc.duration_fa}
+                    </span>
+                    <span className="font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
+                      <span>{dict.catalog_featured_action || 'مشاهده دوره'}</span>
+                      <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      </main>
+
+      <CartModal
+        isOpen={isCartOpen}
+        items={cartItems}
+        currentLang={currentLang}
+        onClose={closeCart}
+        onRemoveItem={removeItem}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+### گام ۲: ساخت Server Component سئو و اسکیمای JSON-LD برای مقالات در `frontend/src/app/articles/[slug]/page.tsx`
+فایل جدید `frontend/src/app/articles/[slug]/page.tsx` را با کد کامل زیر بساز تا موتورهای جستجو (Google و Google Scholar) هر مقاله را با متادیتای اختصاصی و اسکیمای `ScholarlyArticle` و `BreadcrumbList` ایندکس کنند:
+
+```tsx
+import React from 'react';
+import { Metadata } from 'next';
+import { scholarlyArticlesDatabase } from '@/lib/data';
+import { ArticleDetailClient } from './ArticleDetailClient';
+
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  return scholarlyArticlesDatabase.map((article) => ({
+    slug: article.slug,
+  }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const article =
+    scholarlyArticlesDatabase.find((a) => a.slug === slug || a.id === slug) ||
+    scholarlyArticlesDatabase[0];
+
+  const title = `${article.title_fa || article.title} | حجت الاسلام دکتر زنجیر زن حسینی`;
+  const description =
+    article.abstract_fa ||
+    article.abstract ||
+    'مقالات و جستارهای برهانی پایگاه رسمی دارالحکمة (حجت الاسلام دکتر زنجیر زن حسینی)';
+  const url = `https://zanjirzan.ir/articles/${article.slug}`;
+
+  return {
+    title,
+    description,
+    authors: [{ name: 'حجت الاسلام دکتر زنجیر زن حسینی', url: 'https://zanjirzan.ir' }],
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی (دارالحکمة)',
+      type: 'article',
+      locale: 'fa_IR',
+      authors: ['حجت الاسلام دکتر زنجیر زن حسینی'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+}
+
+export default async function ArticleDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const article =
+    scholarlyArticlesDatabase.find((a) => a.slug === slug || a.id === slug) ||
+    scholarlyArticlesDatabase[0];
+
+  const scholarlyArticleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline: article.title_fa || article.title,
+    description: article.abstract_fa || article.abstract,
+    inLanguage: 'fa-IR',
+    author: {
+      '@type': 'Person',
+      name: 'حجت الاسلام دکتر زنجیر زن حسینی',
+      jobTitle: 'استاد سطوح عالی و خارج حوزه علمیه، پژوهشگر علوم عقلی و نقلی',
+      url: 'https://zanjirzan.ir',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'پایگاه علمی و پژوهشی دارالحکمة',
+      url: 'https://zanjirzan.ir',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://zanjirzan.ir/articles/${article.slug}`,
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'صفحه نخست',
+        item: 'https://zanjirzan.ir',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'مقالات علمی',
+        item: 'https://zanjirzan.ir/articles',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.title_fa || article.title,
+        item: `https://zanjirzan.ir/articles/${article.slug}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(scholarlyArticleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ArticleDetailClient slug={slug} />
+    </>
+  );
+}
+```
+
+---
+
+### گام ۳: ارتقای صفحه آرشیو مقالات (`frontend/src/app/articles/page.tsx`) به ۳ زبان و لینک مستقیم به `/articles/[slug]`
+فایل `frontend/src/app/articles/page.tsx` را با کد کامل زیر جایگزین کن تا:
+1. تمام متون، دستهبندیها و کارتها به صورت کامل ۳ زبانه (`fa`, `ar`, `en`) شوند.
+2. هر مقاله دارای لینک مستقیم به صفحه سئوشده `/articles/${art.slug}` باشد و همچنین دکمه «پیشنمایش سریع چکیده» را هم حفظ کند.
+3. سبد خرید سراسری `useCart()` به `Navbar` متصل باشد.
+
+```tsx
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import {
+  Clock,
+  ArrowLeft,
+  Search,
+  X,
+  BookOpen,
+  FileText,
+} from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
+import { CartModal } from '@/components/CartModal';
+import { EmptyStateCard } from '@/components/ui/FeedbackStates';
+import { scholarlyArticlesDatabase, ScholarlyArticle } from '@/lib/data';
+import { getLocalizedArticle } from '@/lib/localization';
+import { useLanguage } from '@/context/LanguageContext';
+import { useCart } from '@/context/CartContext';
+import { SCHOLAR_NAME } from '@/lib/constants';
+
+export default function ArticlesPage() {
+  const { currentLang, dict, toLocale } = useLanguage();
+  const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
+
+  const [isDark, setIsDark] = useState(false);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedArticle, setSelectedArticle] = useState<ScholarlyArticle | null>(null);
+
+  const categoryOptions = useMemo(() => {
+    return [
+      {
+        id: 'all',
+        label:
+          currentLang === 'en'
+            ? 'All Treatises'
+            : currentLang === 'ar'
+            ? 'جميع الأبحاث'
+            : 'همه جستارها',
+      },
+      {
+        id: 'فلسفه',
+        label: currentLang === 'en' ? 'Philosophy' : currentLang === 'ar' ? 'الفلسفة' : 'فلسفه',
+      },
+      {
+        id: 'منطق',
+        label: currentLang === 'en' ? 'Logic' : currentLang === 'ar' ? 'المنطق' : 'منطق',
+      },
+      {
+        id: 'عرفان عملی',
+        label:
+          currentLang === 'en'
+            ? 'Spiritual Wayfaring'
+            : currentLang === 'ar'
+            ? 'العرفان العملي'
+            : 'عرفان عملی',
+      },
+    ];
+  }, [currentLang]);
+
+  const articles = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return scholarlyArticlesDatabase.filter((art) => {
+      const loc = getLocalizedArticle(art, currentLang);
+      const title = (loc?.title || art.title_fa || art.title).toLowerCase();
+      const abs = (loc?.abstract || art.abstract_fa || art.abstract).toLowerCase();
+      const matchesSearch = !q || title.includes(q) || abs.includes(q);
+      const matchesCat =
+        selectedCategory === 'all' ||
+        art.category === selectedCategory ||
+        art.category_fa === selectedCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [search, selectedCategory, currentLang]);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-10">
+      <Navbar
+        isDark={isDark}
+        cartCount={cartItems.length}
+        onThemeToggle={() => {
+          setIsDark(!isDark);
+          document.documentElement.classList.toggle('dark');
+        }}
+        onOpenCart={openCart}
+      />
+
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 w-full text-start">
+        {/* Header */}
+        <div className="border-b border-[#E6E1D8] dark:border-[#22242A] pb-5 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+            <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+              {dict.nav_home || 'صفحه نخست'}
+            </Link>
+            <span>/</span>
+            <span className="text-[#8A532B] dark:text-[#C58B43]">
+              {dict.nav_articles || 'مقالات علمی'}
+            </span>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
+            {dict.articles_home_title || 'کتابخانه مقالات و جستارهای برهانی'}
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+            {dict.articles_home_desc ||
+              'مجموعه مقالات تخصصی و آثار تحلیلی تبیینشده توسط حجت الاسلام دکتر زنجیر زن حسینی در تراز آکادمیک و حوزوی.'}
+          </p>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-zinc-400 absolute start-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={
+                currentLang === 'en'
+                  ? 'Search article titles & abstracts...'
+                  : currentLang === 'ar'
+                  ? 'البحث في عناوين وملخصات الأبحاث...'
+                  : 'جستجو در موضوعات و چکیدهها...'
+              }
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full ps-9 pe-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B]"
+            />
+          </div>
+
+          <div className="inline-flex p-1 bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] rounded-xl text-xs font-bold self-start sm:self-auto">
+            {categoryOptions.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  selectedCategory === cat.id
+                    ? 'bg-[#8A532B] text-[#FAF8F5]'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-[#0C0D0E] dark:hover:text-[#FAF8F5]'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Articles Grid */}
+        {articles.length === 0 ? (
+          <EmptyStateCard
+            title={
+              currentLang === 'en'
+                ? 'No matching articles found'
+                : currentLang === 'ar'
+                ? 'لم يتم العثور على مقالات مطابقة'
+                : 'مقالهای با این عبارت یافت نشد'
+            }
+            description={
+              currentLang === 'en'
+                ? 'Try clearing your search filter or selecting another discipline.'
+                : currentLang === 'ar'
+                ? 'يرجى تغيير عبارة البحث أو اختيار تخصص آخر.'
+                : 'لطفاً فیلتر جستجو را تغییر دهید یا شاخه علمی دیگری را انتخاب کنید.'
+            }
+            actionLabel={
+              currentLang === 'en'
+                ? 'Reset Filters'
+                : currentLang === 'ar'
+                ? 'إعادة ضبط الفلتر'
+                : 'نمایش همه مقالات'
+            }
+            onActionClick={() => {
+              setSearch('');
+              setSelectedCategory('all');
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {articles.map((art, index) => {
+              const loc = getLocalizedArticle(art, currentLang);
+              const artTitle = loc?.title || art.title_fa || art.title;
+              const artCat = loc?.category || art.category_fa || art.category;
+              const artReadTime = loc?.readTime || art.readTime_fa || art.readTime;
+              const artDate = loc?.publishDate || art.publishDate_fa || art.publishDate;
+              const artAbstract = loc?.abstract || art.abstract_fa || art.abstract;
+
+              return (
+                <article
+                  key={art.id}
+                  className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B]/50 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 transition group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono text-zinc-400">
+                          [ART-0{toLocale(index + 1)}]
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] font-bold text-[11px]">
+                          {artCat}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px] font-num">
+                        <Clock className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                        <span>{toLocale(artReadTime)}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Link href={`/articles/${art.slug}`} className="block">
+                        <h2 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] leading-snug line-clamp-2 min-h-[2.75rem] transition">
+                          {artTitle}
+                        </h2>
+                      </Link>
+                      <p className="text-xs text-zinc-500">
+                        {dict.articles_modal_author || 'نگارنده:'}{' '}
+                        {dict.scholar_name || SCHOLAR_NAME}
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3 text-justify">
+                      {artAbstract}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono text-zinc-400 font-num">
+                      {toLocale(artDate)}
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedArticle(art)}
+                        className="px-3 py-2 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-xs font-bold text-zinc-600 dark:text-zinc-300 transition cursor-pointer flex items-center gap-1"
+                      >
+                        <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                        <span>
+                          {currentLang === 'en'
+                            ? 'Quick Abstract'
+                            : currentLang === 'ar'
+                            ? 'ملخص سريع'
+                            : 'چکیده سریع'}
+                        </span>
+                      </button>
+
+                      <Link
+                        href={`/articles/${art.slug}`}
+                        className="px-3.5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <span>
+                          {currentLang === 'en'
+                            ? 'Read Full Treatise'
+                            : currentLang === 'ar'
+                            ? 'قراءة البحث كاملاً'
+                            : 'مطالعه کامل مقاله'}
+                        </span>
+                        <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </main>
+
+      {/* Quick Abstract Modal */}
+      {selectedArticle && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 text-start shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4">
+              <div className="space-y-1.5">
+                <span className="px-3 py-0.5 rounded-full bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] font-bold text-xs inline-block">
+                  {getLocalizedArticle(selectedArticle, currentLang)?.category ||
+                    selectedArticle.category_fa}
+                </span>
+                <h3 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
+                  {getLocalizedArticle(selectedArticle, currentLang)?.title ||
+                    selectedArticle.title_fa}
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  {dict.scholar_name || SCHOLAR_NAME} •{' '}
+                  {getLocalizedArticle(selectedArticle, currentLang)?.publishDate ||
+                    selectedArticle.publishDate_fa}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedArticle(null)}
+                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-1.5">
+                <span className="font-bold text-[#8A532B] dark:text-[#C58B43] block text-xs">
+                  {dict.articles_modal_abstract || 'چکیده و مسئلهشناسی مقاله:'}
+                </span>
+                <p>
+                  {getLocalizedArticle(selectedArticle, currentLang)?.abstract ||
+                    selectedArticle.abstract_fa}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-3 border-t border-[#E6E1D8] dark:border-[#22242A]">
+              <button
+                type="button"
+                onClick={() => setSelectedArticle(null)}
+                className="px-4 py-2.5 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs font-bold text-zinc-600 dark:text-zinc-300 cursor-pointer"
+              >
+                {dict.articles_modal_close || 'بستن پنجره'}
+              </button>
+
+              <Link
+                href={`/articles/${selectedArticle.slug}`}
+                onClick={() => setSelectedArticle(null)}
+                className="px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold flex items-center gap-2 transition"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>
+                  {currentLang === 'en'
+                    ? 'Open Dedicated Article Page'
+                    : currentLang === 'ar'
+                    ? 'فتح الصفحة الكاملة للبحث'
+                    : 'ورود به صفحه کامل و مطالعه مقاله'}
+                </span>
+                <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <CartModal
+        isOpen={isCartOpen}
+        items={cartItems}
+        currentLang={currentLang}
+        onClose={closeCart}
+        onRemoveItem={removeItem}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+### گام ۴: تکمیل `frontend/src/app/sitemap.ts` با افزودن تمام مقالات، دورهها و کتابها
+فایل `frontend/src/app/sitemap.ts` را با کد کامل زیر جایگزین کن تا لینک تمام مقالات (`/articles/[slug]`)، هر ۲۱ دوره و تمام کتب در نقشه سایت XML گوگل قرار گیرد:
+
+```ts
+import { MetadataRoute } from 'next';
+import { coursesDatabase, booksDatabase, scholarlyArticlesDatabase } from '@/lib/data';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://zanjirzan.ir';
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/courses`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/books`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/articles`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/roadmap`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/search`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+  ];
+
+  const courseRoutes: MetadataRoute.Sitemap = Object.keys(coursesDatabase).map((id) => ({
+    url: `${baseUrl}/courses/${id}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  const bookRoutes: MetadataRoute.Sitemap = Object.keys(booksDatabase).map((id) => ({
+    url: `${baseUrl}/books/${id}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }));
+
+  const articleRoutes: MetadataRoute.Sitemap = scholarlyArticlesDatabase.map((article) => ({
+    url: `${baseUrl}/articles/${article.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...courseRoutes, ...bookRoutes, ...articleRoutes];
+}
+```
+
+---
+
+### گام ۵: ساخت تولیدکننده خودکار تصویر پیشنمایش شبکههای اجتماعی در `frontend/src/app/opengraph-image.tsx`
+فایل جدید `frontend/src/app/opengraph-image.tsx` را با کد کامل زیر بساز تا هر زمان لینک سایت در تلگرام، ایتا، واتساپ یا توییتر به اشتراک گذاشته شد، یک کارت گرافیکی رسمی با پالت دارالحکمة (`#0C0D0E`، `#FAF8F5`، `#8A532B` و `#C58B43`) رندر شود:
+
+```tsx
+import { ImageResponse } from 'next/og';
+
+export const runtime = 'edge';
+export const alt = 'پایگاه رسمی نشر آثار و دروس حجت الاسلام دکتر زنجیر زن حسینی — دارالحکمة';
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = 'image/png';
+
+export default async function Image() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          backgroundColor: '#0C0D0E',
+          color: '#FAF8F5',
+          padding: '64px',
+          border: '16px solid #141518',
+          fontFamily: 'sans-serif',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '2px solid #22242A',
+            paddingBottom: '28px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              color: '#C58B43',
+              fontSize: 22,
+              letterSpacing: '0.1em',
+            }}
+          >
+            <span>[ DAR AL-HIKMAH ARCHIVE ]</span>
+          </div>
+          <div
+            style={{
+              padding: '8px 20px',
+              borderRadius: '999px',
+              backgroundColor: '#8A532B',
+              color: '#FAF8F5',
+              fontSize: 20,
+              fontWeight: 700,
+            }}
+          >
+            zanjirzan.ir
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            marginTop: 'auto',
+            marginBottom: 'auto',
+          }}
+        >
+          <div
+            style={{
+              fontSize: 54,
+              fontWeight: 800,
+              color: '#FAF8F5',
+              lineHeight: 1.3,
+            }}
+          >
+            پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+          </div>
+          <div
+            style={{
+              fontSize: 30,
+              color: '#C58B43',
+              fontWeight: 600,
+            }}
+          >
+            آرشیو جامع درسگفتارهای علوم عقلی و نقلی، شرح اسفار اربعه، حکمت اشراق و کتب چاپی
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTop: '2px solid #22242A',
+            paddingTop: '28px',
+            fontSize: 20,
+            color: '#A1A1AA',
+          }}
+        >
+          <div>
+            <span>تخصصی‌ترین درگاه پژوهش و آموزش حکمت اسلامی</span>
+          </div>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <span>۲۱ دوره تخصصی</span>
+            <span>•</span>
+            <span>بیش از ۱۰۰ ساعت تدریس</span>
+          </div>
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+    }
+  );
+}
+```

@@ -1,0 +1,149 @@
+=== fa has 16 duplicate keys ===
+Key: dash_tab_overview
+   Line 2335: 'میز مطالعه و وضعیت تحصیلی'
+   Line 2589: 'میز کار پژوهشی'
+Key: dash_tab_courses
+   Line 2336: 'دوره‌های من'
+   Line 2590: 'درس‌گفتارهای من'
+Key: dash_tab_books
+   Line 2337: 'کتابخانه دیجیتال من'
+   Line 2592: 'کتابخانه و مونوگراف‌ها'
+Key: dash_tab_notes
+   Line 2338: 'تقریرات و یادداشت‌های درسی'
+   Line 2593: 'یادداشت‌ها و حواشی'
+Key: dash_tab_orders
+   Line 2340: 'سفارش‌های کتب چاپی'
+   Line 2594: 'سفارش‌های پستی'
+Key: dash_tab_certificates
+   Line 2341: 'گواهینامه‌های علمی دوره'
+   Line 2596: 'گواهی‌نامه‌های علمی'
+Key: admin_tab_stats
+   Line 2501: 'داشبورد آماری و هوش تجاری'
+   Line 2599: 'آمار و هوش تجاری'
+Key: admin_tab_courses
+   Line 2502: 'استودیو دوره‌ها و جلسات'
+   Line 2600: 'مدیریت درس‌گفتارها'
+Key: admin_tab_books
+   Line 2503: 'انتشارات و آپلود جلد کتب'
+   Line 2602: 'انبار و کتب چاپی'
+Key: admin_tab_orders
+   Line 2504: 'سفارشات و رهگیری ۲۴ رقمی پست'
+   Line 2603: 'سفارش‌ها و مرسولات'
+Key: admin_tab_drm
+   Line 2505: 'پخش و جلسات آنلاین'
+   Line 2604: 'نظارت بر امنیت DRM'
+Key: admin_tab_coupons
+   Line 2506: 'کدهای تخفیف دانشجویی'
+   Line 2605: 'کدهای تخفیف و کوپن'
+Key: admin_tab_media
+   Line 2507: 'استودیو جلد و مونوگراف'
+   Line 2606: 'صف پالایش صوت ۴۸kHz'
+Key: player_status_playing
+   Line 2313: 'در حال پخش'
+   Line 2698: 'در حال پخش'
+Key: learn_tab_handouts
+   Line 2445: 'درسنامه‌ها و اسناد'
+   Line 2713: 'تقریرات و جزوات درسی'
+Key: learn_tab_qa
+   Line 2444: 'پرسش و پاسخ علمی'
+   Line 2714: 'پرسش‌ها و مباحثات علمی'
+
+=== ar has 16 duplicate keys ===
+Key: dash_tab_overview
+   Line 3003: 'لوحة الدراسة والحالة التعليمية'
+   Line 3257: 'لوحة المتابعة'
+Key: dash_tab_courses
+   Line 3004: 'دوراتي'
+   Line 3258: 'دوراتي ومحاضراتي'
+Key: dash_tab_books
+   Line 3005: 'مكتبتي الرقمية'
+   Line 3260: 'المكتبة والمونوغرافات'
+Key: dash_tab_notes
+   Line 3006: 'التقريرات والملاحظات الدراسية'
+   Line 3261: 'الملاحظات والتعليقات'
+Key: dash_tab_orders
+   Line 3008: 'طلبات الكتب المطبوعة'
+   Line 3262: 'الطلبات البريدية'
+Key: dash_tab_certificates
+   Line 3009: 'الشهادات الأكاديمية'
+   Line 3264: 'الشهادات العلمية'
+Key: admin_tab_stats
+   Line 3169: 'لوحة المؤشرات والتحليلات'
+   Line 3267: 'الإحصاءات والتقارير'
+Key: admin_tab_courses
+   Line 3170: 'استوديو المقررات والمحاضرات'
+   Line 3268: 'إدارة الدروس الصوتية'
+Key: admin_tab_books
+   Line 3171: 'إدارة المطبوعات والكتب'
+   Line 3270: 'المطبوعات والمستودع'
+Key: admin_tab_orders
+   Line 3172: 'الطلبات والتتبع البريدي'
+   Line 3271: 'الطلبات البريدية'
+Key: admin_tab_drm
+   Line 3173: 'البث والجلسات المباشرة'
+   Line 3272: 'أمن البث وحماية DRM'
+Key: admin_tab_coupons
+   Line 3174: 'كوبونات الخصم الدراسي'
+   Line 3273: 'قسائم الخصم'
+Key: admin_tab_media
+   Line 3175: 'استوديو الأغلفة والبحوث'
+   Line 3274: 'قائمة معالجة الصوت'
+Key: player_status_playing
+   Line 2981: 'قيد التشغيل'
+   Line 3366: 'قيد التشغيل'
+Key: learn_tab_handouts
+   Line 3113: 'المصادر والوثائق'
+   Line 3381: 'التقريرات والكراريس الدراسية'
+Key: learn_tab_qa
+   Line 3112: 'المباحثة والأسئلة'
+   Line 3382: 'الأسئلة والمباحثات العلمية'
+
+=== en has 16 duplicate keys ===
+Key: dash_tab_overview
+   Line 3671: 'Study Desk & Academic Status'
+   Line 3925: 'Overview'
+Key: dash_tab_courses
+   Line 3672: 'My Courses'
+   Line 3926: 'My Courses'
+Key: dash_tab_books
+   Line 3673: 'My Digital Library'
+   Line 3928: 'Library & Monographs'
+Key: dash_tab_notes
+   Line 3674: 'Class Notes & Transcripts'
+   Line 3929: 'Study Notes'
+Key: dash_tab_orders
+   Line 3676: 'Printed Book Orders'
+   Line 3930: 'Orders'
+Key: dash_tab_certificates
+   Line 3677: 'Course Certificates'
+   Line 3932: 'Certificates'
+Key: admin_tab_stats
+   Line 3837: 'Analytics & BI Dashboard'
+   Line 3935: 'Analytics & Stats'
+Key: admin_tab_courses
+   Line 3838: 'Curricula & Episodes Studio'
+   Line 3936: 'Course Studio'
+Key: admin_tab_books
+   Line 3839: 'Publications & Books'
+   Line 3938: 'Books & Inventory'
+Key: admin_tab_orders
+   Line 3840: 'Orders & Shipping'
+   Line 3939: 'Orders Management'
+Key: admin_tab_drm
+   Line 3841: 'Live Sessions & Audio'
+   Line 3940: 'DRM Security'
+Key: admin_tab_coupons
+   Line 3842: 'Coupons & Discounts'
+   Line 3941: 'Coupons'
+Key: admin_tab_media
+   Line 3843: 'Cover & Monograph Studio'
+   Line 3942: 'Media & Audio Queue'
+Key: player_status_playing
+   Line 3649: 'Playing'
+   Line 4034: 'Playing'
+Key: learn_tab_handouts
+   Line 3781: 'Handouts & Texts'
+   Line 4049: 'Lecture Transcripts & Handouts'
+Key: learn_tab_qa
+   Line 3780: 'Scholarly Q&A'
+   Line 4050: 'Scholarly Q&A'

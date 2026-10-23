@@ -1,0 +1,835 @@
+{
+  "title": "Dr. Zanjirzan Platform - Cross-Layer AST Dependency Graph",
+  "models_count": 9,
+  "endpoints_count": 52,
+  "apiclient_modules_count": 12,
+  "models": {
+    "Category": {
+      "table": "categories",
+      "columns": [
+        "id",
+        "name",
+        "slug",
+        "description",
+        "icon_name",
+        "display_order"
+      ],
+      "relationships": [
+        {
+          "field": "courses",
+          "target": "Course"
+        }
+      ]
+    },
+    "Course": {
+      "table": "courses",
+      "columns": [
+        "id",
+        "category_id",
+        "title_fa",
+        "slug",
+        "course_type",
+        "desc_fa",
+        "author_name",
+        "level",
+        "capacity",
+        "enrolled_count",
+        "skyroom_url",
+        "schedule",
+        "cover_image",
+        "total_duration_hours",
+        "is_published",
+        "created_at"
+      ],
+      "relationships": [
+        {
+          "field": "category",
+          "target": "Category"
+        },
+        {
+          "field": "lessons",
+          "target": "Lesson"
+        },
+        {
+          "field": "enrollments",
+          "target": "Enrollment"
+        },
+        {
+          "field": "favorited_by",
+          "target": "UserFavorite"
+        }
+      ]
+    },
+    "Lesson": {
+      "table": "lessons",
+      "columns": [
+        "id",
+        "course_id",
+        "session_number",
+        "title_fa",
+        "audio_url",
+        "duration_seconds",
+        "audio_size_mb",
+        "is_free_sample",
+        "created_at"
+      ],
+      "relationships": [
+        {
+          "field": "course",
+          "target": "Course"
+        }
+      ]
+    },
+    "User": {
+      "table": "users",
+      "columns": [
+        "id",
+        "mobile",
+        "email",
+        "full_name",
+        "hashed_password",
+        "role",
+        "wallet_balance",
+        "avatar_url",
+        "is_active",
+        "created_at"
+      ],
+      "relationships": [
+        {
+          "field": "enrollments",
+          "target": "Enrollment"
+        },
+        {
+          "field": "orders",
+          "target": "Order"
+        },
+        {
+          "field": "favorites",
+          "target": "UserFavorite"
+        }
+      ]
+    },
+    "Enrollment": {
+      "table": "enrollments",
+      "columns": [
+        "id",
+        "user_id",
+        "course_id",
+        "enrolled_at",
+        "status"
+      ],
+      "relationships": [
+        {
+          "field": "user",
+          "target": "User"
+        },
+        {
+          "field": "course",
+          "target": "Course"
+        }
+      ]
+    },
+    "UserFavorite": {
+      "table": "user_favorites",
+      "columns": [
+        "id",
+        "user_id",
+        "course_id",
+        "created_at"
+      ],
+      "relationships": [
+        {
+          "field": "user",
+          "target": "User"
+        },
+        {
+          "field": "course",
+          "target": "Course"
+        }
+      ]
+    },
+    "AnalyticsLog": {
+      "table": "analytics_logs",
+      "columns": [
+        "id",
+        "event_type",
+        "resource_id",
+        "user_id",
+        "ip_address",
+        "user_agent",
+        "timestamp"
+      ],
+      "relationships": []
+    },
+    "Order": {
+      "table": "orders",
+      "columns": [
+        "id",
+        "user_id",
+        "tracking_number",
+        "status",
+        "total_amount",
+        "items_count",
+        "shipping_address",
+        "postal_code",
+        "recipient_name",
+        "recipient_phone",
+        "postal_barcode_24digit",
+        "coupon_code",
+        "discount_amount",
+        "created_at"
+      ],
+      "relationships": [
+        {
+          "field": "user",
+          "target": "User"
+        },
+        {
+          "field": "items",
+          "target": "OrderItem"
+        }
+      ]
+    },
+    "OrderItem": {
+      "table": "order_items",
+      "columns": [
+        "id",
+        "order_id",
+        "item_id",
+        "item_type",
+        "title",
+        "price",
+        "quantity",
+        "cover_image"
+      ],
+      "relationships": [
+        {
+          "field": "order",
+          "target": "Order"
+        }
+      ]
+    }
+  },
+  "endpoints": [
+    {
+      "module": "admin",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/admin",
+      "handler": "admin_root",
+      "summary": "Root status check for administrative portal.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "GET",
+      "path": "/analytics",
+      "full_route": "/api/v1/admin/analytics",
+      "handler": "get_analytics",
+      "summary": "Returns real-time platform metrics: revenue, student enrollments, and audio streams.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "POST",
+      "path": "/courses/create",
+      "full_route": "/api/v1/admin/courses/create",
+      "handler": "create_course",
+      "summary": "Publishes a new audio course series into the catalog and SQLite database.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "PUT",
+      "path": "/courses/{course_id}",
+      "full_route": "/api/v1/admin/courses/{course_id}",
+      "handler": "update_course",
+      "summary": "Updates course metadata, price, level, and description in memory and SQLite.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "POST",
+      "path": "/courses/{course_id}/chapters",
+      "full_route": "/api/v1/admin/courses/{course_id}/chapters",
+      "handler": "add_chapter",
+      "summary": "Adds a new lesson chapter to the course curriculum in memory and SQLite.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "PUT",
+      "path": "/courses/{course_id}/chapters/{chapter_id}",
+      "full_route": "/api/v1/admin/courses/{course_id}/chapters/{chapter_id}",
+      "handler": "update_chapter",
+      "summary": "Updates chapter title, audio URL, or sample status in memory and SQLite.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "PUT",
+      "path": "/books/{book_id}",
+      "full_route": "/api/v1/admin/books/{book_id}",
+      "handler": "update_book",
+      "summary": "Updates book details, stock status, and price.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "PUT",
+      "path": "/orders/{order_id}/status",
+      "full_route": "/api/v1/admin/orders/{order_id}/status",
+      "handler": "update_order_status",
+      "summary": "Updates delivery state (processing, shipped, delivered) and optional 24-digit Iran Post tracking barcode.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "DELETE",
+      "path": "/courses/{course_id}",
+      "full_route": "/api/v1/admin/courses/{course_id}",
+      "handler": "delete_course",
+      "summary": "Removes a course from the catalog and SQLite database.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "admin",
+      "method": "POST",
+      "path": "/upload",
+      "full_route": "/api/v1/admin/upload",
+      "handler": "upload_media",
+      "summary": "Uploads a media file to backend/app/static/uploads/ and returns relative URL.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/admin.py"
+    },
+    {
+      "module": "ai",
+      "method": "POST",
+      "path": "/chat",
+      "full_route": "/api/v1/ai/chat",
+      "handler": "chat_with_assistant",
+      "summary": "RAG-grounded philosophical conversational response citing official treatises",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/ai.py"
+    },
+    {
+      "module": "ai",
+      "method": "POST",
+      "path": "/chat/stream",
+      "full_route": "/api/v1/ai/chat/stream",
+      "handler": "stream_chat_with_assistant",
+      "summary": "Token-by-token SSE streaming response citing official treatises",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/ai.py"
+    },
+    {
+      "module": "ai",
+      "method": "POST",
+      "path": "/transcribe",
+      "full_route": "/api/v1/ai/transcribe",
+      "handler": "transcribe_voice",
+      "summary": "Transcribes audio speech to text for hands-free scholarly inquiries.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/ai.py"
+    },
+    {
+      "module": "ai",
+      "method": "POST",
+      "path": "/analyze-document",
+      "full_route": "/api/v1/ai/analyze-document",
+      "handler": "analyze_document",
+      "summary": "Extracts dialectic theses and philosophical critique from user-uploaded texts.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/ai.py"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/register",
+      "full_route": "/api/v1/auth/register",
+      "handler": "register",
+      "summary": "Registers a new student account in the persistent SQLite database.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/login",
+      "full_route": "/api/v1/auth/login",
+      "handler": "login",
+      "summary": "Authenticates user credentials and issues a secure JWT bearer session.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/otp/send",
+      "full_route": "/api/v1/auth/otp/send",
+      "handler": "send_otp",
+      "summary": "Dispatches a 6-digit one-time password code to the specified Iranian mobile number.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/otp/verify",
+      "full_route": "/api/v1/auth/otp/verify",
+      "handler": "verify_otp",
+      "summary": "Validates the submitted OTP and returns user profile with JWT access token.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "auth",
+      "method": "GET",
+      "path": "/me",
+      "full_route": "/api/v1/auth/me",
+      "handler": "get_me",
+      "summary": "Retrieves the currently authenticated user session.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "auth",
+      "method": "PUT",
+      "path": "/profile",
+      "full_route": "/api/v1/auth/profile",
+      "handler": "update_profile",
+      "summary": "Updates profile details including full name, email, and avatar URI.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/auth.py"
+    },
+    {
+      "module": "books",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/books",
+      "handler": "list_books",
+      "summary": "Retrieves published books, monographs, and critical editions with publication metadata.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/books.py"
+    },
+    {
+      "module": "books",
+      "method": "GET",
+      "path": "/{book_id}",
+      "full_route": "/api/v1/books/{book_id}",
+      "handler": "get_book",
+      "summary": "Fetches full book description, table of contents, ISBN, and pricing.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/books.py"
+    },
+    {
+      "module": "books",
+      "method": "GET",
+      "path": "/{book_id}/sample",
+      "full_route": "/api/v1/books/{book_id}/sample",
+      "handler": "get_book_sample",
+      "summary": "Returns introductory sample pages and chapters formatted for the browser e-reader component.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/books.py"
+    },
+    {
+      "module": "cart",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/cart",
+      "handler": "get_cart",
+      "summary": "Retrieves all pending courses and books in the user's isolated cart with calculated totals.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/cart.py"
+    },
+    {
+      "module": "cart",
+      "method": "POST",
+      "path": "/add",
+      "full_route": "/api/v1/cart/add",
+      "handler": "add_to_cart",
+      "summary": "Adds a course or physical book to the user's isolated active cart.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/cart.py"
+    },
+    {
+      "module": "cart",
+      "method": "DELETE",
+      "path": "/remove/{item_id}",
+      "full_route": "/api/v1/cart/remove/{item_id}",
+      "handler": "remove_from_cart",
+      "summary": "Removes an item from the user's isolated cart by its unique item_id.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/cart.py"
+    },
+    {
+      "module": "cart",
+      "method": "DELETE",
+      "path": "/clear",
+      "full_route": "/api/v1/cart/clear",
+      "handler": "clear_cart",
+      "summary": "Empties the active isolated shopping cart.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/cart.py"
+    },
+    {
+      "module": "coupons",
+      "method": "POST",
+      "path": "/validate",
+      "full_route": "/api/v1/coupons/validate",
+      "handler": "validate_coupon",
+      "summary": "Validates coupon eligibility and calculates promotional discount amount.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/coupons.py"
+    },
+    {
+      "module": "coupons",
+      "method": "GET",
+      "path": "/list",
+      "full_route": "/api/v1/coupons/list",
+      "handler": "list_coupons",
+      "summary": "Retrieves available promotional coupons.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/coupons.py"
+    },
+    {
+      "module": "courses",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/courses",
+      "handler": "list_courses",
+      "summary": "Retrieves all available philosophical and seminary lecture series with their syllabus.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "GET",
+      "path": "/enrolled",
+      "full_route": "/api/v1/courses/enrolled",
+      "handler": "get_enrolled_courses",
+      "summary": "Retrieves all active courses unlocked for the current authenticated student.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "GET",
+      "path": "/favorites",
+      "full_route": "/api/v1/courses/favorites",
+      "handler": "get_favorite_courses",
+      "summary": "Retrieves all courses bookmarked/favorited by the current authenticated student.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "POST",
+      "path": "/{course_id}/enroll",
+      "full_route": "/api/v1/courses/{course_id}/enroll",
+      "handler": "enroll_course",
+      "summary": "Enrolls the authenticated student in the specified lecture series.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "POST",
+      "path": "/{course_id}/favorite",
+      "full_route": "/api/v1/courses/{course_id}/favorite",
+      "handler": "toggle_course_favorite",
+      "summary": "Toggles bookmark/favorite status for a course.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "GET",
+      "path": "/{course_id}",
+      "full_route": "/api/v1/courses/{course_id}",
+      "handler": "get_course",
+      "summary": "Retrieves in-depth course information, syllabus lessons, and streaming endpoints.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "courses",
+      "method": "POST",
+      "path": "/{course_id}/progress",
+      "full_route": "/api/v1/courses/{course_id}/progress",
+      "handler": "sync_progress",
+      "summary": "Syncs the student audio playback position and completed percentage across devices.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/courses.py"
+    },
+    {
+      "module": "notes",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/notes",
+      "handler": "get_notes",
+      "summary": "Retrieves marginalia notes taken by the student during course audio playback.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/notes.py"
+    },
+    {
+      "module": "notes",
+      "method": "POST",
+      "path": "/create",
+      "full_route": "/api/v1/notes/create",
+      "handler": "create_note",
+      "summary": "Saves a timestamped philosophical marginalia note linked to an audio lecture.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/notes.py"
+    },
+    {
+      "module": "notes",
+      "method": "PUT",
+      "path": "/{note_id}",
+      "full_route": "/api/v1/notes/{note_id}",
+      "handler": "update_note",
+      "summary": "Updates an existing philosophical study note.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/notes.py"
+    },
+    {
+      "module": "notes",
+      "method": "DELETE",
+      "path": "/{note_id}",
+      "full_route": "/api/v1/notes/{note_id}",
+      "handler": "delete_note",
+      "summary": "Deletes a marginalia study note.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/notes.py"
+    },
+    {
+      "module": "orders",
+      "method": "POST",
+      "path": "/create",
+      "full_route": "/api/v1/orders/create",
+      "handler": "create_order",
+      "summary": "Submits a new order, optionally connects to student, records in database,",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/orders.py"
+    },
+    {
+      "module": "orders",
+      "method": "GET",
+      "path": "/{order_id}",
+      "full_route": "/api/v1/orders/{order_id}",
+      "handler": "get_order",
+      "summary": "Retrieves order details, payment status, and shipping barcode using non-blocking AsyncSession.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/orders.py"
+    },
+    {
+      "module": "orders",
+      "method": "GET",
+      "path": "/track/{tracking_code}",
+      "full_route": "/api/v1/orders/track/{tracking_code}",
+      "handler": "track_shipment",
+      "summary": "Provides real-time dispatch status via national Iran Post sorting hub simulation.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/orders.py"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "path": "/init",
+      "full_route": "/api/v1/payment/init",
+      "handler": "initiate_payment",
+      "summary": "Generates a secure Shaparak transaction token and gateway redirect URL.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/payment.py"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "path": "/verify",
+      "full_route": "/api/v1/payment/verify",
+      "handler": "verify_payment",
+      "summary": "Validates bank callback token and returns digital receipt with masked card number.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/payment.py"
+    },
+    {
+      "module": "qa",
+      "method": "GET",
+      "path": "/",
+      "full_route": "/api/v1/qa",
+      "handler": "list_discussions",
+      "summary": "Retrieves public Q&A questions asked by students regarding course lectures.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/qa.py"
+    },
+    {
+      "module": "qa",
+      "method": "POST",
+      "path": "/ask",
+      "full_route": "/api/v1/qa/ask",
+      "handler": "ask_question",
+      "summary": "Submits a philosophical inquiry regarding a specific course lesson.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/qa.py"
+    },
+    {
+      "module": "qa",
+      "method": "POST",
+      "path": "/{question_id}/answer",
+      "full_route": "/api/v1/qa/{question_id}/answer",
+      "handler": "answer_question",
+      "summary": "Publishes an official answer by Dr. Hosseini or senior academic teaching assistants.",
+      "is_admin": true,
+      "file": "backend/app/api/v1/endpoints/qa.py"
+    },
+    {
+      "module": "stream",
+      "method": "POST",
+      "path": "/token",
+      "full_route": "/api/v1/stream/token",
+      "handler": "issue_stream_token",
+      "summary": "Generates an encrypted, time-limited playback token with forensic student watermark.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/stream.py"
+    },
+    {
+      "module": "stream",
+      "method": "POST",
+      "path": "/heartbeat",
+      "full_route": "/api/v1/stream/heartbeat",
+      "handler": "verify_heartbeat",
+      "summary": "Verifies active playback session every 30 seconds to prevent concurrent stream abuse.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/stream.py"
+    },
+    {
+      "module": "stream",
+      "method": "GET",
+      "path": "/hls/{course_id}/{chapter_id}/master.m3u8",
+      "full_route": "/api/v1/stream/hls/{course_id}/{chapter_id}/master.m3u8",
+      "handler": "get_hls_playlist",
+      "summary": "Serves standard HLS M3U8 manifest with AES-128 segment protection headers.",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/stream.py"
+    },
+    {
+      "module": "stream",
+      "method": "GET",
+      "path": "/audio/{course_id}/{chapter_id}",
+      "full_route": "/api/v1/stream/audio/{course_id}/{chapter_id}",
+      "handler": "stream_audio_range",
+      "summary": "Performance Engine: Streams protected lecture audio supporting HTTP Range requests (RFC 7233).",
+      "is_admin": false,
+      "file": "backend/app/api/v1/endpoints/stream.py"
+    }
+  ],
+  "client_modules": {
+    "auth": [
+      {
+        "method": "getMe",
+        "params": "",
+        "endpoint": "/auth/me",
+        "http_verb": "GET"
+      }
+    ],
+    "courses": [
+      {
+        "method": "getAll",
+        "params": "",
+        "endpoint": "/courses/",
+        "http_verb": "GET"
+      },
+      {
+        "method": "getById",
+        "params": "courseId: string",
+        "endpoint": "/courses/${courseId}",
+        "http_verb": "GET"
+      },
+      {
+        "method": "getEnrolled",
+        "params": "",
+        "endpoint": "/courses/enrolled",
+        "http_verb": "GET"
+      }
+    ],
+    "books": [
+      {
+        "method": "getAll",
+        "params": "",
+        "endpoint": "/books/",
+        "http_verb": "GET"
+      },
+      {
+        "method": "getById",
+        "params": "bookId: string",
+        "endpoint": "/books/${bookId}",
+        "http_verb": "GET"
+      },
+      {
+        "method": "getSample",
+        "params": "bookId: string",
+        "endpoint": "/books/${bookId}/sample",
+        "http_verb": "GET"
+      }
+    ],
+    "stream": [],
+    "cart": [
+      {
+        "method": "get",
+        "params": "",
+        "endpoint": "/cart/",
+        "http_verb": "GET"
+      }
+    ],
+    "coupons": [],
+    "orders": [
+      {
+        "method": "getById",
+        "params": "orderId: string",
+        "endpoint": "/orders/${orderId}",
+        "http_verb": "GET"
+      },
+      {
+        "method": "track",
+        "params": "trackingCode: string",
+        "endpoint": "/orders/track/${trackingCode}",
+        "http_verb": "GET"
+      }
+    ],
+    "payment": [],
+    "notes": [
+      {
+        "method": "getAll",
+        "params": "courseId?: string",
+        "endpoint": "/notes/${courseId ? ",
+        "http_verb": "GET"
+      }
+    ],
+    "qa": [
+      {
+        "method": "getAll",
+        "params": "courseId?: string",
+        "endpoint": "/qa/${courseId ? ",
+        "http_verb": "GET"
+      }
+    ],
+    "admin": [
+      {
+        "method": "getAnalytics",
+        "params": "",
+        "endpoint": "/admin/analytics",
+        "http_verb": "GET"
+      }
+    ],
+    "ai": []
+  }
+}

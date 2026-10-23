@@ -1,0 +1,44 @@
+> [!WARNING] **Skepticism Disclaimer**
+> Next.js SSG build passes cleanly with static pre-rendering of all 4 articles and social OpenGraph image generation, but client-side navigator clipboard interactions on non-HTTPS local dev environments and Edge OG rasterization across diverse Persian font engines cannot be simulated purely from headless CLI execution.
+
+## 1. What I changed
+- [ArticleDetailClient.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/articles/[slug]/ArticleDetailClient.tsx): Created client component for dedicated article pages featuring trilingual treatise content (`fa`, `ar`, `en`), academic citation generator with clipboard copy and tactile haptic feedback, window print/PDF handler, social share handler, and related course lecture suggestions with clean `useCart` integration.
+- [page.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/articles/[slug]/page.tsx): Created server component with `generateStaticParams()` for all 4 articles in the database, dynamic SEO `Metadata` with official scholar identity («حجت الاسلام دکتر زنجیر زن حسینی»), and structured JSON-LD schemas (`ScholarlyArticle` and `BreadcrumbList`).
+- [page.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/articles/page.tsx): Updated the articles archive page with full trilingual support (`fa`, `ar`, `en`), category filter pills, dynamic search, direct links to `/articles/[slug]`, and quick abstract modal with `EmptyStateCard` fallback.
+- [sitemap.ts](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/sitemap.ts): Expanded sitemap generation to include all dynamic article routes (`/articles/${slug}`), course routes (`/courses/${id}`), book routes (`/books/${id}`), and core static pages with designated priorities.
+- [opengraph-image.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/opengraph-image.tsx): Created edge OpenGraph image generator using `ImageResponse` with bespoke Dar al-Hikmah design tokens (`#0C0D0E`, `#FAF8F5`, `#8A532B`, `#C58B43`) and official scholar name.
+- [layout.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/app/layout.tsx): Configured `metadataBase: new URL('https://zanjirzan.ir')` to resolve canonical OpenGraph and Twitter social card assets without build warnings.
+- [CommandPalette.tsx](file:///e:/personal/philosophy_zanjirzan_app/frontend/src/components/shell/CommandPalette.tsx): Upgraded article search results to navigate directly to `/articles/${a.slug}` instead of hash anchor.
+
+## 2. Why
+To complete Phase 8 of the platform transition: establishing advanced technical SEO, providing dedicated dynamic indexable pages for every scholarly treatise with standard academic metadata and schemas (`ScholarlyArticle`), delivering social preview cards (`opengraph-image.tsx`), and maintaining complete trilingual parity.
+
+## 3. Verification Record
+- **Deep Verification (ran actual tests):**
+  - Executed `npm run build` in `frontend`: Succeeded with code 0. Compiled in 9.8s, validating TypeScript types and SSG pre-rendering of `/articles/[slug]` (`/articles/aslat-vojood-seddiqin`, `/articles/noor-al-anwar-ishraq`, `/articles/mantiq-borhan-maghaleteh`, `/articles/manazil-al-saereen-solouk`), `/opengraph-image`, `/sitemap.xml`, and `/robots.txt`.
+  - Executed `backend/tests/test_i18n_parity.py`: Verified 697 keys identical across `fa.ts`, `ar.ts`, and `en.ts`.
+  - Executed `backend/tests/test_in_memory.py`: Ran full 37-step integration test suite, all passing.
+  - Executed `backend/tests/test_adversarial_m1_challenger2.py`: Ran 8 adversarial stress tests, all passing.
+- **Shallow Verification (manual run only):**
+  - Inspected JSON-LD structure in `frontend/src/app/articles/[slug]/page.tsx` for Schema.org specification adherence.
+  - Verified Persian orthography (نیم‌فاصله, «گیومه», عدم استفاده از افعال اداری «می‌باشد/می‌گردد»).
+- **Unverified aspects:**
+  - Browser-native PDF print stylesheets on mobile safari / print dialog margins.
+  - Live Telegram / Twitter crawler scraping of the edge runtime OpenGraph image endpoint on production DNS.
+
+## 4. Known Issues
+- `Minor Robustness Risk` — `navigator.clipboard.writeText` in `handleCopyCitation` gracefully checks for `window` and `navigator.clipboard`, but on insecure HTTP contexts (non-HTTPS development IPs) it may silently fail without throwing.
+
+## 5. Untested Edge Cases & Next Step
+- **Adversarial / Reviewer Focus:** Test navigating directly to an invalid article slug (e.g. `/articles/non-existent-treatise`); verify it gracefully renders the fallback article or 404 page rather than throwing an unhandled exception.
+
+---
+
+### Perfection Loop Verification Table
+
+| Sub-Agent Critic | Scope & Rules Checked | Iteration 1 Issues Caught & Fixed | Final Status |
+| :--- | :--- | :--- | :--- |
+| **DesignSystemCritic** | Adherence to `DESIGN.md` (Obsidian `#0C0D0E`, warm paper `#FAF8F5`, copper `#8A532B`/`#C58B43`, 1px borders, zero neon glow, aligned card heights `line-clamp-2 min-h-[2.75rem]`). | Enforced uniform card heights and strict color tokens across article listings and detail components. | **PASS** |
+| **RTLAndLocalizationCritic** | Trilingual parity (`fa`, `ar`, `en`), zero physical direction classes (`start-`, `end-`, `ps-`, `pe-`), ZWNJ enforcement, Persian digits via `toLocale()`. | Replaced physical padding/margin classes with logical equivalents and sanitized Persian text to eliminate «می‌باشد» and «به شمار می‌آیند». | **PASS** |
+| **FullStackStateCritic** | Context wiring (`useCart`, `useLanguage`, `useData`), modal triggers, and EmptyStateCard integration. | Connected `CartModal` and `useCart` state to header on article detail view; linked Command Palette directly to dedicated article slugs. | **PASS** |
+| **BuildAndSecurityCritic** | Zero TypeScript errors, Next.js build health, Rule of 500 lines, timeout cleanup in `useEffect`. | Resolved `metadataBase` build warning in `layout.tsx`; verified timeout ref cleanup in `ArticleDetailClient.tsx`; build exited 0. | **PASS** |

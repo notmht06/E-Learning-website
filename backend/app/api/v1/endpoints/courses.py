@@ -1,0 +1,225 @@
+"""
+Audio Courses and Academic Syllabus API Endpoints.
+Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine - Async Def).
+"""
+from typing import List
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from backend.app.schemas.course import (
+    CourseDetailSchema,
+    CourseEnrollResponse,
+    ProgressSyncRequest,
+    ProgressSyncResponse,
+    LiveAccessResponse,
+)
+from backend.app.services.course_service import course_service
+from backend.app.api.deps import get_current_user
+from backend.app.models.database import get_db
+from backend.app.models.models import Enrollment
+
+router = APIRouter()
+
+
+@router.get("/", response_model=List[CourseDetailSchema], summary="List all audio courses")
+async def list_courses():
+    """
+    Retrieves all available philosophical and seminary lecture series with their syllabus.
+    """
+    return course_service.get_all_courses()
+
+
+@router.get("/enrolled", response_model=List[CourseDetailSchema], summary="Get enrolled courses of current student")
+async def get_enrolled_courses(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Retrieves all active courses unlocked for the current authenticated student.
+    """
+    return await course_service.get_enrolled_courses_for_user(db=db, user_id=user["id"])
+
+
+@router.get("/favorites", response_model=List[CourseDetailSchema], summary="Get favorite courses of current student")
+async def get_favorite_courses(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Retrieves all courses bookmarked/favorited by the current authenticated student.
+    """
+    return await course_service.get_user_favorites(db=db, user_id=user["id"])
+
+
+@router.post("/{course_id}/enroll", response_model=CourseEnrollResponse, summary="Enroll student in course")
+async def enroll_course(
+    course_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Enrolls the authenticated student in the specified lecture series.
+    Rejects duplicate enrollments with HTTP 400 and structured Persian AppException.
+    """
+    return await course_service.enroll_student(db=db, user_id=user["id"], course_id=course_id)
+
+
+@router.post("/{course_id}/favorite", summary="Toggle favorite bookmark on course")
+async def toggle_course_favorite(
+    course_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Toggles bookmark/favorite status for a course.
+    """
+    return await course_service.toggle_favorite(db=db, user_id=user["id"], course_id=course_id)
+
+
+@router.get("/{course_id}", response_model=CourseDetailSchema, summary="Get course details by ID")
+async def get_course(course_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Retrieves in-depth course information, syllabus lessons, and streaming endpoints.
+    """
+    try:
+        return course_service.get_course_by_id(course_id)
+    except Exception:
+        db_c = await course_service.get_course_from_db_tx(db, course_id)
+        if db_c:
+            return {
+                "id": db_c.id,
+                "title": db_c.title_fa,
+                "slug": db_c.slug,
+                "instructor": db_c.author_name or "حجت الاسلام دکتر زنجیر زن حسینی",
+                "level": db_c.level or "سطوح عالی و خارج",
+                "hours": f"{db_c.total_duration_hours} ساعت",
+                "sessions_count": len(db_c.lessons) if db_c.lessons else 0,
+                "rating": 5.0,
+                "students_count": 0,
+                "original_price": "۰",
+                "price": "رایگان (وقف عام علم)",
+                "discount_percent": 0,
+                "badge": "دوره رسمی",
+                "thumbnail": db_c.cover_image or "/images/ostad_zanjirzan.jpg",
+                "media_type": "hybrid",
+                "course_type": db_c.course_type or "offline",
+                "capacity": db_c.capacity or 30,
+                "enrolled_count": db_c.enrolled_count or 0,
+                "skyroom_url": db_c.skyroom_url,
+                "schedule": db_c.schedule,
+                "description": db_c.desc_fa or "",
+                "syllabus": [
+                    {
+                        "id": l.session_number,
+                        "title": l.title_fa,
+                        "duration": "۴۵:۰۰",
+                        "duration_sec": l.duration_seconds,
+                        "is_preview": l.is_free_sample,
+                        "audio_stream_url": l.audio_url,
+                        "media_type": "hybrid",
+                    }
+                    for l in (db_c.lessons or [])
+                ],
+            }
+        raise HTTPException(status_code=404, detail="دوره مورد نظر یافت نشد.")
+
+
+@router.get("/{course_id}/live-access", response_model=LiveAccessResponse, summary="Generate authenticated Skyroom live class ticket")
+async def get_live_course_access(
+    course_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Security Guardian & SaaS Gateway:
+    Validates student enrollment for live online course and issues an ephemeral,
+    authenticated Skyroom access payload with student identity.
+    """
+    course = await course_service.get_course_from_db_tx(db, course_id)
+    if not course:
+        try:
+            c_dict = course_service.get_course_by_id(course_id)
+            skyroom_url = c_dict.get("skyroomUrl") or "https://www.skyroom.online/ch/zanjirzan/live"
+            schedule = c_dict.get("schedule") or "طبق تقویم هفتگی"
+            course_title = c_dict.get("title", course_id)
+        except Exception:
+            raise HTTPException(status_code=404, detail="دوره مورد نظر یافت نشد.")
+    else:
+        skyroom_url = course.skyroom_url or "https://www.skyroom.online/ch/zanjirzan/live"
+        schedule = course.schedule or "طبق تقویم هفتگی"
+        course_title = course.title_fa
+
+    # Verify student is enrolled (or is admin)
+    if user.get("role") != "admin":
+        enr_stmt = select(Enrollment).where(
+            Enrollment.user_id == user["id"],
+            Enrollment.course_id == course_id,
+            Enrollment.status == "active",
+        )
+        enr_res = await db.execute(enr_stmt)
+        if not enr_res.scalar_one_or_none():
+            raise HTTPException(
+                status_code=403,
+                detail="برای ورود به کلاس آنلاین ابتدا باید در این دوره ثبت‌نام فرمایید."
+            )
+
+    user_display = user.get("full_name") or f"دانش‌پژوه {user.get('phone', '')[-4:]}"
+    return {
+        "success": True,
+        "course_id": course_id,
+        "course_title": course_title,
+        "schedule": schedule,
+        "is_live_now": True,
+        "skyroom_url": skyroom_url,
+        "student_display_name": user_display,
+        "student_phone": user.get("phone", ""),
+        "ticket_ttl_seconds": 300,
+        "access_role": "admin" if user.get("role") == "admin" else "student",
+        "notice": "ورود به کلاس با شناسه رسمی و احراز هویت شده شما انجام می‌شود.",
+    }
+
+
+@router.get("/{course_id}/progress", summary="Get student playback progress for all chapters of a course")
+async def get_course_progress(
+    course_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Returns saved playback positions and completion percentages for all chapters of a course.
+    """
+    items = await course_service.get_user_course_progress_tx(
+        db=db,
+        user_id=user["id"],
+        course_id=course_id,
+    )
+    completed_chapter_ids = [
+        int(item["chapter_id"])
+        for item in items
+        if int(item.get("progress_percent", 0)) >= 90
+    ]
+    return {
+        "course_id": course_id,
+        "items": items,
+        "completed_chapter_ids": completed_chapter_ids,
+    }
+
+
+@router.post("/{course_id}/progress", response_model=ProgressSyncResponse, summary="Synchronize audio playback progress")
+async def sync_progress(
+    course_id: str,
+    req: ProgressSyncRequest,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Syncs the student audio playback position and completed percentage across devices and persists in DB.
+    """
+    return await course_service.sync_progress_tx(
+        db=db,
+        user_id=user["id"],
+        course_id=course_id,
+        chapter_id=req.chapter_id,
+        progress_percent=req.progress_percent,
+        last_pos_sec=req.last_position_sec,
+    )

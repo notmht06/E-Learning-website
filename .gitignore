@@ -1,0 +1,36 @@
+# Database
+*.db
+*.db-shm
+*.db-wal
+zanjirzan_platform.db
+backend/app/zanjirzan_platform.db
+
+# Python virtual environment & cache
+backend/.venv/
+.venv/
+**/__pycache__/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node dependencies & Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/out/
+
+# TypeScript build info
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Environment & local secrets
+.env
+.env*.local
+
+# Archive files
+*.zip
+
+# Audit runs & temporary logs
+_audit_run/
+*.log

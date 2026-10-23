@@ -1,0 +1,68 @@
+# Production Docker Compose Orchestration for Hayat Platform
+# پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: zanjirzan_backend
+    restart: always
+    environment:
+      - PORT=8000
+      - ENVIRONMENT=production
+      - PROJECT_NAME=Hayat Platform
+      - SCHOLAR_NAME=حجت الاسلام دکتر زنجیر زن حسینی
+      - DATABASE_URL=sqlite+aiosqlite:///./zanjirzan_platform.db
+      - SECRET_KEY=production_secure_secret_key_zanjirzan_2024
+      - JWT_SECRET=production_secure_secret_key_zanjirzan_2024
+      - ALLOWED_ORIGINS=http://localhost,http://localhost:3000,http://127.0.0.1
+    volumes:
+      - ./zanjirzan_platform.db:/workspace/zanjirzan_platform.db
+      - ./backend/media:/workspace/backend/media
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: zanjirzan_frontend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/ || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  proxy:
+    image: nginx:alpine
+    container_name: zanjirzan_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy

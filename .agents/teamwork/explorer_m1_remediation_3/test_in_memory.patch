@@ -1,0 +1,151 @@
+--- backend/tests/test_in_memory.py
++++ backend/tests/test_in_memory.py
+@@ -14,9 +14,15 @@
+ import sys
+ import os
++import uuid
++import sqlite3
++from datetime import datetime, timedelta
++from concurrent.futures import ThreadPoolExecutor
+ sys.path.insert(0, os.path.abspath("."))
+ 
+ from fastapi.testclient import TestClient
++from jose import jwt
+ from backend.app.main import app
++from backend.app.core.config import settings
+ 
+ client = TestClient(app)
+@@ -332,6 +338,98 @@
+     print("✅ Milestone 1: Persistent registration (09191112233), duplicate 400 check, and /me hydration passed.")
+ 
+ 
++def test_unknown_user_token_strict_401():
++    """
++    Verifies that a validly-signed JWT token containing an unknown, non-existent,
++    or deleted user ID strictly triggers HTTP 401 Unauthorized.
++    Enforces the permanent eradication of the synthetic in-memory fallback dict
++    ('کاربر احرازشده') in backend/app/api/deps.py.
++    """
++    # 1. Forge a validly signed JWT token with a non-existent user ID
++    non_existent_id = f"usr-unknown-{uuid.uuid4().hex[:8]}"
++    payload = {
++        "sub": non_existent_id,
++        "phone": "09199990000",
++        "role": "student",
++        "exp": datetime.utcnow() + timedelta(hours=2)
++    }
++    unknown_token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
++
++    # 2. Query /api/v1/auth/me with the unknown user token
++    res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {unknown_token}"})
++    assert res.status_code == 401, (
++        f"CRITICAL: Unknown user token did not return 401! Got HTTP {res.status_code}: {res.text}"
++    )
++    # Strict verification: Must NEVER return the old synthetic mock dictionary
++    assert "کاربر احرازشده" not in res.text, (
++        "CRITICAL ARCHITECTURAL VIOLATION: In-memory synthetic user fallback ('کاربر احرازشده') "
++        "is still present in deps.py!"
++    )
++    print("✅ Unknown user token rejected with strict HTTP 401 Unauthorized (mock user eradicated).")
++
++    # 3. Test token invalidation upon user deletion from SQLite
++    temp_phone = f"0912{uuid.uuid4().int % 10000000:07d}"
++    reg_res = client.post("/api/v1/auth/register", json={
++        "full_name": "دانشجوی موقت جهت آزمون حذف",
++        "phone": temp_phone,
++        "password": "Password123!"
++    })
++    assert reg_res.status_code == 200, f"Registration failed: {reg_res.text}"
++    temp_data = reg_res.json()
++    temp_token = temp_data["access_token"]
++    temp_user_id = temp_data["id"]
++
++    # Verify session is valid before deletion
++    me_before = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {temp_token}"})
++    assert me_before.status_code == 200
++
++    # Physically delete the user record from SQLite
++    with sqlite3.connect("zanjirzan_platform.db") as con:
++        con.execute("DELETE FROM users WHERE id = ?", (temp_user_id,))
++        con.commit()
++
++    # Verify session is strictly rejected after user deletion (no ghost sessions)
++    me_after = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {temp_token}"})
++    assert me_after.status_code == 401, (
++        f"CRITICAL: Deleted user session was not rejected with 401! Got HTTP {me_after.status_code}: {me_after.text}"
++    )
++    assert "کاربر احرازشده" not in me_after.text, (
++        "CRITICAL ARCHITECTURAL VIOLATION: Deleted user session resolved to synthetic mock dict!"
++    )
++    print(f"✅ Deleted user token ({temp_user_id}) immediately invalidated with strict HTTP 401.")
++
++
++def test_concurrency_duplicate_registration():
++    """
++    Stress-tests race-condition duplicate registrations with concurrent threads.
++    Asserts:
++    1. Exactly 1 registration succeeds (HTTP 200).
++    2. All other concurrent requests fail with structured HTTP 400 (USER_ALREADY_EXISTS).
++    3. Zero 500 Internal Server Errors or unhandled crashes.
++    4. Exactly 1 row is written to the SQLite users table.
++    """
++    race_phone = f"0912{uuid.uuid4().int % 10000000:07d}"
++    num_concurrent_requests = 10
++
++    def submit_registration(idx: int):
++        c = TestClient(app)
++        return c.post("/api/v1/auth/register", json={
++            "full_name": f"دانشجوی همزمان شماره {idx}",
++            "phone": race_phone,
++            "password": f"SafePassword{idx:02d}!"
++        })
++
++    with ThreadPoolExecutor(max_workers=num_concurrent_requests) as executor:
++        futures = [executor.submit(submit_registration, i) for i in range(num_concurrent_requests)]
++        responses = [f.result() for f in futures]
++
++    status_codes = [r.status_code for r in responses]
++    successes = [r for r in responses if r.status_code == 200]
++    duplicates = [r for r in responses if r.status_code == 400]
++    server_errors = [r for r in responses if r.status_code >= 500]
++
++    # Assertions
++    assert len(server_errors) == 0, (
++        f"CRITICAL: Concurrency caused unhandled server errors (HTTP 500+): {[r.text for r in server_errors]}"
++    )
++    assert len(successes) == 1, (
++        f"Expected exactly 1 successful registration under concurrency, got {len(successes)}! Statuses: {status_codes}"
++    )
++    assert len(duplicates) == num_concurrent_requests - 1, (
++        f"Expected {num_concurrent_requests - 1} duplicate rejections with HTTP 400, got {len(duplicates)}! Statuses: {status_codes}"
++    )
++
++    # Validate structured Persian error message & absence of bureaucratic tells
++    for dup in duplicates:
++        body = dup.text
++        assert ("ثبت شده" in body or "USER_ALREADY_EXISTS" in body), (
++            f"Expected structured duplicate warning, got: {body}"
++        )
++        assert "می‌باشد" not in body, f"Anti-slop violation: 'می‌باشد' found in {body}"
++        assert "می‌گردد" not in body, f"Anti-slop violation: 'می‌گردد' found in {body}"
++
++    # Verify physical SQLite database integrity
++    with sqlite3.connect("zanjirzan_platform.db") as con:
++        count = con.execute("SELECT count(*) FROM users WHERE mobile = ?", (race_phone,)).fetchone()[0]
++        assert count == 1, (
++            f"CRITICAL DATABASE CORRUPTION: Expected 1 row in SQLite for {race_phone}, found {count}!"
++        )
++
++    print(f"✅ Concurrency duplicate registration passed: 1 success (200), {num_concurrent_requests - 1} structured rejections (400), 1 SQLite row.")
++
++
+ if __name__ == "__main__":
+     print("==============================================")
+     print("RUNNING BACKEND TEST SUITE (IN-MEMORY CLIENT)")
+@@ -346,5 +444,7 @@
+     test_admin_course_management(admin_tok)
+     test_persistent_sqlite_auth_and_registration()
+     test_registration_persistence_and_duplicate_error()
++    test_unknown_user_token_strict_401()
++    test_concurrency_duplicate_registration()
+     print("🎉 ALL BACKEND TESTS PASSED SUCCESSFULLY!")

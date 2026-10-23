@@ -1,0 +1,132 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: hayat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hikmat_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-hayat_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hikmat_user} -d ${POSTGRES_DB:-hayat_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hikmat_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: hayat-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - hikmat_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: hayat-backend
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
+      SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - uploads_data:/app/backend/app/static/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hikmat_net
+
+  arq-worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: hayat-worker
+    restart: unless-stopped
+    command: ["arq", "backend.app.core.worker.WorkerSettings"]
+    healthcheck:
+      disable: true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - uploads_data:/app/backend/app/static/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hikmat_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://zanjirzan.ir/api/v1}
+        NEXT_PUBLIC_DEMO_MODE: "false"
+    container_name: hayat-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://zanjirzan.ir/api/v1}
+      NEXT_PUBLIC_DEMO_MODE: "false"
+    depends_on:
+      - backend
+    networks:
+      - hikmat_net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: hayat-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - uploads_data:/srv/uploads:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - hikmat_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  hikmat_net:
+    driver: bridge
