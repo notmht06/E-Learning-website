@@ -373,8 +373,8 @@ class RAGEngine:
             try:
                 with open(self._persistence_file, "w", encoding="utf-8") as f:
                     json.dump([], f)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Failed to reset corrupted persistence file %s: %s", self._persistence_file, exc)
 
     def _save_persisted_transcripts(self, new_chunks: List[Dict[str, Any]]):
         """Saves custom ingested media chunks to json file without un-serializable sets."""

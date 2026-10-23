@@ -5,6 +5,8 @@ Provides complete checkout workflow with 24-digit Iran Post tracking simulation.
 from typing import List, Dict, Any, Optional
 import time
 import random
+import logging
+logger = logging.getLogger("platform.order")
 import uuid
 from datetime import datetime
 from sqlalchemy import select
@@ -78,8 +80,8 @@ class OrderService:
                     digits = "".join([ch for ch in price_ascii if ch.isdigit()])
                     if digits:
                         return int(digits)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Could not resolve dynamic price, falling back: %s", exc)
 
         # Fallback to non-negative item price
         raw_p = item.get("price", 0)
@@ -106,8 +108,8 @@ class OrderService:
             try:
                 res = self.validate_coupon(coupon_code, subtotal)
                 discount = res["discount_amount"]
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Could not apply coupon '%s': %s", coupon_code, exc)
         
         total_amount = max(0, subtotal - discount)
         
@@ -162,8 +164,8 @@ class OrderService:
             try:
                 res = self.validate_coupon(coupon_code, subtotal)
                 discount = res["discount_amount"]
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Could not apply coupon '%s': %s", coupon_code, exc)
 
         total_amount = max(0, subtotal - discount)
         has_physical_book = any(

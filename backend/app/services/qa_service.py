@@ -2,6 +2,8 @@
 Scholarly Discussions and Student-Professor Q&A Forum Service with DB Persistence.
 """
 import uuid
+import logging
+logger = logging.getLogger("platform.qa")
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from sqlalchemy import select
@@ -115,8 +117,8 @@ class QAService:
             await db.flush()
             try:
                 self.answer_qa_question(question_id, answer_text)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Could not sync answer to in-memory store: %s", exc)
             return db_qa.to_dict()
         return self.answer_qa_question(question_id, answer_text)
 

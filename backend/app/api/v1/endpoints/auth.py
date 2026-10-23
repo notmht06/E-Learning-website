@@ -5,6 +5,8 @@ Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine & Security Guardian).
 from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+import logging
+logger = logging.getLogger("platform.auth")
 
 from backend.app.models.database import get_db
 from backend.app.schemas.auth import (
@@ -159,8 +161,8 @@ async def subscribe_dispatch(req: SubscribeRequest, db: AsyncSession = Depends(g
             )
             db.add(sub)
             await db.flush()
-        except IntegrityError:
-            pass
+        except IntegrityError as exc:
+            logger.info("Subscriber already registered during concurrent request: %s", exc)
     return {
         "success": True,
         "contact": clean_contact,

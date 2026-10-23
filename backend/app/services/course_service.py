@@ -520,8 +520,8 @@ class CourseService:
                         )
                         db.add(db_c)
                         await db.flush()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("Course row already exists or initialized concurrently: %s", exc)
 
             new_fav = UserFavorite(
                 id=f"fav-{uuid.uuid4().hex[:8]}",

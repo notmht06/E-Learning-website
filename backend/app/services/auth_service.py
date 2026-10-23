@@ -3,6 +3,8 @@ Authentication and Identity Service with Live SQLAlchemy Async Sessions.
 Complies with BACKEND_SYSTEM_DESIGN.md (Security Guardian & Reliability Engine).
 """
 import asyncio
+import logging
+logger = logging.getLogger("platform.auth_service")
 import time
 import uuid
 from typing import Dict, Any, Optional
@@ -266,8 +268,8 @@ class AuthService:
             loop.create_task(redis_service.delete(f"otp_attempts:{clean_phone}"))
             from backend.app.core.sms_provider import sms_provider
             loop.create_task(sms_provider.send_otp_sms(clean_phone, code))
-        except RuntimeError:
-            pass
+        except RuntimeError as exc:
+            logger.debug("No running asyncio event loop in thread; deferred background task: %s", exc)
 
         response: Dict[str, Any] = {
             "success": True,

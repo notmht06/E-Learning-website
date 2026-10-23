@@ -4,6 +4,8 @@ Complies with Clean Architecture and BACKEND_SYSTEM_DESIGN.md.
 """
 from typing import Dict, Any, List, Optional
 from datetime import datetime
+import logging
+logger = logging.getLogger("platform.coupon")
 from backend.app.core.exceptions import InvalidCouponException
 
 
@@ -71,8 +73,8 @@ class CouponService:
                         raise InvalidCouponException(message=f"مهلت استفاده از کد تخفیف «{code}» به پایان رسیده و منقضی شده است.")
                 except InvalidCouponException:
                     raise
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("Could not parse coupon expiration date: %s", exc)
             discount_percent = int(coupon_entry.get("discount_percent", 0))
         else:
             discount_percent = int(coupon_entry)
