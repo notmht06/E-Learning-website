@@ -48,42 +48,56 @@ async def issue_stream_token(
     and records the playback audit log in SQLite/PostgreSQL.
     Requires authentication and active course enrollment (or admin role).
     """
-    # Check if the requested chapter is an open free preview
-    is_preview_chapter = False
-    from backend.app.services.course_service import course_service
-    course_data = course_service.get_course_by_id(req.course_id)
-    if course_data and "syllabus" in course_data:
-        for ch in course_data["syllabus"]:
-            if ch.get("id") == req.chapter_id:
-                if ch.get("is_preview") or ch.get("is_free_sample"):
-                    is_preview_chapter = True
-                break
-    if not is_preview_chapter:
-        from backend.app.models.models import Lesson
-        res_lesson = await db.execute(
-            select(Lesson).where(
-                Lesson.course_id == req.course_id,
-                Lesson.session_number == req.chapter_id,
-            )
-        )
-        lesson_obj = res_lesson.scalar_one_or_none()
-        if lesson_obj and lesson_obj.is_free_sample:
-            is_preview_chapter = True
+    if user.get("role") != "admin":
+        # Check if the requested chapter is an open free preview
+        is_preview_chapter = False
+        try:
+            from backend.app.services.course_service import course_service
+            course_data = course_service.get_course_by_id(req.course_id)
+            if course_data and "syllabus" in course_data:
+                for ch in course_data["syllabus"]:
+                    if ch.get("id") == req.chapter_id:
+                        if ch.get("is_preview") or ch.get("is_free_sample"):
+                            is_preview_chapter = True
+                        break
+        except Exception:
+            course_data = None
 
-    if not is_preview_chapter and user.get("role") != "admin":
-        res_enr = await db.execute(
-            select(Enrollment).where(
-                Enrollment.user_id == user["id"],
-                Enrollment.course_id == req.course_id,
-                Enrollment.status == "active",
+        if not is_preview_chapter:
+            from backend.app.models.models import Lesson
+            try:
+                res_lesson = await db.execute(
+                    select(Lesson).where(
+                        Lesson.course_id == req.course_id,
+                        Lesson.session_number == req.chapter_id,
+                    )
+                )
+                lesson_obj = res_lesson.scalar_one_or_none()
+                if lesson_obj and lesson_obj.is_free_sample:
+                    is_preview_chapter = True
+            except Exception:
+                pass
+
+        if not is_preview_chapter:
+            from backend.app.services.course_service import course_service
+            candidate_ids = [req.course_id]
+            alias_id = course_service.COURSE_ID_ALIASES.get(req.course_id)
+            if alias_id:
+                candidate_ids.append(alias_id)
+
+            res_enr = await db.execute(
+                select(Enrollment).where(
+                    Enrollment.user_id == user["id"],
+                    Enrollment.course_id.in_(candidate_ids),
+                    Enrollment.status == "active",
+                )
             )
-        )
-        enrollment = res_enr.scalar_one_or_none()
-        if not enrollment:
-            raise HTTPException(
-                status_code=403,
-                detail="شما در این دوره ثبت‌نام نکرده‌اید. دسترسی به استریم صوت نیازمند ثبت‌نام در دوره است."
-            )
+            enrollment = res_enr.scalar_one_or_none()
+            if not enrollment:
+                raise HTTPException(
+                    status_code=403,
+                    detail="شما در این دوره ثبت‌نام نکرده‌اید. دسترسی به استریم صوت نیازمند ثبت‌نام در دوره است."
+                )
 
     effective_user_id = user["id"]
     token_data = drm_service.issue_token(

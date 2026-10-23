@@ -42,10 +42,20 @@ async def issue_certificate(
     from backend.app.core.exceptions import AppException
 
     if user.get("role") != "admin":
+        from backend.app.services.course_service import course_service
+        target_course_id = req.course_id
+        candidate_ids = [target_course_id]
+        alias_id = course_service.COURSE_ID_ALIASES.get(target_course_id)
+        if alias_id and alias_id not in candidate_ids:
+            candidate_ids.append(alias_id)
+        for k, v in course_service.COURSE_ID_ALIASES.items():
+            if v == target_course_id and k not in candidate_ids:
+                candidate_ids.append(k)
+
         res_enr = await db.execute(
             select(Enrollment).where(
                 Enrollment.user_id == user["id"],
-                Enrollment.course_id == req.course_id,
+                Enrollment.course_id.in_(candidate_ids),
                 Enrollment.status == "active",
             )
         )

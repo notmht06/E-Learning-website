@@ -1411,7 +1411,7 @@ def test_phase9_study_notes_crud_and_student_isolation():
     print("✅ Phase 9: Timestamped Study Notes CRUD, student data isolation, and unauthorized mutation defense verified.")
 
 
-def test_phase9_scholarly_qa_lifecycle_and_rbac(student_token: str, admin_token: str):
+def test_phase9_scholarly_qa_lifecycle_and_rbac(student_token: str = None, admin_token: str = None):
     """
     Phase 9 Edge-Case: Scholarly Q&A (/api/v1/qa) full lifecycle, student ask, student answer rejection (403),
     and Admin answer publishing (200):
@@ -1422,6 +1422,11 @@ def test_phase9_scholarly_qa_lifecycle_and_rbac(student_token: str, admin_token:
     5. Admin answers the question -> 200 OK, is_resolved: True, answer_text updated.
     6. Public list reflects resolved status and official answer.
     """
+    login_stu = client.post("/api/v1/auth/login", json={"phone": "09123456789", "password": "pass"})
+    student_token = login_stu.json()["access_token"]
+    if not admin_token:
+        login_adm = client.post("/api/v1/auth/login", json={"phone": "09120000000", "password": "admin_secret_2026"})
+        admin_token = login_adm.json()["access_token"]
     student_headers = {"Authorization": f"Bearer {student_token}"}
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
@@ -1489,11 +1494,16 @@ def test_phase9_scholarly_qa_lifecycle_and_rbac(student_token: str, admin_token:
     print("✅ Phase 9: Scholarly Q&A lifecycle, student answer 403 block, and admin resolution verified.")
 
 
-def test_live_course_skyroom_access(student_tok: str, admin_tok: str):
+def test_live_course_skyroom_access(student_tok: str = None, admin_tok: str = None):
     """
     Verifies that non-enrolled students are blocked (403) from accessing live class tickets,
     while enrolled students and admins receive authenticated Skyroom tickets with student identity metadata.
     """
+    login_stu = client.post("/api/v1/auth/login", json={"phone": "09123456789", "password": "pass"})
+    student_tok = login_stu.json()["access_token"]
+    if not admin_tok:
+        login_adm = client.post("/api/v1/auth/login", json={"phone": "09120000000", "password": "admin_secret_2026"})
+        admin_tok = login_adm.json()["access_token"]
     live_course_id = "course-online-sadra-ishraq"
 
     # 1. Unenrolled student attempt must return HTTP 403
@@ -1601,9 +1611,11 @@ def test_background_worker_enqueue():
     print("✅ ARQ / Background worker task enqueuing verified.")
 
 
-def test_phase2_progress_sync_db_persistence(student_tok: str):
+def test_phase2_progress_sync_db_persistence(student_tok: str = None):
     """Verifies that audio playback progress is persisted in DB via sync_progress_tx."""
     import sqlite3
+    login_stu = client.post("/api/v1/auth/login", json={"phone": "09123456789", "password": "pass"})
+    student_tok = login_stu.json()["access_token"]
     headers = {"Authorization": f"Bearer {student_tok}"}
     res = client.post(
         "/api/v1/courses/course-mantiq-mabadi/progress",
@@ -1686,8 +1698,10 @@ def test_phase2_all_21_courses_catalog_and_aliases():
     print(f"✅ Phase 2: 21 courses loaded in catalog ({len(courses)} total) and canonical aliases verified.")
 
 
-def test_phase5_security_and_otp_sessions(student_tok: str):
+def test_phase5_security_and_otp_sessions(student_tok: str = None):
     """Verifies Phase 5 Production Security, Security Headers, OTP and Session Management."""
+    login_stu = client.post("/api/v1/auth/login", json={"phone": "09123456789", "password": "pass"})
+    student_tok = login_stu.json()["access_token"]
     # 1. HTTP Security Headers
     res = client.get("/")
     assert res.status_code == 200

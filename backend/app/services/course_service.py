@@ -129,6 +129,12 @@ class CourseService:
         "course-falsafe-bidayah": "course-bidayat",
         "course-falsafe-asfar-1": "course-asfar",
         "course-falsafe-ishraq": "course-ishraq",
+        "c1": "course-falsafe-asfar-1",
+        "c2": "course-falsafe-bidayah",
+        "c3": "course-mantiq-mabadi",
+        "course-asfar": "course-falsafe-asfar-1",
+        "course-asfar-1": "course-falsafe-asfar-1",
+        "course-ishraq": "course-falsafe-ishraq",
     }
 
     def _load_seed_catalog(self) -> None:
@@ -355,10 +361,15 @@ class CourseService:
         # ۲. تضمین وجود دوره در جدول دیتابیس برای ارضای کلید خارجی SQLite
         course_res = await db.execute(select(Course).where(Course.id == course_id))
         if not course_res.scalar_one_or_none():
+            safe_slug = course_id
+            existing_slug_res = await db.execute(select(Course).where(Course.slug == safe_slug))
+            if existing_slug_res.scalar_one_or_none():
+                safe_slug = f"{course_id}-{uuid.uuid4().hex[:6]}"
+
             db_course = Course(
                 id=course_id,
                 title_fa=course_title,
-                slug=course.get("slug", course_id),
+                slug=safe_slug,
                 author_name=course.get("instructor", "حجت الاسلام دکتر زنجیر زن حسینی"),
                 desc_fa=course.get("description", ""),
                 level=course.get("level", "سطوح عالی و خارج"),
