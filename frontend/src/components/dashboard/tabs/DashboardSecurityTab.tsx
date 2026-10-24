@@ -63,18 +63,10 @@ export function DashboardSecurityTab() {
           setMaxDevices(res.max_concurrent_devices || 3);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn('Failed to load active sessions from backend:', err);
         if (mounted) {
-          setDevices(
-            drmSessions.slice(0, 2).map((s, idx) => ({
-              id: s.id,
-              device_name: s.device,
-              ip_address: s.ip,
-              last_active_at: s.startedAt,
-              is_active: s.status === 'فعال',
-              is_current: idx === 0,
-            }))
-          );
+          setDevices([]);
         }
       })
       .finally(() => {

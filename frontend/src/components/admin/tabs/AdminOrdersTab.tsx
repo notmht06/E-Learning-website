@@ -16,7 +16,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 export function AdminOrdersTab() {
   const { orders, updateOrderTracking } = useData();
-  const { toLocale } = useLanguage();
+  const { toLocale, dict } = useLanguage();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'همه' | 'در حال پردازش' | 'ارسال‌شده' | 'تحویل مشتری'>('همه');
@@ -48,7 +48,7 @@ export function AdminOrdersTab() {
             <Search className="w-4 h-4 text-zinc-400 absolute start-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="جستجو با نام، شماره، شناسه..."
+              placeholder={dict.admin_orders_search_placeholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full ps-8 pe-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -60,15 +60,15 @@ export function AdminOrdersTab() {
             onChange={(e) => setStatusFilter(e.target.value as any)}
             className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none text-zinc-700 dark:text-zinc-300"
           >
-            <option value="همه">همه وضعیت‌ها</option>
-            <option value="در حال پردازش">در حال پردازش</option>
-            <option value="ارسال‌شده">ارسال‌شده (پست پیشتاز)</option>
-            <option value="تحویل مشتری">تحویل مشتری</option>
+            <option value="همه">{dict.admin_orders_filter_all}</option>
+            <option value="در حال پردازش">{dict.admin_orders_filter_processing}</option>
+            <option value="ارسال‌شده">{dict.admin_orders_filter_shipped}</option>
+            <option value="تحویل مشتری">{dict.admin_orders_filter_delivered}</option>
           </select>
         </div>
 
         <div className="text-xs text-zinc-500 font-mono">
-          <span>تعداد سفارشات: </span>
+          <span>{dict.admin_orders_count_label} </span>
           <span className="font-bold text-zinc-800 dark:text-zinc-200 font-num">
             {toLocale(filteredOrders.length)}
           </span>
@@ -81,13 +81,13 @@ export function AdminOrdersTab() {
           <table className="w-full text-xs text-start">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 font-mono bg-zinc-50 dark:bg-zinc-900/50">
-                <th className="py-3 px-4 font-normal text-start">شناسه فاکتور</th>
-                <th className="py-3 px-4 font-normal text-start">سفارش‌دهنده</th>
-                <th className="py-3 px-4 font-normal text-start">عنوان اثر / دوره</th>
-                <th className="py-3 px-4 font-normal text-start">مبلغ کل</th>
-                <th className="py-3 px-4 font-normal text-start">وضعیت مرسوله</th>
-                <th className="py-3 px-4 font-normal text-start">کد رهگیری ۲۴ رقمی</th>
-                <th className="py-3 px-4 font-normal text-start">عملیات</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_id}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_customer}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_item}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_total}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_status}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_tracking}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_orders_th_actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -112,9 +112,9 @@ export function AdminOrdersTab() {
                       }
                       className="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[11px] outline-none"
                     >
-                      <option value="در حال پردازش">در حال پردازش</option>
-                      <option value="ارسال‌شده">ارسال‌شده</option>
-                      <option value="تحویل مشتری">تحویل مشتری</option>
+                      <option value="در حال پردازش">{dict.admin_orders_filter_processing}</option>
+                      <option value="ارسال‌شده">{dict.admin_orders_filter_shipped}</option>
+                      <option value="تحویل مشتری">{dict.admin_orders_filter_delivered}</option>
                     </select>
                   </td>
                   <td className="py-3 px-4 font-mono text-zinc-500">
@@ -123,7 +123,7 @@ export function AdminOrdersTab() {
                       <button
                         onClick={() => handleCopyTracking(ord.trackingCode)}
                         className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer"
-                        title="کپی بارکد پستی"
+                        title={dict.admin_orders_copy_tooltip}
                       >
                         {copiedTrackingId === ord.trackingCode ? (
                           <Check className="w-3.5 h-3.5 text-[#8A532B]" />
@@ -139,7 +139,7 @@ export function AdminOrdersTab() {
                       className="px-3 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-300 text-[11px] font-medium transition flex items-center gap-1 cursor-pointer"
                     >
                       <Printer className="w-3 h-3" />
-                      <span>قبض ارسال</span>
+                      <span>{dict.admin_orders_btn_print_slip}</span>
                     </button>
                   </td>
                 </tr>
@@ -157,7 +157,7 @@ export function AdminOrdersTab() {
               <div className="flex items-center gap-2">
                 <Package className="w-4 h-4 text-[#8A532B]" />
                 <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                  قبض رسمی پست پیشتاز حیات
+                  {dict.admin_orders_slip_title}
                 </h3>
               </div>
               <button
@@ -171,26 +171,26 @@ export function AdminOrdersTab() {
             {/* Slip Container with clean 1px border */}
             <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 text-xs">
               <div className="flex justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-2">
-                <span className="font-mono text-zinc-400">شناسه مرسوله: {selectedOrderForSlip.id}</span>
+                <span className="font-mono text-zinc-400">{dict.admin_orders_slip_header_sub} {selectedOrderForSlip.id}</span>
                 <span className="font-num text-zinc-500">{selectedOrderForSlip.date}</span>
               </div>
 
               <div className="space-y-1">
-                <span className="text-zinc-400 block text-[11px]">گیرنده محترم:</span>
+                <span className="text-zinc-400 block text-[11px]">{dict.admin_orders_slip_recipient}</span>
                 <p className="font-bold text-zinc-900 dark:text-zinc-100">{selectedOrderForSlip.customer}</p>
                 <p className="font-mono text-zinc-600 dark:text-zinc-400">{selectedOrderForSlip.phone}</p>
               </div>
 
               <div className="space-y-1">
-                <span className="text-zinc-400 block text-[11px]">نشانی پستی:</span>
+                <span className="text-zinc-400 block text-[11px]">{dict.admin_orders_slip_address}</span>
                 <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                  {selectedOrderForSlip.address || 'تهران، خیابان انقلاب، خیابان قدس، کوچه آذین، پلاک ۴'}
+                  {selectedOrderForSlip.address || dict.admin_orders_slip_default_address}
                 </p>
-                <p className="font-mono text-zinc-500">کد پستی ۱۰ رقمی: {selectedOrderForSlip.postalCode || '1417834591'}</p>
+                <p className="font-mono text-zinc-500">{dict.admin_orders_slip_postal_code} {selectedOrderForSlip.postalCode || '1417834591'}</p>
               </div>
 
               <div className="pt-2 border-t border-zinc-200/80 dark:border-zinc-800 flex justify-between items-center">
-                <span>محتوای بسته: <strong className="text-zinc-800 dark:text-zinc-200">{selectedOrderForSlip.item}</strong></span>
+                <span>{dict.admin_orders_slip_contents} <strong className="text-zinc-800 dark:text-zinc-200">{selectedOrderForSlip.item}</strong></span>
                 <span className="font-mono text-[11px] text-[#8A532B] font-bold">{selectedOrderForSlip.total}</span>
               </div>
             </div>
@@ -201,7 +201,7 @@ export function AdminOrdersTab() {
                 className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium flex items-center gap-2 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>چاپ قبض ارسال</span>
+                <span>{dict.admin_orders_slip_print_btn}</span>
               </button>
             </div>
           </div>

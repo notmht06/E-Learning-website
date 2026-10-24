@@ -26,6 +26,9 @@ class CertificateService:
         res = await db.execute(stmt)
         existing = res.scalar_one_or_none()
         if existing:
+            if score != existing.score and not existing.score.startswith("عالی"):
+                existing.score = score
+                await db.flush()
             return existing.to_dict()
 
         cert_id = f"cert-{uuid.uuid4().hex[:8]}"

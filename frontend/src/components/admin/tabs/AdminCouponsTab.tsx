@@ -13,7 +13,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 export function AdminCouponsTab() {
   const { coupons, addCoupon, toggleCoupon } = useData();
-  const { toLocale } = useLanguage();
+  const { toLocale, dict } = useLanguage();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [code, setCode] = useState('');
@@ -45,10 +45,10 @@ export function AdminCouponsTab() {
       <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between">
         <div>
           <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-            کدهای تخفیف و جوایز دوره‌های علمی
+            {dict.admin_coupons_title}
           </h2>
           <p className="text-xs text-zinc-500">
-            مدیریت کدهای تخفیف دوره‌های آنلاین و کتاب‌ها
+            {dict.admin_coupons_desc}
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export function AdminCouponsTab() {
           className="px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>ایجاد کد تخفیف جدید</span>
+          <span>{dict.admin_coupons_btn_add}</span>
         </button>
       </div>
 
@@ -67,12 +67,12 @@ export function AdminCouponsTab() {
           <table className="w-full text-xs text-start">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 font-mono bg-zinc-50 dark:bg-zinc-900/50">
-                <th className="py-3 px-4 font-normal text-start">کد تخفیف</th>
-                <th className="py-3 px-4 font-normal text-start">درصد تخفیف</th>
-                <th className="py-3 px-4 font-normal text-start">استفاده</th>
-                <th className="py-3 px-4 font-normal text-start">انقضا</th>
-                <th className="py-3 px-4 font-normal text-start">وضعیت فعال</th>
-                <th className="py-3 px-4 font-normal text-start">عملیات</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_coupons_th_code}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_coupons_th_percent}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_coupons_th_usage}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_coupons_th_expires}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_coupons_th_status}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.th_actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -85,7 +85,7 @@ export function AdminCouponsTab() {
                     {toLocale(c.discountPercent)}٪
                   </td>
                   <td className="py-3 px-4 font-num text-zinc-600 dark:text-zinc-400">
-                    {toLocale(c.usedCount)} از {toLocale(c.maxUses)}
+                    {toLocale(c.usedCount)} {dict.ongoing_session_of} {toLocale(c.maxUses)}
                   </td>
                   <td className="py-3 px-4 font-num text-zinc-600 dark:text-zinc-400">
                     {c.expiresAt}
@@ -96,7 +96,7 @@ export function AdminCouponsTab() {
                         c.isActive ? 'bg-[#8A532B]/10 text-[#8A532B]' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
                       }`}
                     >
-                      {c.isActive ? 'فعال' : 'غیرفعال'}
+                      {c.isActive ? dict.admin_coupons_status_active : dict.admin_coupons_status_inactive}
                     </span>
                   </td>
                   <td className="py-3 px-4">
@@ -104,7 +104,7 @@ export function AdminCouponsTab() {
                       onClick={() => toggleCoupon(c.code)}
                       className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-300 text-[11px] transition cursor-pointer"
                     >
-                      {c.isActive ? 'غیرفعال‌سازی' : 'فعال‌سازی مجدد'}
+                      {c.isActive ? dict.admin_coupons_btn_deactivate : dict.admin_coupons_btn_activate}
                     </button>
                   </td>
                 </tr>
@@ -120,7 +120,7 @@ export function AdminCouponsTab() {
           <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                ایجاد کوپن تخفیف جدید
+                {dict.admin_coupons_modal_title}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -132,10 +132,10 @@ export function AdminCouponsTab() {
 
             <form onSubmit={handleCreate} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">کد تخفیف (لاتین)</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_coupons_field_code}</label>
                 <input
                   type="text"
-                  placeholder="مثلاً: HEKMATE1403"
+                  placeholder="HEKMATE1403"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B] uppercase"
@@ -144,7 +144,7 @@ export function AdminCouponsTab() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">درصد تخفیف (عدد)</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_coupons_field_percent}</label>
                 <input
                   type="number"
                   min="1"
@@ -157,10 +157,10 @@ export function AdminCouponsTab() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">شرح تخفیف</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_coupons_field_desc}</label>
                 <input
                   type="text"
-                  placeholder="تخفیف ویژه هفته پژوهش حوزه علمیه..."
+                  placeholder="..."
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -173,13 +173,13 @@ export function AdminCouponsTab() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
                 >
-                  انصراف
+                  {dict.admin_categories_btn_cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium"
                 >
-                  ثبت کد
+                  {dict.admin_coupons_btn_submit}
                 </button>
               </div>
             </form>

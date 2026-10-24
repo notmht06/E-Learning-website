@@ -9,7 +9,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { QuickRoleSelector } from '@/components/auth/QuickRoleSelector';
 
-export default function LoginPage() {
+function LoginContent() {
   const {
     activeTab,
     switchTab,
@@ -104,5 +104,13 @@ export default function LoginPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <LoginContent />
+    </React.Suspense>
   );
 }

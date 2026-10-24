@@ -87,13 +87,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               profile.enrolledCourseIds = merged;
               profile.enrolled_courses_count = merged.length;
             }
-          } catch {
-            // non-blocking server enrolled sync fallback
+          } catch (enrErr) {
+            console.warn('Failed to sync enrolled courses on initial auth load:', enrErr);
           }
           setUser(profile);
           localStorage.setItem('zanjirzan_user', JSON.stringify(profile));
         }
-      } catch {
+      } catch (authErr) {
+        console.warn('Auth token validation failed, resetting session:', authErr);
         if (isMounted) {
           setUser(null);
           localStorage.removeItem('zanjirzan_token');

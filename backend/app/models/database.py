@@ -69,25 +69,26 @@ async def _seed_users_tx(session: AsyncSession):
         student_initial_password = os.getenv("STUDENT_INITIAL_PASSWORD", "pass")
 
 
-    # 1. Seed or sync student (usr-140301)
-    res_stu = await session.execute(select(User).where(User.mobile == "09123456789"))
-    student = res_stu.scalar_one_or_none()
-    if not student:
-        student = User(
-            id="usr-140301",
-            mobile="09123456789",
-            full_name="Ali Mousavi",
-            hashed_password=hash_password(student_initial_password),
-            role="student",
-            wallet_balance="350,000 Tomans",
-            is_active=True,
-        )
-        session.add(student)
-    else:
-        student.role = "student"
-        student.is_active = True
-        if not student.id:
-            student.id = "usr-140301"
+    # 1. Seed or sync student (usr-140301) only in non-production environments
+    if settings.ENVIRONMENT != "production":
+        res_stu = await session.execute(select(User).where(User.mobile == "09123456789"))
+        student = res_stu.scalar_one_or_none()
+        if not student:
+            student = User(
+                id="usr-140301",
+                mobile="09123456789",
+                full_name="Ali Mousavi",
+                hashed_password=hash_password(student_initial_password),
+                role="student",
+                wallet_balance="350,000 Tomans",
+                is_active=True,
+            )
+            session.add(student)
+        else:
+            student.role = "student"
+            student.is_active = True
+            if not student.id:
+                student.id = "usr-140301"
 
     # 2. Seed or sync admin (adm-001 strictly named «حجت الاسلام دکتر زنجیر زن حسینی»)
     res_adm = await session.execute(select(User).where(User.mobile == "09120000000"))

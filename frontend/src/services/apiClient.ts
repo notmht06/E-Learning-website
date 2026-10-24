@@ -33,11 +33,13 @@ class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = { ...this.getAuthHeaders(), ...(options.headers || {}) };
-
     try {
       const response = await fetch(url, { ...options, headers });
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch((jsonErr) => {
+          console.debug('Failed to parse error response as JSON:', jsonErr);
+          return {};
+        });
         let errorMessage = errorData.detail || errorData.message;
         if (Array.isArray(errorMessage)) {
           errorMessage = errorMessage.map((err: any) => err.msg || (typeof err === 'object' ? JSON.stringify(err) : String(err))).join(' | ');
@@ -445,8 +447,8 @@ class ApiClient {
                 if (parsed.done) {
                   finalPayload = parsed;
                 }
-              } catch {
-                // Ignore partial JSON parse errors
+              } catch (chunkErr) {
+                console.debug('Ignoring non-JSON or partial SSE chunk:', chunkErr);
               }
             }
           }
@@ -454,13 +456,17 @@ class ApiClient {
           if (signal?.aborted || readErr?.name === 'AbortError') {
             try {
               await reader.cancel();
-            } catch {}
+            } catch (cancelErr) {
+              console.debug('Reader cancel ignored:', cancelErr);
+            }
           }
           throw readErr;
         } finally {
           try {
             reader.releaseLock();
-          } catch {}
+          } catch (lockErr) {
+            console.debug('Reader release lock ignored:', lockErr);
+          }
         }
 
         const finalResult = {

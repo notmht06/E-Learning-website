@@ -148,8 +148,8 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
       if (savedNotes) {
         try {
           setUserMarginNotes(JSON.parse(savedNotes));
-        } catch {
-          // ignore
+        } catch (notesErr) {
+          console.warn('Failed to parse saved user margin notes from localStorage:', notesErr);
         }
       }
     }

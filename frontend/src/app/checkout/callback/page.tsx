@@ -43,7 +43,8 @@ function formatPersianDate(dateStr?: string): string {
       dateStyle: 'long',
       timeStyle: 'short',
     }).format(date);
-  } catch {
+  } catch (dateErr) {
+    console.debug('Failed to format Persian date, using fallback:', dateErr);
     return dateStr || '';
   }
 }

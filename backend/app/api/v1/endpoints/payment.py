@@ -330,21 +330,28 @@ async def verify_payment(
     tx_order_id = db_tx.order_id if db_tx else (mem_tx.get("order_id", "") if mem_tx else "")
 
     if not is_success:
-        if db_tx:
-            db_tx.status = "failed"
-            db_tx.paid_at = datetime.utcnow()
-            await db.commit()
+        paid_dt_fail = datetime.utcnow()
+        stmt_atomic_fail = (
+            update(PaymentTransaction)
+            .where(
+                PaymentTransaction.authority == req.authority,
+                PaymentTransaction.status == "pending"
+            )
+            .values(status="failed", paid_at=paid_dt_fail)
+        )
+        await db.execute(stmt_atomic_fail)
+        await db.commit()
         with payment_service._lock:
             if req.authority in payment_service.transactions:
                 payment_service.transactions[req.authority]["status"] = "failed"
-                payment_service.transactions[req.authority]["paid_at"] = paid_timestamp
+                payment_service.transactions[req.authority]["paid_at"] = paid_dt_fail.isoformat()
         return {
             "success": False,
             "reference_id": "",
             "amount": tx_amount,
             "order_id": tx_order_id,
             "card_mask": "6037-99**-****-1403",
-            "paid_at": paid_timestamp
+            "paid_at": paid_dt_fail.isoformat()
         }
 
     # Atomic DB state transition from pending -> verifying to prevent multi-worker races
@@ -493,5 +500,5 @@ async def verify_payment(
         "amount": tx_amount,
         "order_id": tx_order_id,
         "card_mask": card_mask,
-        "paid_at": paid_timestamp,
+        "paid_at": paid_dt.isoformat(),
     }

@@ -100,8 +100,8 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
             url: window.location.href,
           });
           return;
-        } catch {
-          // User aborted share or share failed; fallback to clipboard copy
+        } catch (shareErr) {
+          console.debug('Navigator share aborted or unsupported, falling back to clipboard:', shareErr);
         }
       }
       if (navigator.clipboard) {

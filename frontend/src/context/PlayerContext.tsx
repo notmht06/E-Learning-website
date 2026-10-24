@@ -69,7 +69,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         // Fallback to local audio if remote url failed
         if (targetUrl !== '/audio/sample_lecture.wav' && audioRef.current) {
           audioRef.current.src = '/audio/sample_lecture.wav';
-          audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+          audioRef.current.play().then(() => setIsPlaying(true)).catch((playErr) => {
+            console.warn('Fallback audio playback failed:', playErr);
             setIsPlaying(false);
           });
         } else {
@@ -87,8 +88,9 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } else {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {
-        // Fallback
+      }).catch((resumeErr) => {
+        console.warn('Audio resume playback failed:', resumeErr);
+        setIsPlaying(false);
       });
     }
   };
@@ -149,7 +151,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           console.warn('Audio play error in setChapterIndex:', err);
           if (targetUrl !== '/audio/sample_lecture.wav' && audioRef.current) {
             audioRef.current.src = '/audio/sample_lecture.wav';
-            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+            audioRef.current.play().then(() => setIsPlaying(true)).catch((playErr) => {
+              console.warn('Fallback audio playback failed in setChapterIndex:', playErr);
               setIsPlaying(false);
             });
           } else {

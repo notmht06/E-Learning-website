@@ -38,7 +38,8 @@ export function DashboardCertificatesTab() {
                 month: '2-digit',
                 day: '2-digit',
               }).format(new Date(c.issued_at));
-            } catch {
+            } catch (intlErr) {
+              console.debug('Failed to format certificate date with Intl, using fallback:', intlErr);
               dateStr = c.issued_at.split('T')[0];
             }
           }
@@ -53,8 +54,8 @@ export function DashboardCertificatesTab() {
         });
         setCerts(apiCerts);
       })
-      .catch(() => {
-        // graceful fallback to sample certificates
+      .catch((err) => {
+        console.warn('Failed to load certificates from API:', err);
       });
 
     return () => {

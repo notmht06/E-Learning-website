@@ -68,7 +68,9 @@ export const ThemeProvider: React.FC<{
       }
       try {
         localStorage.setItem('zan_theme', newTheme);
-      } catch {}
+      } catch (err) {
+        console.warn('Failed to persist theme in localStorage:', err);
+      }
       setCookie('zan_theme', newTheme);
     }
   }, []);

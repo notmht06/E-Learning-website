@@ -51,7 +51,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           itemType: resolvedType,
         };
       });
-    } catch {
+    } catch (cartErr) {
+      console.warn('Failed to parse cart items from localStorage:', cartErr);
       return [];
     }
   }, []);

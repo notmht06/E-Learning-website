@@ -29,8 +29,8 @@ export function ScholarDispatchBento() {
     setIsSubmitting(true);
     try {
       await apiClient.auth.subscribe(trimmed);
-    } catch {
-      // Fallback to local persistence if offline
+    } catch (subErr) {
+      console.warn('Subscribe API call failed, falling back to local storage:', subErr);
     } finally {
       setIsSubmitted(true);
       setIsSubmitting(false);

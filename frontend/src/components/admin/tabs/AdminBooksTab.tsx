@@ -16,7 +16,7 @@ import { booksDatabase } from '@/lib/data';
 
 export function AdminBooksTab() {
   const { books, addBook, deleteBook } = useData();
-  const { toLocale } = useLanguage();
+  const { toLocale, dict } = useLanguage();
 
   const [search, setSearch] = useState('');
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState(false);
@@ -73,7 +73,7 @@ export function AdminBooksTab() {
           <Search className="w-4 h-4 text-zinc-400 absolute start-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="جستجو در کتاب‌ها و آثار چاپی..."
+            placeholder={dict.admin_books_search_placeholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full ps-8 pe-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -85,7 +85,7 @@ export function AdminBooksTab() {
           className="w-full sm:w-auto px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>افزودن کتاب چاپی جدید</span>
+          <span>{dict.admin_books_btn_add}</span>
         </button>
       </div>
 
@@ -95,12 +95,12 @@ export function AdminBooksTab() {
           <table className="w-full text-xs text-start">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 font-mono bg-zinc-50 dark:bg-zinc-900/50">
-                <th className="py-3 px-4 font-normal text-start">عنوان اثر</th>
-                <th className="py-3 px-4 font-normal text-start">مؤلف</th>
-                <th className="py-3 px-4 font-normal text-start">شاخص شابک (ISBN)</th>
-                <th className="py-3 px-4 font-normal text-start">موجودی انبار</th>
-                <th className="py-3 px-4 font-normal text-start">قیمت پشت جلد</th>
-                <th className="py-3 px-4 font-normal text-start">عملیات</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_title}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_author}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_isbn}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_stock}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_price}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_books_th_actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -117,7 +117,7 @@ export function AdminBooksTab() {
                   </td>
                   <td className="py-3 px-4 font-num">
                     <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                      {toLocale(book.stock || 50)} نسخه
+                      {toLocale(book.stock || 50)} {dict.admin_books_unit_copies}
                     </span>
                   </td>
                   <td className="py-3 px-4 font-bold text-[#8A532B]">
@@ -126,12 +126,12 @@ export function AdminBooksTab() {
                   <td className="py-3 px-4">
                     <button
                       onClick={() => {
-                        if (confirm(`آیا از حذف کتاب «${book.title_fa}» مطمئن هستید؟`)) {
+                        if (confirm(`${dict.admin_books_confirm_delete} (${book.title_fa})`)) {
                           deleteBook(book.id);
                         }
                       }}
                       className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 transition cursor-pointer"
-                      title="حذف کتاب"
+                      title={dict.admin_books_btn_delete_tooltip}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -149,7 +149,7 @@ export function AdminBooksTab() {
           <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                ثبت کتاب چاپی جدید
+                {dict.admin_books_modal_title}
               </h3>
               <button
                 onClick={() => setIsAddBookModalOpen(false)}
@@ -161,7 +161,7 @@ export function AdminBooksTab() {
 
             <form onSubmit={handleCreateBook} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">عنوان کتاب</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_title}</label>
                 <input
                   type="text"
                   placeholder="مثال: کتاب برهان صدیقین"
@@ -174,7 +174,7 @@ export function AdminBooksTab() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">مؤلف اثر</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_author}</label>
                   <input
                     type="text"
                     value={newAuthor}
@@ -184,7 +184,7 @@ export function AdminBooksTab() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">شاخه علمی</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_category}</label>
                   <input
                     type="text"
                     value={newCategory}
@@ -196,7 +196,7 @@ export function AdminBooksTab() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">قیمت (تومان)</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_price}</label>
                   <input
                     type="text"
                     value={newPrice}
@@ -205,7 +205,7 @@ export function AdminBooksTab() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">موجودی انبار</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_stock}</label>
                   <input
                     type="number"
                     value={newStock}
@@ -214,7 +214,7 @@ export function AdminBooksTab() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">شابک (ISBN)</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_isbn}</label>
                   <input
                     type="text"
                     value={newIsbn}
@@ -225,8 +225,8 @@ export function AdminBooksTab() {
               </div>
 
               <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 space-y-1">
-                <span className="font-mono text-[11px] text-[#8A532B] block">مشخصات چاپ تحریریه‌ای:</span>
-                <p>کاغذ بالکی سوئدی ۷۰ گرم • جلد گالینگور با عطف طلاکوب • فونت اختصاصی دانا</p>
+                <span className="font-mono text-[11px] text-[#8A532B] block">{dict.admin_books_spec_label}</span>
+                <p>{dict.admin_books_spec_value}</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
@@ -235,13 +235,13 @@ export function AdminBooksTab() {
                   onClick={() => setIsAddBookModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
                 >
-                  انصراف
+                  {dict.admin_categories_btn_cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium"
                 >
-                  افزودن کتاب
+                  {dict.admin_books_btn_submit}
                 </button>
               </div>
             </form>

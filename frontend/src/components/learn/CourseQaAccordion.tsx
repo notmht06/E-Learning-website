@@ -81,7 +81,8 @@ export function CourseQaAccordion({
         },
         ...prev,
       ]);
-    } catch {
+    } catch (qaErr) {
+      console.warn('Failed to submit question to backend, falling back to local list:', qaErr);
       setQaList((prev) => [
         {
           id: `qa-${Date.now()}`,

@@ -109,8 +109,8 @@ export function AdminCoursesTab() {
       setIsAddCourseModalOpen(false);
       setNewTitle('');
       setNewDesc('');
-    } catch {
-      // Toast notification is managed by DataContext
+    } catch (err) {
+      console.warn('Failed to add course in AdminCoursesTab:', err);
     } finally {
       setIsSubmittingCourse(false);
     }
@@ -135,8 +135,8 @@ export function AdminCoursesTab() {
       await addEpisode(selectedCourseForStudio, ch);
       setNewEpTitle('');
       setNewEpAudioUrl('');
-    } catch {
-      // Toast notification is managed by DataContext
+    } catch (err) {
+      console.warn('Failed to add episode in AdminCoursesTab:', err);
     } finally {
       setIsSubmittingEpisode(false);
     }
@@ -232,8 +232,8 @@ export function AdminCoursesTab() {
                             setDeletingCourseId(course.id);
                             try {
                               await deleteCourse(course.id);
-                            } catch {
-                              // Toast managed by DataContext
+                            } catch (err) {
+                              console.warn('Failed to delete course in AdminCoursesTab:', err);
                             } finally {
                               setDeletingCourseId(null);
                             }
@@ -300,8 +300,8 @@ export function AdminCoursesTab() {
                           setDeletingEpisodeId(ch.id);
                           try {
                             await deleteEpisode(activeStudioCourse.id, ch.id);
-                          } catch {
-                            // Toast managed by DataContext
+                          } catch (err) {
+                            console.warn('Failed to delete episode in AdminCoursesTab:', err);
                           } finally {
                             setDeletingEpisodeId(null);
                           }

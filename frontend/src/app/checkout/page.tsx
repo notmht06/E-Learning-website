@@ -222,7 +222,8 @@ export default function CheckoutPage() {
           const status = urlObj.searchParams.get('Status') || 'OK';
           const callbackTarget = `${redirectBase}${redirectBase.includes('?') ? '&' : '?'}Authority=${encodeURIComponent(authority)}&Status=${encodeURIComponent(status)}`;
           window.location.href = callbackTarget;
-        } catch {
+        } catch (urlErr) {
+          console.debug('Failed parsing gateway redirect URL, using callback fallback:', urlErr);
           window.location.href = `/checkout/callback?Authority=${encodeURIComponent(payRes.payment_token)}&Status=OK`;
         }
       } else if (redirectUrl) {

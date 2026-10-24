@@ -235,8 +235,8 @@ export function AudioVideoPlayerEngine({
           setIsPlaying(true);
           setIsBuffering(false);
         })
-        .catch(() => {
-          // Playback failed or was blocked by browser autoplay policy
+        .catch((playErr) => {
+          console.warn('Playback failed or was blocked by autoplay policy:', playErr);
           setIsBuffering(false);
           setIsPlaying(false);
         });
@@ -279,7 +279,9 @@ export function AudioVideoPlayerEngine({
     if (el) {
       try {
         el.currentTime = nextSec;
-      } catch {}
+      } catch (seekErr) {
+        console.debug('Media seek ignored:', seekErr);
+      }
     }
   };
 
@@ -291,7 +293,9 @@ export function AudioVideoPlayerEngine({
     if (el) {
       try {
         el.currentTime = nextSec;
-      } catch {}
+      } catch (skipErr) {
+        console.debug('Media skip ignored:', skipErr);
+      }
     }
   };
 

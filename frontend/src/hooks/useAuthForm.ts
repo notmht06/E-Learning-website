@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export type AuthTab = 'login' | 'register';
@@ -16,7 +16,11 @@ export interface AuthFieldErrors {
 
 export function useAuthForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, register } = useAuth();
+
+  const redirectParam = searchParams.get('redirect');
+  const safeRedirect = redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//') ? redirectParam : null;
 
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
   const [fullName, setFullName] = useState('');
@@ -79,8 +83,8 @@ export function useAuthForm() {
     setErrors({});
     try {
       const user = await login(phone.trim(), password);
-      const target = user.role === 'ADMIN' ? '/admin' : '/dashboard';
-      router.push(target);
+      const defaultTarget = user.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.push(safeRedirect || defaultTarget);
     } catch (err: any) {
       const msg = err?.message || 'خطا در برقراری ارتباط با سامانه.';
       if (msg.includes('شماره تماس یا کلمه عبور') || msg.includes('نادرست') || msg.includes('401')) {
@@ -100,8 +104,8 @@ export function useAuthForm() {
     setErrors({});
     try {
       const user = await register(fullName.trim(), phone.trim(), password);
-      const target = user.role === 'ADMIN' ? '/admin' : '/dashboard';
-      router.push(target);
+      const defaultTarget = user.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.push(safeRedirect || defaultTarget);
     } catch (err: any) {
       const msg = err?.message || 'خطا در ثبت‌نام.';
       if (msg.includes('قبلاً در سامانه ثبت شده') || msg.includes('USER_ALREADY_EXISTS') || msg.includes('تکراری')) {
@@ -125,8 +129,8 @@ export function useAuthForm() {
     setErrors({});
     try {
       const user = await login(targetPhone, targetPass);
-      const target = (role === 'admin' || user.role === 'ADMIN') ? '/admin' : '/dashboard';
-      router.push(target);
+      const defaultTarget = (role === 'admin' || user.role === 'ADMIN') ? '/admin' : '/dashboard';
+      router.push(safeRedirect || defaultTarget);
     } catch (err: any) {
       setErrors({ general: err?.message || 'ورود سریع با خطا مواجه شد.' });
     } finally {

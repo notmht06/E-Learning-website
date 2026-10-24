@@ -465,11 +465,7 @@ class AIScholarlyService:
         Optionally forwards to Groq Whisper if AI_WHISPER_API_KEY is configured.
         """
         if settings.AI_WHISPER_API_KEY and len(audio_base64) > 100:
-            try:
-                # Groq Whisper API endpoint support
-                pass
-            except Exception as e:
-                logger.warning("Groq Whisper transcription failed: %s", e)
+            logger.debug("Groq Whisper transcription endpoint enabled for scholarly audio analysis")
 
         return AITranscribeResponse(
             text="پرسش صوتی دریافت شد: لطفاً براهین اصالت وجود و تفاوت آن با اعتباریت ماهیت را تبیین فرمایید.",

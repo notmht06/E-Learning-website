@@ -16,7 +16,8 @@ export function useBookmarks() {
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : [];
-    } catch {
+    } catch (readErr) {
+      console.warn('Failed to parse bookmarks from localStorage:', readErr);
       return [];
     }
   }, []);

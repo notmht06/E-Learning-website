@@ -9,8 +9,8 @@ export function triggerTactileHaptic(kind: 'tick' | 'thump' | 'ribbon' = 'tick')
   if ('vibrate' in navigator) {
     try {
       navigator.vibrate(kind === 'thump' ? 10 : kind === 'ribbon' ? [6, 20, 4] : 5);
-    } catch {
-      // نادیده‌گیری در مرورگرهای بدون مجوز
+    } catch (vibErr) {
+      console.debug('Navigator vibrate unsupported or blocked:', vibErr);
     }
   }
 

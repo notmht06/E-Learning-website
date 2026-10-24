@@ -133,8 +133,8 @@ export function ScholarlyAIAssistant() {
         recognitionRef.current.onerror = null;
         recognitionRef.current.onend = null;
         recognitionRef.current.stop();
-      } catch {
-        // ignore
+      } catch (recErr) {
+        console.debug('Recognition stop ignored:', recErr);
       }
       recognitionRef.current = null;
     }
@@ -145,8 +145,8 @@ export function ScholarlyAIAssistant() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
-      } catch {
-        // ignore
+      } catch (speechErr) {
+        console.debug('Speech synthesis cancel ignored:', speechErr);
       }
     }
   };

@@ -27,8 +27,8 @@ function formatCertificateDate(dateStr?: string, lang: string = 'fa'): string {
       }
       return d.toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US');
     }
-  } catch {
-    // fallback
+  } catch (dateErr) {
+    console.debug('Intl date format fallback:', dateErr);
   }
   return toLocaleDigits(dateStr.split('T')[0], lang as any);
 }
@@ -42,7 +42,8 @@ export default function CertificateVerifyPage({
   let safeCertCode = '';
   try {
     safeCertCode = decodeURIComponent(resolvedParams.code || '').trim();
-  } catch {
+  } catch (uriErr) {
+    console.debug('URI decode error in verify page:', uriErr);
     safeCertCode = (resolvedParams.code || '').trim();
   }
 
@@ -93,8 +94,8 @@ export default function CertificateVerifyPage({
           setIsLoading(false);
           return;
         }
-      } catch {
-        // API query failed or backend unavailable
+      } catch (apiErr) {
+        console.warn('Certificate API verification query failed, falling back:', apiErr);
       }
 
       // 2. Client-side fallback: any unrecognized code is invalid
@@ -122,8 +123,8 @@ export default function CertificateVerifyPage({
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-      } catch {
-        // clipboard unavailable
+      } catch (clipErr) {
+        console.warn('Clipboard write failed:', clipErr);
       }
     }
   };

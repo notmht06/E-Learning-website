@@ -78,7 +78,8 @@ export function DashboardNotesTab() {
         },
         ...prev,
       ]);
-    } catch {
+    } catch (saveErr) {
+      console.warn('Failed to save note via API, using local fallback:', saveErr);
       setNotes((prev) => [
         {
           id: `note-${Date.now()}`,
@@ -101,8 +102,8 @@ export function DashboardNotesTab() {
     setNotes((prev) => prev.filter((n) => n.id !== id));
     try {
       await apiClient.notes.delete(id);
-    } catch {
-      // Ignored in fallback mode
+    } catch (delErr) {
+      console.warn('Failed to delete note via API:', delErr);
     }
   };
 

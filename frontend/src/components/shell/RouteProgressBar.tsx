@@ -80,8 +80,8 @@ function RouteProgressBarContent() {
         jumpTimerRef.current = setTimeout(() => {
           setProgress(85);
         }, 40);
-      } catch {
-        // Ignore invalid URL parse
+      } catch (urlErr) {
+        console.debug('Invalid link URL clicked in RouteProgressBar:', urlErr);
       }
     };
 
