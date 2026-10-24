@@ -3,6 +3,7 @@ Audio Course and Academic Syllabus Service.
 Manages course catalog, chapters, audio tracks, and student playback progress.
 """
 import uuid
+import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from sqlalchemy import select
@@ -12,6 +13,8 @@ from sqlalchemy.exc import IntegrityError
 from backend.app.core.exceptions import EntityNotFoundException, AppException
 from backend.app.models.models import Course, Enrollment, UserFavorite
 from backend.app.schemas.admin import to_chapter_dict
+
+logger = logging.getLogger("platform.course_service")
 
 
 class CourseService:

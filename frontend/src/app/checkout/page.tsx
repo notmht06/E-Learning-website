@@ -59,6 +59,14 @@ export default function CheckoutPage() {
     setIsMounted(true);
   }, []);
 
+  // Auth gate: Guest users must authenticate before step 2 (shipping) or step 3 (payment)
+  useEffect(() => {
+    if (isMounted && step > 1 && !user && !isAuthenticated) {
+      setStep(1);
+      router.push('/login?redirect=/checkout');
+    }
+  }, [step, user, isAuthenticated, isMounted, router]);
+
   // Pre-fill user data if available
   useEffect(() => {
     if (user) {
@@ -147,6 +155,10 @@ export default function CheckoutPage() {
 
   const handleGoToShipping = () => {
     if (items.length === 0) return;
+    if (!user && !isAuthenticated) {
+      router.push('/login?redirect=/checkout');
+      return;
+    }
     setStep(2);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -434,14 +446,24 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleGoToShipping}
-                    disabled={items.length === 0}
-                    className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] disabled:opacity-40 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    <span>{dict.checkout_btn_continue_shipping || 'ادامه و ثبت آدرس پستی'}</span>
-                    <ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
-                  </button>
+                  {!user && !isAuthenticated ? (
+                    <button
+                      onClick={() => router.push('/login?redirect=/checkout')}
+                      className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      <span>{dict.checkout_btn_login_to_continue || 'ورود به حساب کاربری و ادامه خرید'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleGoToShipping}
+                      disabled={items.length === 0}
+                      className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] disabled:opacity-40 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <span>{dict.checkout_btn_continue_shipping || 'ادامه و ثبت آدرس پستی'}</span>
+                      <ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
+                    </button>
+                  )}
                 </div>
               </div>
             )}

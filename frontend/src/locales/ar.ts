@@ -384,6 +384,7 @@ export const ar: Dictionary = {
   checkout_shipping_free: 'مجاني (بريد سريع)',
   checkout_payable: 'المبلغ الإجمالي للدفع:',
   checkout_btn_continue_shipping: 'متابعة وإدخال العنوان',
+  checkout_btn_login_to_continue: 'تسجيل الدخول ومتابعة الشراء',
   checkout_shipping_name: 'اسم المستلم الكامل:',
   checkout_shipping_phone: 'رقم الهاتف:',
   checkout_shipping_postal: 'الرمز البريدي (10 أرقام):',

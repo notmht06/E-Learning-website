@@ -81,7 +81,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
       audioContextRef.current = new AudioContextClass();
     }
     if (audioContextRef.current.state === 'suspended') {
-      audioContextRef.current.resume().catch(() => {});
+      audioContextRef.current.resume().catch((err) => { console.debug('AudioContext resume ignored:', err); });
     }
     return audioContextRef.current;
   };
@@ -116,8 +116,8 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
       gain.connect(ctx.destination);
 
       noise.start();
-    } catch {
-      // AudioContext fallback
+    } catch (e) {
+      console.debug('playRustleSound AudioContext ignored:', e);
     }
   };
 
@@ -128,7 +128,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
         flipTimerRef.current = null;
       }
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current.close().catch((err) => { console.debug('AudioContext close ignored:', err); });
         audioContextRef.current = null;
       }
     };
@@ -136,7 +136,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
   useEffect(() => {
     if (!isOpen && audioContextRef.current && audioContextRef.current.state !== 'closed') {
-      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current.close().catch((err) => { console.debug('AudioContext close ignored:', err); });
       audioContextRef.current = null;
     }
   }, [isOpen]);

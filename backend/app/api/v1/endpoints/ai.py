@@ -26,6 +26,7 @@ from backend.app.api.deps import get_optional_user, get_current_user, get_curren
 router = APIRouter()
 
 MAX_PROMPT_LENGTH = 2000
+MAX_DOCUMENT_LENGTH = 30000
 
 
 def _validate_prompt_length(message: str):
@@ -33,6 +34,14 @@ def _validate_prompt_length(message: str):
         raise HTTPException(
             status_code=400,
             detail=f"طول متن پرسش بیش از سقف مجاز است (حداکثر {MAX_PROMPT_LENGTH} نویسه مجاز است)."
+        )
+
+
+def _validate_document_length(document_text: str):
+    if len(document_text.strip()) > MAX_DOCUMENT_LENGTH:
+        raise HTTPException(
+            status_code=400,
+            detail=f"طول متن رساله یا سند ارسالی بیش از سقف مجاز است (حداکثر {MAX_DOCUMENT_LENGTH} نویسه مجاز است)."
         )
 
 
@@ -120,7 +129,7 @@ async def analyze_document(
     Extracts dialectic theses and philosophical critique from user-uploaded texts.
     Requires authenticated user and enforces AI rate limits.
     """
-    _validate_prompt_length(req.document_text)
+    _validate_document_length(req.document_text)
     _check_ai_rate_limit(request, user)
     return ai_service.analyze_document(req.document_text, req.title)
 

@@ -56,7 +56,7 @@ export function CourseQaAccordion({
           );
         }
       })
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to load course Q&A:', err); });
 
     return () => {
       mounted = false;

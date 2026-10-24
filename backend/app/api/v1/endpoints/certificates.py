@@ -66,13 +66,52 @@ async def issue_certificate(
                 status_code=403,
             )
 
-    approved_scores = {
-        "عالی (۱۰۰ از ۱۰۰)",
-        "بسیار خوب (۸۵ از ۱۰۰)",
-        "خوب (۷۵ از ۱۰۰)",
-        "قبول (۷۰ از ۱۰۰)",
-    }
-    safe_score = req.score if (user.get("role") == "admin" or req.score in approved_scores) else "عالی (۱۰۰ از ۱۰۰)"
+        from backend.app.models.models import LessonProgress
+        res_prog = await db.execute(
+            select(LessonProgress).where(
+                LessonProgress.user_id == user["id"],
+                LessonProgress.course_id.in_(candidate_ids),
+            )
+        )
+        progress_items = res_prog.scalars().all()
+
+        try:
+            course_data = course_service.get_course_by_id(target_course_id)
+            syllabus_len = len(course_data.get("syllabus", []))
+        except Exception:
+            syllabus_len = 0
+
+        completed_lessons = [p for p in progress_items if p.progress_percent >= 90]
+        if syllabus_len > 0:
+            completion_rate = (len(completed_lessons) / syllabus_len) * 100
+        else:
+            completion_rate = max([p.progress_percent for p in progress_items], default=0)
+
+        approved_scores = {
+            "عالی (۱۰۰ از ۱۰۰)",
+            "بسیار خوب (۸۵ از ۱۰۰)",
+            "خوب (۷۵ از ۱۰۰)",
+            "قبول (۷۰ از ۱۰۰)",
+        }
+
+        if completion_rate >= 90:
+            safe_score = req.score if req.score in approved_scores else "عالی (۱۰۰ از ۱۰۰)"
+        elif completion_rate >= 80:
+            safe_score = "بسیار خوب (۸۵ از ۱۰۰)"
+        elif completion_rate >= 70:
+            safe_score = "خوب (۷۵ از ۱۰۰)"
+        elif completion_rate >= 50:
+            safe_score = "قبول (۷۰ از ۱۰۰)"
+        else:
+            safe_score = f"در حال گذراندن (پیشرفت: {int(completion_rate)}٪)"
+    else:
+        approved_scores = {
+            "عالی (۱۰۰ از ۱۰۰)",
+            "بسیار خوب (۸۵ از ۱۰۰)",
+            "خوب (۷۵ از ۱۰۰)",
+            "قبول (۷۰ از ۱۰۰)",
+        }
+        safe_score = req.score if req.score in approved_scores else "عالی (۱۰۰ از ۱۰۰)"
 
     cert = await certificate_service.issue_certificate_tx(
         db=db,

@@ -59,7 +59,7 @@ export default function CourseLearnTheaterPage({
           setChapterPositions(posMap);
         }
       })
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to load course progress:', err); });
 
     return () => {
       mounted = false;

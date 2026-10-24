@@ -232,7 +232,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 });
               }
             })
-            .catch(() => {});
+            .catch((err) => { console.warn('Failed to fetch courses during hydration:', err); });
 
           // دریافت همگام کوپن‌های فعال سامانه از API بک‌اند
           apiClient.coupons.getAll()
@@ -248,7 +248,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 })));
               }
             })
-            .catch(() => {});
+            .catch((err) => { console.warn('Failed to fetch coupons during hydration:', err); });
         });
       } catch (err) {
         console.error('Error hydrating DataContext:', err);

@@ -110,24 +110,25 @@ async def _seed_users_tx(session: AsyncSession):
         if not admin.id:
             admin.id = "adm-001"
 
-    # 3. Seed baseline enrollment for student usr-140301 in course-ishraq and course-mabadi-mantiq
-    from backend.app.models.models import Enrollment
-    for cid in ["course-ishraq", "course-mabadi-mantiq", "course-mantiq-mabadi"]:
-        res_enr = await session.execute(
-            select(Enrollment).where(
-                Enrollment.user_id == "usr-140301",
-                Enrollment.course_id == cid
-            )
-        )
-        if not res_enr.scalar_one_or_none():
-            session.add(
-                Enrollment(
-                    id=f"enr-seed-140301-{cid}",
-                    user_id="usr-140301",
-                    course_id=cid,
-                    status="active"
+    # 3. Seed baseline enrollment only in non-production development/testing environments
+    if settings.ENVIRONMENT != "production":
+        from backend.app.models.models import Enrollment
+        for cid in ["course-ishraq", "course-mabadi-mantiq", "course-mantiq-mabadi"]:
+            res_enr = await session.execute(
+                select(Enrollment).where(
+                    Enrollment.user_id == "usr-140301",
+                    Enrollment.course_id == cid
                 )
             )
+            if not res_enr.scalar_one_or_none():
+                session.add(
+                    Enrollment(
+                        id=f"enr-seed-140301-{cid}",
+                        user_id="usr-140301",
+                        course_id=cid,
+                        status="active"
+                    )
+                )
 
 
 async def seed_default_courses(db: Optional[AsyncSession] = None):

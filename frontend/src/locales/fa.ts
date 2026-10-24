@@ -383,6 +383,7 @@ export const fa = {
   checkout_shipping_free: 'رایگان (پست پیشتاز)',
   checkout_payable: 'مبلغ نهایی پرداختی:',
   checkout_btn_continue_shipping: 'ادامه و ثبت آدرس پستی',
+  checkout_btn_login_to_continue: 'ورود به حساب کاربری و ادامه خرید',
   checkout_shipping_name: 'نام و نام‌خانوادگی گیرنده:',
   checkout_shipping_phone: 'شماره تماس همراه:',
   checkout_shipping_postal: 'کد پستی ۱۰ رقمی:',

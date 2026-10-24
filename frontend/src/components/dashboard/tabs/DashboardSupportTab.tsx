@@ -45,7 +45,7 @@ export function DashboardSupportTab() {
     setQaList([newQ, ...qaList]);
     apiClient.qa
       .ask('course-falsafe-asfar-1', 1, topic || 'پرسش علمی', question)
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to submit question to server:', err); });
 
     setTopic('');
     setQuestion('');

@@ -384,6 +384,7 @@ export const en: Dictionary = {
   checkout_shipping_free: 'Free (Express Delivery)',
   checkout_payable: 'Total Payable:',
   checkout_btn_continue_shipping: 'Continue to Shipping Info',
+  checkout_btn_login_to_continue: 'Sign In to Continue Checkout',
   checkout_shipping_name: 'Recipient Full Name:',
   checkout_shipping_phone: 'Phone Number:',
   checkout_shipping_postal: '10-digit Postal Code:',

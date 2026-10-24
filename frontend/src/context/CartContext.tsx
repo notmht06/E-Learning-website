@@ -127,7 +127,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         quantity: 1,
         cover_image: normalizedItem.coverImage,
       })
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to sync cart addition with server:', err); });
   }, []);
 
   const removeItem = useCallback((id: string) => {
@@ -146,12 +146,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updated;
     });
 
-    apiClient.cart.remove(id).catch(() => {});
+    apiClient.cart.remove(id).catch((err) => { console.warn('Failed to sync cart item removal with server:', err); });
   }, []);
 
   const clearCart = useCallback(() => {
     persistLocal([]);
-    apiClient.cart.clear().catch(() => {});
+    apiClient.cart.clear().catch((err) => { console.warn('Failed to sync cart clear with server:', err); });
   }, [persistLocal]);
 
   const isInCart = useCallback((id: string) => items.some((item) => item.id === id), [items]);

@@ -40,7 +40,7 @@ export function AdminMediaTab() {
     apiClient.ai
       .getIndexStats()
       .then((res) => setRagStats(res))
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to load RAG index stats:', err); });
   }, []);
 
   const handleTestToken = () => {

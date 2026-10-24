@@ -51,9 +51,9 @@ export function triggerTactileHaptic(kind: 'tick' | 'thump' | 'ribbon' = 'tick')
     osc.start(now);
     osc.stop(now + 0.032);
     setTimeout(() => {
-      ctx.close().catch(() => {});
+      ctx.close().catch((err) => { console.debug('AudioContext close ignored:', err); });
     }, 60);
-  } catch {
-    // نادیده‌گیری در صورت مسدود بودن AudioContext
+  } catch (e) {
+    console.debug('Haptics AudioContext error:', e);
   }
 }

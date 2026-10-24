@@ -75,8 +75,8 @@ async def issue_stream_token(
                 lesson_obj = res_lesson.scalar_one_or_none()
                 if lesson_obj and lesson_obj.is_free_sample:
                     is_preview_chapter = True
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Failed querying Lesson for preview check: %s", exc)
 
         if not is_preview_chapter:
             from backend.app.services.course_service import course_service

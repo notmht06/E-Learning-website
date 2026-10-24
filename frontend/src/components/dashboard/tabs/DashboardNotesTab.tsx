@@ -51,7 +51,7 @@ export function DashboardNotesTab() {
           );
         }
       })
-      .catch(() => {})
+      .catch((err) => { console.warn('Failed to load notes:', err); })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });

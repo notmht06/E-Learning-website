@@ -190,7 +190,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         onError={() => {
           if (audioRef.current && audioRef.current.src !== window.location.origin + '/audio/sample_lecture.wav') {
             audioRef.current.src = '/audio/sample_lecture.wav';
-            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            audioRef.current.play().then(() => setIsPlaying(true)).catch((err) => { console.warn('Audio play error:', err); });
           }
         }}
         onLoadedMetadata={(e) => {

@@ -112,7 +112,7 @@ export function AudioVideoPlayerEngine({
           }
         }
       })
-      .catch(() => {});
+      .catch((err) => { console.warn('Failed to fetch DRM token:', err); });
 
     return () => {
       mounted = false;
@@ -153,13 +153,13 @@ export function AudioVideoPlayerEngine({
             setSyncIndicator(true);
             setTimeout(() => setSyncIndicator(false), 1800);
           })
-          .catch(() => {});
+          .catch((err) => { console.warn('Failed to sync progress with server:', err); });
       }
 
       if (drmToken) {
         apiClient.stream
           .heartbeat(drmToken, user?.id || 'guest-scholar', courseId, chapterId, Math.floor(sec))
-          .catch(() => {});
+          .catch((err) => { console.debug('DRM heartbeat error ignored:', err); });
       }
     },
     [chapterId, courseId, drmToken, durationSeconds, onProgressSync, user]
@@ -314,9 +314,9 @@ export function AudioVideoPlayerEngine({
   const handleToggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen?.().then(() => setIsFullscreen(true)).catch(() => {});
+      containerRef.current.requestFullscreen?.().then(() => setIsFullscreen(true)).catch((err) => { console.debug('Fullscreen request ignored:', err); });
     } else {
-      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch(() => {});
+      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch((err) => { console.debug('Fullscreen exit ignored:', err); });
     }
   };
 
