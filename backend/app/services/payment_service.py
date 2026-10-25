@@ -135,24 +135,7 @@ class PaymentService:
         return_url: str,
         user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Persists transaction to database and syncs with in-memory state tracker."""
-        with self._lock:
-            tx_data = {
-                "payment_token": authority,
-                "authority": authority,
-                "order_id": order_id,
-                "user_id": user_id,
-                "gateway": gateway,
-                "amount": amount,
-                "return_url": return_url,
-                "status": "pending",
-                "reference_id": None,
-                "tracking_code": None,
-                "created_at": datetime.utcnow().isoformat(),
-                "paid_at": None,
-            }
-            self.transactions[authority] = tx_data
-
+        """Persists transaction to database as the durable Single Source of Truth."""
         db_tx = PaymentTransaction(
             authority=authority,
             order_id=order_id,
@@ -165,23 +148,18 @@ class PaymentService:
         )
         db.add(db_tx)
         await db.commit()
-        return tx_data
+        return db_tx.to_dict()
 
     async def get_transaction_tx(
         self,
         db: AsyncSession,
         authority: str,
     ) -> Optional[Dict[str, Any]]:
-        """Retrieves transaction from database or in-memory state tracker."""
+        """Retrieves transaction directly from database (Single Source of Truth)."""
         stmt = select(PaymentTransaction).where(PaymentTransaction.authority == authority)
         res = await db.execute(stmt)
         record = res.scalar_one_or_none()
-        if record:
-            with self._lock:
-                self.transactions[authority] = record.to_dict()
-            return record.to_dict()
-        with self._lock:
-            return self.transactions.get(authority)
+        return record.to_dict() if record else None
 
 
 payment_service = PaymentService()

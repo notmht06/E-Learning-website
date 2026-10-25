@@ -14,7 +14,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { apiClient } from '@/services/apiClient';
 
 export function AdminMediaTab() {
-  const { toLocale } = useLanguage();
+  const { toLocale, dict } = useLanguage();
   const [tokenResult, setTokenResult] = useState<string | null>(null);
 
   // RAG Audio/Video Transcript Ingestion State
@@ -31,9 +31,9 @@ export function AdminMediaTab() {
   const [ingestSuccessMsg, setIngestSuccessMsg] = useState<string | null>(null);
 
   const sampleQueue = [
-    { id: 'ENC-01', title: 'جلسه اول شرح اسفار اربعه', status: 'تکمیل‌شده', rate: '48 kHz / FLAC', duration: '۵۵:۲۰' },
-    { id: 'ENC-02', title: 'جلسه دوم حکمت اشراق', status: 'تکمیل‌شده', rate: '48 kHz / Opus', duration: '۵۲:۱۰' },
-    { id: 'ENC-03', title: 'جلسه سوم مبادی منطق', status: 'تکمیل‌شده', rate: '48 kHz / PCM', duration: '۴۱:۲۰' },
+    { id: 'ENC-01', title: 'جلسه اول شرح اسفار اربعه', status: dict.admin_media_status_completed, rate: '48 kHz / FLAC', duration: '۵۵:۲۰' },
+    { id: 'ENC-02', title: 'جلسه دوم حکمت اشراق', status: dict.admin_media_status_completed, rate: '48 kHz / Opus', duration: '۵۲:۱۰' },
+    { id: 'ENC-03', title: 'جلسه سوم مبادی منطق', status: dict.admin_media_status_completed, rate: '48 kHz / PCM', duration: '۴۱:۲۰' },
   ];
 
   useEffect(() => {
@@ -61,12 +61,12 @@ export function AdminMediaTab() {
         transcript_text: transcriptText.trim(),
         chunk_duration_sec: 120,
       });
-      setIngestSuccessMsg(res.message || 'متن جلسه با موفقیت زمان‌بندی و در موتور RAG ایندکس شد.');
+      setIngestSuccessMsg(res.message || dict.admin_media_success_msg);
       setTranscriptText('');
       const updatedStats = await apiClient.ai.getIndexStats();
       setRagStats(updatedStats);
     } catch (err: any) {
-      setIngestSuccessMsg(err?.message || 'خطا در ایندکس کردن متن جلسه.');
+      setIngestSuccessMsg(err?.message || dict.admin_media_error_msg);
     } finally {
       setIsIngesting(false);
     }
@@ -80,11 +80,11 @@ export function AdminMediaTab() {
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-[#8A532B]" />
             <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              استودیو پردازش صوت 48kHz، قفل DRM و ایندکس هوش مصنوعی (RAG)
+              {dict.admin_media_banner_title}
             </h2>
           </div>
           <p className="text-xs text-zinc-500 mt-1">
-            مدیریت رمزنگاری استریم‌های صوتی و تغذیه دستیار هوشمند با متن زمان‌دار جلسات استاد
+            {dict.admin_media_banner_desc}
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export function AdminMediaTab() {
           onClick={handleTestToken}
           className="px-3.5 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-mono text-zinc-700 dark:text-zinc-300 transition cursor-pointer"
         >
-          تولید توکن آزمایشی DRM
+          {dict.admin_media_btn_dummy_token}
         </button>
       </div>
 
@@ -110,17 +110,17 @@ export function AdminMediaTab() {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
             <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              افزودن متن پیاده‌شده صوت و ویدیوی جلسات به حافظه هوش مصنوعی (Vector RAG)
+              {dict.admin_media_rag_title}
             </h3>
           </div>
           {ragStats && (
             <div className="flex items-center gap-3 text-[11px] font-mono text-zinc-500 font-num">
               <span className="flex items-center gap-1">
                 <Database className="w-3.5 h-3.5 text-[#8A532B]" />
-                کل قطعات: {toLocale(ragStats.total_chunks)}
+                {dict.admin_media_rag_total_chunks} {toLocale(ragStats.total_chunks)}
               </span>
               <span>•</span>
-              <span>صوتی/ویدیویی: {toLocale(ragStats.audio_chunks + ragStats.video_chunks)}</span>
+              <span>{dict.admin_media_rag_av_chunks} {toLocale(ragStats.audio_chunks + ragStats.video_chunks)}</span>
             </div>
           )}
         </div>
@@ -129,7 +129,7 @@ export function AdminMediaTab() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                نام دوره
+                {dict.admin_media_field_course_title}
               </label>
               <input
                 type="text"
@@ -141,7 +141,7 @@ export function AdminMediaTab() {
             </div>
             <div>
               <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                عنوان و شماره جلسه
+                {dict.admin_media_field_session_name}
               </label>
               <input
                 type="text"
@@ -153,26 +153,26 @@ export function AdminMediaTab() {
             </div>
             <div>
               <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                نوع رسانه
+                {dict.admin_media_field_media_type}
               </label>
               <select
                 value={mediaType}
                 onChange={(e) => setMediaType(e.target.value as 'audio' | 'video')}
                 className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
               >
-                <option value="audio">فایل صوتی درس (Audio)</option>
-                <option value="video">ویدیوی جلسه (Video)</option>
+                <option value="audio">{dict.admin_media_type_audio}</option>
+                <option value="video">{dict.admin_media_type_video}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-              متن کامل پیاده‌شده جلسه (به صورت خودکار به قطعات ۲ دقیقه‌ای زمان‌دار تقسیم می‌شود)
+              {dict.admin_media_field_transcript}
             </label>
             <textarea
               rows={4}
-              placeholder="متن تقریر یا پیاده‌سازی صوت جلسه درس استاد را اینجا وارد کنید..."
+              placeholder={dict.admin_media_transcript_placeholder}
               value={transcriptText}
               onChange={(e) => setTranscriptText(e.target.value)}
               className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -188,7 +188,7 @@ export function AdminMediaTab() {
               </span>
             ) : (
               <span className="text-[11px] text-zinc-400">
-                دستیار هوشمند منحصراً از روی این متون و با ذکر دقیقه دقیق به دانشجویان پاسخ می‌دهد.
+                {dict.admin_media_rag_hint}
               </span>
             )}
 
@@ -202,7 +202,7 @@ export function AdminMediaTab() {
               ) : (
                 <Sparkles className="w-3.5 h-3.5" />
               )}
-              <span>ایندکس زمان‌دار در موتور RAG</span>
+              <span>{dict.admin_media_btn_ingest}</span>
             </button>
           </div>
         </form>
@@ -211,7 +211,7 @@ export function AdminMediaTab() {
       {/* Queue List */}
       <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
         <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
-          <h3 className="text-xs font-mono text-zinc-400">صف پردازش استودیویی</h3>
+          <h3 className="text-xs font-mono text-zinc-400">{dict.admin_media_queue_title}</h3>
           <span className="text-xs font-mono text-zinc-500">ENGINE: FFMPEG / 48000Hz</span>
         </div>
 

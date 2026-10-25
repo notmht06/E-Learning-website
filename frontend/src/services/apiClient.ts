@@ -523,13 +523,18 @@ class ApiClient {
     getIndexStats: () =>
       this.request<{
         total_chunks: number;
+        indexed_chunks_count?: number;
         audio_chunks: number;
         video_chunks: number;
+        audio_video_segments_count?: number;
         text_chunks: number;
         total_courses: number;
         scholar_name: string;
-        persistence_file: string;
-        persisted_media_files: number;
+        scholar_identity?: string;
+        strict_corpus_only?: boolean;
+        status?: string;
+        persistence_file?: string;
+        persisted_media_files?: number;
       }>('/ai/index-stats'),
 
     reindex: () =>
@@ -564,6 +569,7 @@ class ApiClient {
     verify: (code: string) =>
       this.request<{
         valid: boolean;
+        status?: string;
         certificate_code?: string;
         student_name?: string;
         course_title?: string;

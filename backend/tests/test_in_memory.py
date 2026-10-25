@@ -1816,6 +1816,14 @@ def test_phase6_payment_gateway_and_certificate_issuance(student_token: str):
     fresh_token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {fresh_token}"}
     client.post("/api/v1/courses/course-asfar-1/enroll", headers=headers)
+    c_detail = client.get("/api/v1/courses/course-asfar-1").json()
+    syllabus = c_detail.get("syllabus") or [{"id": 1}, {"id": 2}]
+    for ch in syllabus:
+        client.post("/api/v1/courses/course-asfar-1/progress", json={
+            "chapter_id": ch.get("id", 1),
+            "progress_percent": 100,
+            "last_position_sec": 2700
+        }, headers=headers)
     issue_res = client.post("/api/v1/certificates/issue", json={
         "course_id": "course-asfar-1",
         "score": "عالی (۱۰۰ از ۱۰۰)"

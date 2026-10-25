@@ -137,24 +137,26 @@ async def analyze_document(
 @router.get("/index-stats", summary="Get multimedia RAG index statistics")
 async def get_index_stats():
     """
-    Returns statistics on indexed audio, video, text chunks, and courses
+    Returns public statistics on indexed audio, video, text chunks, and courses
     of حجت الاسلام دکتر زنجیر زن حسینی.
+    Sensitive internal configuration details (persistence_file, active_provider, active_model, whisper_model)
+    are excluded from this public endpoint.
     """
     rag_engine.ensure_indexed()
-    endpoint_info = ai_service._resolve_provider_endpoint()
-    active_model = endpoint_info.get("model", "deepseek-chat")
     stats = rag_engine.get_stats()
     audio_video_count = stats.get("audio_chunks", 0) + stats.get("video_chunks", 0)
 
     return {
-        **stats,
-        "indexed_chunks_count": stats.get("total_chunks", len(rag_engine.chunks)),
-        "audio_video_segments_count": audio_video_count,
-        "strict_corpus_only": settings.AI_STRICT_CORPUS_ONLY,
-        "active_provider": settings.AI_PROVIDER,
-        "active_model": active_model,
-        "whisper_model": settings.AI_WHISPER_MODEL,
+        "total_chunks": stats.get("total_chunks", len(rag_engine.chunks)),
+        "indexed_chunks_count": stats.get("indexed_chunks_count", stats.get("total_chunks", len(rag_engine.chunks))),
+        "audio_chunks": stats.get("audio_chunks", 0),
+        "video_chunks": stats.get("video_chunks", 0),
+        "audio_video_segments_count": stats.get("audio_video_segments_count", audio_video_count),
+        "text_chunks": stats.get("text_chunks", 0),
+        "total_courses": stats.get("total_courses", 21),
+        "scholar_name": stats.get("scholar_name", ai_service.scholar_name),
         "scholar_identity": ai_service.scholar_name,
+        "strict_corpus_only": settings.AI_STRICT_CORPUS_ONLY,
         "status": "ready",
     }
 

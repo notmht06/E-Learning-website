@@ -4,6 +4,7 @@ import shutil
 import asyncio
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
+from backend.app.core.config import settings
 from backend.app.core.exceptions import AppException
 from backend.app.schemas.admin import (
     AdminAnalyticsResponse,
@@ -191,7 +192,8 @@ async def upload_media(
 ):
     """
     Uploads a media file to backend/app/static/uploads/ and returns relative URL.
-    Performs non-blocking disk write via asyncio.to_thread and validates extensions.
+    Enforces maximum file size limit (MAX_UPLOAD_SIZE_MB) chunk-by-chunk.
+    Removes partial files and raises HTTP 413 if upload exceeds size limit.
     """
     ext = os.path.splitext(file.filename)[1].lower() if file.filename else ""
     if ext not in ALLOWED_MEDIA_EXTENSIONS:
@@ -207,11 +209,48 @@ async def upload_media(
     safe_name = f"{uuid.uuid4().hex[:12]}{ext}"
     dest_path = os.path.join(upload_dir, safe_name)
 
-    def _write_file():
-        with open(dest_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    chunk_size = 1024 * 1024  # 1 MB chunks
+    total_bytes = 0
 
-    await asyncio.to_thread(_write_file)
+    try:
+        with open(dest_path, "wb") as buffer:
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > max_bytes:
+                    buffer.close()
+                    if os.path.exists(dest_path):
+                        try:
+                            os.remove(dest_path)
+                        except OSError:
+                            pass
+                    raise AppException(
+                        f"حجم فایل بیش از سقف مجاز ({settings.MAX_UPLOAD_SIZE_MB} مگابایت) است.",
+                        code="PAYLOAD_TOO_LARGE",
+                        status_code=413,
+                    )
+                buffer.write(chunk)
+    except AppException:
+        if os.path.exists(dest_path):
+            try:
+                os.remove(dest_path)
+            except OSError:
+                pass
+        raise
+    except Exception as exc:
+        if os.path.exists(dest_path):
+            try:
+                os.remove(dest_path)
+            except OSError:
+                pass
+        raise AppException(
+            f"خطا در پردازش یا ذخیره‌سازی فایل: {str(exc)}",
+            code="FILE_UPLOAD_ERROR",
+            status_code=500,
+        )
 
     return {
         "success": True,

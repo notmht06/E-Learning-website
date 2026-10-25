@@ -17,7 +17,6 @@ from backend.app.schemas.payment import (
     PaymentVerifyResponse,
 )
 from backend.app.services.payment_gateway_service import payment_gateway
-from backend.app.services.payment_service import payment_service
 from backend.app.services.order_service import order_service
 from backend.app.services.course_service import course_service
 from backend.app.models.models import Order, Enrollment, Course, PaymentTransaction
@@ -149,22 +148,6 @@ async def initiate_payment(
         amount = 0
         token = f"FREE-AUTH-{uuid.uuid4().hex[:12]}"
         now_dt = datetime.utcnow()
-        with payment_service._lock:
-            payment_service.transactions[token] = {
-                "payment_token": token,
-                "authority": token,
-                "order_id": req.order_id,
-                "user_id": current_user["id"],
-                "gateway": req.gateway,
-                "amount": 0,
-                "return_url": req.return_url,
-                "status": "pending",
-                "reference_id": None,
-                "tracking_code": None,
-                "card_mask": "رایگان (بدون تراکنش بانکی)",
-                "created_at": now_dt.isoformat(),
-                "paid_at": None,
-            }
 
         db_tx = PaymentTransaction(
             authority=token,
@@ -199,24 +182,8 @@ async def initiate_payment(
     )
     token = res["payment_token"]
 
-    # Register in database PaymentTransaction table and in-memory tracker
+    # Register in database PaymentTransaction table as single source of truth
     now_dt = datetime.utcnow()
-    with payment_service._lock:
-        payment_service.transactions[token] = {
-            "payment_token": token,
-            "authority": token,
-            "order_id": req.order_id,
-            "user_id": current_user["id"],
-            "gateway": req.gateway,
-            "amount": amount,
-            "return_url": req.return_url,
-            "status": "pending",
-            "reference_id": None,
-            "tracking_code": None,
-            "created_at": now_dt.isoformat(),
-            "paid_at": None,
-        }
-
     db_tx = PaymentTransaction(
         authority=token,
         order_id=req.order_id,
@@ -250,46 +217,20 @@ async def verify_payment(
     Requires authentication and transaction ownership (or admin role).
     Durable across multi-worker deployments via PaymentTransaction DB table.
     """
-    # 1. Fetch transaction from DB or in-memory state tracker
+    # 1. Fetch transaction from DB (Single Source of Truth)
     tx_stmt = select(PaymentTransaction).where(PaymentTransaction.authority == req.authority)
     tx_res = await db.execute(tx_stmt)
     db_tx = tx_res.scalar_one_or_none()
 
-    with payment_service._lock:
-        mem_tx = payment_service.transactions.get(req.authority)
-
-    if not db_tx and not mem_tx:
+    if not db_tx:
         raise AppException(
             message="شناسه پرداخت (Authority) یافت نشد.",
             code="PAYMENT_NOT_FOUND",
             status_code=400
         )
 
-    # Cross-sync DB and Memory if one is populated
-    if db_tx and not mem_tx:
-        with payment_service._lock:
-            payment_service.transactions[req.authority] = db_tx.to_dict()
-            mem_tx = payment_service.transactions[req.authority]
-    elif not db_tx and mem_tx:
-        db_tx = PaymentTransaction(
-            authority=req.authority,
-            order_id=mem_tx.get("order_id", ""),
-            user_id=mem_tx.get("user_id"),
-            gateway=mem_tx.get("gateway", "zarinpal"),
-            amount=mem_tx.get("amount", 0),
-            return_url=mem_tx.get("return_url", ""),
-            status=mem_tx.get("status", "pending"),
-            reference_id=mem_tx.get("reference_id"),
-            tracking_code=mem_tx.get("tracking_code"),
-            card_mask=mem_tx.get("card_mask"),
-            created_at=datetime.utcnow(),
-        )
-        db.add(db_tx)
-        await db.commit()
-
     # 2. Authorization check
-    owner_id = db_tx.user_id if db_tx else (mem_tx.get("user_id") if mem_tx else None)
-    if current_user.get("role") != "admin" and owner_id and owner_id != current_user.get("id"):
+    if current_user.get("role") != "admin" and db_tx.user_id and db_tx.user_id != current_user.get("id"):
         raise AppException(
             message="دسترسی غیرمجاز: شما مالک این تراکنش پرداخت نیستید.",
             code="PAYMENT_FORBIDDEN",
@@ -311,13 +252,13 @@ async def verify_payment(
             )
 
     # 4. Check already paid / replay attack
-    if (db_tx and db_tx.status == "paid") or (mem_tx and mem_tx.get("status") == "paid"):
+    if db_tx.status == "paid":
         raise AppException(
             message="این تراکنش قبلاً تایید شده است و امکان استفاده مجدد از آن وجود ندارد.",
             code="PAYMENT_REPLAY_ATTACK",
             status_code=400
         )
-    if (db_tx and db_tx.status == "failed") or (mem_tx and mem_tx.get("status") == "failed"):
+    if db_tx.status == "failed":
         raise AppException(
             message="این تراکنش قبلاً ناموفق ثبت شده است و امکان تغییر وضعیت یا استفاده مجدد از آن وجود ندارد.",
             code="PAYMENT_ALREADY_FAILED",
@@ -326,8 +267,8 @@ async def verify_payment(
 
     is_success = (str(req.status).strip().upper() == "OK")
     paid_timestamp = datetime.now().isoformat()
-    tx_amount = db_tx.amount if db_tx else (mem_tx.get("amount", 0) if mem_tx else 0)
-    tx_order_id = db_tx.order_id if db_tx else (mem_tx.get("order_id", "") if mem_tx else "")
+    tx_amount = db_tx.amount or 0
+    tx_order_id = db_tx.order_id or ""
 
     if not is_success:
         paid_dt_fail = datetime.utcnow()
@@ -341,10 +282,6 @@ async def verify_payment(
         )
         await db.execute(stmt_atomic_fail)
         await db.commit()
-        with payment_service._lock:
-            if req.authority in payment_service.transactions:
-                payment_service.transactions[req.authority]["status"] = "failed"
-                payment_service.transactions[req.authority]["paid_at"] = paid_dt_fail.isoformat()
         return {
             "success": False,
             "reference_id": "",
@@ -404,12 +341,6 @@ async def verify_payment(
             status_code=400,
         )
 
-    with payment_service._lock:
-        if req.authority in payment_service.transactions:
-            payment_service.transactions[req.authority]["status"] = "verifying"
-        if req.tracking_code:
-            payment_service.used_tracking_codes.add(req.tracking_code)
-
     # 5. Verify with banking gateway / Zarinpal (or bypass for free transactions)
     if tx_amount == 0 or str(req.authority).startswith("FREE-AUTH-"):
         is_verified = True
@@ -432,11 +363,6 @@ async def verify_payment(
                 .values(status="pending")
             )
             await db.commit()
-            with payment_service._lock:
-                if req.authority in payment_service.transactions:
-                    payment_service.transactions[req.authority]["status"] = "pending"
-                if req.tracking_code:
-                    payment_service.used_tracking_codes.discard(req.tracking_code)
             raise AppException(
                 message="خطا در برقراری ارتباط با درگاه پرداخت بانکی. لطفاً دقایقی دیگر مجدداً تلاش فرمایید.",
                 code="PAYMENT_GATEWAY_NETWORK_ERROR",
@@ -453,10 +379,6 @@ async def verify_payment(
             .values(status="failed", paid_at=paid_dt_fail)
         )
         await db.commit()
-        with payment_service._lock:
-            if req.authority in payment_service.transactions:
-                payment_service.transactions[req.authority]["status"] = "failed"
-                payment_service.transactions[req.authority]["paid_at"] = paid_dt_fail.isoformat()
         return {
             "success": False,
             "reference_id": "",
@@ -482,15 +404,6 @@ async def verify_payment(
         )
     )
     await db.commit()
-
-    with payment_service._lock:
-        if req.authority in payment_service.transactions:
-            tx = payment_service.transactions[req.authority]
-            tx["status"] = "paid"
-            tx["tracking_code"] = req.tracking_code
-            tx["paid_at"] = paid_dt.isoformat()
-            tx["reference_id"] = ref_id
-            tx["card_mask"] = card_mask
 
     await _process_order_paid_and_enroll(db, tx_order_id, db_tx.user_id if db_tx else current_user["id"])
 

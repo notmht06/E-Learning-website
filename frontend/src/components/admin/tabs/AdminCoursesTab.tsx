@@ -153,7 +153,7 @@ export function AdminCoursesTab() {
             <Search className="w-4 h-4 text-zinc-400 absolute start-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="جستجو در عناوین دروس..."
+              placeholder={dict.admin_courses_search_placeholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full ps-8 pe-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -165,7 +165,7 @@ export function AdminCoursesTab() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none text-zinc-700 dark:text-zinc-300"
           >
-            <option value="all">همه شاخه‌های علمی</option>
+            <option value="all">{dict.admin_courses_cat_all}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.name_fa}>
                 {c.name_fa}
@@ -179,7 +179,7 @@ export function AdminCoursesTab() {
           className="w-full sm:w-auto px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>افزودن دوره جدید</span>
+          <span>{dict.admin_courses_btn_add}</span>
         </button>
       </div>
 
@@ -189,12 +189,12 @@ export function AdminCoursesTab() {
           <table className="w-full text-xs text-start">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 font-mono bg-zinc-50 dark:bg-zinc-900/50">
-                <th className="py-3 px-4 font-normal text-start">عنوان دوره</th>
-                <th className="py-3 px-4 font-normal text-start">موضوع علمی</th>
-                <th className="py-3 px-4 font-normal text-start">نوع برگزاری</th>
-                <th className="py-3 px-4 font-normal text-start">تعداد جلسات</th>
-                <th className="py-3 px-4 font-normal text-start">قیمت</th>
-                <th className="py-3 px-4 font-normal text-start">عملیات</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_title}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_subject}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_type}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_episodes}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_price}</th>
+                <th className="py-3 px-4 font-normal text-start">{dict.admin_courses_th_actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -209,13 +209,13 @@ export function AdminCoursesTab() {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400">
-                    {course.course_type === 'online' ? 'کارگاه زنده اسکای‌روم' : 'استودیویی آفلاین'}
+                    {course.course_type === 'online' ? dict.admin_courses_type_online : dict.admin_courses_type_offline}
                   </td>
                   <td className="py-3 px-4 font-num text-zinc-600 dark:text-zinc-400">
-                    {toLocale(course.chapters?.length || 0)} جلسه
+                    {toLocale(course.chapters?.length || 0)} {dict.admin_courses_unit_session}
                   </td>
                   <td className="py-3 px-4 font-bold text-[#8A532B]">
-                    {course.price_fa || 'رایگان'}
+                    {course.price_fa || dict.admin_courses_price_free}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
@@ -223,12 +223,12 @@ export function AdminCoursesTab() {
                         onClick={() => setSelectedCourseForStudio(course.id)}
                         className="px-3 py-1 rounded-lg bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] text-[11px] font-medium transition cursor-pointer"
                       >
-                        استودیو جلسات
+                        {dict.admin_courses_btn_studio}
                       </button>
                       <button
                         disabled={deletingCourseId === course.id}
                         onClick={async () => {
-                          if (confirm(`آیا از حذف دوره «${course.title_fa}» اطمینان دارید؟`)) {
+                          if (confirm(dict.admin_courses_confirm_delete)) {
                             setDeletingCourseId(course.id);
                             try {
                               await deleteCourse(course.id);
@@ -240,7 +240,7 @@ export function AdminCoursesTab() {
                           }
                         }}
                         className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 disabled:opacity-50 transition cursor-pointer"
-                        title="حذف دوره"
+                        title={dict.admin_courses_btn_delete_tooltip}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -260,10 +260,10 @@ export function AdminCoursesTab() {
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <div>
                 <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                  استودیو جلسات: {activeStudioCourse.title_fa}
+                  {dict.admin_courses_studio_title} {activeStudioCourse.title_fa}
                 </h3>
                 <p className="text-xs text-zinc-500">
-                  مدیریت فایل‌های صوتی ۴۸kHz، مدت‌زمان و وضعیت پیش‌نمایش رایگان
+                  {dict.admin_courses_studio_desc}
                 </p>
               </div>
               <button
@@ -276,7 +276,7 @@ export function AdminCoursesTab() {
 
             {/* Existing Chapters List */}
             <div className="space-y-2">
-              <h4 className="text-xs font-mono text-zinc-400">فهرست جلسات ضبط‌شده</h4>
+              <h4 className="text-xs font-mono text-zinc-400">{dict.admin_courses_studio_episodes_list}</h4>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {activeStudioCourse.chapters?.map((ch, idx) => (
                   <div
@@ -307,7 +307,7 @@ export function AdminCoursesTab() {
                           }
                         }}
                         className="text-[#8A532B] hover:text-[#8A532B] disabled:opacity-50 cursor-pointer"
-                        title="حذف جلسه"
+                        title={dict.admin_courses_studio_delete_ep_tooltip}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -319,11 +319,11 @@ export function AdminCoursesTab() {
 
             {/* Add New Episode Form */}
             <form onSubmit={handleAddEpisode} className="space-y-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-              <h4 className="text-xs font-mono text-zinc-400">افزودن جلسه صوتی جدید</h4>
+              <h4 className="text-xs font-mono text-zinc-400">{dict.admin_courses_studio_add_ep_title}</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="text"
-                  placeholder="عنوان جلسه (مثلاً: برهان امکان و وجوب)"
+                  placeholder={dict.admin_courses_studio_ep_title_placeholder}
                   value={newEpTitle}
                   onChange={(e) => setNewEpTitle(e.target.value)}
                   className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -331,7 +331,7 @@ export function AdminCoursesTab() {
                 />
                 <input
                   type="text"
-                  placeholder="مدت‌زمان (مثلاً: ۴۲:۱۵)"
+                  placeholder={dict.admin_courses_studio_ep_duration_placeholder}
                   value={newEpDuration}
                   onChange={(e) => setNewEpDuration(e.target.value)}
                   className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -347,7 +347,7 @@ export function AdminCoursesTab() {
                   className="rounded border-zinc-300 text-[#8A532B] focus:ring-[#8A532B]"
                 />
                 <label htmlFor="freePreview" className="text-xs text-zinc-600 dark:text-zinc-400">
-                  پیش‌نمایش رایگان (بدون نیاز به ثبت‌نام کامل)
+                  {dict.admin_courses_studio_free_preview_label}
                 </label>
               </div>
 
@@ -358,7 +358,7 @@ export function AdminCoursesTab() {
                   className="px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-2 cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>آپلود فایل صوت ۴۸kHz</span>
+                  <span>{dict.admin_courses_studio_btn_upload_audio}</span>
                 </button>
 
                 <button
@@ -366,7 +366,7 @@ export function AdminCoursesTab() {
                   disabled={isSubmittingEpisode}
                   className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium transition cursor-pointer"
                 >
-                  {isSubmittingEpisode ? 'در حال ثبت در سرور...' : 'ثبت جلسه'}
+                  {isSubmittingEpisode ? dict.admin_courses_submitting : dict.admin_courses_studio_btn_submit_ep}
                 </button>
               </div>
             </form>
@@ -380,7 +380,7 @@ export function AdminCoursesTab() {
           <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                ایجاد دوره تخصصی جدید
+                {dict.admin_courses_modal_title}
               </h3>
               <button
                 onClick={() => setIsAddCourseModalOpen(false)}
@@ -392,10 +392,12 @@ export function AdminCoursesTab() {
 
             <form onSubmit={handleCreateCourse} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">عنوان دوره</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                  {dict.admin_courses_modal_field_title}
+                </label>
                 <input
                   type="text"
-                  placeholder="مثال: شرح اسفار اربعه (سفر اول)"
+                  placeholder={dict.admin_courses_modal_title_placeholder}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -405,7 +407,9 @@ export function AdminCoursesTab() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">موضوع علمی</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                    {dict.admin_courses_modal_field_subject}
+                  </label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
@@ -420,23 +424,27 @@ export function AdminCoursesTab() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">شیوه برگزاری</label>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                    {dict.admin_courses_modal_field_type}
+                  </label>
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
                   >
-                    <option value="offline">استودیویی آفلاین</option>
-                    <option value="online">کارگاه زنده اسکای‌روم</option>
+                    <option value="offline">{dict.admin_courses_type_offline}</option>
+                    <option value="online">{dict.admin_courses_type_online}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">شهریه / وضعیت قیمت</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                  {dict.admin_courses_modal_field_price}
+                </label>
                 <input
                   type="text"
-                  placeholder="مثلاً: رایگان پژوهشی یا ۱,۲۰۰,۰۰۰ تومان"
+                  placeholder={dict.admin_courses_modal_price_placeholder}
                   value={newPrice}
                   onChange={(e) => setNewPrice(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -444,10 +452,12 @@ export function AdminCoursesTab() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">توضیحات اجمالی دوره</label>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                  {dict.admin_courses_modal_field_desc}
+                </label>
                 <textarea
                   rows={3}
-                  placeholder="اهداف آموزشی، مبانی استدلال و پیش‌نیازها..."
+                  placeholder={dict.admin_courses_modal_desc_placeholder}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
@@ -460,14 +470,14 @@ export function AdminCoursesTab() {
                   onClick={() => setIsAddCourseModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
                 >
-                  انصراف
+                  {dict.admin_courses_modal_btn_cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingCourse}
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium"
                 >
-                  {isSubmittingCourse ? 'در حال ثبت در سرور...' : 'ثبت دوره'}
+                  {isSubmittingCourse ? dict.admin_courses_submitting : dict.admin_courses_modal_btn_submit}
                 </button>
               </div>
             </form>
@@ -479,7 +489,7 @@ export function AdminCoursesTab() {
       {isAudioUploaderOpen && (
         <AudioUploaderModal
           isOpen={isAudioUploaderOpen}
-          courseTitle={selectedCourseForStudio ? courses[selectedCourseForStudio]?.title_fa || 'درس‌گفتار استودیویی' : 'درس‌گفتار استودیویی'}
+          courseTitle={selectedCourseForStudio ? courses[selectedCourseForStudio]?.title_fa || dict.admin_courses_studio_default_title : dict.admin_courses_studio_default_title}
           onClose={() => setIsAudioUploaderOpen(false)}
           onUploadSuccess={(data) => {
             setNewEpTitle(data.title_fa);

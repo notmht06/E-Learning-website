@@ -52,6 +52,9 @@ class Settings(BaseModel):
     AI_STRICT_CORPUS_ONLY: bool = os.getenv("AI_STRICT_CORPUS_ONLY", "true").lower() == "true"
     AI_MIN_SIMILARITY_THRESHOLD: float = float(os.getenv("AI_MIN_SIMILARITY_THRESHOLD", "0.10"))
 
+    # Media Upload Settings
+    MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "50"))
+
     # CORS Origins
     ALLOWED_ORIGINS: List[str] = [
         origin.strip()
@@ -64,8 +67,17 @@ class Settings(BaseModel):
 
     def model_post_init(self, __context: Any) -> None:
         if self.ENVIRONMENT == "production":
-            if not self.SECRET_KEY or "illumination" in self.SECRET_KEY:
-                raise RuntimeError("Production SECRET_KEY must be securely provided and not default/illumination.")
+            sec = self.SECRET_KEY or ""
+            sec_lower = sec.lower()
+            weak_exact = {"secret", "mysecret", "jwt_secret", "supersecret", "password", "admin", "12345678", "dev", "test"}
+            weak_substrings = ("illumination", "changeme", "default")
+            if (
+                not sec
+                or len(sec) < 32
+                or sec_lower in weak_exact
+                or any(t in sec_lower for t in weak_substrings)
+            ):
+                raise RuntimeError("Production SECRET_KEY must be at least 32 characters and not contain default/weak values.")
             if self.OTP_MODE != "production":
                 raise RuntimeError("Production OTP_MODE must be set to 'production'.")
         else:
