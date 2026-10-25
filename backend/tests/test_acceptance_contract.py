@@ -11,6 +11,7 @@ Enforces all core invariants:
 7. Production configuration rejects weak or short (<32 chars) SECRET_KEY.
 8. DRM tokens and HTTP 206 Range audio playback stream correctly.
 """
+import os
 import uuid
 import pytest
 from backend.app.core.config import Settings, settings
@@ -68,6 +69,10 @@ def test_contract_free_orders_and_payment_ssot(client, student_token):
         headers=headers
     )
     assert replay_res.status_code == 400
+
+    # Ensure in-memory transactions dictionary mirror is completely removed (DB SSOT)
+    from backend.app.services.payment_service import payment_service
+    assert not hasattr(payment_service, "transactions")
 
 
 def test_contract_guest_checkout_gated(client):
@@ -181,34 +186,37 @@ def test_contract_admin_upload_size_limit_and_rbac(client, student_token, admin_
     forbidden_res = client.post("/api/v1/admin/upload", files={"file": sample_audio}, headers=h_student)
     assert forbidden_res.status_code == 403
 
-    # Admin valid upload succeeds -> 200
-    ok_res = client.post("/api/v1/admin/upload", files={"file": sample_audio}, headers=h_admin)
-    assert ok_res.status_code == 200
-    assert ok_res.json()["success"] is True
-    assert "file_url" in ok_res.json()
-    uploaded_filename = ok_res.json().get("filename", "")
-
-    # Oversized file upload returns 413
+    up_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "app", "static", "uploads")
+    )
+    uploaded_filename = ""
     orig_max = settings.MAX_UPLOAD_SIZE_MB
+    pre_files = set(os.listdir(up_dir)) if os.path.exists(up_dir) else set()
     try:
+        # Admin valid upload succeeds -> 200
+        ok_res = client.post("/api/v1/admin/upload", files={"file": sample_audio}, headers=h_admin)
+        assert ok_res.status_code == 200
+        assert ok_res.json()["success"] is True
+        assert "file_url" in ok_res.json()
+        uploaded_filename = ok_res.json().get("filename", "")
+
+        # Oversized file upload returns 413 and unlinks partial file
         settings.MAX_UPLOAD_SIZE_MB = 1  # 1 MB threshold for deterministic verification
         oversized = ("oversized_lecture.mp3", b"A" * (1024 * 1024 + 50), "audio/mpeg")
         over_res = client.post("/api/v1/admin/upload", files={"file": oversized}, headers=h_admin)
         assert over_res.status_code == 413
     finally:
         settings.MAX_UPLOAD_SIZE_MB = orig_max
-        # Clean up uploaded test file
         if uploaded_filename:
-            import os
-            up_dir = os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "..", "app", "static", "uploads")
-            )
             up_path = os.path.join(up_dir, uploaded_filename)
             if os.path.exists(up_path):
                 try:
                     os.remove(up_path)
                 except OSError:
                     pass
+        # Assert no partial or stray files leaked
+        post_files = set(os.listdir(up_dir)) if os.path.exists(up_dir) else set()
+        assert post_files == pre_files, f"Leaked upload files found: {post_files - pre_files}"
 
 
 def test_contract_drm_preview_and_range_streaming(client, student_token):

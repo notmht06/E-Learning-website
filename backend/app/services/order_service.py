@@ -284,15 +284,12 @@ class OrderService:
         }
 
     def initiate_payment(self, order_id: str, gateway: str, return_url: str) -> Dict[str, Any]:
-        """Initializes Shaparak gateway redirect simulation via payment_service."""
-        from backend.app.services.payment_service import payment_service
-        order = self.orders.get(order_id, {"total_amount": 890000})
-        return payment_service.initiate_payment(order_id, gateway, return_url, amount=order.get("total_amount", 890000))
+        """Deprecated in-memory simulation. Real payment must use /api/v1/payment/init with DB SSOT."""
+        raise NotImplementedError("Use /api/v1/payment/init with database SSOT.")
 
     def verify_payment(self, authority: str, status: str, tracking_code: Optional[str]) -> Dict[str, Any]:
-        """Verifies Shaparak bank payment via payment_service."""
-        from backend.app.services.payment_service import payment_service
-        return payment_service.verify_payment(authority, status, tracking_code)
+        """Deprecated in-memory simulation. Real payment must use /api/v1/payment/verify with DB SSOT."""
+        raise NotImplementedError("Use /api/v1/payment/verify with database SSOT.")
 
     def add_study_note(self, user_id: str, course_id: str, chapter_id: int, title: str, content: str, timestamp_sec: int) -> Dict[str, Any]:
         """Adds a student study note via note_service."""

@@ -53,6 +53,7 @@ export default function CertificateVerifyPage({
   const [copied, setCopied] = useState(false);
   const [certData, setCertData] = useState<{
     valid: boolean;
+    status?: string;
     certificate_code?: string;
     student_name?: string;
     course_id?: string;
@@ -83,6 +84,7 @@ export default function CertificateVerifyPage({
         if (mounted && apiData && apiData.valid !== undefined) {
           setCertData({
             valid: apiData.valid,
+            status: apiData.status,
             certificate_code: apiData.certificate_code || safeCertCode,
             student_name: apiData.student_name,
             course_id: apiData.course_title || apiData.course_id,
@@ -239,6 +241,52 @@ export default function CertificateVerifyPage({
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          ) : certData?.status === 'in_progress' ? (
+            <div className="space-y-5">
+              {/* In-progress Notice Banner */}
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2.5">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{certData.message}</span>
+              </div>
+
+              {/* Certificate Provisional Details */}
+              <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-3.5 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">نام دانش‌پژوه:</span>
+                  <strong className="text-[#0C0D0E] dark:text-[#FAF8F5] font-bold text-sm">
+                    {certData.student_name}
+                  </strong>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">عنوان دوره تخصصی:</span>
+                  <strong className="text-[#0C0D0E] dark:text-[#FAF8F5] font-semibold text-end max-w-[65%]">
+                    {certData.course_id}
+                  </strong>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">وضعیت ارزیابی:</span>
+                  <strong className="text-amber-700 dark:text-amber-400 font-bold">
+                    {certData.score}
+                  </strong>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">تاریخ صدور پیش‌نویس:</span>
+                  <strong className="font-num text-zinc-700 dark:text-zinc-300">
+                    {formatCertificateDate(certData.issued_at, currentLang)}
+                  </strong>
+                </div>
+
+                <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex justify-between items-start gap-2">
+                  <span className="text-zinc-500 shrink-0">مرجع صادرکننده:</span>
+                  <strong className="text-[11px] text-end text-zinc-800 dark:text-zinc-200">
+                    {certData.institute}
+                  </strong>
+                </div>
               </div>
             </div>
           ) : (

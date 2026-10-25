@@ -212,6 +212,7 @@ async def upload_media(
     max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
     chunk_size = 1024 * 1024  # 1 MB chunks
     total_bytes = 0
+    upload_success = False
 
     try:
         with open(dest_path, "wb") as buffer:
@@ -222,35 +223,27 @@ async def upload_media(
                 total_bytes += len(chunk)
                 if total_bytes > max_bytes:
                     buffer.close()
-                    if os.path.exists(dest_path):
-                        try:
-                            os.remove(dest_path)
-                        except OSError:
-                            pass
                     raise AppException(
                         f"حجم فایل بیش از سقف مجاز ({settings.MAX_UPLOAD_SIZE_MB} مگابایت) است.",
                         code="PAYLOAD_TOO_LARGE",
                         status_code=413,
                     )
                 buffer.write(chunk)
+        upload_success = True
     except AppException:
-        if os.path.exists(dest_path):
-            try:
-                os.remove(dest_path)
-            except OSError:
-                pass
         raise
     except Exception as exc:
-        if os.path.exists(dest_path):
-            try:
-                os.remove(dest_path)
-            except OSError:
-                pass
         raise AppException(
             f"خطا در پردازش یا ذخیره‌سازی فایل: {str(exc)}",
             code="FILE_UPLOAD_ERROR",
             status_code=500,
         )
+    finally:
+        if not upload_success and os.path.exists(dest_path):
+            try:
+                os.remove(dest_path)
+            except OSError:
+                pass
 
     return {
         "success": True,
