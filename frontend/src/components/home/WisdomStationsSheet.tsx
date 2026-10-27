@@ -30,10 +30,10 @@ interface StationItem {
   focusKey: string;
   serialTag: string;
   sessionsCount: number;
-  durationText: string;
-  canonicalText: string;
-  treatiseAuthor: string;
-  concepts: string[];
+  durationHours: number;
+  canonicalText: { fa: string; ar: string; en: string };
+  treatiseAuthor: { fa: string; ar: string; en: string };
+  concepts: { fa: string[]; ar: string[]; en: string[] };
 }
 
 const STATIONS: StationItem[] = [
@@ -48,10 +48,22 @@ const STATIONS: StationItem[] = [
     focusKey: 'stations_station_1_focus',
     serialTag: 'STN-01',
     sessionsCount: 160,
-    durationText: '۱۲۵ ساعت',
-    canonicalText: 'الحکمة المتعالیة فی الاسفار العقلیة الاربعة',
-    treatiseAuthor: 'صدرالمتألهین ملاصدرا الشیرازی',
-    concepts: ['اصالت وجود', 'تشکیک وجود', 'حرکت جوهری', 'برهان صدیقین'],
+    durationHours: 125,
+    canonicalText: {
+      fa: 'الحکمة المتعالیة فی الاسفار العقلیة الاربعة',
+      ar: 'الحكمة المتعالية في الأسفار العقلية الأربعة',
+      en: 'Al-Hikmat al-Muta’aliyah (Asfar al-Arba’ah)',
+    },
+    treatiseAuthor: {
+      fa: 'صدرالمتألهین ملاصدرا الشیرازی',
+      ar: 'صدر المتألهين ملا صدرا الشيرازي',
+      en: 'Mulla Sadra al-Shirazi',
+    },
+    concepts: {
+      fa: ['اصالت وجود', 'تشکیک وجود', 'حرکت جوهری', 'برهان صدیقین'],
+      ar: ['أصالة الوجود', 'تشكيك الوجود', 'الحركة الجوهرية', 'برهان الصديقين'],
+      en: ['Primacy of Existence', 'Modulation of Being', 'Substantial Motion', 'Proof of Sincere'],
+    },
   },
   {
     id: 'station-ishraq',
@@ -64,10 +76,22 @@ const STATIONS: StationItem[] = [
     focusKey: 'stations_station_2_focus',
     serialTag: 'STN-02',
     sessionsCount: 84,
-    durationText: '۶۲ ساعت',
-    canonicalText: 'حکمة الإشراق',
-    treatiseAuthor: 'شیخ شهاب‌الدین سهروردی (شیخ اشراق)',
-    concepts: ['نور مجرد', 'نورالانوار', 'امکان اشرف', 'انوار قاهره'],
+    durationHours: 62,
+    canonicalText: {
+      fa: 'حکمة الإشراق',
+      ar: 'حكمة الإشراق',
+      en: 'Hikmat al-Ishraq',
+    },
+    treatiseAuthor: {
+      fa: 'شیخ شهاب‌الدین سهروردی (شیخ اشراق)',
+      ar: 'الشيخ شهاب الدين السهروردي (شيخ الإشراق)',
+      en: 'Shahab al-Din Suhrawardi (Shaykh al-Ishraq)',
+    },
+    concepts: {
+      fa: ['نور مجرد', 'نورالانوار', 'امکان اشرف', 'انوار قاهره'],
+      ar: ['النور المجرد', 'نور الأنوار', 'قاعدة الإمكان الأشرف', 'الأنوار القاهرة'],
+      en: ['Immaterial Light', 'Light of Lights', 'Nobler Possibility', 'Dominating Lights'],
+    },
   },
   {
     id: 'station-isharat',
@@ -80,10 +104,22 @@ const STATIONS: StationItem[] = [
     focusKey: 'stations_station_3_focus',
     serialTag: 'STN-03',
     sessionsCount: 85,
-    durationText: '۶۸ ساعت',
-    canonicalText: 'الاشارات و التنبیهات (ده نمط)',
-    treatiseAuthor: 'شیخ‌الرئیس ابوعلی سینا و خواجه نصیرالدین طوسی',
-    concepts: ['تجوهر اجسام', 'صورت و ماده', 'برهان امکان', 'مقامات العارفین'],
+    durationHours: 68,
+    canonicalText: {
+      fa: 'الاشارات و التنبیهات (ده نمط)',
+      ar: 'الإشارات والتنبيهات (عشرة أنماط)',
+      en: 'Al-Isharat wa al-Tanbihat (Ten Namats)',
+    },
+    treatiseAuthor: {
+      fa: 'شیخ‌الرئیس ابوعلی سینا و خواجه نصیرالدین طوسی',
+      ar: 'الشيخ الرئيس ابن سينا والخواجة نصير الدين الطوسي',
+      en: 'Avicenna & Khawaja Nasir al-Din al-Tusi',
+    },
+    concepts: {
+      fa: ['تجوهر اجسام', 'صورت و ماده', 'برهان امکان', 'مقامات العارفین'],
+      ar: ['تجوهر الأجسام', 'الصورة والمادة', 'برهان الإمكان', 'مقامات العارفين'],
+      en: ['Substantiality of Bodies', 'Matter & Form', 'Proof of Contingency', 'Stations of the Knowers'],
+    },
   },
   {
     id: 'station-shifa',
@@ -96,15 +132,27 @@ const STATIONS: StationItem[] = [
     focusKey: 'stations_station_4_focus',
     serialTag: 'STN-04',
     sessionsCount: 52,
-    durationText: '۴۰ ساعت',
-    canonicalText: 'إلهیات الشفاء و رسائل سنجش با فلسفه معاصر',
-    treatiseAuthor: 'ابن سینا و درس‌گفتار تطبیقی با مدرنیته',
-    concepts: ['اثبات واجب بذاته', 'عنایت ربوبی', 'نقد سوژه دکارتی', 'نقد کانت'],
+    durationHours: 40,
+    canonicalText: {
+      fa: 'إلهیات الشفاء و رسائل سنجش با فلسفه معاصر',
+      ar: 'إلهيات الشفاء ورسائل المقارنة مع الفلسفة المعاصرة',
+      en: 'Ilahiyyat al-Shifa & Contemporary Dialectics',
+    },
+    treatiseAuthor: {
+      fa: 'ابن سینا و درس‌گفتار تطبیقی با مدرنیته',
+      ar: 'ابن سينا ودراسات مقارنة مع الفكر المعاصر',
+      en: 'Ibn Sina & Comparative Modern Studies',
+    },
+    concepts: {
+      fa: ['اثبات واجب بذاته', 'عنایت ربوبی', 'نقد سوژه دکارتی', 'نقد کانت'],
+      ar: ['إثبات الواجب بذاته', 'العناية الإلهية', 'نقد الذات الديكارتية', 'نقد كانط'],
+      en: ['Self-Necessary Being', 'Divine Providence', 'Critique of Cartesian Subject', 'Critique of Kant'],
+    },
   },
 ];
 
 export const WisdomStationsSheet: React.FC = () => {
-  const { dict, toLocale, isRtl } = useLanguage();
+  const { dict, toLocale, isRtl, currentLang } = useLanguage();
   const { playTrack, currentCourse, isPlaying } = usePlayer();
   const [selectedStationId, setSelectedStationId] = useState<string>('all');
 
@@ -148,7 +196,7 @@ export const WisdomStationsSheet: React.FC = () => {
 
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify sm:text-center">
             {dict.stations_desc ||
-              `بازخوانی روش‌مند و اجتهادی ارکان حکمت اسلامی در چهار ایستگاه درسی با تکیه بر متون مصحح و تدریس صوت استودیویی استاد ${SCHOLAR_NAME}`}
+              `بازخوانی روش‌مند و اجتهادی ارکان حکمت اسلامی در چهار ایستگاه درسی با تکیه بر متون مصحح و تدریس صوت استودیویی ${SCHOLAR_NAME}`}
           </p>
         </div>
 
@@ -168,6 +216,9 @@ export const WisdomStationsSheet: React.FC = () => {
 
           {STATIONS.map((station) => {
             const isSelected = selectedStationId === station.id;
+            const fallbackTitle =
+              station.canonicalText[currentLang as keyof typeof station.canonicalText] ||
+              station.canonicalText.fa;
             return (
               <button
                 key={station.id}
@@ -182,7 +233,7 @@ export const WisdomStationsSheet: React.FC = () => {
                 <span className="font-mono text-[11px] opacity-80">
                   [{toLocale(station.stationNumber)}]
                 </span>
-                <span>{dict[station.titleKey] || station.canonicalText}</span>
+                <span>{dict[station.titleKey] || fallbackTitle}</span>
               </button>
             );
           })}
@@ -194,6 +245,15 @@ export const WisdomStationsSheet: React.FC = () => {
             const course = coursesDatabase[station.courseKey];
             const isCoursePlaying =
               currentCourse?.id === course?.id && isPlaying;
+            const canonical =
+              station.canonicalText[currentLang as keyof typeof station.canonicalText] ||
+              station.canonicalText.fa;
+            const author =
+              station.treatiseAuthor[currentLang as keyof typeof station.treatiseAuthor] ||
+              station.treatiseAuthor.fa;
+            const conceptsList =
+              station.concepts[currentLang as keyof typeof station.concepts] ||
+              station.concepts.fa;
 
             return (
               <article
@@ -223,7 +283,10 @@ export const WisdomStationsSheet: React.FC = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-[#8A532B]" />
-                        <span>{station.durationText}</span>
+                        <span>
+                          {toLocale(station.durationHours)}{' '}
+                          {dict.stations_metrics_hours || 'ساعت'}
+                        </span>
                       </span>
                     </div>
                   </div>
@@ -231,10 +294,10 @@ export const WisdomStationsSheet: React.FC = () => {
                   {/* Station Titles */}
                   <div className="space-y-1">
                     <h3 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
-                      {dict[station.titleKey] || station.canonicalText}
+                      {dict[station.titleKey] || canonical}
                     </h3>
                     <p className="text-xs font-medium text-[#8A532B] dark:text-[#C58B43]">
-                      {dict[station.subtitleKey] || station.treatiseAuthor}
+                      {dict[station.subtitleKey] || author}
                     </p>
                   </div>
 
@@ -247,13 +310,13 @@ export const WisdomStationsSheet: React.FC = () => {
                   <div className="space-y-2 pt-1">
                     <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5 text-[#8A532B]" />
-                      <span>{station.canonicalText}</span>
+                      <span>{canonical}</span>
                       <span className="text-zinc-400 dark:text-zinc-600">•</span>
-                      <span>{station.treatiseAuthor}</span>
+                      <span>{author}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                      {station.concepts.map((concept, idx) => (
+                      {conceptsList.map((concept, idx) => (
                         <span
                           key={idx}
                           className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#FAF8F5] dark:bg-[#18191D] text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800"
@@ -272,7 +335,7 @@ export const WisdomStationsSheet: React.FC = () => {
                     onClick={() => handlePlayStationPreview(station)}
                     className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                       isCoursePlaying
-                        ? 'bg-[#8A532B] text-white shadow-xs animate-pulse'
+                        ? 'bg-[#8A532B] text-white shadow-xs'
                         : 'bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/30'
                     }`}
                   >

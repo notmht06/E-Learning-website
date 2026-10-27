@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -40,6 +40,34 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
 
+  const headerRef = useRef<HTMLElement | null>(null);
+  const langDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setIsLangOpen(false);
+      }
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setIsMobileOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsLangOpen(false);
+        setIsMobileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const totalCartCount = propCartCount !== undefined ? propCartCount : cartItems.length;
 
   const handleOpenSearch = () => {
@@ -63,7 +91,10 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   ];
 
   return (
-    <header className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1.25rem)] sm:w-[calc(100%-2.5rem)] max-w-5xl transition-all duration-300">
+    <header
+      ref={headerRef}
+      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1.25rem)] sm:w-[calc(100%-2.5rem)] max-w-5xl transition-all duration-300"
+    >
       <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Identity / Scholar */}
         <Link
@@ -160,12 +191,14 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           </button>
 
           {/* Language Selector Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={langDropdownRef}>
             <button
               type="button"
               onClick={() => setIsLangOpen(!isLangOpen)}
               className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1 cursor-pointer"
               aria-label={dict.pill_nav_lang_aria || 'انتخاب زبان'}
+              aria-haspopup="menu"
+              aria-expanded={isLangOpen}
             >
               <Globe className="w-4 h-4" />
               <span className="text-[11px] font-bold uppercase hidden sm:inline">
@@ -241,6 +274,8 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             onClick={() => setIsMobileOpen(!isMobileOpen)}
             className="md:hidden p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
             aria-label={dict.pill_nav_menu_toggle || 'منو'}
+            aria-expanded={isMobileOpen}
+            aria-controls="mobile-nav-drawer"
           >
             {isMobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -249,7 +284,10 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
       {/* Mobile Drawer Dropdown */}
       {isMobileOpen && (
-        <div className="md:hidden mt-2 mx-1 p-4 rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#121316]/95 backdrop-blur-2xl border border-[#E6E1D8] dark:border-[#22242A] shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div
+          id="mobile-nav-drawer"
+          className="md:hidden mt-2 mx-1 p-4 rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#121316]/95 backdrop-blur-2xl border border-[#E6E1D8] dark:border-[#22242A] shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
+        >
           <div className="grid grid-cols-2 gap-2 text-xs font-medium">
             <Link
               href="/courses"

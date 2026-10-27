@@ -941,4 +941,10 @@ export const en: Dictionary = {
   discourse_waveform_hint: 'Click audio wave to jump to exact timestamp',
   discourse_active_badge: 'Active Playing Session',
   discourse_token_verified: 'Verified DRM Stream Token',
+  discourse_chapter_preview: 'Preview',
+  discourse_chapter_fallback: 'Lecture Session',
+  discourse_course_tab_asfar: 'Asfar al-Arba’ah',
+  discourse_course_tab_ishraq: 'Hikmat al-Ishraq',
+  discourse_course_tab_isharat: 'Sharh al-Isharat',
+  discourse_progress_aria: 'Audio progress scrubber',
 };

@@ -900,7 +900,7 @@ export const ar: Dictionary = {
   // 2. Wisdom Stations Sheet
   stations_badge: 'المحطات الأربع الكبرى في التفكير البرهاني',
   stations_title: 'منظومة المحطات المعرفية للعلوم العقلية والأنطولوجيا',
-  stations_desc: 'قراءة منهجية واجتهادية لأركان الحكمة الإسلامية في أربع محطات دراسية بالاعتماد على النصوص المصححة وبأداء صوتي استوديوهاتي للأستاذ حجة الإسلام الدكتور زنجير زن حسيني',
+  stations_desc: 'قراءة منهجية واجتهادية لأركان الحكمة الإسلامية في أربع محطات دراسية بالاعتماد على النصوص المصححة وبأداء صوتي استوديوهاتي لحجة الإسلام الدكتور زنجير زن حسيني',
   stations_tab_all: 'جميع المحطات',
   stations_station_num_prefix: 'المحطة',
   stations_btn_listen_preview: 'الاستماع إلى عينة الدرس',
@@ -926,7 +926,7 @@ export const ar: Dictionary = {
 
   // 3. Discourse Player Section
   discourse_badge: 'استوديو المحاضرات والبث الصوتي',
-  discourse_title: 'المحاضرات الصوتية والبيان البرهاني للأستاذ',
+  discourse_title: 'المحاضرات الصوتية والبيان البرهاني لحجة الإسلام الدكتور زنجير زن حسيني',
   discourse_subtitle: 'استماع إلى الصوت الاستوديوهاتي مع تبويب الفصول وبتردد 48kHz وحماية رقمية للبث',
   discourse_drm_label: 'تشفير DRM مخصص • بث محمي بالتوقيع الرقمي',
   discourse_live_status: 'جارٍ التشغيل من الاستوديو',
@@ -941,4 +941,10 @@ export const ar: Dictionary = {
   discourse_waveform_hint: 'انقر على الموجة الصوتية للانتقال المباشر إلى الزمن المحدد',
   discourse_active_badge: 'الجلسة قيد التشغيل',
   discourse_token_verified: 'رمز الأمان الرقمي موثق',
+  discourse_chapter_preview: 'معاينة مجانية',
+  discourse_chapter_fallback: 'جلسة دراسية',
+  discourse_course_tab_asfar: 'الأسفار الأربعة',
+  discourse_course_tab_ishraq: 'حكمة الإشراق',
+  discourse_course_tab_isharat: 'شرح الإشارات',
+  discourse_progress_aria: 'مؤشر تقدم تشغيل الصوت',
 };

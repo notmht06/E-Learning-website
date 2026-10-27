@@ -899,7 +899,7 @@ export const fa = {
   // 2. Wisdom Stations Sheet
   stations_badge: 'چهار ایستگاه بنیادین تفکر برهانی',
   stations_title: 'منظومه ایستگاه‌های معرفتی علوم عقلی و وجودشناسی',
-  stations_desc: 'بازخوانی روش‌مند و اجتهادی ارکان حکمت اسلامی در چهار ایستگاه درسی با تکیه بر متون مصحح و تدریس صوت استودیویی استاد حجت الاسلام دکتر زنجیر زن حسینی',
+  stations_desc: 'بازخوانی روش‌مند و اجتهادی ارکان حکمت اسلامی در چهار ایستگاه درسی با تکیه بر متون مصحح و تدریس صوت استودیویی حجت الاسلام دکتر زنجیر زن حسینی',
   stations_tab_all: 'همه ایستگاه‌ها',
   stations_station_num_prefix: 'ایستگاه',
   stations_btn_listen_preview: 'شنیدن درس نمونه',
@@ -925,7 +925,7 @@ export const fa = {
 
   // 3. Discourse Player Section
   discourse_badge: 'استودیو درس‌گفتار و نشر صوتی',
-  discourse_title: 'گفتار صوتی و تبیین برهانی استاد',
+  discourse_title: 'گفتار صوتی و تبیین برهانی حجت الاسلام دکتر زنجیر زن حسینی',
   discourse_subtitle: 'استماع صوت استودیویی با تفکیک موضوعی فصول، فرکانس صوتی ۴۸kHz و حفاظت دیجیتال استریم',
   discourse_drm_label: 'رمزنگاری DRM اختصاصی • پخش با امضای دیجیتال',
   discourse_live_status: 'در حال پخش استودیو',
@@ -940,4 +940,10 @@ export const fa = {
   discourse_waveform_hint: 'کلیک روی موج صوتی جهت جهش به زمان دلخواه',
   discourse_active_badge: 'جلسه در حال پخش',
   discourse_token_verified: 'توکن امنیتی معتبر',
+  discourse_chapter_preview: 'پیش‌نمایش',
+  discourse_chapter_fallback: 'جلسه درس',
+  discourse_course_tab_asfar: 'اسفار اربعه',
+  discourse_course_tab_ishraq: 'حکمت اشراق',
+  discourse_course_tab_isharat: 'شرح اشارات',
+  discourse_progress_aria: 'کنترل پیشرفت پخش صوت',
 } as const;

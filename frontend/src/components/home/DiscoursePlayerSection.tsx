@@ -31,7 +31,7 @@ interface DiscoursePlayerSectionProps {
 export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
   initialCourseId = 'course-falsafe-asfar-1',
 }) => {
-  const { dict, toLocale, isRtl } = useLanguage();
+  const { dict, toLocale, isRtl, currentLang } = useLanguage();
   const { user, isAuthenticated } = useAuth();
   const {
     currentCourse,
@@ -51,6 +51,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
   } = usePlayer();
 
   const [activeCourseId, setActiveCourseId] = useState<string>(initialCourseId);
+  const [selectedChapterIdx, setSelectedChapterIdx] = useState<number>(0);
   const [drmWatermark, setDrmWatermark] = useState<string>('');
   const [drmVerified, setDrmVerified] = useState<boolean>(false);
   const [isRequestingToken, setIsRequestingToken] = useState<boolean>(false);
@@ -59,6 +60,18 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
     return coursesDatabase[activeCourseId] || coursesDatabase['course-falsafe-asfar-1'] || Object.values(coursesDatabase)[0];
   }, [activeCourseId]);
 
+  const isCurrentCourseActive = currentCourse?.id === featuredCourse.id;
+  const isPlayingActive = isCurrentCourseActive && isPlaying;
+
+  // Clamped active chapter index to prevent out-of-bounds access
+  const activeChapterIndex = useMemo(() => {
+    const rawIdx = isCurrentCourseActive ? currentChapterIndex : selectedChapterIdx;
+    const maxIdx = Math.max(0, (featuredCourse.chapters?.length || 1) - 1);
+    return Math.min(Math.max(0, rawIdx), maxIdx);
+  }, [isCurrentCourseActive, currentChapterIndex, selectedChapterIdx, featuredCourse.chapters?.length]);
+
+  const activeChapter = featuredCourse.chapters?.[activeChapterIndex] || featuredCourse.chapters?.[0];
+
   // Request DRM signed streaming token for the active chapter
   useEffect(() => {
     let isCancelled = false;
@@ -66,7 +79,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
     async function fetchDrmToken() {
       setIsRequestingToken(true);
       try {
-        const chapterId = featuredCourse.chapters?.[currentChapterIndex]?.id || 1;
+        const chapterId = activeChapter?.id || 1;
         const userId = user?.id || 'usr-preview';
         const res = await apiClient.stream.getToken(userId, featuredCourse.id, chapterId);
         if (!isCancelled && res?.token) {
@@ -91,16 +104,29 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [featuredCourse.id, currentChapterIndex, user?.id]);
+  }, [featuredCourse.id, activeChapter?.id, user?.id]);
 
   const formatTime = (seconds: number): string => {
-    if (isNaN(seconds) || seconds < 0) return '۰۰:۰۰';
+    if (isNaN(seconds) || seconds < 0) return toLocale('00:00');
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
     const paddedM = m < 10 ? `0${m}` : `${m}`;
     const paddedS = s < 10 ? `0${s}` : `${s}`;
     return toLocale(`${paddedM}:${paddedS}`);
   };
+
+  // Parse chapter duration in seconds when inactive
+  const chapterDurationSec = useMemo(() => {
+    if (!activeChapter?.duration) return 180;
+    const parts = activeChapter.duration.split(':').map(Number);
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return parts[0] * 60 + parts[1];
+    }
+    return 180;
+  }, [activeChapter?.duration]);
+
+  const displayTime = isCurrentCourseActive ? currentTime : 0;
+  const displayDuration = isCurrentCourseActive && duration > 0 ? duration : chapterDurationSec;
 
   // 48-bar scholastic soundwave pattern
   const waveBars = useMemo(() => {
@@ -114,17 +140,35 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
     return baseCurve;
   }, []);
 
-  const progressPercent = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
-  const activeBarIndex = Math.floor((progressPercent / 100) * waveBars.length);
+  const progressPercent = displayDuration > 0 ? Math.min(100, Math.max(0, (displayTime / displayDuration) * 100)) : 0;
+  const activeBarIndex = isCurrentCourseActive ? Math.floor((progressPercent / 100) * waveBars.length) : -1;
 
-  const handleWaveClick = (barIdx: number) => {
-    if (duration > 0) {
-      const targetSec = (barIdx / waveBars.length) * duration;
-      seek(targetSec);
+  const handleWaveSeek = (ratio: number) => {
+    const targetDuration = displayDuration;
+    const targetTime = Math.max(0, Math.min(targetDuration, ratio * targetDuration));
+    if (isCurrentCourseActive) {
+      seek(targetTime);
+    } else {
+      playTrack(featuredCourse, activeChapterIndex);
+      setTimeout(() => seek(targetTime), 100);
+    }
+  };
+
+  const handleWaveKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (isCurrentCourseActive) skip(isRtl ? -5 : 5);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (isCurrentCourseActive) skip(isRtl ? 5 : -5);
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      handleToggleOrPlay();
     }
   };
 
   const handleChapterClick = (idx: number) => {
+    setSelectedChapterIdx(idx);
     if (currentCourse?.id === featuredCourse.id) {
       setChapterIndex(idx);
     } else {
@@ -136,13 +180,9 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
     if (currentCourse?.id === featuredCourse.id) {
       togglePlay();
     } else {
-      playTrack(featuredCourse, currentChapterIndex || 0);
+      playTrack(featuredCourse, activeChapterIndex);
     }
   };
-
-  const isCurrentCourseActive = currentCourse?.id === featuredCourse.id;
-  const isPlayingActive = isCurrentCourseActive && isPlaying;
-  const activeChapter = featuredCourse.chapters?.[currentChapterIndex] || featuredCourse.chapters?.[0];
 
   return (
     <section
@@ -159,7 +199,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
               <span>{dict.discourse_badge || 'استودیو درس‌گفتار و نشر صوتی'}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.discourse_title || 'گفتار صوتی و تبیین برهانی استاد'}
+              {dict.discourse_title || `گفتار صوتی و تبیین برهانی ${SCHOLAR_NAME}`}
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
               {dict.discourse_subtitle ||
@@ -170,21 +210,24 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
           {/* Course Switcher Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             {[
-              { id: 'course-falsafe-asfar-1', label: 'اسفار اربعه' },
-              { id: 'course-falsafe-ishraq', label: 'حکمت اشراق' },
-              { id: 'course-falsafe-isharat', label: 'شرح اشارات' },
+              { id: 'course-falsafe-asfar-1', labelKey: 'discourse_course_tab_asfar' as const, fallback: 'اسفار اربعه' },
+              { id: 'course-falsafe-ishraq', labelKey: 'discourse_course_tab_ishraq' as const, fallback: 'حکمت اشراق' },
+              { id: 'course-falsafe-isharat', labelKey: 'discourse_course_tab_isharat' as const, fallback: 'شرح اشارات' },
             ].map((c) => (
               <button
                 key={c.id}
                 type="button"
-                onClick={() => setActiveCourseId(c.id)}
+                onClick={() => {
+                  setActiveCourseId(c.id);
+                  setSelectedChapterIdx(0);
+                }}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   activeCourseId === c.id
                     ? 'bg-[#8A532B] text-white font-bold'
                     : 'bg-white dark:bg-[#141518] text-zinc-600 dark:text-zinc-400 border border-[#E6E1D8] dark:border-[#22242A] hover:bg-zinc-50 dark:hover:bg-zinc-800'
                 }`}
               >
-                {c.label}
+                {dict[c.labelKey] || c.fallback}
               </button>
             ))}
           </div>
@@ -222,10 +265,14 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
               {/* Lecture Title */}
               <div className="space-y-1">
                 <h3 className="text-lg sm:text-xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
-                  {featuredCourse.title_fa}
+                  {currentLang === 'en' && featuredCourse.title_en
+                    ? featuredCourse.title_en
+                    : currentLang === 'ar' && featuredCourse.title_ar
+                    ? featuredCourse.title_ar
+                    : featuredCourse.title_fa}
                 </h3>
                 <p className="text-xs sm:text-sm font-medium text-[#8A532B] dark:text-[#C58B43]">
-                  {activeChapter?.title_fa || 'جلسه درس'} • {SCHOLAR_NAME}
+                  {activeChapter?.title_fa || dict.discourse_chapter_fallback || 'جلسه درس'} • {SCHOLAR_NAME}
                 </p>
               </div>
             </div>
@@ -233,22 +280,21 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
             {/* Interactive Audio Waveform */}
             <div className="space-y-2 py-2">
               <div
-                className="h-20 sm:h-24 flex items-end justify-between gap-1 sm:gap-1.5 p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-zinc-200/80 dark:border-zinc-800 cursor-pointer select-none"
+                className="h-20 sm:h-24 flex items-end justify-between gap-1 sm:gap-1.5 p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-zinc-200/80 dark:border-zinc-800 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A532B]"
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const clickX = isRtl
                     ? rect.right - e.clientX
                     : e.clientX - rect.left;
                   const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-                  if (duration > 0) {
-                    seek(ratio * duration);
-                  }
+                  handleWaveSeek(ratio);
                 }}
+                onKeyDown={handleWaveKeyDown}
                 role="slider"
-                aria-label="Audio progress slider"
+                aria-label={dict.discourse_progress_aria || 'کنترل پیشرفت پخش صوت'}
                 aria-valuemin={0}
-                aria-valuemax={duration}
-                aria-valuenow={currentTime}
+                aria-valuemax={displayDuration}
+                aria-valuenow={displayTime}
                 tabIndex={0}
               >
                 {waveBars.map((heightPercent, idx) => {
@@ -269,11 +315,11 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
 
               {/* Timestamp Markers */}
               <div className="flex items-center justify-between text-xs font-num text-zinc-500 dark:text-zinc-400 px-1">
-                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(displayTime)}</span>
                 <span className="text-[11px] opacity-70">
                   {dict.discourse_waveform_hint || 'جهش زمانی با کلیک روی موج'}
                 </span>
-                <span>{formatTime(duration)}</span>
+                <span>{formatTime(displayDuration)}</span>
               </div>
             </div>
 
@@ -364,7 +410,9 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
               {/* Chapter Timeline List */}
               <div className="space-y-2 max-h-[280px] overflow-y-auto pe-1">
                 {featuredCourse.chapters.map((ch, idx) => {
-                  const isActive = isCurrentCourseActive && currentChapterIndex === idx;
+                  const isActive = isCurrentCourseActive
+                    ? currentChapterIndex === idx
+                    : activeChapterIndex === idx;
                   return (
                     <button
                       key={ch.id}
@@ -398,7 +446,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                                 : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
                             }`}
                           >
-                            پیش‌نمایش
+                            {dict.discourse_chapter_preview || 'پیش‌نمایش'}
                           </span>
                         )}
                         <span className="font-num text-[11px] opacity-80">
