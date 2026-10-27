@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
-import { Vazirmatn, Lalezar } from 'next/font/google';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { PlayerProvider } from '@/context/PlayerContext';
@@ -11,20 +10,6 @@ import { CartProvider } from '@/context/CartContext';
 import { GlobalOverlays } from '@/components/shell/GlobalOverlays';
 import { Toaster } from 'sonner';
 import { SupportedLang } from '@/locales';
-
-const vazirmatn = Vazirmatn({
-  subsets: ['arabic', 'latin'],
-  display: 'swap',
-  variable: '--font-vazirmatn',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-});
-
-const lalezar = Lalezar({
-  subsets: ['arabic'],
-  display: 'swap',
-  variable: '--font-lalezar',
-  weight: '400',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://zanjirzan.ir'),
@@ -66,13 +51,13 @@ export default async function RootLayout({
     <html
       lang={initialLang}
       dir={initialDir}
-      className={`${initialTheme} ${vazirmatn.variable} ${lalezar.variable}`}
+      className={initialTheme}
       suppressHydrationWarning
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)zan_theme=([^;]+)/);var t=localStorage.getItem('zan_theme')||(m?decodeURIComponent(m[1]):null);var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;var isD=t==='dark'||(!t&&d);var cl=document.documentElement.classList;if(isD){cl.add('dark');cl.remove('light');}else{cl.remove('dark');cl.add('light');}var ml=document.cookie.match(/(?:^|;\\s*)zan_lang=([^;]+)/);var l=localStorage.getItem('zan_lang')||(ml?decodeURIComponent(ml[1]):null)||'fa';if(l==='fa'||l==='ar'||l==='en'){document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}}catch(e){}})();`,
+            __html: `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)zan_theme=([^;]+)/);var t=localStorage.getItem('zan_theme')||(m?decodeURIComponent(m[1]):null);var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;var isD=t==='dark'||(!t&&d);var cl=document.documentElement.classList;if(isD){cl.add('dark');cl.remove('light');}else{cl.remove('dark');cl.add('light');}var ml=document.cookie.match(/(?:^|;\\s*)zan_lang=([^;]+)/);var l=localStorage.getItem('zan_lang')||(ml?decodeURIComponent(ml[1]):null);if(!l){try{var tz=(Intl&&Intl.DateTimeFormat)?Intl.DateTimeFormat().resolvedOptions().timeZone:'';var nl=((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();if(tz.indexOf('Tehran')===-1&&tz.indexOf('Iran')===-1){if(nl.indexOf('ar')===0||/Baghdad|Riyadh|Cairo|Damascus|Beirut|Amman|Kuwait|Qatar|Dubai|Muscat|Aden/i.test(tz)){l='ar';}else{l='en';}}else{l='fa';}}catch(e2){l='fa';}}if(l==='fa'||l==='ar'||l==='en'){document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}}catch(e){}})();`,
           }}
         />
         <link

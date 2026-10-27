@@ -10,6 +10,7 @@ import {
   initialCategories,
   ScholarlyArticle,
   scholarlyArticlesDatabase,
+  COURSE_ID_ALIASES,
 } from '@/lib/data';
 
 export interface AudioChapter {
@@ -182,37 +183,42 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setCourses(prev => {
                   const merged = { ...prev };
                   for (const bc of backendCourses) {
-                    if (merged[bc.id]) {
-                      merged[bc.id] = {
-                        ...merged[bc.id],
-                        title_fa: bc.title || merged[bc.id].title_fa,
-                        episodes_count: bc.sessions_count || merged[bc.id].episodes_count,
-                        duration_fa: bc.hours || merged[bc.id].duration_fa,
-                        level_fa: bc.level || merged[bc.id].level_fa,
-                        price_fa: bc.price || merged[bc.id].price_fa,
+                    const canonicalId = COURSE_ID_ALIASES[bc.id] || bc.id;
+                    const existingKey = merged[canonicalId] ? canonicalId : (merged[bc.id] ? bc.id : null);
+                    if (existingKey) {
+                      merged[existingKey] = {
+                        ...merged[existingKey],
+                        title_fa: bc.title || merged[existingKey].title_fa,
+                        episodes_count: bc.sessions_count || merged[existingKey].episodes_count,
+                        duration_fa: bc.hours || merged[existingKey].duration_fa,
+                        level_fa: bc.level || merged[existingKey].level_fa,
+                        price_fa: bc.price || merged[existingKey].price_fa,
                       };
+                      if (existingKey !== bc.id) {
+                        merged[bc.id] = merged[existingKey];
+                      }
                     } else if (bc.id && bc.title) {
                       merged[bc.id] = {
                         id: bc.id,
                         title_fa: bc.title,
-                        title_ar: bc.title,
-                        title_en: bc.title,
+                        title_ar: bc.title_ar || bc.title,
+                        title_en: bc.title_en || bc.title,
                         desc_fa: bc.description || '',
-                        desc_ar: bc.description || '',
-                        desc_en: bc.description || '',
+                        desc_ar: bc.description_ar || bc.description || '',
+                        desc_en: bc.description_en || bc.description || '',
                         instructor_fa: bc.instructor || 'حجت الاسلام دکتر زنجیر زن حسینی',
-                        instructor_ar: bc.instructor || 'حجة الإسلام الدكتور زنجير زن حسيني',
-                        instructor_en: bc.instructor || 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+                        instructor_ar: bc.instructor_ar || 'حجة الإسلام الدكتور زنجير زن حسيني',
+                        instructor_en: bc.instructor_en || 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
                         episodes_count: bc.sessions_count || (bc.syllabus ? bc.syllabus.length : 1),
                         duration_fa: bc.hours || '۲۰ ساعت',
-                        duration_ar: bc.hours || '٢٠ ساعة',
-                        duration_en: bc.hours || '20 Hours',
+                        duration_ar: bc.hours_ar || '٢٠ ساعة',
+                        duration_en: bc.hours_en || '20 Hours',
                         level_fa: bc.level || 'سطح عالی',
-                        level_ar: bc.level || 'مستوى عالٍ',
-                        level_en: bc.level || 'Advanced',
+                        level_ar: bc.level_ar || 'مستوى عالٍ',
+                        level_en: bc.level_en || 'Advanced',
                         price_fa: bc.price || 'رایگان',
-                        price_ar: bc.price || 'مجاني',
-                        price_en: bc.price || 'Free',
+                        price_ar: bc.price_ar || 'مجاني',
+                        price_en: bc.price_en || 'Free',
                         sampleAudioUrl: '/audio/sample_lecture.wav',
                         course_type: bc.course_type || 'offline',
                         subject: (bc.tags && bc.tags[0]) || 'فلسفه',
@@ -220,6 +226,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                           ? bc.syllabus.map((s: any, idx: number) => ({
                               id: s.id || idx + 1,
                               title_fa: s.title || `جلسه ${idx + 1}`,
+                              title_ar: s.title_ar,
+                              title_en: s.title_en,
                               duration: s.duration || '۴۵:۰۰',
                               isFreePreview: Boolean(s.is_preview),
                               audioUrl: s.audio_stream_url || '/audio/sample_lecture.wav',

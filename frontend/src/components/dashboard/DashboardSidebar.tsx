@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type DashboardTab = 'overview' | 'courses' | 'books' | 'notes' | 'orders' | 'certificates' | 'support';
+export type DashboardTab = 'overview' | 'courses' | 'books' | 'notes' | 'orders' | 'certificates';
 
 interface DashboardSidebarProps {
   activeTab: DashboardTab;
@@ -41,7 +41,6 @@ export function DashboardSidebar({
     { id: 'notes', label: 'یادداشت‌های من', icon: BookMarked },
     { id: 'orders', label: 'سفارش‌های پستی', icon: Package },
     { id: 'certificates', label: 'گواهی‌نامه‌های علمی', icon: Award },
-    { id: 'support', label: 'طرح پرسش و ارتباط', icon: MessageSquare },
   ];
 
   return (

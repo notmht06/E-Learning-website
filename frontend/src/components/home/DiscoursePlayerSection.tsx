@@ -22,7 +22,8 @@ import { usePlayer } from '@/context/PlayerContext';
 import { useAuth } from '@/context/AuthContext';
 import { coursesDatabase, AudioCourse } from '@/lib/data';
 import { apiClient } from '@/services/apiClient';
-import { SCHOLAR_NAME } from '@/lib/constants';
+import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
+import { getLocalizedChapterTitle } from '@/lib/localization';
 
 interface DiscoursePlayerSectionProps {
   initialCourseId?: string;
@@ -199,7 +200,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
               <span>{dict.discourse_badge || 'استودیو درس‌گفتار و نشر صوتی'}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.discourse_title || `گفتار صوتی و تبیین برهانی ${SCHOLAR_NAME}`}
+              {dict.discourse_title || `گفتار صوتی و تبیین برهانی ${dict.scholar_name || getScholarName(currentLang)}`}
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
               {dict.discourse_subtitle ||
@@ -272,7 +273,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                     : featuredCourse.title_fa}
                 </h3>
                 <p className="text-xs sm:text-sm font-medium text-[#8A532B] dark:text-[#C58B43]">
-                  {activeChapter?.title_fa || dict.discourse_chapter_fallback || 'جلسه درس'} • {SCHOLAR_NAME}
+                  {getLocalizedChapterTitle(activeChapter, currentLang) || dict.discourse_chapter_fallback || 'جلسه درس'} • {dict.scholar_name || getScholarName(currentLang)}
                 </p>
               </div>
             </div>
@@ -434,7 +435,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                         >
                           {toLocale(ch.id)}
                         </span>
-                        <span className="truncate">{ch.title_fa}</span>
+                        <span className="truncate">{getLocalizedChapterTitle(ch, currentLang)}</span>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">

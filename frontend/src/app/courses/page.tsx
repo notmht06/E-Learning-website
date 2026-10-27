@@ -50,7 +50,7 @@ function CoursesContent() {
         page_title: dict.catalog_courses_page_title || 'Archive of Specialized Courses & Discourses',
         page_subtitle:
           dict.catalog_courses_page_subtitle ||
-          'Collection of academic discourses by Hujjat al-Islam Dr. Zanjirzan Hosseini across 8 branches of rational and transmitted disciplines.',
+          'Collection of academic discourses by Hojjat al-Islam Dr. Zanjirzan Hosseini across 8 branches of rational and transmitted disciplines.',
         type_all: dict.catalog_type_all || 'All Courses',
         type_offline: dict.catalog_type_offline || 'Offline Courses',
         type_online: dict.catalog_type_online || 'Online Courses',

@@ -6,4 +6,3 @@ export * from './DashboardBooksTab';
 export * from './DashboardCertificatesTab';
 export * from './DashboardNotesTab';
 export * from './DashboardOrdersTab';
-export * from './DashboardSupportTab';

@@ -79,7 +79,7 @@ export function AdminCoursesTab() {
       title_en: newTitle,
       instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
       instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-      instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+      instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
       subject: newCategory,
       level_fa: newLevel,
       level_ar: 'تخصصي',

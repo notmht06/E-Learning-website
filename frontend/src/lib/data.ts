@@ -1,4 +1,4 @@
-// Data Store & Multilingual Content for Hujjat al-Islam Dr. Zanjirzan Hosseini Platform
+// Data Store & Multilingual Content for Hojjat al-Islam Dr. Zanjirzan Hosseini Platform
 
 import type { SupportedLang } from '@/locales';
 
@@ -351,16 +351,39 @@ export interface AudioCourse {
   }[];
 }
 
+export const COURSE_ID_ALIASES: Record<string, string> = {
+  'course-asfar': 'course-falsafe-asfar-1',
+  'course-asfar-1': 'course-falsafe-asfar-1',
+  'course-bidayat': 'course-falsafe-bidayah',
+  'course-mabadi-mantiq': 'course-mantiq-mabadi',
+  'course-ishraq': 'course-falsafe-ishraq',
+  'course1': 'course-mantiq-mabadi',
+  'course2': 'course-falsafe-bidayah',
+  'course3': 'course-falsafe-asfar-1',
+  'c1': 'course-falsafe-asfar-1',
+  'c2': 'course-falsafe-bidayah',
+  'c3': 'course-mantiq-mabadi',
+};
+
 export function toLocaleDigits(num: number | string, lang: SupportedLang = 'fa'): string {
+  if (num === null || num === undefined) return '';
   const str = String(num);
-  if (lang === 'fa') {
-    const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return str.replace(/\d/g, d => farsiDigits[parseInt(d, 10)]);
-  } else if (lang === 'ar') {
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return str.replace(/\d/g, d => arabicDigits[parseInt(d, 10)]);
+  if (lang === 'en') {
+    return str
+      .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+      .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
   }
-  return str;
+  if (lang === 'ar') {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return str
+      .replace(/[0-9]/g, (d) => arabicDigits[parseInt(d, 10)])
+      .replace(/[۰-۹]/g, (d) => arabicDigits['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]);
+  }
+  // Default: Persian (fa)
+  const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return str
+    .replace(/[0-9]/g, (d) => farsiDigits[parseInt(d, 10)])
+    .replace(/[٠-٩]/g, (d) => farsiDigits['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
 }
 
 export const booksDatabase: Record<string, Book> = {
@@ -372,7 +395,7 @@ export const booksDatabase: Record<string, Book> = {
     title_en: 'Mabadi al-Hikmah al-Sadraiyyah',
     author_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     author_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    author_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    author_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     formatCategory: 'کتاب چاپی (گالینگور)',
     subjectCategory: 'حکمت متعالیه',
     desc_fa: 'تحریر آموزشی نظام‌مند اصول فلسفه اسلامی، برهان بداهت هستی و تمایز اعتبارات ماهوی در قالب ساختاری نوین برای طلاب و دانشجویان.',
@@ -637,7 +660,7 @@ export const booksDatabase: Record<string, Book> = {
     title_en: 'Commentary on Hikmat al-Ishraq',
     author_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     author_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    author_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    author_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     formatCategory: 'کتاب چاپی (جلد چرمی)',
     subjectCategory: 'حکمت اشراق',
     desc_fa: 'تقریر نوینی از منظومه نوری شیخ شهاب‌الدین سهروردی با تطبیق انتقادی بر فلسفه مشاء سینوی و حکمت متعالیه ملاصدرا.',
@@ -744,7 +767,7 @@ export const booksDatabase: Record<string, Book> = {
     title_en: 'Treatise on Gradation of Being',
     author_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     author_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    author_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    author_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     formatCategory: 'کتاب چاپی (رقعی نفیس)',
     subjectCategory: 'حکمت متعالیه',
     desc_fa: 'بررسی دقیق براهین تشکیک وجود در حکمت متعالیه و پاسخ به شبهات فخر رازی و متکلمان با رویکرد منطق فلسفی.',
@@ -850,7 +873,7 @@ export const booksDatabase: Record<string, Book> = {
     title_en: 'Comparative Philosophy & Phenomenology',
     author_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     author_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    author_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    author_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     formatCategory: 'کتاب چاپی (وزیری)',
     subjectCategory: 'فلسفه تطبیقی',
     desc_fa: 'کاوشی عمیق در گفتگوی انتقادی میان مکتب صدرایی با پدیدارشناسی هوسرل و هایدگر پیرامون مسئله زیست‌جهان و حقیقت هستی.',
@@ -963,10 +986,10 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     title_en: 'Foundations of Logic & Rational Metaphysics (Principles of Argumentation)',
     desc_fa: 'تدریس تفصیلی و مهندسی‌شده اصول علم منطق، از تعریف علم و تصور و تصدیق تا کلیات خمس و ساختار برهان و نقد مغالطات توسط استاد حجت الاسلام دکتر زنجیر زن حسینی.',
     desc_ar: 'دروس منهجية في أصول المنطق الأرسطي والإسلامي من التصور والتصديق إلى صناعة البرهان للأستاذ حجة الإسلام الدكتور زنجير زن حسيني.',
-    desc_en: 'A comprehensive curriculum on classical and formal logic, epistemology, and argumentation theory by Hujjat al-Islam Dr. Zanjirzan Hosseini.',
+    desc_en: 'A comprehensive curriculum on classical and formal logic, epistemology, and argumentation theory by Hojjat al-Islam Dr. Zanjirzan Hosseini.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 24,
     duration_fa: '۱۸ ساعت',
     duration_ar: '١٨ ساعة',
@@ -1006,7 +1029,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Rigorous commentary on the pedagogical masterpiece Al-Mantiq by Sheikh Muhammad Rida al-Muzaffar.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 62,
     duration_fa: '۴۸ ساعت',
     duration_ar: '٤٨ ساعة',
@@ -1042,7 +1065,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Analytical lecture series on the epistemology of demonstration and fallacies.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 45,
     duration_fa: '۳۵ ساعت',
     duration_ar: '٣٥ ساعة',
@@ -1079,7 +1102,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Introduction to foundational Sadrian metaphysics.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 38,
     duration_fa: '۳۰ ساعت',
     duration_ar: '٣٠ ساعة',
@@ -1111,7 +1134,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'A premier course in Sadrian metaphysics covering essence, existence, causality, and ontology.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 120,
     duration_fa: '۹۲ ساعت',
     duration_ar: '٩٢ ساعة',
@@ -1147,7 +1170,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Free inquiry and analytical critiques of classical metaphysical theses.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 54,
     duration_fa: '۴۲ ساعت',
     duration_ar: '٤٢ ساعة',
@@ -1179,7 +1202,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Advanced seminar on Nihayat al-Hikmah volume 1 by Allamah Tabatabai.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 110,
     duration_fa: '۸۵ ساعت',
     duration_ar: '٨٥ ساعة',
@@ -1211,7 +1234,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Substantial motion, time, intellect, and divine theology in Nihayat al-Hikmah.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 95,
     duration_fa: '۷۵ ساعت',
     duration_ar: '٧٥ ساعة',
@@ -1243,7 +1266,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'An in-depth seminar on Suhrawardi’s Illuminationist Philosophy, metaphysical light, and angelic ontologies.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 84,
     duration_fa: '۶۲ ساعت',
     duration_ar: '٦٢ ساعة',
@@ -1279,7 +1302,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'The definitive Kharij-level curriculum in Sadrian Transcendent Philosophy covering the complete metaphysical architecture.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 160,
     duration_fa: '۱۲۵ ساعت',
     duration_ar: '١٢٥ ساعة',
@@ -1315,7 +1338,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Rigorous commentary on Avicenna’s magnum opus in Peripatetic theology.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 52,
     duration_fa: '۴۰ ساعت',
     duration_ar: '٤٠ ساعة',
@@ -1347,7 +1370,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Commentary on Hakim Sabzawari’s poetic formulation of Transcendent Wisdom.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 130,
     duration_fa: '۱۰۰ ساعت',
     duration_ar: '١٠٠ ساعة',
@@ -1379,7 +1402,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Avicenna’s final philosophical and mystical treatise analyzed comprehensively.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 85,
     duration_fa: '۶۸ ساعت',
     duration_ar: '٦٨ ساعة',
@@ -1411,7 +1434,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Mulla Sadra’s synthesis of intellectual demonstration and spiritual contemplation.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 76,
     duration_fa: '۵۸ ساعت',
     duration_ar: '٥٨ ساعة',
@@ -1443,7 +1466,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Critical studies of Western philosophical paradigms from Descartes and Kant to contemporary phenomenology.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 40,
     duration_fa: '۳۲ ساعت',
     duration_ar: '٣٢ ساعة',
@@ -1480,7 +1503,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Foundational text of Shi’a rational theology by Khawaja Nasir al-Din Tusi with commentary by Allamah al-Hilli.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 70,
     duration_fa: '۵۵ ساعت',
     duration_ar: '٥٥ ساعة',
@@ -1517,7 +1540,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Introduction to Islamic metaphysical mysticism and ontology of divine manifestation.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 28,
     duration_fa: '۲۲ ساعت',
     duration_ar: '٢٢ ساعة',
@@ -1549,7 +1572,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Rigorous philosophical demonstration of the Oneness of Being based on Ibn Turkah.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 90,
     duration_fa: '۷۰ ساعت',
     duration_ar: '٧٠ ساعة',
@@ -1581,7 +1604,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'A foundational masterwork systematically detailing the taxonomy of Ibn Arabi’s mystical ontology.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 65,
     duration_fa: '۵۲ ساعت',
     duration_ar: '٥٢ ساعة',
@@ -1613,7 +1636,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'The definitive lecture series analyzing the prophetic wisdoms of Ibn Arabi.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 140,
     duration_fa: '۱۱۰ ساعت',
     duration_ar: '١١٠ ساعة',
@@ -1650,7 +1673,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'The classical Persian-Islamic spiritual guide mapping the hundred stations of spiritual journey.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 80,
     duration_fa: '۶۰ ساعت',
     duration_ar: '٦٠ ساعة',
@@ -1684,7 +1707,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Tusi’s brilliant philosophical-ethical treatise on the virtuous soul’s spiritual ascension.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 35,
     duration_fa: '۲۸ ساعت',
     duration_ar: '٢٨ ساعة',
@@ -1720,7 +1743,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Metaphysical and contemplative exegesis of the opening chapter of the Holy Qur’an.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 32,
     duration_fa: '۲۵ ساعت',
     duration_ar: '٢٥ ساعة',
@@ -1752,7 +1775,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'An ongoing mystical commentary series extracting ontological lessons from Surah al-Baqarah.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 48,
     duration_fa: '۳۸ ساعت',
     duration_ar: '٣٨ ساعة',
@@ -1788,7 +1811,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Seminal jurisprudence course on epistemology of legal certainty and probabilistic evidence.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 85,
     duration_fa: '۶۵ ساعت',
     duration_ar: '٦٥ ساعة',
@@ -1820,7 +1843,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Mastery over the foremost text of analytical Islamic jurisprudence and linguistic philosophy.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 90,
     duration_fa: '۷۲ ساعت',
     duration_ar: '٧٢ ساعة',
@@ -1852,7 +1875,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Analytical and contemporary structuring of legal methodology by Shahid Baqir al-Sadr.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 65,
     duration_fa: '۵۰ ساعت',
     duration_ar: '٥٠ ساعة',
@@ -1888,7 +1911,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Advanced Kharij jurisprudence seminars on prohibited commercial transactions.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 95,
     duration_fa: '۷۵ ساعت',
     duration_ar: '٧٥ ساعة',
@@ -1920,7 +1943,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'The legal doctrines of contractual capacity, intent, and agency in Islamic civil law.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 60,
     duration_fa: '۴۸ ساعت',
     duration_ar: '٤٨ ساعة',
@@ -1952,7 +1975,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Contractual warranties and remedies under the law of sales.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 50,
     duration_fa: '۴۰ ساعت',
     duration_ar: '٤٠ ساعة',
@@ -1986,7 +2009,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Interactive live seminar with limited enrollment (30 seats) analyzing complex metaphysical texts.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 12,
     duration_fa: '۱۸ ساعت آنلاین',
     duration_ar: '١٨ ساعة مباشرة',
@@ -2022,7 +2045,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Specialized live webinar tackling physicalism and consciousness through Islamic presence knowledge.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 8,
     duration_fa: '۱۲ ساعت آنلاین',
     duration_ar: '١٢ ساعة مباشرة',
@@ -2057,7 +2080,7 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     desc_en: 'Weekly live interactive sessions on inner wayfaring and spiritual perfection.',
     instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
     instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-    instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+    instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
     episodes_count: 15,
     duration_fa: '۲۲ ساعت آنلاین',
     duration_ar: '٢٢ ساعة مباشرة',

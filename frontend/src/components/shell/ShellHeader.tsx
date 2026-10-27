@@ -22,7 +22,7 @@ export interface ShellHeaderProps {
   onOpenMobileNav?: () => void;
 }
 
-const SCHOLAR_NAME = 'حجت الاسلام دکتر زنجیر زن حسینی';
+import { getScholarName } from '@/lib/constants';
 
 const languages: { code: SupportedLang; label: string; dir: 'rtl' | 'ltr' }[] = [
   { code: 'fa', label: 'فارسی', dir: 'rtl' },
@@ -96,7 +96,7 @@ export function ShellHeader({
         <div className="hidden xl:flex items-center gap-2 text-zinc-500 pe-2">
           <ShieldCheck className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
           <span className="font-medium text-zinc-800 dark:text-zinc-200 text-xs">
-            {SCHOLAR_NAME}
+            {getScholarName(currentLang)}
           </span>
         </div>
 

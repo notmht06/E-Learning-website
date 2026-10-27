@@ -41,7 +41,7 @@ export default function BooksPage() {
         page_title: dict.catalog_books_page_title || 'Monographs, Treatises & Philosophical Works',
         page_subtitle:
           dict.catalog_books_page_subtitle ||
-          'Collection of scholarly treatises, research volumes, and manuscripts authored by Hujjat al-Islam Dr. Zanjirzan Hosseini.',
+          'Collection of scholarly treatises, research volumes, and manuscripts authored by Hojjat al-Islam Dr. Zanjirzan Hosseini.',
         search_ph: dict.catalog_search_books_ph || 'Search in book titles and treatises...',
         all_categories: 'All Categories',
         books_count_suffix: 'Titles',

@@ -21,7 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useCart } from '@/context/CartContext';
-import { SCHOLAR_NAME, PLATFORM_NAME } from '@/lib/constants';
+import { SCHOLAR_NAME, PLATFORM_NAME, getScholarName } from '@/lib/constants';
 import { SupportedLang } from '@/locales';
 
 interface FloatingNavigationPillProps {
@@ -100,7 +100,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
         <Link
           href="/"
           className="flex items-center gap-2 sm:gap-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A532B] rounded-full pe-1"
-          title={SCHOLAR_NAME}
+          title={dict.scholar_name || getScholarName(currentLang)}
         >
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#8A532B] text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform duration-200 shrink-0">
             <BookOpen className="w-4 h-4 text-[#FAF8F5]" />
@@ -110,7 +110,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               {dict.pill_nav_brand || PLATFORM_NAME}
             </span>
             <span className="text-xs sm:text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] truncate max-w-[130px] sm:max-w-[220px] md:max-w-[280px]">
-              {SCHOLAR_NAME}
+              {dict.scholar_name || getScholarName(currentLang)}
             </span>
           </div>
         </Link>

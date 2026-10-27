@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Play,
   Pause,
@@ -19,6 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { apiClient } from '@/services/apiClient';
 import { triggerTactileHaptic } from '@/lib/haptics';
+import { getCourseSubtitles, getActiveSubtitleText, SubtitleLang } from '@/lib/subtitles';
 
 export interface AudioVideoPlayerEngineProps {
   courseId?: string;
@@ -49,7 +50,12 @@ export function AudioVideoPlayerEngine({
 }: AudioVideoPlayerEngineProps) {
   const { toLocale, dict, currentLang } = useLanguage();
   const { user } = useAuth();
-  const { isPlaying: isGlobalIslandPlaying, togglePlay: toggleGlobalIsland } = usePlayer();
+  const {
+    isPlaying: isGlobalIslandPlaying,
+    togglePlay: toggleGlobalIsland,
+    subtitleLang,
+    setSubtitleLang,
+  } = usePlayer();
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -67,12 +73,29 @@ export function AudioVideoPlayerEngine({
   const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
   const [serverWatermark, setServerWatermark] = useState<string | null>(null);
   const [syncIndicator, setSyncIndicator] = useState(false);
+  const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState<
     'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
   >('top-end');
 
   const lastSyncedSecRef = useRef<number>(0);
   const currentTimeRef = useRef<number>(initialPositionSec || 0);
+
+  const subtitleCues = useMemo(() => {
+    return getCourseSubtitles(courseId, chapterId, duration);
+  }, [courseId, chapterId, duration]);
+
+  const activeSubtitle = getActiveSubtitleText(subtitleCues, currentTime, subtitleLang);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (isSubtitleMenuOpen && !(e.target as HTMLElement).closest('.cc-menu-container')) {
+        setIsSubtitleMenuOpen(false);
+      }
+    };
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, [isSubtitleMenuOpen]);
 
   useEffect(() => {
     currentTimeRef.current = currentTime;
@@ -442,6 +465,22 @@ export function AudioVideoPlayerEngine({
             </div>
           </div>
         )}
+
+        {/* On-Stage Multilingual Subtitle Display (Coursera / Udemy Inspired) */}
+        {activeSubtitle && (
+          <div className="absolute bottom-6 inset-x-4 sm:inset-x-12 z-25 flex justify-center pointer-events-none animate-in fade-in duration-200">
+            <div
+              className={`max-w-2xl px-4 py-2.5 rounded-xl bg-black/85 backdrop-blur-xs border border-[#8A532B]/50 shadow-2xl text-center select-text pointer-events-auto ${
+                subtitleLang === 'en'
+                  ? 'font-sans text-xs sm:text-sm text-[#FAF8F5] leading-relaxed'
+                  : 'font-sans text-xs sm:text-sm text-[#FAF8F5] leading-loose'
+              }`}
+              dir={subtitleLang === 'en' ? 'ltr' : 'rtl'}
+            >
+              <span className="font-medium drop-shadow-md">{activeSubtitle}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Control Bar */}
@@ -469,7 +508,10 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={() => skipSeconds(-10)}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.player_skip_10s || '۱۰ ثانیه به عقب'}
+              title={
+                dict.player_skip_10s ||
+                (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
+              }
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -491,7 +533,10 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={() => skipSeconds(30)}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.player_skip_30s || '۳۰ ثانیه به جلو'}
+              title={
+                dict.player_skip_30s ||
+                (currentLang === 'en' ? '30s Forward' : currentLang === 'ar' ? '٣٠ ثانية للأمام' : '۳۰ ثانیه به جلو')
+              }
             >
               <RotateCw className="w-4 h-4" />
             </button>
@@ -517,6 +562,81 @@ export function AudioVideoPlayerEngine({
               {speed}x
             </button>
 
+            {/* Subtitle / Closed Caption (CC) Switcher */}
+            <div className="relative cc-menu-container">
+              <button
+                type="button"
+                onClick={() => setIsSubtitleMenuOpen((prev) => !prev)}
+                className={`px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                  subtitleLang !== 'off'
+                    ? 'bg-[#8A532B] border-[#C58B43] text-[#FAF8F5]'
+                    : 'bg-[#0C0D0E] border-[#22242A] text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                }`}
+                title={
+                  dict.player_subtitles ||
+                  (currentLang === 'en'
+                    ? 'Subtitles / Closed Captions'
+                    : currentLang === 'ar'
+                    ? 'الترجمة والشرح النصي'
+                    : 'زیرنویس همگام')
+                }
+                aria-label="Closed Captions"
+              >
+                <span className="text-[11px] tracking-wider uppercase font-black">CC</span>
+                {subtitleLang !== 'off' && (
+                  <span className="text-[10px] uppercase text-[#E6CA85] font-mono">
+                    {subtitleLang}
+                  </span>
+                )}
+              </button>
+
+              {/* CC Language Selector Popover Menu */}
+              {isSubtitleMenuOpen && (
+                <div className="absolute bottom-full mb-2 end-0 z-50 w-44 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-3 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider border-b border-[#22242A]">
+                    {currentLang === 'en'
+                      ? 'Subtitles (CC)'
+                      : currentLang === 'ar'
+                      ? 'الترجمة النصية'
+                      : 'انتخاب زبان زیرنویس'}
+                  </div>
+                  {[
+                    {
+                      code: 'off',
+                      label:
+                        currentLang === 'en'
+                          ? 'Off'
+                          : currentLang === 'ar'
+                          ? 'إيقاف'
+                          : 'خاموش',
+                    },
+                    { code: 'fa', label: 'فارسی (FA)' },
+                    { code: 'ar', label: 'العربية (AR)' },
+                    { code: 'en', label: 'English (EN)' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      onClick={() => {
+                        setSubtitleLang(opt.code as SubtitleLang);
+                        setIsSubtitleMenuOpen(false);
+                      }}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-start cursor-pointer hover:bg-zinc-800 transition ${
+                        subtitleLang === opt.code
+                          ? 'text-[#C58B43] font-bold'
+                          : 'text-zinc-300'
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {subtitleLang === opt.code && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Audio / Video Mode Switcher */}
             <div className="inline-flex p-1 bg-[#0C0D0E] border border-[#22242A] rounded-xl text-xs font-bold">
               <button
@@ -528,7 +648,7 @@ export function AudioVideoPlayerEngine({
                     : 'text-zinc-400 hover:text-[#FAF8F5]'
                 }`}
               >
-                {dict.player_mode_audio || 'صوت ۴۸kHz'}
+                {dict.player_mode_audio || (currentLang === 'en' ? 'Audio 48kHz' : currentLang === 'ar' ? 'صوت ٤٨kHz' : 'صوت ۴۸kHz')}
               </button>
               <button
                 type="button"
@@ -539,7 +659,7 @@ export function AudioVideoPlayerEngine({
                     : 'text-zinc-400 hover:text-[#FAF8F5]'
                 }`}
               >
-                {dict.player_mode_video || 'ویدیو'}
+                {dict.player_mode_video || (currentLang === 'en' ? 'Video' : currentLang === 'ar' ? 'فيديو' : 'ویدیو')}
               </button>
             </div>
 

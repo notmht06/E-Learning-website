@@ -19,6 +19,7 @@ import {
 import { usePlayer } from '@/context/PlayerContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { SupportedLang } from '@/lib/data';
+import { getLocalizedChapterTitle } from '@/lib/localization';
 
 interface AudioPlayerIslandProps {
   currentLang?: SupportedLang;
@@ -111,14 +112,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
     return toLocale(formatted);
   };
 
-  const chapterTitle =
-    (currentChapter as any)[`title_${currentLang}`] ||
-    (currentLang === 'fa'
-      ? currentChapter.title_fa
-      : currentLang === 'ar'
-      ? currentChapter.title_ar
-      : currentChapter.title_en) ||
-    currentChapter.title_fa;
+  const chapterTitle = getLocalizedChapterTitle(currentChapter, currentLang);
 
   const courseTitle =
     (currentCourse as any)[`title_${currentLang}`] ||
@@ -163,7 +157,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
           <div className="space-y-1 max-h-52 overflow-y-auto pe-1">
             {currentCourse.chapters.map((ch, idx) => {
               const active = idx === currentChapterIndex;
-              const chTitle = (ch as any)[`title_${currentLang}`] || ch.title_fa;
+              const chTitle = getLocalizedChapterTitle(ch, currentLang);
               return (
                 <div
                   key={ch.id}
@@ -221,11 +215,14 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={() => skip(-10)}
               className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-neutral-800 text-stone-500 hover:text-stone-900 dark:hover:text-white transition items-center justify-center cursor-pointer group active:scale-95"
-              title={dict.player_skip_10s || '۱۰ ثانیه به عقب'}
+              title={
+                dict.player_skip_10s ||
+                (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
+              }
             >
               <RotateCcw className="w-4 h-4" />
               <span className="absolute -bottom-0.5 text-[8px] font-bold font-num opacity-70 group-hover:opacity-100">
-                ۱۰
+                {toLocale(10)}
               </span>
             </button>
 
@@ -246,11 +243,14 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={() => skip(30)}
               className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-neutral-800 text-stone-500 hover:text-stone-900 dark:hover:text-white transition items-center justify-center cursor-pointer group active:scale-95"
-              title={dict.player_skip_30s || '۳۰ ثانیه به جلو'}
+              title={
+                dict.player_skip_30s ||
+                (currentLang === 'en' ? '30s Forward' : currentLang === 'ar' ? '٣٠ ثانية للأمام' : '۳۰ ثانیه به جلو')
+              }
             >
               <RotateCw className="w-4 h-4" />
               <span className="absolute -bottom-0.5 text-[8px] font-bold font-num opacity-70 group-hover:opacity-100">
-                ۳۰
+                {toLocale(30)}
               </span>
             </button>
           </div>

@@ -335,6 +335,7 @@ class ApiClient {
       subject_filter?: string;
       file_context?: string;
       file_name?: string;
+      lang?: string;
     }) =>
       this.request<{
         reply: string;
@@ -361,6 +362,7 @@ class ApiClient {
         subject_filter?: string;
         file_context?: string;
         file_name?: string;
+        lang?: string;
       },
       onChunk?: (chunkOrAccumulated: string) => void,
       onDone?: (terminalData: {

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { AudioCourse, coursesDatabase } from '@/lib/data';
+import { SubtitleLang } from '@/lib/subtitles';
 
 interface PlayerContextType {
   currentCourse: AudioCourse;
@@ -12,6 +13,7 @@ interface PlayerContextType {
   playbackRate: number;
   isMuted: boolean;
   isPlaylistOpen: boolean;
+  subtitleLang: SubtitleLang;
   playTrack: (course: AudioCourse, chapterIndex?: number) => void;
   togglePlay: () => void;
   seek: (seconds: number) => void;
@@ -20,6 +22,7 @@ interface PlayerContextType {
   toggleMute: () => void;
   togglePlaylist: () => void;
   setChapterIndex: (index: number) => void;
+  setSubtitleLang: (lang: SubtitleLang) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -35,6 +38,24 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isPlaylistOpen, setIsPlaylistOpen] = useState<boolean>(false);
+  const [subtitleLang, setSubtitleLangState] = useState<SubtitleLang>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zan_sub_lang');
+      if (saved === 'off' || saved === 'fa' || saved === 'ar' || saved === 'en') return saved;
+    }
+    return 'off';
+  });
+
+  const setSubtitleLang = (lang: SubtitleLang) => {
+    setSubtitleLangState(lang);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('zan_sub_lang', lang);
+      } catch (e) {
+        console.debug('Failed to save subtitle pref:', e);
+      }
+    }
+  };
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -184,6 +205,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         toggleMute,
         togglePlaylist,
         setChapterIndex,
+        subtitleLang,
+        setSubtitleLang,
       }}
     >
       <audio

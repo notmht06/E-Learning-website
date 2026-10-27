@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Check, Headphones, Lock } from 'lucide-react';
 import { AudioChapter } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { getLocalizedChapterTitle } from '@/lib/localization';
 
 export interface CoursePlaylistSidebarProps {
   courseId?: string;
@@ -49,11 +50,7 @@ export function CoursePlaylistSidebar({
           const isPreview = !!ch.isFreePreview || idx === 0;
           const isLocked = !isEnrolled && !isPreview;
 
-          const title = currentLang === 'ar'
-            ? ch.title_ar || ch.title_fa
-            : currentLang === 'en'
-            ? ch.title_en || ch.title_fa
-            : ch.title_fa;
+          const title = getLocalizedChapterTitle(ch, currentLang);
 
           return (
             <li key={ch.id} className="relative">
@@ -70,7 +67,12 @@ export function CoursePlaylistSidebar({
                 type="button"
                 onClick={() => {
                   if (isLocked) {
-                    alert('این جلسه نیازمند ثبت‌نام در دوره است.');
+                    const lockAlert = currentLang === 'en'
+                      ? 'This session requires enrollment in the course.'
+                      : currentLang === 'ar'
+                      ? 'هذه الجلسة تتطلب التسجيل في الدورة.'
+                      : 'این جلسه نیازمند ثبت‌نام در دوره است.';
+                    alert(lockAlert);
                   } else {
                     onSelectChapter(idx);
                   }
@@ -119,7 +121,11 @@ export function CoursePlaylistSidebar({
                     <span className="font-num">{toLocale(ch.duration)}</span>
                     {isLocked ? (
                       <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                        نیازمند ثبت‌نام در دوره
+                        {currentLang === 'en'
+                          ? 'Enrollment Required'
+                          : currentLang === 'ar'
+                          ? 'يتطلب التسجيل'
+                          : 'نیازمند ثبت‌نام در دوره'}
                       </span>
                     ) : isPreview ? (
                       <span className="rounded bg-[#8A532B]/10 px-2 py-0.5 font-bold text-[#8A532B] dark:text-[#C58B43]">

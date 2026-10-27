@@ -43,16 +43,90 @@ def _normalize_persian(text: str) -> str:
     return text.lower().strip()
 
 
+CROSS_LINGUAL_SYNONYMS = {
+    "asfar": ["اسفار", "صدرالمتالهین", "ملاصدرا", "اصالت وجود"],
+    "existence": ["وجود", "اصالت وجود", "هستی", "عینی"],
+    "principality": ["اصالت", "اصالت وجود"],
+    "proofs": ["برهان", "براهین", "استدلال"],
+    "proof": ["برهان", "استدلال"],
+    "quiddity": ["ماهیت", "اعتباریت"],
+    "suhrawardi": ["سهروردی", "اشراق", "انوار"],
+    "illumination": ["اشراق", "انوار"],
+    "illuminationism": ["اشراق", "انوار"],
+    "lights": ["انوار", "نور"],
+    "light": ["نور", "انوار"],
+    "sadra": ["صدرالمتالهین", "اسفار"],
+    "tabatabai": ["طباطبایی", "بدایة"],
+    "bidayah": ["بدایة", "بدایه", "طباطبایی"],
+    "nihayah": ["نهایة", "نهایه"],
+    "logic": ["منطق", "مبادی"],
+    "jurisprudence": ["اصول", "فقه"],
+    "roadmap": ["سیر", "مطالعاتی"],
+    "sabzawari": ["سبزواری", "منظومه"],
+    "manzumah": ["منظومه", "سبزواری"],
+    "fusus": ["فصوص", "ابن عربی"],
+    "qaysari": ["قیصری"],
+    "tajrid": ["تجرید"],
+    "ishraq": ["اشراق"],
+    "primacy": ["اصالت", "اصالت وجود"],
+    "gradation": ["تشکیک", "مراتب"],
+    "analogical": ["تشکیک", "مشکک"],
+    "knowledge": ["علم", "تصور", "تصدیق", "حضوری"],
+    "presence": ["حضوری", "شهود"],
+    "conception": ["تصور"],
+    "assent": ["تصدیq", "تصدیقات"],
+    "motion": ["حرکت", "حرکت جوهری"],
+    "substantial": ["جوهری", "حرکت"],
+    "sincere": ["صدیقین", "برهان صدیقین"],
+    "soul": ["نفس", "تجرد"],
+    "causality": ["علت", "معلول", "علیت"],
+    "cause": ["علت", "معلول"],
+    "effect": ["معلول", "اثر"],
+    "unity": ["وحدت", "توحید", "تشکیک"],
+    "multiplicity": ["کثرت"],
+    "essence": ["ماهیت", "ذات"],
+    "contingency": ["امکان", "فقر وجودی"],
+    "necessity": ["وجوب", "ضرورت"],
+    "avicenna": ["ابن سینا", "شفا", "اشارات", "مشاء"],
+    "peripatetic": ["مشاء", "سینوی"],
+    "demonstration": ["برهان", "استدلال"],
+    "treatise": ["رساله", "کتاب", "مصنف"],
+    "course": ["دوره", "درس"],
+    "أصالة": ["اصالت"],
+    "الوجود": ["وجود"],
+    "الأسفار": ["اسفار"],
+    "براهين": ["براهین", "برهان"],
+    "الماهية": ["ماهیت"],
+    "السهروردي": ["سهروردی"],
+    "الأنوار": ["انوار"],
+    "المتعالية": ["متعالیه"],
+    "المنطق": ["منطق"],
+    "التشكيك": ["تشکیک"],
+    "الحركة": ["حرکت"],
+    "الجوهرية": ["جوهری"],
+    "الصديقين": ["صدیقین"],
+    "العلم": ["علم"],
+    "الحضوري": ["حضوری"],
+}
+
+
 def _tokenize(text: str) -> List[str]:
-    """Tokenizes normalized Persian text into unique stems/words excluding basic stop-words."""
+    """Tokenizes normalized text into unique stems/words excluding stop-words with multilingual expansion."""
     normalized = _normalize_persian(text)
     words = re.findall(r"\b[\u0600-\u06FF\w]{2,}\b", normalized)
     stopwords = {
         "در", "به", "از", "که", "این", "آن", "با", "برای", "را", "یک", "تا",
         "بر", "هم", "نیز", "چون", "چه", "اگر", "یا", "اما", "ولی", "پس", "هر",
-        "خود", "شده", "شد", "شدند", "است", "هستند", "بود", "بودند", "شدن"
+        "خود", "شده", "شد", "شدند", "است", "هستند", "بود", "بودند", "شدن",
+        "what", "are", "the", "for", "in", "of", "and", "is", "to", "how", "does"
     }
-    return [w for w in words if w not in stopwords]
+    tokens = [w for w in words if w not in stopwords]
+    expanded: List[str] = list(tokens)
+    for w in tokens:
+        syns = CROSS_LINGUAL_SYNONYMS.get(w.lower())
+        if syns:
+            expanded.extend(syns)
+    return expanded
 
 
 class RAGEngine:

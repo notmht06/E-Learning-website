@@ -14,6 +14,7 @@ class AIChatRequest(BaseModel):
     subject_filter: Optional[str] = Field(default=None, description="Optional discipline filter (e.g. حکمت متعالیه, فلسفه اشراق)")
     file_context: Optional[str] = Field(default=None, description="Extracted content from uploaded PDF/document")
     file_name: Optional[str] = Field(default=None, description="Name of the uploaded file")
+    lang: Optional[str] = Field(default=None, description="Target response language ('fa', 'en', 'ar')")
 
 
 class AICitation(BaseModel):

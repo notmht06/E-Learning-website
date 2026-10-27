@@ -25,7 +25,6 @@ import {
   DashboardOrdersTab,
   DashboardCertificatesTab,
   DashboardSecurityTab,
-  DashboardSupportTab,
 } from '@/components/dashboard/tabs';
 
 const BookReader3D = dynamic(
@@ -40,8 +39,7 @@ export type DashboardTab =
   | 'notes'
   | 'orders'
   | 'certificates'
-  | 'security'
-  | 'support';
+  | 'security';
 
 const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
@@ -52,7 +50,6 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'سفارشات پستی و رهگیری مرسولات',
     certificates: 'گواهی‌نامه‌های رسمی پایان دوره',
     security: 'امنیت حساب و دستگاه‌های متصل (DRM)',
-    support: 'پرسش‌های علمی و ارتباط با استاد',
   },
   ar: {
     overview: 'لوحة الباحث العلمي',
@@ -62,7 +59,6 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'الطلبات البريدية وتتبع الشحنات',
     certificates: 'شهادات إتمام الدورات الرسمية',
     security: 'الأمان وإدارة الأجهزة المتصلة',
-    support: 'الاستفسارات العلمية والتواصل مع الأستاذ',
   },
   en: {
     overview: 'Student Scholarly Dashboard',
@@ -72,7 +68,6 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'Postal Orders & Tracking',
     certificates: 'Official Academic Certificates',
     security: 'Account Security & Active Devices',
-    support: 'Academic Inquiries & Faculty Q&A',
   },
 };
 
@@ -85,7 +80,6 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'سفارشات پستی',
     certificates: 'گواهی‌نامه‌ها',
     security: 'امنیت و نشست‌ها',
-    support: 'ارتباط علمی',
   },
   ar: {
     overview: 'لوحة الباحث',
@@ -95,7 +89,6 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'الطلبات البريدية',
     certificates: 'الشهادات',
     security: 'الأجهزة المتصلة',
-    support: 'التواصل العلمي',
   },
   en: {
     overview: 'Research Workspace',
@@ -105,7 +98,6 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'Postal Orders',
     certificates: 'Certificates',
     security: 'Active Devices',
-    support: 'Academic Support',
   },
 };
 
@@ -138,7 +130,6 @@ export default function UserDashboardPage() {
     { id: 'orders', label: t('dash_tab_orders', labels.orders), icon: Package },
     { id: 'certificates', label: t('dash_tab_certificates', labels.certificates), icon: Award },
     { id: 'security', label: t('dash_tab_security', labels.security), icon: ShieldCheck },
-    { id: 'support', label: t('dash_tab_support', labels.support), icon: MessageSquare },
   ];
 
   const portalBadge =
@@ -182,7 +173,6 @@ export default function UserDashboardPage() {
         {activeTab === 'orders' && <DashboardOrdersTab />}
         {activeTab === 'certificates' && <DashboardCertificatesTab />}
         {activeTab === 'security' && <DashboardSecurityTab />}
-        {activeTab === 'support' && <DashboardSupportTab />}
       </ShellLayout>
 
       {isReaderOpen && (

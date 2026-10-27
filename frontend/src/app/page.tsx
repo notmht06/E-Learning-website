@@ -13,7 +13,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
 import { booksDatabase } from '@/lib/data';
-import { SCHOLAR_NAME } from '@/lib/constants';
+import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
 
 export default function HomePage() {
   const { currentLang, dict } = useLanguage();
@@ -85,7 +85,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-0.5 text-center sm:text-start">
             <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              {SCHOLAR_NAME}
+              {dict.scholar_name || getScholarName(currentLang)}
             </h4>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}

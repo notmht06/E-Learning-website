@@ -69,13 +69,76 @@ class AIScholarlyService:
             "temperature": settings.AI_TEMPERATURE,
         }
 
-    def _build_system_prompt_prefix(self) -> str:
+    def _detect_language(self, msg: str, requested_lang: Optional[str] = None) -> str:
         """
-        Static system prompt for DeepSeek Context Caching (prompts > 64 tokens get 90% discount).
-        Sets up the persona and strict closed-book boundaries.
+        Detects active language: 'fa', 'ar', or 'en'.
+        If client explicitly queries in English, responds in English.
+        If client UI is set to 'en', responds in English.
+        If client queries in Arabic, responds in Arabic.
+        If client UI is set to 'ar', responds in Arabic.
+        Otherwise defaults to Persian ('fa').
         """
+        clean_msg = (msg or "").strip()
+        req_lang = (requested_lang or "").lower().strip()
+
+        latin_chars = len(re.findall(r"[a-zA-Z]", clean_msg))
+        arabic_chars = len(re.findall(r"[\u0600-\u06FF]", clean_msg))
+        has_arabic_indicators = bool(re.search(r"\b(ما هي|لماذا|كيف|هل|أين|من هو|براهين|أصالة|الحكمة)\b|[ةى]", clean_msg))
+        has_persian_letters = bool(re.search(r"[گچپژ]", clean_msg))
+
+        # Query is written in English
+        if latin_chars > 3 and latin_chars > arabic_chars:
+            return "en"
+
+        # Explicit UI language is English
+        if req_lang == "en":
+            return "en"
+
+        # Query is written in Arabic
+        if has_arabic_indicators and not has_persian_letters:
+            return "ar"
+
+        # Explicit UI language is Arabic
+        if req_lang == "ar":
+            return "ar"
+
+        return "fa"
+
+    def get_scholar_name(self, lang: str = "fa") -> str:
+        if lang == "en":
+            return "Hojjat al-Islam Dr. Zanjirzan Hosseini"
+        if lang == "ar":
+            return "حجة الإسلام الدكتور زنجير زن حسيني"
+        return "حجت الاسلام دکتر زنجیر زن حسینی"
+
+    def _build_system_prompt_prefix(self, lang: str = "fa") -> str:
+        """
+        Multilingual system prompt setting up the persona, strict closed-book boundaries,
+        and authoritative grounding in the scholar's official works.
+        """
+        scholar = self.get_scholar_name(lang)
+        if lang == "en":
+            return (
+                f"You are «HekmatYar», the Scholarly AI Assistant of the official platform of {scholar}.\n"
+                "Fundamental Directives:\n"
+                "1. You answer EXCLUSIVELY and strictly based on the transcribed lectures, audio, video recordings, and published treatises of the scholar.\n"
+                "2. Formulate your entire response in rigorous, dignified academic English with correct philosophical terminology (Sadrian, Illuminationist, Peripatetic).\n"
+                "3. Provide precise citations (treatise or course name, session or page number, and timestamp if available).\n"
+                "4. Maintain a demonstrative, objective, and scholarly tone.\n"
+                "5. If an inquiry has no connection to the scholar's teachings or books, politely state that you only address matters within the corpus of the scholar."
+            )
+        if lang == "ar":
+            return (
+                f"أنت «حكمت‌یار»، المساعد العلمي والبرهاني الذكي في المنصة الرسمية لسماحة {scholar}.\n"
+                "التعليمات الأساسية:\n"
+                "١. تجيب حصراً واعتماداً تاماً على تقريرات، تسجيلات (صوت وفيديو) ومؤلفات الأستاذ.\n"
+                "٢. تكون الإجابة بلغة عربية فصحى برهانية ورصينة تليق بالحلقات والبحوث العالية.\n"
+                "٣. تذكر المصادر بدقة مع رقم الجلسة أو الصفحة والتوقيت الزمني إن وجد.\n"
+                "٤. النبرة استدلالية علمية وقورة بعيدة عن التكلف.\n"
+                "٥. إذا كان السؤال خارجاً عن نطاق دروس وآثار الأستاذ، بيّن بلطف أن الإجابة محصورة في منظومة آثار الأستاذ."
+            )
         return (
-            f"شما «حکمت‌یار»، دستیار هوشمند علمی، برهانی و فلسفی پایگاه رسمی {self.scholar_name} هستید.\n"
+            f"شما «حکمت‌یار»، دستیار هوشمند علمی، برهانی و فلسفی پایگاه رسمی {scholar} هستید.\n"
             "دستورالعمل‌های بنیادین:\n"
             "۱. شما منحصراً و اکیداً بر پایه تقریرات، صوت‌ها، ویدیوها و کتاب‌های استاد به پرسش‌ها پاسخ می‌دهید.\n"
             "۲. از استفاده از افعال اداری فرسوده نظیر «می‌باشد» و «می‌گردد» مطلقاً خودداری کرده و منحصراً از «است» و «می‌شود» استفاده فرمایید.\n"
@@ -105,92 +168,276 @@ class AIScholarlyService:
         matched_chunks: List[Dict[str, Any]],
         file_context: Optional[str] = None,
         file_name: Optional[str] = None,
+        lang: str = "fa",
     ) -> AIChatResponse:
         """
         Generates deterministic, high-accuracy scholarly responses locally
-        grounded in the scholar's multimedia corpus (zero hallucination, zero cost).
+        grounded in the scholar's multimedia corpus in the requested language (fa, ar, en).
         """
-        if not matched_chunks:
-            if settings.AI_STRICT_CORPUS_ONLY:
-                reply_body = (
-                    f"پرسش شما خارج از قلمرو مباحث ارائه‌شده در دروس و آثار مکتوب و شفاهی {self.scholar_name} است. "
-                    "دستیار حکمت‌یار منحصراً موظف به تبیین و پاسخگویی بر پایه تقریرات، صوت‌ها، ویدیوها و کتب مصنف استاد است. "
-                    "لطفاً پرسش خود را پیرامون موضوعات مطرح‌شده در ۲۱ دوره فلسفی، اصولی یا آثار مکتوب ایشان مطرح فرمایید."
-                )
-            else:
-                reply_body = (
-                    f"پرسش شما در حوزه حکمت و علوم عقلانی بررسی شد. از منظر منظومه معرفتی {self.scholar_name}:\n\n"
-                    f"در پاسخ به پرسش «{user_msg}»، توجه به این نکته اساسی ضروری است که در دستگاه فلسفه برهانی اسلامی، "
-                    "هرگونه تحلیل باید بر پایه تعریف دقیق موضوع، تفکیک مفهوم ذهنی از واقعیت بیرونی و رعایت اصول منطقی استدلال باشد.\n\n"
-                    "شما می‌توانید موضوع مورد نظر را از طریق کاتالوگ دوره‌های پایگاه و بخش کتاب‌ها پیگیری فرمایید."
-                )
+        scholar = self.get_scholar_name(lang)
 
-            citations = [
-                AICitation(
-                    source="منظومه اجتهادی علوم عقلی و نقلی",
-                    page_or_session="کرسی تدریس حجت الاسلام دکتر زنجیر زن حسینی",
-                    snippet="احیای تفکر عقلانی بر پایه بازخوانی متون کهن با روش‌های دقیق منطقی و استدلالی است.",
-                    media_type="text",
-                )
-            ]
-            followups = [
-                "براهین اصالت وجود در اسفار اربعه چیست؟",
-                "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
-                "سیر مطالعاتی پیشنهادی برای شروع فلسفه اسلامی چیست؟",
-            ]
+        if not matched_chunks:
+            if lang == "en":
+                if settings.AI_STRICT_CORPUS_ONLY:
+                    reply_body = (
+                        f"Your inquiry lies outside the scope of the topics presented in the courses and official treatises of {scholar}. "
+                        "The HekmatYar assistant is strictly authorized to explain and answer queries grounded in the lectures, audio-visual recordings, and authored books of the scholar. "
+                        "Please frame your question around subjects covered in his 21 philosophy and principles curricula."
+                    )
+                else:
+                    reply_body = (
+                        f"Your inquiry regarding «{user_msg}» was analyzed within Islamic rational philosophy. From the epistemological system of {scholar}:\n\n"
+                        "In demonstrative philosophy, every rigorous inquiry requires exact delimitation of subject matter, ontological separation between mental concepts and extra-mental reality, and adherence to formal logical demonstration.\n\n"
+                        "You may explore this topic further through the comprehensive course catalog and treatises."
+                    )
+                citations = [
+                    AICitation(
+                        source="Curriculum of Rational & Transmitted Sciences",
+                        page_or_session=f"Official Chair of {scholar}",
+                        snippet="Revival of rational discourse based upon re-reading classical texts with rigorous logical demonstration.",
+                        media_type="text",
+                    )
+                ]
+                followups = [
+                    "What are the proofs for the Principality of Existence in Asfar?",
+                    "What is the structure of lights in Suhrawardi’s Illuminationism?",
+                    "What is the recommended study roadmap for Islamic philosophy?",
+                ]
+            elif lang == "ar":
+                if settings.AI_STRICT_CORPUS_ONLY:
+                    reply_body = (
+                        f"سؤالكم خارج عن نطاق الأبحاث المطروحة في دروس ومؤلفات سماحة {scholar}. "
+                        "المساعد حكمت‌یار مكلّف حصراً بالبيان والإجابة بالاستناد إلى تقريرات، تسجيلات وكتب الأستاذ المعتمدة. "
+                        "يرجى طرح الأسئلة المتعلقة بالدورات العلمية الـ ۲۱ أو مؤلفاته الفلسفية والأصولية."
+                    )
+                else:
+                    reply_body = (
+                        f"تمت دراسة استفساركم حول «{user_msg}» في ضوء الحكمة والعلوم العقلية الإسلامية، ومن منظور المنظومة المعرفية لسماحة {scholar}:\n\n"
+                        "في الفلسفة البرهانية، يقتضي كل تحليل رصين تحديد الموضوع بدقة، والتمييز بين المفهوم الذهني والحقيقة الخارجية، ومراعاة الأصول المنطقية في الاستدلال.\n\n"
+                        "يمكنكم متابعة هذا المبحث عبر قائمة الدورات والكتب المحققة في المنصة."
+                    )
+                citations = [
+                    AICitation(
+                        source="المنظومة الاجتهادية للعلوم العقلية والنقلية",
+                        page_or_session=f"كرسي تدريس {scholar}",
+                        snippet="إحياء الفكر البرهاني على أساس إعادة قراءة النصوص الأصيلة بمنهجية استدلالية دقيقة.",
+                        media_type="text",
+                    )
+                ]
+                followups = [
+                    "ما هي براهين أصالة الوجود في الأسفار الأربعة؟",
+                    "كيف ينتظم عالم الأنوار في حكمة الإشراق للسهروردي؟",
+                    "ما هو السير الدراسي المقترح للبدء في الفلسفة الإسلامية؟",
+                ]
+            else:
+                if settings.AI_STRICT_CORPUS_ONLY:
+                    reply_body = (
+                        f"پرسش شما خارج از قلمرو مباحث ارائه‌شده در دروس و آثار مکتوب و شفاهی {scholar} است. "
+                        "دستیار حکمت‌یار منحصراً موظف به تبیین و پاسخگویی بر پایه تقریرات، صوت‌ها، ویدیوها و کتب مصنف استاد است. "
+                        "لطفاً پرسش خود را پیرامون موضوعات مطرح‌شده در ۲۱ دوره فلسفی، اصولی یا آثار مکتوب ایشان مطرح فرمایید."
+                    )
+                else:
+                    reply_body = (
+                        f"پرسش شما در حوزه حکمت و علوم عقلانی بررسی شد. از منظر منظومه معرفتی {scholar}:\n\n"
+                        f"در پاسخ به پرسش «{user_msg}»، توجه به این نکته اساسی ضروری است که در دستگاه فلسفه برهانی اسلامی، "
+                        "هرگونه تحلیل باید بر پایه تعریف دقیق موضوع، تفکیک مفهوم ذهنی از واقعیت بیرونی و رعایت اصول منطقی استدلال باشد.\n\n"
+                        "شما می‌توانید موضوع مورد نظر را از طریق کاتالوگ دوره‌های پایگاه و بخش کتاب‌ها پیگیری فرمایید."
+                    )
+                citations = [
+                    AICitation(
+                        source="منظومه اجتهادی علوم عقلی و نقلی",
+                        page_or_session=f"کرسی تدریس {scholar}",
+                        snippet="احیای تفکر عقلانی بر پایه بازخوانی متون کهن با روش‌های دقیق منطقی و استدلالی است.",
+                        media_type="text",
+                    )
+                ]
+                followups = [
+                    "براهین اصالت وجود در اسفار اربعه چیست؟",
+                    "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
+                    "سیر مطالعاتی پیشنهادی برای شروع فلسفه اسلامی چیست؟",
+                ]
+
             return AIChatResponse(
                 reply=reply_body,
                 citations=citations,
                 suggested_followups=followups,
-                scholar_identity=self.scholar_name,
+                scholar_identity=scholar,
             )
 
         top_match = matched_chunks[0]
-        reply_lead = f"بر اساس مبانی استدلالی و تقریرات رسمی {self.scholar_name}:"
 
-        file_lead = ""
-        if file_context:
+        if lang == "en":
+            reply_lead = f"Based on the demonstrative principles and official lectures of {scholar}:"
+            file_lead = (
+                f"\n\nIn reviewing the document you attached ({file_name or 'attached treatise'}):\n"
+                "The extracted premises have been examined under foundational metaphysical principles."
+                if file_context else ""
+            )
+            media_lead = (
+                f"\n\nThis demonstration is documented as an audio/video segment at interval «{top_match.get('timestamp_label', '')}» of the corresponding session."
+                if top_match.get("media_type") in ["audio", "video"] and top_match.get("timestamp_label") else ""
+            )
+
+            # High-fidelity English synthesis matching chunk topic
+            chunk_id = top_match.get("id", "")
+            chunk_snippet = top_match.get("snippet", "")
+            if "asfar" in chunk_id or "اصالت وجود" in chunk_snippet:
+                snippet_text = (
+                    "The Sadrian philosophical system is established upon the Principality of Existence (Asalat al-Wujud) and the derivative, conceptual nature of quiddity (I'tibariyat al-Mahiyyah). "
+                    "Existence is the concrete objective reality and the primary active source of effects in the external world, whereas quiddity is a mental delimitation and conceptual frame abstracted from the ontological grades of being. "
+                    "The demonstrations for the principality of existence include the proof of ontological division, the proof of the causal source of effects, and the proof of the impossibility of non-being interposition."
+                )
+                source_title = "Commentary on Asfar al-Arba'ah: First Journey, General Principles"
+                session_title = "Session 12: Threefold Proofs for the Principality of Existence"
+            elif "ishraq" in chunk_id or "انوار" in chunk_snippet:
+                snippet_text = (
+                    "In Suhrawardi's Illuminationist philosophy (Hikmat al-Ishraq), reality is articulated through the hierarchy of lights rather than peripatetic hylomorphism. "
+                    "The Light of Lights (Nur al-Anwar) emanates the longitudinal order of dominant lights (al-Anwar al-Qahirah) and latitudinal archetypes, culminating in sensory bodies as dark barriers (Barzakh)."
+                )
+                source_title = "Commentary on Hikmat al-Ishraq by Suhrawardi"
+                session_title = "Session 08: The Hierarchy of Lights"
+            elif "mantiq" in chunk_id or "منطق" in chunk_snippet:
+                snippet_text = (
+                    "Logic serves as an instrumental canonical science protecting the human intellect from inadvertent error in reasoning. "
+                    "Knowledge is systematically divided into conception (Tasawwur) and assent (Tasdiq), each bifurcating into self-evident (Badihi) and acquired (Nazari) requiring demonstration."
+                )
+                source_title = "Foundations of Logic & Reasoning"
+                session_title = "Session 01: Conceptions and Assents"
+            else:
+                snippet_text = top_match.get("snippet_en") or (
+                    f"Under the rational curriculum of {scholar}: "
+                    f"{chunk_snippet}"
+                )
+                source_title = top_match.get("source_en") or top_match.get("source", "")
+                session_title = top_match.get("session_en") or top_match.get("page_or_session", "")
+
+            reply_body = (
+                f"{reply_lead}\n\n"
+                f"{snippet_text}{file_lead}{media_lead}\n\n"
+                f"For further detailed investigation, it is recommended to follow the complete session in «{source_title}»."
+            )
+
+            citations: List[AICitation] = []
+            for ch in matched_chunks[:3]:
+                citations.append(
+                    AICitation(
+                        source=source_title if ch == top_match else ch.get("source", ""),
+                        page_or_session=session_title if ch == top_match else ch.get("page_or_session", ""),
+                        snippet=snippet_text[:240] + "..." if ch == top_match else ch["snippet"][:240] + "...",
+                        media_type=ch.get("media_type", "text"),
+                        timestamp_label=ch.get("timestamp_label"),
+                        start_sec=ch.get("start_sec"),
+                        end_sec=ch.get("end_sec"),
+                    )
+                )
+
+            followups = [
+                "What are the proofs of Allamah Tabataba'i for the Principality of Existence in Bidayat al-Hikmah?",
+                "How does Suhrawardi critique the principality of existence in Hikmat al-Ishraq?",
+                "What is the recommended study roadmap for Islamic philosophy?",
+            ]
+        elif lang == "ar":
+            reply_lead = f"بناءً على الأسس البرهانية والتقريرات الرسمية لسماحة {scholar}:"
+            file_lead = (
+                f"\n\nفي مراجعة السند المرفق من قبلكم ({file_name or 'السند المرفق'}):\n"
+                "تمت دراسة القضايا المستخرجة في ضوء القواعد الفلسفية الكلية."
+                if file_context else ""
+            )
+            media_lead = (
+                f"\n\nهذا المطلب موثق كقطعة صوتية/مرئية في التوقيت «{top_match.get('timestamp_label', '')}» من الجلسة المعنية."
+                if top_match.get("media_type") in ["audio", "video"] and top_match.get("timestamp_label") else ""
+            )
+
+            chunk_id = top_match.get("id", "")
+            chunk_snippet = top_match.get("snippet", "")
+            if "asfar" in chunk_id or "اصالت وجود" in chunk_snippet:
+                snippet_text = (
+                    "يقوم النظام الفلسفي الصدرائي على أصالة الوجود واعتبارية الماهية. "
+                    "فالوجود هو الحقيقة العينية ومنشأ الآثار في الخارج، بينما الماهية حد عدمي وصورة ذهنية منتزعة من مراتب الوجود. "
+                    "وتشمل براهين أصالة الوجود: برهان الانقسام، برهان منشئية الآثار، وبرهان تخلل العدم."
+                )
+                source_title = "دورة شرح الأسفار الأربعة: السفر الأول، الأمور العامة"
+                session_title = "الجلسة ۱۲: البراهين الثلاثة على أصالة الوجود"
+            elif "ishraq" in chunk_id or "انوار" in chunk_snippet:
+                snippet_text = (
+                    "في حكمة الإشراق للسهروردي، ينتظم الوجود في مراتب الأنوار بدلاً من الهيولى والصورة المشائية. "
+                    "فنور الأنوار يفيض النظام الطولي للأنوار القاهرة والنظام العرضي لأرباب الأنواع، وتنتهي المراتب إلى الأجسام بوصفها برازخ وغواسق."
+                )
+                source_title = "دورة شرح حكمة الإشراق للسهروردي"
+                session_title = "الجلسة ۰۸: مراتب الأنوار القاهرة والمدبرة"
+            else:
+                snippet_text = chunk_snippet
+                source_title = top_match.get("source", "")
+                session_title = top_match.get("page_or_session", "")
+
+            reply_body = (
+                f"{reply_lead}\n\n"
+                f"{snippet_text}{file_lead}{media_lead}\n\n"
+                f"لمزيد من التحقيق والتدقيق، يُقترح متابعة الجلسة المخصصة لهذا البحث في «{source_title}»."
+            )
+
+            citations: List[AICitation] = []
+            for ch in matched_chunks[:3]:
+                citations.append(
+                    AICitation(
+                        source=source_title if ch == top_match else ch["source"],
+                        page_or_session=session_title if ch == top_match else ch["page_or_session"],
+                        snippet=snippet_text[:240] + "..." if ch == top_match else ch["snippet"][:240] + "...",
+                        media_type=ch.get("media_type", "text"),
+                        timestamp_label=ch.get("timestamp_label"),
+                        start_sec=ch.get("start_sec"),
+                        end_sec=ch.get("end_sec"),
+                    )
+                )
+
+            followups = [
+                "ما هي براهين أصالة الوجود في الأسفار الأربعة؟",
+                "كيف ينتظم عالم الأنوار في حكمة الإشراق للسهروردي؟",
+                "ما هو السير الدراسي المقترح للبدء في الفلسفة الإسلامية؟",
+            ]
+        else:
+            reply_lead = f"بر اساس مبانی استدلالی و تقریرات رسمی {scholar}:"
             file_lead = (
                 f"\n\nدر بازخوانی سندی که ضمیمه نمودید ({file_name or 'سند ارسالی'}):\n"
                 "نکات استخراج‌شده نشان می‌دهد که مدعای مطرح‌شده در پرتو قواعد تحلیلی سنجیده شد."
+                if file_context else ""
+            )
+            media_lead = (
+                f"\n\nاین مطلب به صورت قطعه {('صوتی' if top_match.get('media_type') == 'audio' else 'ویدیویی')} در بازه زمانی «{top_match['timestamp_label']}» در جلسه مربوطه مستند است."
+                if top_match.get("media_type") in ["audio", "video"] and top_match.get("timestamp_label") else ""
             )
 
-        media_lead = ""
-        if top_match.get("media_type") in ["audio", "video"] and top_match.get("timestamp_label"):
-            media_type_fa = "صوتی" if top_match.get("media_type") == "audio" else "ویدیویی"
-            media_lead = f"\n\nاین مطلب به صورت قطعه {media_type_fa} در بازه زمانی «{top_match['timestamp_label']}» در جلسه مربوطه مستند است."
+            reply_body = (
+                f"{reply_lead}\n\n"
+                f"{top_match['snippet']}{file_lead}{media_lead}\n\n"
+                f"برای تدقیق بیشتر، پیشنهاد می‌شود جلسه مربوط به این مبحث را در دوره «{top_match['source']}» پیگیری فرمایید."
+            )
 
-        reply_body = (
-            f"{reply_lead}\n\n"
-            f"{top_match['snippet']}{file_lead}{media_lead}\n\n"
-            f"برای تدقیق بیشتر، پیشنهاد می‌شود جلسه مربوط به این مبحث را در دوره «{top_match['source']}» پیگیری فرمایید."
-        )
-
-        citations: List[AICitation] = []
-        for ch in matched_chunks[:3]:
-            citations.append(
-                AICitation(
-                    source=ch["source"],
-                    page_or_session=ch["page_or_session"],
-                    snippet=ch["snippet"][:240] + ("..." if len(ch["snippet"]) > 240 else ""),
-                    media_type=ch.get("media_type", "text"),
-                    timestamp_label=ch.get("timestamp_label"),
-                    start_sec=ch.get("start_sec"),
-                    end_sec=ch.get("end_sec"),
+            citations: List[AICitation] = []
+            for ch in matched_chunks[:3]:
+                citations.append(
+                    AICitation(
+                        source=ch["source"],
+                        page_or_session=ch["page_or_session"],
+                        snippet=ch["snippet"][:240] + ("..." if len(ch["snippet"]) > 240 else ""),
+                        media_type=ch.get("media_type", "text"),
+                        timestamp_label=ch.get("timestamp_label"),
+                        start_sec=ch.get("start_sec"),
+                        end_sec=ch.get("end_sec"),
+                    )
                 )
-            )
 
-        followups = top_match.get("followups") or [
-            "براهین اصالت وجود در اسفار اربعه چیست؟",
-            "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
-            "سیر مطالعاتی پیشنهادی برای شروع فلسفه اسلامی چیست؟",
-        ]
+            followups = top_match.get("followups") or [
+                "براهین اصالت وجود در اسفار اربعه چیست؟",
+                "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
+                "سیر مطالعاتی پیشنهادی برای شروع فلسفه اسلامی چیست؟",
+            ]
 
         return AIChatResponse(
             reply=reply_body,
             citations=citations,
             suggested_followups=followups,
-            scholar_identity=self.scholar_name,
+            scholar_identity=scholar,
         )
 
     async def chat(self, req: AIChatRequest) -> AIChatResponse:
@@ -199,6 +446,9 @@ class AIScholarlyService:
         Performs hybrid vector retrieval on audio/video/text chunks, then routes to remote LLM or local engine.
         """
         user_msg = req.message.strip()
+        lang = self._detect_language(user_msg, getattr(req, "lang", None))
+        scholar = self.get_scholar_name(lang)
+
         matched_chunks = rag_engine.search(
             query=user_msg,
             subject_filter=req.subject_filter,
@@ -213,6 +463,7 @@ class AIScholarlyService:
                 matched_chunks=[],
                 file_context=req.file_context,
                 file_name=req.file_name,
+                lang=lang,
             )
 
         provider_info = self._resolve_provider_endpoint()
@@ -224,12 +475,13 @@ class AIScholarlyService:
                 matched_chunks=matched_chunks,
                 file_context=req.file_context,
                 file_name=req.file_name,
+                lang=lang,
             )
 
         # Call remote provider (DeepSeek, OpenRouter, Gemini, Groq)
         try:
             context_text = self._build_context_from_chunks(matched_chunks)
-            system_prompt = self._build_system_prompt_prefix()
+            system_prompt = self._build_system_prompt_prefix(lang=lang)
 
             messages = [
                 {"role": "system", "content": system_prompt},
@@ -238,10 +490,24 @@ class AIScholarlyService:
                 for h in req.history[-4:]:
                     messages.append({"role": h.role, "content": h.content})
 
-            user_prompt = (
-                f"مستندات و قطعات دروس استاد:\n{context_text}\n\n"
-                f"پرسش دانشجو:\n{user_msg}"
-            )
+            if lang == "en":
+                user_prompt = (
+                    f"Official Grounding Documents:\n{context_text}\n\n"
+                    f"Student Inquiry:\n{user_msg}\n\n"
+                    f"(CRITICAL: Formulate the entire response strictly in academic English. Reference the scholar as: {scholar})"
+                )
+            elif lang == "ar":
+                user_prompt = (
+                    f"مستندات دروس الأستاذ:\n{context_text}\n\n"
+                    f"سؤال الباحث:\n{user_msg}\n\n"
+                    f"(هام: أجب حصراً باللغة العربية الفصحى البرهانية مع ذكر اسم الأستاذ: {scholar})"
+                )
+            else:
+                user_prompt = (
+                    f"مستندات و قطعات دروس استاد:\n{context_text}\n\n"
+                    f"پرسش دانشجو:\n{user_msg}"
+                )
+
             if req.file_context:
                 user_prompt += f"\n\nمتن ضمیمه کاربر ({req.file_name or 'سند'}):\n{req.file_context[:1000]}"
 
@@ -266,7 +532,7 @@ class AIScholarlyService:
                 if res.status_code == 200:
                     data = res.json()
                     ai_reply = data["choices"][0]["message"]["content"].strip()
-                    
+
                     citations = [
                         AICitation(
                             source=c["source"],
@@ -279,7 +545,13 @@ class AIScholarlyService:
                         )
                         for c in matched_chunks[:3]
                     ]
-                    followups = matched_chunks[0].get("followups", [
+                    followups = [
+                        "What are the proofs for the Principality of Existence in Asfar?",
+                        "What is the structure of lights in Suhrawardi’s Illuminationism?",
+                    ] if lang == "en" else [
+                        "ما هي براهين أصالة الوجود في الأسفار الأربعة؟",
+                        "كيف ينتظم عالم الأنوار في حكمة الإشراق للسهروردي؟",
+                    ] if lang == "ar" else matched_chunks[0].get("followups", [
                         "براهین اصالت وجود در اسفار اربعه چیست؟",
                         "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
                     ])
@@ -287,7 +559,7 @@ class AIScholarlyService:
                         reply=ai_reply,
                         citations=citations,
                         suggested_followups=followups,
-                        scholar_identity=self.scholar_name,
+                        scholar_identity=scholar,
                     )
                 else:
                     logger.warning("Remote LLM returned %d: %s. Falling back to local RAG.", res.status_code, res.text[:200])
@@ -300,6 +572,7 @@ class AIScholarlyService:
             matched_chunks=matched_chunks,
             file_context=req.file_context,
             file_name=req.file_name,
+            lang=lang,
         )
 
     async def stream_chat(self, req: AIChatRequest) -> AsyncGenerator[str, None]:
@@ -309,6 +582,9 @@ class AIScholarlyService:
         Supports both remote streaming via httpx and local tokenization fallback.
         """
         user_msg = req.message.strip()
+        lang = self._detect_language(user_msg, getattr(req, "lang", None))
+        scholar = self.get_scholar_name(lang)
+
         matched_chunks = rag_engine.search(
             query=user_msg,
             subject_filter=req.subject_filter,
@@ -325,6 +601,7 @@ class AIScholarlyService:
                 matched_chunks=matched_chunks,
                 file_context=req.file_context,
                 file_name=req.file_name,
+                lang=lang,
             )
             full_text = local_res.reply
             tokens = re.findall(r"\S+\s*", full_text) or [full_text]
@@ -349,7 +626,7 @@ class AIScholarlyService:
         accumulated_chunks = []
         try:
             context_text = self._build_context_from_chunks(matched_chunks)
-            system_prompt = self._build_system_prompt_prefix()
+            system_prompt = self._build_system_prompt_prefix(lang=lang)
 
             messages = [
                 {"role": "system", "content": system_prompt},
@@ -358,10 +635,24 @@ class AIScholarlyService:
                 for h in req.history[-4:]:
                     messages.append({"role": h.role, "content": h.content})
 
-            user_prompt = (
-                f"مستندات و قطعات دروس استاد:\n{context_text}\n\n"
-                f"پرسش دانشجو:\n{user_msg}"
-            )
+            if lang == "en":
+                user_prompt = (
+                    f"Official Grounding Documents:\n{context_text}\n\n"
+                    f"Student Inquiry:\n{user_msg}\n\n"
+                    f"(CRITICAL: Formulate the entire response strictly in academic English. Reference the scholar as: {scholar})"
+                )
+            elif lang == "ar":
+                user_prompt = (
+                    f"مستندات دروس الأستاذ:\n{context_text}\n\n"
+                    f"سؤال الباحث:\n{user_msg}\n\n"
+                    f"(هام: أجب حصراً باللغة العربية الفصحى البرهانية مع ذكر اسم الأستاذ: {scholar})"
+                )
+            else:
+                user_prompt = (
+                    f"مستندات و قطعات دروس استاد:\n{context_text}\n\n"
+                    f"پرسش دانشجو:\n{user_msg}"
+                )
+
             if req.file_context:
                 user_prompt += f"\n\nمتن ضمیمه کاربر ({req.file_name or 'سند'}):\n{req.file_context[:1000]}"
 
@@ -417,7 +708,13 @@ class AIScholarlyService:
                     )
                     for c in matched_chunks[:3]
                 ]
-                followups = matched_chunks[0].get("followups", [
+                followups = [
+                    "What are the proofs for the Principality of Existence in Asfar?",
+                    "What is the structure of lights in Suhrawardi’s Illuminationism?",
+                ] if lang == "en" else [
+                    "ما هي براهين أصالة الوجود في الأسفار الأربعة؟",
+                    "كيف ينتظم عالم الأنوار في حكمة الإشراق للسهروردي؟",
+                ] if lang == "ar" else matched_chunks[0].get("followups", [
                     "براهین اصالت وجود در اسفار اربعه چیست؟",
                     "نظام انوار در حکمت اشراق سهروردی چگونه است؟",
                 ])
@@ -427,7 +724,7 @@ class AIScholarlyService:
                     "reply": full_reply,
                     "citations": [c.model_dump() if hasattr(c, "model_dump") else c.dict() for c in citations],
                     "suggested_followups": followups,
-                    "scholar_identity": self.scholar_name,
+                    "scholar_identity": scholar,
                 }
                 yield f"data: {json.dumps(final_payload, ensure_ascii=False)}\n\n"
                 return
@@ -440,6 +737,7 @@ class AIScholarlyService:
             matched_chunks=matched_chunks,
             file_context=req.file_context,
             file_name=req.file_name,
+            lang=lang,
         )
         full_text = local_res.reply
         tokens = re.findall(r"\S+\s*", full_text) or [full_text]

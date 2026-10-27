@@ -218,6 +218,7 @@ export const ar: Dictionary = {
   player_speed: 'سرعة التشغيل',
   player_playlist: 'قائمة الدروس',
   player_volume: 'الصوت',
+  player_subtitles: 'الترجمة والشرح النصي',
   player_playlist_header: 'قائمة دروس الدورة:',
   player_status_playing: 'قيد التشغيل',
   cart_title: 'حقيبة الطلبات والاشتراكات',

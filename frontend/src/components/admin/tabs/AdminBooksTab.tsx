@@ -47,7 +47,7 @@ export function AdminBooksTab() {
       title_en: newTitle,
       author_fa: newAuthor,
       author_ar: newAuthor,
-      author_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+      author_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
       formatCategory: 'کتاب چاپی (گالینگور طلاکوب)',
       subjectCategory: newCategory,
       desc_fa: `کتاب تالیف ${newAuthor} چاپ‌شده بر روی کاغذ سوئدی ۷۰ گرم بالکی.`,

@@ -217,6 +217,7 @@ export const fa = {
   player_speed: 'سرعت پخش',
   player_playlist: 'فهرست جلسات',
   player_volume: 'صدا',
+  player_subtitles: 'زیرنویس همگام',
   player_playlist_header: 'فهرست جلسات دوره:',
   player_status_playing: 'در حال پخش',
   cart_title: 'سبد سفارشات و ثبت‌نام',

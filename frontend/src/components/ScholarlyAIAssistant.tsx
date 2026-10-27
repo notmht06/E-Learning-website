@@ -47,7 +47,7 @@ const getInitialWelcome = (lang: string): Message => ({
   role: 'assistant',
   content:
     lang === 'en'
-      ? 'Greetings. I am the Scholarly AI Assistant grounded in the rational treatises and lectures of Hujjat al-Islam Dr. Zanjirzan Hosseini. You may ask philosophical questions, upload treatises for inspection, or record voice queries.'
+      ? 'Greetings. I am the Scholarly AI Assistant grounded in the rational treatises and lectures of Hojjat al-Islam Dr. Zanjirzan Hosseini. You may ask philosophical questions, upload treatises for inspection, or record voice queries.'
       : lang === 'ar'
       ? 'أهلاً بكم. أنا المساعد الذكي المستند إلى أبحاث ودروس سماحة حجت الاسلام دکتر زنجیر زن حسینی. يمكنكم طرح الأسئلة الفلسفية أو رفع الملفات للتحليل أو التسجيل الصوتي.'
       : 'سلام و درود. من دستیار هوشمند علمی پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید پرسش‌های علمی و فلسفی خود را مطرح کنید، فایل متنی بارگذاری نمایید یا به صورت صوتی گفتگو فرمایید.',
@@ -310,6 +310,7 @@ export function ScholarlyAIAssistant() {
           subject_filter: activeSubject !== 'همه' ? activeSubject : undefined,
           file_context: uploadedFile?.content,
           file_name: uploadedFile?.name,
+          lang: currentLang,
         },
         (liveAccumulatedText) => {
           if (!controller.signal.aborted) {
@@ -432,7 +433,7 @@ export function ScholarlyAIAssistant() {
                     </div>
                     <p className="text-[11px] text-stone-500 dark:text-stone-400">
                       {currentLang === 'en'
-                        ? 'Based on the seminars of Hujjat al-Islam Dr. Zanjirzan Hosseini'
+                        ? 'Based on the seminars of Hojjat al-Islam Dr. Zanjirzan Hosseini'
                         : currentLang === 'ar'
                         ? 'مستند إلى أبحاث سماحة حجت الاسلام دکتر زنجیر زن حسینی'
                         : 'مستند به کرسی تدریس حجت الاسلام دکتر زنجیر زن حسینی'}

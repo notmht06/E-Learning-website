@@ -43,8 +43,69 @@ export const LanguageProvider: React.FC<{
         document.documentElement.lang = savedLang;
         document.documentElement.dir = savedLang === 'en' ? 'ltr' : 'rtl';
         setCookie('zan_lang', savedLang);
-      } else {
-        setCookie('zan_lang', initialLang);
+        return;
+      }
+
+      // First-time visit: auto-detect by browser locale & timezone
+      let detected: SupportedLang = initialLang;
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        const navLangs = navigator.languages || [navigator.language || ''];
+        const primary = (navLangs[0] || '').toLowerCase();
+
+        const isArabicTz = /^(Asia\/Baghdad|Asia\/Riyadh|Asia\/Dubai|Africa\/Cairo|Asia\/Kuwait|Asia\/Beirut|Asia\/Damascus|Asia\/Amman|Asia\/Muscat|Asia\/Qatar|Asia\/Bahrain)/i.test(tz);
+        const isTehranTz = tz === 'Asia/Tehran';
+
+        if (primary.startsWith('ar') || isArabicTz) {
+          detected = 'ar';
+        } else if (primary.startsWith('fa') || isTehranTz) {
+          detected = 'fa';
+        } else {
+          // Default to English for international visits outside Iran
+          detected = 'en';
+        }
+      } catch {
+        detected = initialLang;
+      }
+
+      // Apply and persist detected locale permanently
+      setCurrentLangState(detected);
+      document.documentElement.lang = detected;
+      document.documentElement.dir = detected === 'en' ? 'ltr' : 'rtl';
+      try {
+        localStorage.setItem('zan_lang', detected);
+      } catch {
+        // storage disabled fallback
+      }
+      setCookie('zan_lang', detected);
+
+      // Background Geo-IP verification for accurate international location
+      try {
+        fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout?.(2500) })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (!data || !data.country_code) return;
+            const country = String(data.country_code).toUpperCase();
+            const ARAB_COUNTRIES = ['SA', 'AE', 'IQ', 'EG', 'KW', 'QA', 'BH', 'OM', 'LB', 'SY', 'JO', 'YE'];
+            let resolved: SupportedLang = 'fa';
+            if (country !== 'IR') {
+              resolved = ARAB_COUNTRIES.includes(country) ? 'ar' : 'en';
+            }
+            if (resolved !== detected) {
+              setCurrentLangState(resolved);
+              document.documentElement.lang = resolved;
+              document.documentElement.dir = resolved === 'en' ? 'ltr' : 'rtl';
+              try {
+                localStorage.setItem('zan_lang', resolved);
+              } catch {}
+              setCookie('zan_lang', resolved);
+            }
+          })
+          .catch(() => {
+            // Silently fall back to timezone/browser detection
+          });
+      } catch {
+        // Ignore fetch errors
       }
     }
   }, [initialLang]);

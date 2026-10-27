@@ -10,10 +10,10 @@ import { useAuth } from '@/context/AuthContext';
 import { coursesDatabase } from '@/lib/data';
 import { AudioVideoPlayerEngine } from '@/components/learn/AudioVideoPlayerEngine';
 import { CoursePlaylistSidebar } from '@/components/course/CoursePlaylistSidebar';
-import { CourseQaAccordion } from '@/components/learn/CourseQaAccordion';
 import { CourseHandoutsTab } from '@/components/learn/CourseHandoutsTab';
 import { apiClient } from '@/services/apiClient';
-import { SCHOLAR_NAME } from '@/lib/constants';
+import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
+import { getLocalizedChapterTitle, getLocalizedSubject } from '@/lib/localization';
 
 export default function CourseLearnTheaterPage({
   params,
@@ -36,7 +36,6 @@ export default function CourseLearnTheaterPage({
     !!user && (user.role === 'ADMIN' || user.enrolledCourseIds.includes(course.id));
 
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
-  const [activeSubTab, setActiveSubTab] = useState<'qa' | 'handouts'>('qa');
   const [completedChapters, setCompletedChapters] = useState<number[]>([]);
   const [chapterPositions, setChapterPositions] = useState<Record<number, number>>({});
 
@@ -81,12 +80,7 @@ export default function CourseLearnTheaterPage({
       ? course.title_en || course.title_fa
       : course.title_fa;
 
-  const chapterTitle =
-    currentLang === 'ar'
-      ? activeChapter.title_ar || activeChapter.title_fa
-      : currentLang === 'en'
-      ? activeChapter.title_en || activeChapter.title_fa
-      : activeChapter.title_fa;
+  const chapterTitle = getLocalizedChapterTitle(activeChapter, currentLang);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-8">
@@ -102,7 +96,7 @@ export default function CourseLearnTheaterPage({
               </Link>
               <span>/</span>
               <span className="text-[#8A532B] dark:text-[#C58B43]">
-                {course.subject || 'حکمت متعالیه'}
+                {getLocalizedSubject(course.subject, currentLang)}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
@@ -110,7 +104,7 @@ export default function CourseLearnTheaterPage({
             </h1>
             <p className="text-xs text-zinc-500">
               {dict.learn_instructor_prefix || dict.course_instructor_label || 'مدرس:'}{' '}
-              {dict.scholar_name || SCHOLAR_NAME}
+              {dict.scholar_name || getScholarName(currentLang)}
             </p>
           </div>
 
@@ -191,39 +185,9 @@ export default function CourseLearnTheaterPage({
               }}
             />
 
-            {/* Sub-Tabs Switcher: Q&A Accordion vs Handouts */}
+            {/* Handouts and Course Notes */}
             <div className="space-y-4">
-              <div className="inline-flex p-1 bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-full text-xs font-bold shadow-xs">
-                <button
-                  type="button"
-                  onClick={() => setActiveSubTab('qa')}
-                  className={`px-4 py-2 rounded-full transition cursor-pointer ${
-                    activeSubTab === 'qa'
-                      ? 'bg-[#8A532B] text-[#FAF8F5] shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                  }`}
-                >
-                  {dict.learn_tab_qa || 'پرسش‌ها و مباحثات علمی'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveSubTab('handouts')}
-                  className={`px-4 py-2 rounded-full transition cursor-pointer ${
-                    activeSubTab === 'handouts'
-                      ? 'bg-[#8A532B] text-[#FAF8F5] shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                  }`}
-                >
-                  {dict.learn_tab_handouts || 'تقریرات و جزوات درسی'}
-                </button>
-              </div>
-
-              {activeSubTab === 'qa' && (
-                <CourseQaAccordion courseId={course.id} chapterId={activeChapter.id} />
-              )}
-              {activeSubTab === 'handouts' && (
-                <CourseHandoutsTab courseTitle={courseTitle} chapterTitle={chapterTitle} />
-              )}
+              <CourseHandoutsTab courseTitle={courseTitle} chapterTitle={chapterTitle} />
             </div>
           </div>
 
