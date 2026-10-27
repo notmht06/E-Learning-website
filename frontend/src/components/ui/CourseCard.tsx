@@ -116,7 +116,9 @@ export function CourseCard({ course, isPlaying = false, onPlaySample }: CourseCa
               </span>
               <div className="flex items-center justify-center gap-1.5 text-[9px] text-amber-200/70 font-mono">
                 <span>✦</span>
-                <span className="tracking-widest">درس‌گفتار رسمی</span>
+                <span className="tracking-widest">
+                  {currentLang === 'en' ? 'Official Discourse' : currentLang === 'ar' ? 'درس رسمي' : 'درس‌گفتار رسمی'}
+                </span>
                 <span>✦</span>
               </div>
             </div>

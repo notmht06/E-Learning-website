@@ -70,7 +70,9 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
               <span className="text-[10px] font-bold text-white/95 line-clamp-2 leading-tight">
                 {title}
               </span>
-              <div className="text-[8px] text-white/50 font-mono">✦ صوت رسمی</div>
+              <div className="text-[8px] text-white/50 font-mono">
+                ✦ {currentLang === 'en' ? 'Official Audio' : currentLang === 'ar' ? 'صوت رسمي' : 'صوت رسمی'}
+              </div>
             </div>
           )}
           <span className="absolute bottom-1.5 end-1.5 px-2 py-0.5 rounded text-[10px] font-bold font-num bg-[#0C0D0E]/90 dark:bg-[#1E2024]/95 text-[#FAF8F5] border border-[#8A532B]/40 dark:border-[#C58B43]/40 backdrop-blur-xs">

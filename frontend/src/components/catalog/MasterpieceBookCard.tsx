@@ -17,7 +17,7 @@ import {
 import { useLanguage } from '@/context/LanguageContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { Book } from '@/lib/data';
-import { getLocalizedBook } from '@/lib/localization';
+import { getLocalizedBook, getLocalizedSubject } from '@/lib/localization';
 import { triggerTactileHaptic } from '@/lib/haptics';
 import { EDITORIAL_SPRING, TACTILE_SPRING } from './MasterpieceCourseCard';
 
@@ -40,8 +40,21 @@ export function MasterpieceBookCard({
   const title = locBook?.title || book.title_fa;
   const desc = locBook?.desc || book.desc_fa;
   const price = locBook?.price || book.price_fa;
-  const badge = locBook?.badge || book.badge_fa;
   const bookmarked = isBookmarked(book.id);
+
+  const getFormatBadge = () => {
+    switch (book.id) {
+      case 'book1':
+        return dict.book_format_hardcover || (currentLang === 'en' ? 'Royal Octavo • Hardcover Edition' : currentLang === 'ar' ? 'القطع الوزيري • غلاف مجلد فاخر' : 'قطع وزیری • جلد سخت (گالینگور)');
+      case 'book2':
+        return dict.book_format_leather || (currentLang === 'en' ? 'Imperial Octavo • Leather Bound' : currentLang === 'ar' ? 'القطع السلطاني • غلاف جلد طبيعي' : 'قطع سلطانی • جلد چرم طبیعی');
+      case 'book3':
+        return dict.book_format_paperback || (currentLang === 'en' ? 'Crown Octavo • Fine Paperback' : currentLang === 'ar' ? 'القطع الرقعي • غلاف ورقي فاخر' : 'قطع رقعی • شومیز نفیس');
+      case 'book4':
+      default:
+        return dict.book_format_vaziri || (currentLang === 'en' ? 'Royal Octavo • Gilded Hardcover' : currentLang === 'ar' ? 'القطع الوزيري • طبعة فاخرة مذهبة' : 'قطع وزیری • جلد گالینگور طلاکوب');
+    }
+  };
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -151,7 +164,7 @@ export function MasterpieceBookCard({
           </div>
 
           <span className="text-[9px] font-mono text-[#E6CA85]/75 block z-10 truncate">
-            {book.formatCategory || 'قطع وزیری • گالینگور'}
+            {getFormatBadge()}
           </span>
         </motion.div>
       </div>
@@ -161,7 +174,7 @@ export function MasterpieceBookCard({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2 text-[11px]">
             <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold">
-              {book.subjectCategory || 'حکمت متعالیه'}
+              {getLocalizedSubject(book.subjectCategory || 'حکمت متعالیه', currentLang)}
             </span>
             <span className="font-num font-bold text-xs text-zinc-800 dark:text-zinc-200">
               {price}

@@ -715,7 +715,7 @@ export const ar: Dictionary = {
   dash_unit_note: 'ملاحظة',
   dash_unit_order: 'طلب',
   dash_last_audio_pos: 'آخر موضع استماع صوتي (الجلسة ٠٤)',
-  dash_instructor_meta_prefix: 'المدرس: حجت الاسلام دکتر زنجیر زن حسینی',
+  dash_instructor_meta_prefix: 'المدرس: حجة الإسلام الدكتور زنجير زن حسيني',
   dash_studio_quality_badge: 'صوت',
   dash_resume_audio_btn: 'متابعة الدرس الصوتي',
   footer_tagline: 'حياة • الموقع الرسمي لنشر آثار ودروس العلوم العقلية والنقلية',

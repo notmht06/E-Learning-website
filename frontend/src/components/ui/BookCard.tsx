@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { BookOpen, Bookmark, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Book } from '@/lib/data';
-import { getLocalizedBook } from '@/lib/localization';
+import { getLocalizedBook, getLocalizedSubject } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { SCHOLAR_NAME } from '@/lib/constants';
@@ -186,7 +186,7 @@ export function BookCard({ book, onOpenReader, onAddToBag }: BookCardProps) {
           {/* Format Badge & Subject Category */}
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold text-[11px]">
-              {book.subjectCategory || 'حکمت و فلسفه'}
+              {getLocalizedSubject(book.subjectCategory || 'حکمت و فلسفه', currentLang)}
             </span>
             <span className="text-zinc-500 dark:text-zinc-400 font-num font-bold text-xs">
               {price}

@@ -49,6 +49,7 @@ export default function BooksPage() {
         empty_desc: 'Please try searching with different keywords or categories.',
         featured_eyebrow: '[ Rare Monographs & Seminal Publications ]',
         featured_title: dict.catalog_books_featured_heading || 'Dar al-Hikmah Publications & Printed Works',
+        categories_aria: 'Book subject categories',
       };
     }
     if (currentLang === 'ar') {
@@ -63,9 +64,10 @@ export default function BooksPage() {
         all_categories: 'جميع الأبواب',
         books_count_suffix: 'عنوان كتاب',
         empty_title: 'لم يتم العثور على مصنفات',
-        empty_desc: 'يرجى تجربة كلمات بحث یا دسته‌بندی‌های دیگر.',
+        empty_desc: 'يرجى تجربة كلمات بحث أو تصنيفات أخرى.',
         featured_eyebrow: '[ الرسائل والمونوغرافات البارزة ]',
         featured_title: dict.catalog_books_featured_heading || 'آثار ومنشورات دار الحكمة المطبوعة',
+        categories_aria: 'تصنيفات الكتب الموضوعية',
       };
     }
     return {
@@ -82,6 +84,7 @@ export default function BooksPage() {
       empty_desc: 'لطفاً عبارات جستجو یا دسته‌بندی‌های دیگر را امتحان کنید.',
       featured_eyebrow: '[ رسائل برگزیده و نسخ ویژه ]',
       featured_title: dict.catalog_books_featured_heading || 'آثار و انتشارات مکتوب دارالحکمة',
+      categories_aria: 'دسته‌بندی موضوعی کتب',
     };
   }, [currentLang, dict]);
 
@@ -194,7 +197,7 @@ export default function BooksPage() {
               tabs={categoryTabs}
               activeTab={selectedCategory}
               onChange={setSelectedCategory}
-              ariaLabel="دسته‌بندی موضوعی کتب"
+              ariaLabel={t.categories_aria}
             />
           </div>
         )}

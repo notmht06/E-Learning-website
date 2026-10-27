@@ -642,7 +642,7 @@ export const booksDatabase: Record<string, Book> = {
           l_num: 17,
           l_body: `
             <div class="p-3 bg-book-accent/10 rounded-xl border border-book-accent/20">
-              <span class="font-bold text-book-accent text-xs block">Annotation by Dr. Zanjirzan Hosseini:</span>
+              <span class="font-bold text-book-accent text-xs block">Annotation by Hojjat al-Islam Dr. Zanjirzan Hosseini:</span>
               <p class="text-[11px] text-justify text-book-subtext dark:text-stone-300 leading-[1.9] mt-1">
                 “Suhrawardi’s luminous taxonomy converges intuitive vision with Sadrian analogical gradation. Chapter VI provides detailed geometric models mapping this synthesis.”
               </p>
@@ -702,7 +702,7 @@ export const booksDatabase: Record<string, Book> = {
           r_body: `<h5 class="font-bold text-book-accent text-sm">Suhrawardi’s Principle:</h5><p class="text-justify text-xs text-book-text dark:text-stone-200 leading-[2.1] pt-2">“There is nothing in existence more manifest than Light; thus nothing stands in less need of definition...”</p>`,
           l_header: 'Hikmat al-Ishraq • Luminous Hierarchies',
           l_num: 2,
-          l_body: `<div class="border-s-2 border-book-accent ps-3"><span class="font-bold text-book-accent text-xs block">Analysis by Dr. Zanjirzan:</span><p class="text-xs text-justify text-book-text dark:text-stone-200 leading-[2.1] mt-1">Suhrawardi expands the Peripatetic ten-intellect cosmology into an infinite network of Victorious (Qahirah) and Regent (Isfahbad) Lights.</p></div>`
+          l_body: `<div class="border-s-2 border-book-accent ps-3"><span class="font-bold text-book-accent text-xs block">Analysis by Hojjat al-Islam Dr. Zanjirzan Hosseini:</span><p class="text-xs text-justify text-book-text dark:text-stone-200 leading-[2.1] mt-1">Suhrawardi expands the Peripatetic ten-intellect cosmology into an infinite network of Victorious (Qahirah) and Regent (Isfahbad) Lights.</p></div>`
         }
       },
       2: {

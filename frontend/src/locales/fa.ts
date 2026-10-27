@@ -486,7 +486,7 @@ export const fa = {
   catalog_books_btn_read_3d: 'مشاهده نمونه کتاب',
   catalog_books_btn_order: 'سفارش اثر',
   catalog_books_featured_heading: 'آثار و انتشارات مکتوب دارالحکمة',
-  catalog_books_featured_subheading: 'متون مرجع و تصحیحات منتشرشده توسط انتشارات حیات',
+  catalog_books_featured_subheading: 'متون مرجع و تصحیحات منتشرشده توسط انتشارات دارالحکمة',
   book_format_hardcover: 'قطع وزیری • جلد سخت (گالینگور)',
   book_format_leather: 'قطع سلطانی • جلد چرم طبیعی',
   book_format_paperback: 'قطع رقعی • شومیز نفیس',

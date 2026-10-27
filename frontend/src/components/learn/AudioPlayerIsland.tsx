@@ -31,6 +31,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
     currentCourse,
     currentChapterIndex,
     isPlaying,
+    hasStartedPlaying,
     currentTime,
     duration,
     playbackRate,
@@ -107,7 +108,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
   }
 
   // Do NOT render floating island if user hasn't started playing anything (only render when isPlaying && currentCourse)
-  if (!isPlaying || !currentCourse || !currentCourse.chapters || currentCourse.chapters.length === 0 || isDismissed) {
+  if (!hasStartedPlaying || !isPlaying || !currentCourse || !currentCourse.chapters || currentCourse.chapters.length === 0 || isDismissed) {
     return null;
   }
 
