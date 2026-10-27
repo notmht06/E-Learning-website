@@ -15,3 +15,5 @@ export * from './CourseCatalogBento';
 export * from './ScholarDispatchBento';
 export * from './ScholarlyAIAssistant';
 export * from './CurriculumRoadmap';
+export * from './navigation';
+export * from './home';

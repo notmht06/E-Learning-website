@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Navbar } from '@/components/Navbar';
+import { FloatingNavigationPill } from '@/components/navigation/FloatingNavigationPill';
 import { BentoHero } from '@/components/BentoHero';
+import { WisdomStationsSheet, DiscoursePlayerSection } from '@/components/home';
 import { CourseCatalogBento } from '@/components/CourseCatalogBento';
 import { ScholarDispatchBento } from '@/components/ScholarDispatchBento';
 import { BookReader3D } from '@/components/BookReader3D';
@@ -12,6 +13,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
 import { booksDatabase } from '@/lib/data';
+import { SCHOLAR_NAME } from '@/lib/constants';
 
 export default function HomePage() {
   const { currentLang, dict } = useLanguage();
@@ -49,18 +51,24 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-[#8A532B]/20 selection:text-[#8A532B] dark:selection:text-[#C58B43] bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#18181B] dark:text-[#F4F4F6] transition-colors duration-200 font-sans antialiased">
-      {/* 1. Main Navigation Bar */}
-      <Navbar
+      {/* 1. Floating Capsule Header Navigation (Adapted from UTopia farabi-utopia.ir) */}
+      <FloatingNavigationPill
         cartCount={cartItems.length}
         onOpenCart={openCart}
       />
 
-      {/* 2. Main Content Layout (Clean Minimal Sirus & Shadcn Scale) */}
-      <main className="flex-1 space-y-8 sm:space-y-8 pb-8">
+      {/* 2. Main Content Layout (Scholastic Editorial Architecture) */}
+      <main className="flex-1 space-y-10 sm:space-y-14 pb-12">
         {/* SECTION 1: Clean Scholar Hero */}
         <BentoHero />
 
-        {/* SECTION 2: Minimal Course & Book Catalog */}
+        {/* SECTION 2: Rising Wisdom Stations Sheet (Adapted from UTopia sheet-main & AlphaSchool value grid) */}
+        <WisdomStationsSheet />
+
+        {/* SECTION 3: Multimedia Discourse Player Studio (Adapted from AlphaSchool AlphaGap) */}
+        <DiscoursePlayerSection />
+
+        {/* SECTION 4: Minimal Course & Book Catalog */}
         <CourseCatalogBento
           courses={allCourses}
           categories={categories}
@@ -68,7 +76,7 @@ export default function HomePage() {
           onAddToCart={handleAddToBag}
         />
 
-        {/* SECTION 3: Minimal Newsletter / Dispatch */}
+        {/* SECTION 5: Minimal Scholar Dispatch */}
         <ScholarDispatchBento />
       </main>
 
@@ -77,7 +85,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-0.5 text-center sm:text-start">
             <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              حجت الاسلام دکتر زنجیر زن حسینی
+              {SCHOLAR_NAME}
             </h4>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}
