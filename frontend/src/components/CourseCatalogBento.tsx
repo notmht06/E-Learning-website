@@ -50,7 +50,7 @@ export function CourseCatalogBento({
       .slice(0, 6);
   }, [courses, filterType]);
 
-  const featuredBooks = useMemo(() => Object.values(booksDatabase).slice(0, 3), []);
+  const featuredBooks = useMemo(() => Object.values(booksDatabase).slice(0, 4), []);
 
   const filterTabs = [
     {
@@ -178,7 +178,7 @@ export function CourseCatalogBento({
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredBooks.map((book) => (
             <MasterpieceBookCard
               key={book.id}

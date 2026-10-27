@@ -26,6 +26,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { booksDatabase, toLocaleDigits, SupportedLang, i18nDict } from '@/lib/data';
+import { SCHOLAR_NAME } from '@/lib/constants';
 
 interface BookReader3DProps {
   isOpen: boolean;
@@ -540,36 +541,64 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             }
           `}</style>
 
-          {/* PAGE 0: COVER SPREAD */}
-          {currentPage === 0 && (
-            <div className="w-full max-w-sm aspect-[1/1.4] rounded-2xl p-8 flex flex-col justify-between items-center text-center shadow-2xl relative border-4 border-[#DECFA9]/40 bg-[#1E293B] text-[#DECFA9]">
-              <div className="space-y-2">
-                <span className="text-xs uppercase block font-bold text-[#8A532B]">
-                  {dict.scholar_full_title}
-                </span>
-                <div className="w-12 h-0.5 bg-[#8A532B]/40 mx-auto" />
-              </div>
+          {/* PAGE 0: COVER SPREAD (Bespoke Moroccan Leather & Gilded Binding) */}
+          {currentPage === 0 && (() => {
+            const leatherBg =
+              book.id === 'book1' ? 'bg-[#241812]' :
+              book.id === 'book2' ? 'bg-[#131B2B]' :
+              book.id === 'book3' ? 'bg-[#14221A]' :
+              book.id === 'book4' ? 'bg-[#25141C]' :
+              'bg-[#241812]';
+            const leatherBorder =
+              book.id === 'book1' ? 'border-[#C58B43]' :
+              book.id === 'book2' ? 'border-[#D4AF37]' :
+              book.id === 'book3' ? 'border-[#B87333]' :
+              book.id === 'book4' ? 'border-[#C58B43]' :
+              'border-[#C58B43]';
+            const foilColor =
+              book.id === 'book1' ? 'text-[#E6CA85]' :
+              book.id === 'book2' ? 'text-[#F5E6B3]' :
+              book.id === 'book3' ? 'text-[#ECD7C0]' :
+              book.id === 'book4' ? 'text-[#FAF8F5]' :
+              'text-[#E6CA85]';
+            return (
+              <div className={`w-full max-w-sm aspect-[1/1.4] rounded-2xl p-8 flex flex-col justify-between items-center text-center shadow-[0_24px_50px_rgba(0,0,0,0.7)] relative border-4 ${leatherBorder} ${leatherBg} text-[#DECFA9]`}>
+                {/* Embossed Inner Cartouche Border */}
+                <div className="absolute inset-3 border border-[#E6CA85]/30 rounded-xl pointer-events-none">
+                  <span className="absolute -top-1 -start-1 w-2 h-2 border-t border-s border-[#E6CA85]" />
+                  <span className="absolute -top-1 -end-1 w-2 h-2 border-t border-e border-[#E6CA85]" />
+                  <span className="absolute -bottom-1 -start-1 w-2 h-2 border-b border-s border-[#E6CA85]" />
+                  <span className="absolute -bottom-1 -end-1 w-2 h-2 border-b border-e border-[#E6CA85]" />
+                </div>
 
-              <div className="space-y-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight">
-                  {title}
-                </h1>
-                <p className="text-xs text-[#DECFA9]/80 leading-relaxed px-4">
-                  {(book as any)[`desc_${currentLang}`] || book.desc_fa}
-                </p>
-              </div>
+                <div className="space-y-2 z-10">
+                  <span className={`text-[10px] font-mono uppercase tracking-widest block font-bold ${foilColor}`}>
+                    DAR AL-HIKMAH
+                  </span>
+                  <div className="w-12 h-0.5 bg-[#C58B43]/50 mx-auto" />
+                </div>
 
-              <div className="space-y-2">
-                <div className="w-16 h-0.5 bg-[#8A532B]/40 mx-auto" />
-                <span className="text-xs font-bold block text-stone-300">
-                  {dict.book_binding_spec}
-                </span>
-                <span className="text-[11px] font-num text-[#8A532B] block">
-                  {book.isbn || '978-622-02-1948-1'}
-                </span>
+                <div className="space-y-4 z-10 px-2">
+                  <h1 className="text-xl sm:text-2xl font-bold text-[#FAF8F5] leading-tight drop-shadow-md">
+                    {title}
+                  </h1>
+                  <p className={`text-xs ${foilColor} leading-relaxed opacity-90 px-2`}>
+                    {(book as any)[`desc_${currentLang}`] || book.desc_fa}
+                  </p>
+                </div>
+
+                <div className="space-y-2 z-10">
+                  <div className="w-16 h-0.5 bg-[#C58B43]/50 mx-auto" />
+                  <span className="text-xs font-bold block text-[#FAF8F5]">
+                    {dict.scholar_name || SCHOLAR_NAME}
+                  </span>
+                  <span className={`text-[11px] font-num block ${foilColor}`}>
+                    ISBN: {book.isbn || '978-622-02-1948-1'}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* PAGES 1+: TWO-PAGE BOOK SPREAD */}
           {currentPage > 0 && (

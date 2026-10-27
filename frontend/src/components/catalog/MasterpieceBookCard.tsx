@@ -112,17 +112,20 @@ export function MasterpieceBookCard({
           <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
         </motion.button>
 
-        {/* کپسول قیمت با کنتراست استاندارد WCAG AAA */}
-        <div className="absolute bottom-3 end-3 z-20 px-3 py-1 rounded-full bg-[#0C0D0E]/90 dark:bg-[#FAF8F5]/95 text-[#FAF8F5] dark:text-[#0C0D0E] border border-[#8A532B]/40 text-xs font-bold font-num shadow-sm">
-          {price}
-        </div>
-
-        {/* جلد فیزیکی کتاب در نسبت ۳:۴ با عطف برجسته و طلاکوب */}
+        {/* جلد فیزیکی کتاب در قطع وزیری با پالت فاخر چرم، عطف برجسته و طلاکوب */}
         <motion.div
           style={{ rotateX, rotateY }}
           className={`relative w-36 h-52 rounded-e-lg rounded-s-sm ${
-            book.coverGradient || 'bg-[#0C0D0E]'
-          } border border-[#C58B43]/40 p-4 flex flex-col justify-between text-center shadow-[0_18px_35px_-10px_rgba(12,13,14,0.55)] preserve-3d stacked-pages-border-left`}
+            book.id === 'book1'
+              ? 'bg-[#241812] border-[#C58B43]'
+              : book.id === 'book2'
+              ? 'bg-[#131B2B] border-[#D4AF37]'
+              : book.id === 'book3'
+              ? 'bg-[#14221A] border-[#B87333]'
+              : book.id === 'book4'
+              ? 'bg-[#25141C] border-[#C58B43]'
+              : (book.coverGradient || 'bg-[#241812]') + ' border-[#C58B43]'
+          } border p-4 flex flex-col justify-between text-center shadow-[0_18px_35px_-10px_rgba(12,13,14,0.55)] preserve-3d stacked-pages-border-left`}
         >
           {/* شیار عطف جلد سخت */}
           <div className="book-spine-crease" />
@@ -137,7 +140,7 @@ export function MasterpieceBookCard({
           />
 
           <span className="text-[9px] font-mono text-[#E6CA85]/80 tracking-widest uppercase block z-10">
-            HAYAT
+            DAR AL-HIKMAH
           </span>
 
           <div className="my-auto space-y-2 z-10 px-1">
@@ -147,21 +150,21 @@ export function MasterpieceBookCard({
             <div className="w-8 h-px bg-[#C58B43]/60 mx-auto" />
           </div>
 
-          <span className="text-[9px] font-mono text-[#E6CA85]/75 block z-10">
+          <span className="text-[9px] font-mono text-[#E6CA85]/75 block z-10 truncate">
             {book.formatCategory || 'قطع وزیری • گالینگور'}
           </span>
         </motion.div>
       </div>
 
-      {/* بخش توضیحات تحلیلی و شناسنامه نشر (بدون تکرار عنوان و نویسنده) */}
+      {/* بخش توضیحات تحلیلی و شناسنامه نشر با کپسول قیمت معتبر */}
       <div className="space-y-3 flex-1 flex flex-col justify-between">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2 text-[11px]">
             <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold">
               {book.subjectCategory || 'حکمت متعالیه'}
             </span>
-            <span className="font-mono text-zinc-400 dark:text-zinc-500 text-[10px] truncate">
-              {badge}
+            <span className="font-num font-bold text-xs text-zinc-800 dark:text-zinc-200">
+              {price}
             </span>
           </div>
 
@@ -196,7 +199,7 @@ export function MasterpieceBookCard({
               triggerTactileHaptic('thump');
               onOpenBookReader(book.id);
             }}
-            className="py-2.5 px-3 rounded-xl bg-white dark:bg-[#18191D] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 text-[#0C0D0E] dark:text-[#FAF8F5] border border-[#E2DACB] dark:border-[#262830] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            className="py-2.5 px-3 rounded-xl bg-white dark:bg-[#1E2024] hover:bg-[#8A532B]/10 dark:hover:bg-[#25282E] text-[#0C0D0E] dark:text-[#FAF8F5] border border-[#E2DACB] dark:border-[#C58B43]/30 hover:border-[#C58B43] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">{dict.catalog_books_btn_read_3d || dict.btn_quick_read || 'مشاهده نمونه کتاب'}</span>

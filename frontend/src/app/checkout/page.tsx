@@ -270,13 +270,13 @@ export default function CheckoutPage() {
             }`}>
               <span>{dict.checkout_step_cart || '۱. سبد خرید'}</span>
             </span>
-            <span className="text-stone-400">←</span>
+            <ChevronLeft className="w-3.5 h-3.5 text-stone-400 rtl:rotate-0 ltr:rotate-180" />
             <span className={`flex items-center gap-2 px-3.5 py-2 rounded-full font-bold transition ${
               step >= 2 ? 'bg-book-accent text-white shadow-xs' : 'bg-stone-200 dark:bg-[#18191D] text-stone-500'
             }`}>
               <span>{dict.checkout_step_shipping || '۲. اطلاعات گیرنده'}</span>
             </span>
-            <span className="text-stone-400">←</span>
+            <ChevronLeft className="w-3.5 h-3.5 text-stone-400 rtl:rotate-0 ltr:rotate-180" />
             <span className={`flex items-center gap-2 px-3.5 py-2 rounded-full font-bold transition ${
               step >= 3 ? 'bg-book-accent text-white shadow-xs' : 'bg-stone-200 dark:bg-[#18191D] text-stone-500'
             }`}>
@@ -479,9 +479,10 @@ export default function CheckoutPage() {
                   </h2>
                   <button
                     onClick={() => setStep(1)}
-                    className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200"
+                    className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 flex items-center gap-1"
                   >
-                    ← {currentLang === 'en' ? 'Back to Bag' : currentLang === 'ar' ? 'العودة للسلة' : 'بازگشت به سبد'}
+                    <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 ltr:rotate-0" />
+                    <span>{currentLang === 'en' ? 'Back to Bag' : currentLang === 'ar' ? 'العودة للسلة' : 'بازگشت به سبد'}</span>
                   </button>
                 </div>
 

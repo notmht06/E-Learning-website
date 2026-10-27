@@ -407,11 +407,11 @@ export const booksDatabase: Record<string, Book> = {
     badge_fa: 'به‌زودی • در دست آماده‌سازی و نشر',
     badge_ar: 'قريباً • قيد التحضير والنشر',
     badge_en: 'Coming Soon • In Preparation',
-    coverGradient: 'bg-[#0B2E24] ',
-    coverBorder: '#E6CA85',
+    coverGradient: 'bg-[#241812]',
+    coverBorder: '#C58B43',
     ribbonClass: 'bg-[#B91C1C]',
-    leatherTexture: 'leather-pattern-emerald',
-    motif: 'octagram',
+    leatherTexture: 'leather-pattern-cordovan',
+    motif: 'geometric-frame',
     cover_image: '/images/book_cover_real.jpg',
     pages: {
       1: {
@@ -672,11 +672,11 @@ export const booksDatabase: Record<string, Book> = {
     badge_fa: 'به‌زودی • در دست آماده‌سازی و نشر',
     badge_ar: 'قريباً • قيد التحضير والنشر',
     badge_en: 'Coming Soon • In Preparation',
-    coverGradient: 'bg-[#0A1D36] ',
-    coverBorder: '#FBBF24',
+    coverGradient: 'bg-[#131B2B]',
+    coverBorder: '#D4AF37',
     ribbonClass: 'bg-[#D97706]',
     leatherTexture: 'leather-pattern-lapis',
-    motif: 'sun-rays',
+    motif: 'cartouche',
     cover_image: '/images/book_cover_real.jpg',
     pages: {
       1: {
@@ -779,11 +779,11 @@ export const booksDatabase: Record<string, Book> = {
     badge_fa: 'به‌زودی • در دست آماده‌سازی و نشر',
     badge_ar: 'قريباً • قيد التحضير والنشر',
     badge_en: 'Coming Soon • In Preparation',
-    coverGradient: 'bg-[#380E16] ',
-    coverBorder: '#F43F5E',
-    ribbonClass: 'bg-[#2563EB]',
-    leatherTexture: 'leather-pattern-burgundy',
-    motif: 'toranj',
+    coverGradient: 'bg-[#14221A]',
+    coverBorder: '#B87333',
+    ribbonClass: 'bg-[#8A532B]',
+    leatherTexture: 'cloth-pattern-jade',
+    motif: 'copper-filigree',
     pages: {
       1: {
         fa: {
@@ -885,11 +885,11 @@ export const booksDatabase: Record<string, Book> = {
     badge_fa: 'به‌زودی • در دست آماده‌سازی و نشر',
     badge_ar: 'قريباً • قيد التحضير والنشر',
     badge_en: 'Coming Soon • In Preparation',
-    coverGradient: 'bg-[#1E2229] ',
-    coverBorder: '#94A3B8',
-    ribbonClass: 'bg-[#78350F]',
-    leatherTexture: 'leather-pattern-slate',
-    motif: 'minimalist-geometric',
+    coverGradient: 'bg-[#25141C]',
+    coverBorder: '#C58B43',
+    ribbonClass: 'bg-[#8A532B]',
+    leatherTexture: 'leather-pattern-burgundy',
+    motif: 'gilded-frame',
     pages: {
       1: {
         fa: {

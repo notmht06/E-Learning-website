@@ -13,6 +13,7 @@ interface PlayerContextType {
   playbackRate: number;
   isMuted: boolean;
   isPlaylistOpen: boolean;
+  hasStartedPlaying: boolean;
   subtitleLang: SubtitleLang;
   playTrack: (course: AudioCourse, chapterIndex?: number) => void;
   togglePlay: () => void;
@@ -33,6 +34,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [currentCourse, setCurrentCourse] = useState<AudioCourse>(defaultCourse);
   const [currentChapterIndex, setCurrentChapterIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [hasStartedPlaying, setHasStartedPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(180);
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
@@ -75,6 +77,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const playTrack = (course: AudioCourse, chapterIndex = 0) => {
+    setHasStartedPlaying(true);
     setCurrentCourse(course);
     setCurrentChapterIndex(chapterIndex);
     if (audioRef.current) {
@@ -107,6 +110,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
+      setHasStartedPlaying(true);
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch((resumeErr) => {
@@ -197,6 +201,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         playbackRate,
         isMuted,
         isPlaylistOpen,
+        hasStartedPlaying,
         playTrack,
         togglePlay,
         seek,

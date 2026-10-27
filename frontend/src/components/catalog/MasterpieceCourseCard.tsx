@@ -16,7 +16,6 @@ import { usePlayer } from '@/context/PlayerContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { AudioCourse } from '@/lib/data';
 import { getLocalizedCourse } from '@/lib/localization';
-import { SCHOLAR_NAME } from '@/lib/constants';
 import { CourseFolderPreview } from '@/components/course/CourseFolderPreview';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
@@ -141,16 +140,12 @@ export function MasterpieceCourseCard({ course, index }: MasterpieceCourseCardPr
         </div>
 
         {/* عنوان دوره با ارتفاع استاندارد دو خطی برای حفظ تقارن شبکه‌ای */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Link href={`/courses/${course.id}`} className="block focus:outline-none">
-            <h3 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition-colors line-clamp-2 min-h-[3rem] leading-snug">
+            <h3 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition-colors line-clamp-2 min-h-[3.25rem] leading-snug">
               {title}
             </h3>
           </Link>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8A532B] dark:text-[#C58B43]" />
-            <span className="truncate">{dict.scholar_name || SCHOLAR_NAME}</span>
-          </p>
         </div>
 
         {/* نوار شنیدن نمونه استودیویی */}
@@ -252,7 +247,7 @@ export function MasterpieceCourseCard({ course, index }: MasterpieceCourseCardPr
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 truncate">
+          <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400 leading-tight">
             {level}
           </span>
 
@@ -261,7 +256,7 @@ export function MasterpieceCourseCard({ course, index }: MasterpieceCourseCardPr
             <Link
               href={`/courses/${course.id}`}
               onClick={() => triggerTactileHaptic('tick')}
-              className="px-4 py-2 rounded-xl bg-[#0C0D0E] dark:bg-[#FAF8F5] hover:bg-[#8A532B] dark:hover:bg-[#C58B43] text-[#FAF8F5] dark:text-[#0C0D0E] text-xs font-bold transition-colors flex items-center gap-2 shrink-0 group/link"
+              className="px-4 py-2 rounded-xl bg-[#0C0D0E] hover:bg-[#8A532B] text-[#FAF8F5] dark:bg-[#1E2024] dark:border dark:border-[#C58B43]/30 dark:text-[#FAF8F5] dark:hover:bg-[#25282E] dark:hover:border-[#C58B43] text-xs font-bold transition-colors flex items-center gap-2 shrink-0 group/link shadow-xs"
             >
               <span>{dict.catalog_enter_course || 'مشاهده دوره'}</span>
               <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180 rtl:group-hover/link:-translate-x-1 ltr:group-hover/link:translate-x-1 transition-transform" />

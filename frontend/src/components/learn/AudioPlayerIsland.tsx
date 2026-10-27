@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { usePathname } from 'next/navigation';
 import { SupportedLang } from '@/lib/data';
 import { getLocalizedChapterTitle } from '@/lib/localization';
 
@@ -99,7 +100,14 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
     }
   }, [isPlaying, currentCourse, currentChapterIndex]);
 
-  if (!currentCourse || !currentCourse.chapters || currentCourse.chapters.length === 0 || isDismissed) {
+  // Suppress completely on the dedicated in-page studio player route (/courses/[id]/learn)
+  const pathname = usePathname();
+  if (pathname && pathname.includes('/learn')) {
+    return null;
+  }
+
+  // Do NOT render floating island if user hasn't started playing anything (only render when isPlaying && currentCourse)
+  if (!isPlaying || !currentCourse || !currentCourse.chapters || currentCourse.chapters.length === 0 || isDismissed) {
     return null;
   }
 
@@ -133,7 +141,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
 
   return (
     <aside
-      className="fixed bottom-4 inset-x-0 z-40 flex flex-col items-center px-2 sm:px-4 pointer-events-none space-y-2 select-none"
+      className="fixed bottom-4 inset-x-0 z-30 flex flex-col items-center px-2 sm:px-4 pointer-events-none space-y-2 select-none"
       aria-label="Studio Audio Player Island"
     >
       {/* Expandable Playlist Drawer */}
@@ -148,7 +156,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             </div>
             <button
               onClick={togglePlaylist}
-              className="p-1 rounded-md hover:bg-stone-100 dark:hover:bg-neutral-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+              className="p-1 rounded-md hover:bg-stone-100 dark:hover:bg-[#1E2024] text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
             >
               <ChevronDown className="w-4 h-4" />
             </button>
@@ -164,7 +172,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
                   onClick={() => setChapterIndex(idx)}
                   className={`p-3 rounded-lg text-xs font-semibold flex items-center justify-between gap-2 cursor-pointer transition ${
                     active
-                      ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                      ? 'bg-stone-900 text-white dark:bg-[#1E2024] dark:border dark:border-[#C58B43]/30 dark:text-[#FAF8F5]'
                       : 'hover:bg-stone-50 dark:hover:bg-neutral-800/60 text-stone-700 dark:text-stone-300'
                   }`}
                 >
@@ -214,7 +222,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             {/* -10s skip */}
             <button
               onClick={() => skip(-10)}
-              className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-neutral-800 text-stone-500 hover:text-stone-900 dark:hover:text-white transition items-center justify-center cursor-pointer group active:scale-95"
+              className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1E2024] text-stone-500 hover:text-stone-900 dark:hover:text-[#FAF8F5] transition items-center justify-center cursor-pointer group active:scale-95"
               title={
                 dict.player_skip_10s ||
                 (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
@@ -226,10 +234,10 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
               </span>
             </button>
 
-            {/* Play/Pause Button */}
+            {/* Play/Pause Button - Anti-Glare dark metallic bronze/obsidian */}
             <button
               onClick={togglePlay}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-stone-900 hover:bg-stone-800 dark:bg-[#1E2024] border border-transparent dark:border-[#C58B43]/30 text-white dark:text-[#FAF8F5] hover:border-[#C58B43] dark:hover:bg-[#25282E] flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer"
               title={isPlaying ? (dict.player_pause || 'توقف') : (dict.player_play || 'پخش')}
             >
               {isPlaying ? (
@@ -242,7 +250,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             {/* +30s skip */}
             <button
               onClick={() => skip(30)}
-              className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-neutral-800 text-stone-500 hover:text-stone-900 dark:hover:text-white transition items-center justify-center cursor-pointer group active:scale-95"
+              className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1E2024] text-stone-500 hover:text-stone-900 dark:hover:text-[#FAF8F5] transition items-center justify-center cursor-pointer group active:scale-95"
               title={
                 dict.player_skip_30s ||
                 (currentLang === 'en' ? '30s Forward' : currentLang === 'ar' ? '٣٠ ثانية للأمام' : '۳۰ ثانیه به جلو')
@@ -259,7 +267,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <button
               onClick={cycleSpeed}
-              className="hidden sm:block px-2 py-1 rounded-md bg-stone-100 dark:bg-neutral-800 hover:bg-stone-200 dark:hover:bg-neutral-700 text-stone-700 dark:text-stone-200 font-bold text-xs transition cursor-pointer font-num"
+              className="hidden sm:block px-2 py-1 rounded-md bg-stone-100 dark:bg-[#1E2024] border border-transparent dark:border-[#C58B43]/20 hover:bg-stone-200 dark:hover:bg-[#25282E] text-stone-700 dark:text-[#FAF8F5] font-bold text-xs transition cursor-pointer font-num"
               title={dict.player_speed || 'سرعت پخش'}
             >
               {playbackRate.toFixed(2).replace(/\.00$/, '')}x
@@ -269,8 +277,8 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
               onClick={togglePlaylist}
               className={`p-2 rounded-md transition cursor-pointer ${
                 isPlaylistOpen
-                  ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
-                  : 'text-stone-500 hover:bg-stone-100 dark:hover:bg-neutral-800'
+                  ? 'bg-stone-900 text-white dark:bg-[#1E2024] dark:border dark:border-[#C58B43]/30 dark:text-[#FAF8F5]'
+                  : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-[#1E2024]'
               }`}
               title={dict.player_playlist || 'فهرست جلسات'}
             >
@@ -279,7 +287,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
 
             <button
               onClick={toggleMute}
-              className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition hidden sm:block cursor-pointer"
+              className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-[#FAF8F5] hover:bg-stone-100 dark:hover:bg-[#1E2024] transition hidden sm:block cursor-pointer"
               title={dict.player_volume || 'صدا'}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -287,7 +295,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
 
             <button
               onClick={() => setIsDismissed(true)}
-              className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition cursor-pointer"
+              className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-[#FAF8F5] hover:bg-stone-100 dark:hover:bg-[#1E2024] transition cursor-pointer"
               title={dict.player_close || 'بستن پخش‌کننده'}
             >
               <X className="w-4 h-4" />

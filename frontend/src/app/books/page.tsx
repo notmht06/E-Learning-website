@@ -48,7 +48,7 @@ export default function BooksPage() {
         empty_title: 'No books found',
         empty_desc: 'Please try searching with different keywords or categories.',
         featured_eyebrow: '[ Rare Monographs & Seminal Publications ]',
-        featured_title: dict.catalog_featured_heading || 'Featured Monographs & Editions',
+        featured_title: dict.catalog_books_featured_heading || 'Dar al-Hikmah Publications & Printed Works',
       };
     }
     if (currentLang === 'ar') {
@@ -65,7 +65,7 @@ export default function BooksPage() {
         empty_title: 'لم يتم العثور على مصنفات',
         empty_desc: 'يرجى تجربة كلمات بحث یا دسته‌بندی‌های دیگر.',
         featured_eyebrow: '[ الرسائل والمونوغرافات البارزة ]',
-        featured_title: dict.catalog_featured_heading || 'المصنفات البارزة والطبعات الخاصة',
+        featured_title: dict.catalog_books_featured_heading || 'آثار ومنشورات دار الحكمة المطبوعة',
       };
     }
     return {
@@ -81,7 +81,7 @@ export default function BooksPage() {
       empty_title: 'کتابی یافت نشد',
       empty_desc: 'لطفاً عبارات جستجو یا دسته‌بندی‌های دیگر را امتحان کنید.',
       featured_eyebrow: '[ رسائل برگزیده و نسخ ویژه ]',
-      featured_title: dict.catalog_featured_heading || 'مونوگراف‌های شاخص و آثار چاپی',
+      featured_title: dict.catalog_books_featured_heading || 'آثار و انتشارات مکتوب دارالحکمة',
     };
   }, [currentLang, dict]);
 
@@ -201,7 +201,7 @@ export default function BooksPage() {
 
         {/* Books Grid */}
         {books.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-4">
             {books.map((b) => (
               <BookCard
                 key={b.id}
