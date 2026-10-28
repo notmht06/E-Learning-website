@@ -6,12 +6,13 @@ import {
   Compass,
   BookOpen,
   Headphones,
+  CheckCircle2,
+  Layers,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-import { useData } from '@/context/DataContext';
 import { AudioCourse } from '@/lib/data';
-import { getLocalizedCategory } from '@/lib/localization';
-import { SCHOLAR_NAME } from '@/lib/constants';
+import { getScholarName } from '@/lib/constants';
+import { HeroInstantSearch } from './home/HeroInstantSearch';
 
 interface BentoHeroProps {
   heroCourse?: AudioCourse;
@@ -19,73 +20,136 @@ interface BentoHeroProps {
 }
 
 export function BentoHero({}: BentoHeroProps) {
-  const { currentLang, dict } = useLanguage();
-  const { categories } = useData();
+  const { currentLang, dict, localizeHref = (p) => p } = useLanguage();
 
-  const heroBadge = dict.hero_badge || 'پایگاه رسمی دروس و معارف';
-  const scholarTitle = dict.scholar_name || SCHOLAR_NAME;
-  const subtitle = dict.hero_subtitle || 'درس‌گفتارها، تقریرات و پژوهش‌های علوم عقلی و نقلی';
-  const coursesBtn = dict.btn_listen_courses || dict.nav_courses || 'مشاهده دوره‌ها';
-  const roadmapBtn = dict.nav_roadmap || 'سیر مطالعاتی';
-  const booksBtn = dict.nav_books || 'کتب و آثار';
+  const heroBadge = dict.hero_badge || 'پایگاه رسمی نشر آثار فلسفی';
+  const scholarTitle = dict.scholar_name || getScholarName(currentLang);
+  const subtitle = dict.hero_subtitle || 'مرکز نشر کتاب‌ها و آثار تخصصی فلسفه و کلام اسلامی و آرشیو جامع دوره‌های آموزشی.';
+
+  const coursesBtn = dict.hero_all_courses_btn || dict.nav_courses || 'مشاهده آرشیو دوره‌ها';
+  const roadmapBtn = dict.hero_roadmap_btn || dict.nav_roadmap || 'سیر مطالعاتی گام‌به‌گام';
+  const booksBtn = dict.hero_books_btn || dict.nav_books || 'کتب و تقریرات مکتوب';
+
+  const numFont = currentLang === 'en' ? 'font-mono' : 'font-sans';
 
   return (
-    <section id="hero" className="max-w-4xl mx-auto px-4 sm:px-6 w-full pt-8 sm:pt-8 pb-4 text-center space-y-5">
-      {/* Top Status Pill */}
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#8A532B]/10 text-[#8A532B] border border-[#8A532B]/20 mx-auto">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#8A532B]" />
-        <span>{heroBadge}</span>
-      </div>
+    <section id="hero" className="max-w-5xl mx-auto px-4 sm:px-6 w-full pt-4 sm:pt-6 pb-2">
+      {/* Folio Outer Frame with 4-Corner Traditional Accents */}
+      <div className="relative rounded-3xl border border-[#E6E1D8] dark:border-[#27282D] bg-[#FAF8F5]/80 dark:bg-[#111215]/80 backdrop-blur-md p-6 sm:p-10 text-center space-y-6 sm:space-y-8 shadow-xs overflow-hidden">
+        {/* 4 Traditional Corner Brackets (نشان‌های ۴گوشه هندسی دارالحکمه و سبزلرن) */}
+        <span
+          className="absolute top-3.5 right-3.5 w-3.5 h-3.5 border-t-2 border-r-2 border-[#8A532B]/70 dark:border-[#C58B43]/70 pointer-events-none"
+          aria-hidden="true"
+        />
+        <span
+          className="absolute top-3.5 left-3.5 w-3.5 h-3.5 border-t-2 border-l-2 border-[#8A532B]/70 dark:border-[#C58B43]/70 pointer-events-none"
+          aria-hidden="true"
+        />
+        <span
+          className="absolute bottom-3.5 right-3.5 w-3.5 h-3.5 border-b-2 border-r-2 border-[#8A532B]/70 dark:border-[#C58B43]/70 pointer-events-none"
+          aria-hidden="true"
+        />
+        <span
+          className="absolute bottom-3.5 left-3.5 w-3.5 h-3.5 border-b-2 border-l-2 border-[#8A532B]/70 dark:border-[#C58B43]/70 pointer-events-none"
+          aria-hidden="true"
+        />
 
-      {/* Main Scholar Title */}
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight leading-snug">
-          {scholarTitle}
-        </h1>
-        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium">
-          {subtitle}
-        </p>
-      </div>
+        {/* 1. Top Scholar Status Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-medium bg-[#8A532B]/10 dark:bg-[#C58B43]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 dark:border-[#C58B43]/20 mx-auto">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#8A532B] dark:bg-[#C58B43]" />
+          <span>{heroBadge}</span>
+        </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-        <a
-          href="#catalog"
-          className="px-6 py-3 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-medium shadow-xs transition duration-200 flex items-center gap-2 cursor-pointer"
-        >
-          <Headphones className="w-4 h-4" />
-          <span>{coursesBtn}</span>
-        </a>
-        <Link
-          href="/roadmap"
-          className="px-5 py-3 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs sm:text-sm font-medium transition duration-200 flex items-center gap-2 cursor-pointer shadow-xs"
-        >
-          <Compass className="w-4 h-4 text-[#8A532B]" />
-          <span>{roadmapBtn}</span>
-        </Link>
-        <Link
-          href="/books"
-          className="px-5 py-3 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs sm:text-sm font-medium transition duration-200 flex items-center gap-2 cursor-pointer shadow-xs"
-        >
-          <BookOpen className="w-4 h-4 text-[#8A532B]" />
-          <span>{booksBtn}</span>
-        </Link>
-      </div>
+        {/* 2. Official Scholar Title & Subtitle */}
+        <div className="space-y-3 max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight leading-snug">
+            {scholarTitle}
+          </h1>
+          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-300 font-medium leading-relaxed max-w-2xl mx-auto">
+            {subtitle}
+          </p>
+        </div>
 
-      {/* Subject Quick Links */}
-      <div className="pt-3 flex flex-wrap items-center justify-center gap-2 max-w-lg mx-auto">
-        {categories.slice(0, 6).map((cat) => {
-          const locCat = getLocalizedCategory(cat, currentLang);
-          return (
-            <Link
-              key={cat.id}
-              href={`/courses?subject=${encodeURIComponent(cat.name)}`}
-              className="px-3 py-1 rounded-full text-xs bg-zinc-100 dark:bg-zinc-800/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] text-zinc-600 dark:text-zinc-300 transition duration-150 border border-transparent hover:border-[#8A532B]/20"
-            >
-              {locCat?.name || cat.name}
-            </Link>
-          );
-        })}
+        {/* 3. Hero Instant Search Console with Hotkey and Live Dropdown */}
+        <div className="pt-1">
+          <HeroInstantSearch />
+        </div>
+
+        {/* 4. Action CTAs */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            href={localizeHref('/courses')}
+            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#8A532B] hover:bg-[#734320] text-white text-xs sm:text-sm font-medium shadow-xs transition-all duration-200 flex items-center gap-2 cursor-pointer active:scale-95"
+          >
+            <Headphones className="w-4 h-4" />
+            <span>{coursesBtn}</span>
+          </Link>
+          <Link
+            href={localizeHref('/roadmap')}
+            className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-[#E6E1D8] dark:border-[#27282D] bg-white dark:bg-[#16171B] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-2xs active:scale-95"
+          >
+            <Compass className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+            <span>{roadmapBtn}</span>
+          </Link>
+          <Link
+            href={localizeHref('/books')}
+            className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-[#E6E1D8] dark:border-[#27282D] bg-white dark:bg-[#16171B] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-2xs active:scale-95"
+          >
+            <BookOpen className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+            <span>{booksBtn}</span>
+          </Link>
+        </div>
+
+        {/* 5. Three Architectural Value Pillars (۳ ستون ارزش محوری سبزلرن و دارالحکمه) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-[#E6E1D8]/80 dark:border-[#27282D]/80 text-start">
+          {/* Pillar 1 */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
+            <div className="flex items-center gap-2">
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+                {dict.hero_stat_1_num || '۱۶۰+'}
+              </span>
+              <Layers className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              {dict.hero_stat_1_title || 'جلسه درس خارج و تدریس استودیویی'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              {dict.hero_stat_1_desc || 'آرشیو منقح متون امهات فلسفه و حکمت'}
+            </p>
+          </div>
+
+          {/* Pillar 2 */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
+            <div className="flex items-center gap-2">
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+                {dict.hero_stat_2_num || '۸'}
+              </span>
+              <Compass className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              {dict.hero_stat_2_title || 'شاخه تخصصی علوم عقلی و اجتهادی'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              {dict.hero_stat_2_desc || 'از منطق و کلام تا اسفار و عرفان نظری'}
+            </p>
+          </div>
+
+          {/* Pillar 3 */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
+            <div className="flex items-center gap-2">
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+                {dict.hero_stat_3_num || '۱۰۰٪'}
+              </span>
+              <CheckCircle2 className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              {dict.hero_stat_3_title || 'استدلال برهانی بر متون کهن'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              {dict.hero_stat_3_desc || 'تقریرات منقح و دسترسی آزاد به فصول نمونه'}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
