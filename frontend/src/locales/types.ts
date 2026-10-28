@@ -25,6 +25,7 @@ export interface LanguageContextType {
   dict: Dictionary;
   isRtl: boolean;
   dir: 'rtl' | 'ltr';
-  toLocale: (num: number | string) => string;
+  toLocale: (num: number | string, lang?: SupportedLang) => string;
+  localizeHref?: (path: string) => string;
   t: (key: TranslationKey | string, fallback?: string) => string;
 }
