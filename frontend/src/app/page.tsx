@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FloatingNavigationPill } from '@/components/navigation/FloatingNavigationPill';
+import { Navbar } from '@/components/Navbar';
 import { BentoHero } from '@/components/BentoHero';
 import { WisdomStationsSheet, DiscoursePlayerSection } from '@/components/home';
 import { CourseCatalogBento } from '@/components/CourseCatalogBento';
@@ -40,8 +40,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-[#8A532B]/20 selection:text-[#8A532B] dark:selection:text-[#C58B43] bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#18181B] dark:text-[#F4F4F6] transition-colors duration-200 font-sans antialiased">
-      {/* 1. Floating Capsule Header Navigation (Adapted from UTopia farabi-utopia.ir) */}
-      <FloatingNavigationPill
+      {/* 1. Floating Capsule Header Navigation */}
+      <Navbar
         cartCount={cartItems.length}
         onOpenCart={openCart}
       />

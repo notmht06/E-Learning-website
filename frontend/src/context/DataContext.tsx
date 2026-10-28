@@ -194,9 +194,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         level_fa: bc.level || merged[existingKey].level_fa,
                         price_fa: bc.price || merged[existingKey].price_fa,
                       };
-                      if (existingKey !== bc.id) {
-                        merged[bc.id] = merged[existingKey];
-                      }
+
                     } else if (bc.id && bc.title) {
                       merged[bc.id] = {
                         id: bc.id,

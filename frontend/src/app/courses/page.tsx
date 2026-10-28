@@ -100,9 +100,20 @@ function CoursesContent() {
     };
   }, [currentLang, dict]);
 
+  // Deduplicated unique courses list
+  const uniqueCourses = useMemo(() => {
+    const all = Object.values(courses);
+    const seen = new Set<string>();
+    return all.filter((c) => {
+      if (!c?.id || seen.has(c.id)) return false;
+      seen.add(c.id);
+      return true;
+    });
+  }, [courses]);
+
   // Filter Logic
   const coursesList = useMemo(() => {
-    return Object.values(courses).filter((c) => {
+    return uniqueCourses.filter((c) => {
       const loc = getLocalizedCourse(c, currentLang);
       const title = (loc?.title || c.title_fa || '').toLowerCase();
       const desc = (loc?.desc || c.desc_fa || '').toLowerCase();
@@ -114,23 +125,23 @@ function CoursesContent() {
 
       return matchesSearch && matchesType && matchesSubject;
     });
-  }, [courses, currentLang, searchQuery, selectedType, selectedSubject]);
+  }, [uniqueCourses, currentLang, searchQuery, selectedType, selectedSubject]);
 
   // Featured Courses (first 2-3 courses)
   const featuredCourses = useMemo(() => {
-    return Object.values(courses).slice(0, 3);
-  }, [courses]);
+    return uniqueCourses.slice(0, 3);
+  }, [uniqueCourses]);
 
   // Subject tabs for CategoryTabStrip
   const subjectTabs: TabItem[] = useMemo(() => {
     const allTab: TabItem = {
       id: 'all',
       label: t.all_subjects,
-      count: Object.values(courses).length,
+      count: uniqueCourses.length,
     };
 
     const catTabs = categories.map((cat) => {
-      const catCount = Object.values(courses).filter((c) => c.subject === cat.name).length;
+      const catCount = uniqueCourses.filter((c) => c.subject === cat.name).length;
       let label = cat.name;
       if (currentLang === 'en' && cat.name_en) label = cat.name_en;
       if (currentLang === 'ar' && cat.name_ar) label = cat.name_ar;

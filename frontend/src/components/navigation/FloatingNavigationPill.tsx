@@ -129,14 +129,14 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             {dict.pill_nav_catalog || 'دوره‌ها'}
           </Link>
           <a
-            href="#stations"
+            href="/#stations"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors flex items-center gap-1"
           >
             <Compass className="w-3.5 h-3.5 text-[#8A532B]" />
             <span>{dict.pill_nav_stations || 'ایستگاه‌های حکمت'}</span>
           </a>
           <a
-            href="#discourse"
+            href="/#discourse"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors flex items-center gap-1"
           >
             <Headphones className="w-3.5 h-3.5 text-[#8A532B]" />
@@ -286,7 +286,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.pill_nav_catalog || 'دوره‌ها'}</span>
             </Link>
             <a
-              href="#stations"
+              href="/#stations"
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -294,7 +294,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.pill_nav_stations || 'ایستگاه‌های حکمت'}</span>
             </a>
             <a
-              href="#discourse"
+              href="/#discourse"
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
