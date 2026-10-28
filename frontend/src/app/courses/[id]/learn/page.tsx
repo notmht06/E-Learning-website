@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { coursesDatabase } from '@/lib/data';
 import { AudioVideoPlayerEngine } from '@/components/learn/AudioVideoPlayerEngine';
 import { CoursePlaylistSidebar } from '@/components/course/CoursePlaylistSidebar';
-import { CourseHandoutsTab } from '@/components/learn/CourseHandoutsTab';
+import { LessonWorkspaceTabs } from '@/components/learn/LessonWorkspaceTabs';
 import { apiClient } from '@/services/apiClient';
 import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
 import { getLocalizedChapterTitle, getLocalizedSubject } from '@/lib/localization';
@@ -217,10 +217,13 @@ export default function CourseLearnTheaterPage({
               }}
             />
 
-            {/* Handouts and Course Notes */}
-            <div className="space-y-4">
-              <CourseHandoutsTab courseTitle={courseTitle} chapterTitle={chapterTitle} />
-            </div>
+            {/* Stage 9: Sabzlearn-Inspired Learning Workspace Tabs & AI Assistant */}
+            <LessonWorkspaceTabs
+              courseId={course.id}
+              chapterId={activeChapter.id}
+              courseTitle={courseTitle}
+              chapterTitle={chapterTitle}
+            />
           </div>
 
           {/* Sidebar Playlist Column (4 Cols) */}

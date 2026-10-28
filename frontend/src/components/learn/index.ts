@@ -4,3 +4,7 @@ export * from './CourseHandoutsTab';
 export * from './AudioPlayerIsland';
 export * from './AudioUploaderModal';
 export * from './LearningAccessGuard';
+export * from './LessonNotesTab';
+export * from './LessonAttachmentsTab';
+export * from './LessonAiQnATab';
+export * from './LessonWorkspaceTabs';
