@@ -81,7 +81,7 @@ export const CartModal: React.FC<CartModalProps> = ({
             {items.map((item, idx) => (
               <div
                 key={`${item.id}-${idx}`}
-                className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-[#E6E1D8] dark:border-[#24262D] flex items-center justify-between gap-3 shadow-xs"
+                className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-[#E6E1D8] dark:border-[#24262D] hover:border-[#8A532B]/40 hover:shadow-xs flex items-center justify-between gap-3 transition-all duration-200"
               >
                 <div className="min-w-0">
                   <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">

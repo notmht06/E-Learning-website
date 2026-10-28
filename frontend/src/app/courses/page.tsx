@@ -121,7 +121,17 @@ function CoursesContent() {
 
       const matchesSearch = !q || title.includes(q) || desc.includes(q);
       const matchesType = selectedType === 'all' || c.course_type === selectedType;
-      const matchesSubject = selectedSubject === 'all' || c.subject === selectedSubject;
+      const matchesSubject =
+        selectedSubject === 'all' ||
+        c.subject === selectedSubject ||
+        categories.some(
+          (cat) =>
+            cat.name === c.subject &&
+            (cat.name_en === selectedSubject ||
+              cat.name_ar === selectedSubject ||
+              cat.slug === selectedSubject ||
+              cat.name === selectedSubject)
+        );
 
       return matchesSearch && matchesType && matchesSubject;
     });

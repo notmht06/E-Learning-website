@@ -208,14 +208,11 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           <button
             type="button"
             onClick={handleOpenSearch}
-            className="p-2 sm:px-2.5 sm:py-1.5 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+            className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center cursor-pointer shrink-0"
             aria-label={dict.nav_search_aria || 'جستجو'}
-            title={dict.nav_quick_search_tooltip || 'جستجوی سریع (Ctrl+K)'}
+            title={dict.nav_search_aria || 'جستجو'}
           >
             <Search className="w-4 h-4 shrink-0" />
-            <span className="hidden xl:inline text-[11px] font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
-              Ctrl+K
-            </span>
           </button>
 
           {/* Theme Toggle */}
@@ -233,35 +230,48 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             )}
           </button>
 
-          {/* Language Selector Dropdown with shadcn DropdownMenu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1 cursor-pointer shrink-0"
-                aria-label={dict.pill_nav_lang_aria || 'انتخاب زبان'}
-              >
-                <Globe className="w-4 h-4 shrink-0" />
-                <span className="text-[11px] font-bold uppercase hidden sm:inline whitespace-nowrap">
-                  {currentLang}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-32">
-              {languages.map((l) => (
-                <DropdownMenuItem
-                  key={l.code}
-                  onClick={() => setLanguage(l.code)}
-                  className={`flex items-center justify-between text-xs cursor-pointer ${
-                    currentLang === l.code ? 'font-bold text-[#8A532B] dark:text-[#C58B43]' : ''
-                  }`}
-                >
-                  <span>{l.label}</span>
-                  <span className="text-sm">{l.flag}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Tactile Segmented Language Switcher (1-Click Swiss Capsule) */}
+          <div
+            className="flex items-center p-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-[10px] sm:text-[11px] font-bold shrink-0 select-none"
+            dir="ltr"
+          >
+            <button
+              type="button"
+              onClick={() => setLanguage('fa')}
+              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
+                currentLang === 'fa'
+                  ? 'bg-[#8A532B] text-white shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+              }`}
+              title="فارسی"
+            >
+              فا
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('ar')}
+              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
+                currentLang === 'ar'
+                  ? 'bg-[#8A532B] text-white shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+              }`}
+              title="العربية"
+            >
+              ع
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
+                currentLang === 'en'
+                  ? 'bg-[#8A532B] text-white shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
+              }`}
+              title="English"
+            >
+              EN
+            </button>
+          </div>
 
           {/* Cart Drawer Trigger */}
           <button

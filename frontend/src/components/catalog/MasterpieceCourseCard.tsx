@@ -88,7 +88,7 @@ export function MasterpieceCourseCard({ course, index }: MasterpieceCourseCardPr
 
   return (
     <Card
-      className={`flex flex-col justify-between transition-all duration-200 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 ${
+      className={`flex flex-col justify-between transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 cursor-pointer ${
         isThisCoursePlaying
           ? 'border-[#8A532B] dark:border-[#C58B43] ring-1 ring-[#8A532B]/20 dark:ring-[#C58B43]/20 shadow-md'
           : ''

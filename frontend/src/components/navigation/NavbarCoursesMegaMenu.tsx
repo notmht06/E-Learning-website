@@ -97,7 +97,13 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             >
               <Headphones className="w-3.5 h-3.5" />
               <span>{dict.nav_courses_offline || 'دوره‌های آفلاین'}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-num">
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-num font-bold transition-colors ${
+                  activeTab === 'offline'
+                    ? 'bg-white/25 text-white'
+                    : 'bg-black/5 dark:bg-white/10 text-zinc-600 dark:text-zinc-400'
+                }`}
+              >
                 {toLocale(Object.values(courses).filter((c) => c.course_type === 'offline').length)}
               </span>
             </button>
@@ -113,7 +119,13 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             >
               <Radio className="w-3.5 h-3.5" />
               <span>{dict.nav_courses_online || 'کلاس‌های آنلاین (اسکای‌روم)'}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#8A532B]/20 dark:bg-[#C58B43]/20 text-[#8A532B] dark:text-[#C58B43] font-num">
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-num font-bold transition-colors ${
+                  activeTab === 'online'
+                    ? 'bg-white/25 text-white'
+                    : 'bg-[#8A532B]/15 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43]'
+                }`}
+              >
                 {toLocale(onlineCoursesList.length)}
               </span>
             </button>
@@ -147,7 +159,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                       key={cat.id}
                       href={`/courses?subject=${encodeURIComponent(cat.name)}`}
                       onClick={onClose}
-                      className="group p-2.5 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition-all duration-200 flex items-center justify-between gap-2 min-w-0"
+                      className="group p-2.5 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xs flex items-center justify-between gap-2 min-w-0"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#1E2024] shadow-xs flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 border border-black/5 dark:border-white/5">
@@ -172,7 +184,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             </div>
 
             {/* Left (RTL): Curated Offline Highlight Card */}
-            <div className="w-full lg:w-[270px] shrink-0 bg-white dark:bg-[#1A1C20] border border-[#E6E1D8] dark:border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+            <div className="w-full lg:w-[270px] shrink-0 bg-white dark:bg-[#1A1C20] border border-[#E6E1D8] dark:border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-[#8A532B]/50">
               <div className="space-y-2.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-[10px] font-bold">
                   <Sparkles className="w-3 h-3 shrink-0" />

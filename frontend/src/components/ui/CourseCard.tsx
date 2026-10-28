@@ -85,7 +85,7 @@ export function CourseCard({ course, isPlaying = false, onPlaySample }: CourseCa
   const discipline = getDisciplineBanner(course.subject, currentLang);
 
   return (
-    <article className="group flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3 transition-[border-color] duration-200 ease-out hover:border-[#8A532B]/40 dark:border-zinc-800 dark:bg-[#141518] dark:hover:border-[#C58B43]/40">
+    <article className="group flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:border-zinc-800 dark:bg-[#141518] dark:hover:border-[#C58B43]/60 cursor-pointer">
       {/* 16:9 Classical Manuscript Media */}
       <div className="group/media relative aspect-video overflow-hidden rounded-xl bg-[#0C0D0E]">
         {course.thumbnail ? (

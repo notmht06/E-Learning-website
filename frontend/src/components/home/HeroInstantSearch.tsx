@@ -243,9 +243,9 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
   return (
     <div ref={containerRef} className="w-full max-w-2xl mx-auto relative z-30">
       {/* 1. Main Search Console Input */}
-      <div className="relative flex items-center w-full rounded-2xl bg-white dark:bg-[#121316] border border-[#E6E1D8] dark:border-[#27282D] focus-within:border-[#8A532B] dark:focus-within:border-[#C58B43] shadow-xs focus-within:shadow-md transition-all duration-200">
+      <div className="relative flex items-center w-full rounded-2xl bg-white dark:bg-[#121316] border border-[#E6E1D8] dark:border-[#27282D] focus-within:border-[#8A532B] dark:focus-within:border-[#C58B43] shadow-xs focus-within:shadow-xl focus-within:shadow-black/5 dark:focus-within:shadow-black/30 focus-within:scale-[1.008] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
         {/* Search Icon */}
-        <div className="ps-4 pe-2 text-[#8A532B] dark:text-[#C58B43] shrink-0 pointer-events-none">
+        <div className="ps-4 pe-2 text-[#8A532B] dark:text-[#C58B43] shrink-0 pointer-events-none transition-transform duration-300 group-focus-within:scale-110">
           <Search className="w-5 h-5" />
         </div>
 
@@ -269,7 +269,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
           dir={dict.dir || (isRtl ? 'rtl' : 'ltr')}
         />
 
-        {/* Right side controls: Clear / Hotkey / Submit */}
+        {/* Right side controls: Clear / Submit */}
         <div className="flex items-center gap-1.5 sm:gap-2 pe-2 sm:pe-3 shrink-0">
           {query && (
             <button
@@ -279,28 +279,12 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 setIsOpen(false);
                 inputRef.current?.focus();
               }}
-              className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 cursor-pointer"
               aria-label="Clear"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-
-          {/* Hotkey Badge (strictly LTR for Ctrl + K) */}
-          <button
-            type="button"
-            dir="ltr"
-            onClick={() => {
-              inputRef.current?.focus();
-              setIsOpen(true);
-            }}
-            title={dict.hero_search_hotkey || 'Quick Search'}
-            className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-mono font-medium bg-[#FAF8F5] dark:bg-[#1A1B1E] text-zinc-500 dark:text-zinc-400 border border-[#E6E1D8] dark:border-[#2B2C32] hover:border-[#8A532B]/40 transition-colors cursor-pointer select-none"
-          >
-            <span className="text-[10px]">Ctrl</span>
-            <span>+</span>
-            <span>K</span>
-          </button>
 
           {/* Submit Search Button */}
           <button
@@ -312,17 +296,17 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 handleSelect('/courses');
               }
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#734320] text-white text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer shadow-xs active:scale-95"
+            className="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#734320] text-white text-xs sm:text-sm font-medium transition-all duration-300 ease-out cursor-pointer shadow-xs hover:shadow-md active:scale-95"
           >
             <span>{dict.hero_search_btn || 'جستجو'}</span>
-            <ArrowIcon className="w-3.5 h-3.5 hidden sm:inline-block" />
+            <ArrowIcon className="w-3.5 h-3.5 hidden sm:inline-block transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
         </div>
       </div>
 
-      {/* 2. Live Dropdown Results Panel */}
+      {/* 2. Live Dropdown Results Panel with Spring Fade/Slide Animation */}
       {isOpen && query.trim().length > 0 && (
-        <div className="absolute top-full start-0 end-0 mt-2 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-xl overflow-hidden z-50 divide-y divide-[#E6E1D8]/60 dark:divide-[#27282D]/60 animate-in fade-in duration-150">
+        <div className="absolute top-full start-0 end-0 mt-2 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-2xl shadow-black/15 dark:shadow-black/70 overflow-hidden z-50 divide-y divide-[#E6E1D8]/60 dark:divide-[#27282D]/60 animate-in fade-in-0 zoom-in-95 slide-in-from-top-3 duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform origin-top">
           {hasResults ? (
             <div className="max-h-[380px] overflow-y-auto p-2 sm:p-3 space-y-3">
               {/* Courses Group */}
@@ -344,10 +328,10 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={c.id}
                           type="button"
                           onClick={() => handleSelect(`/courses/${c.id}`)}
-                          className={`w-full text-start px-3 py-2 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-colors cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
                             isSelected
-                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43]'
-                              : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-800 dark:text-zinc-200'
+                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
+                              : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
@@ -382,10 +366,10 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={b.id}
                           type="button"
                           onClick={() => handleSelect('/books')}
-                          className={`w-full text-start px-3 py-2 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-colors cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
                             isSelected
-                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43]'
-                              : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-800 dark:text-zinc-200'
+                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
+                              : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
@@ -420,10 +404,10 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={a.id}
                           type="button"
                           onClick={() => handleSelect('/articles')}
-                          className={`w-full text-start px-3 py-2 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-colors cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
                             isSelected
-                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43]'
-                              : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-800 dark:text-zinc-200'
+                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
+                              : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
@@ -470,7 +454,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
             key={topic.label}
             type="button"
             onClick={() => handleChipClick(topic.query)}
-            className="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium bg-white/80 dark:bg-zinc-900/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-700 dark:text-zinc-300 border border-[#E6E1D8] dark:border-[#27282D] hover:border-[#8A532B]/30 transition-all duration-150 cursor-pointer shadow-2xs"
+            className="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium bg-white/80 dark:bg-zinc-900/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-700 dark:text-zinc-300 border border-[#E6E1D8] dark:border-[#27282D] hover:border-[#8A532B]/30 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-xs active:scale-95 cursor-pointer shadow-2xs"
           >
             {topic.label}
           </button>

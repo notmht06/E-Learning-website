@@ -51,7 +51,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
     const viewText = currentLang === 'en' ? 'View' : currentLang === 'ar' ? 'مشاهدة' : 'مشاهده';
 
     return (
-      <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-zinc-50/80 dark:hover:bg-[#18191D] transition group">
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-zinc-50/80 dark:hover:bg-[#18191D] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
         
         {/* 16:9 Thumbnail Preview */}
         <div className="relative w-32 sm:w-40 aspect-video rounded-lg overflow-hidden shrink-0 bg-[#0C0D0E] border border-zinc-200 dark:border-zinc-800">
@@ -133,7 +133,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
     const viewText = currentLang === 'en' ? 'Details' : currentLang === 'ar' ? 'التفاصيل' : 'مشاهده رساله';
 
     return (
-      <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-zinc-50/80 dark:hover:bg-[#18191D] transition group">
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-zinc-50/80 dark:hover:bg-[#18191D] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
         
         {/* Cover Preview */}
         <div className="relative w-32 sm:w-40 aspect-video rounded-lg overflow-hidden shrink-0 bg-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center p-2 text-center">
