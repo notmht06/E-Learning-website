@@ -235,11 +235,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-8 px-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-8 px-4 bg-black/60 backdrop-blur-xs animate-search-backdrop"
       onClick={handleClose}
     >
       <div
-        className="w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] animate-search-modal"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Search Input Bar */}

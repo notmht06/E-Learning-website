@@ -117,6 +117,8 @@ export const ar: Dictionary = {
   catalog_syllabus_toggle: 'فهرس الجلسات والموضوعات',
   catalog_listen_sample: 'استماع النموذج',
   catalog_enter_course: 'الدخول إلى قاعة الدرس',
+  courses_enter_hall: 'الدخول إلى الدورة',
+  currency_toman: 'تومان',
   roadmap_badge: 'خارطة الطريق المعرفية الخماسية',
   roadmap_title: 'المسار الدراسي التكاملي للعلوم العقلية والنقلية',
   roadmap_desc: 'من مبادئ المنطق إلى قمم الحكمة المتعالية والعرفان النظري بإشراف الأستاذ',

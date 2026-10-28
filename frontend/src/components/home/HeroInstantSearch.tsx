@@ -306,7 +306,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
 
       {/* 2. Live Dropdown Results Panel with Spring Fade/Slide Animation */}
       {isOpen && query.trim().length > 0 && (
-        <div className="absolute top-full start-0 end-0 mt-2 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-2xl shadow-black/15 dark:shadow-black/70 overflow-hidden z-50 divide-y divide-[#E6E1D8]/60 dark:divide-[#27282D]/60 animate-in fade-in-0 zoom-in-95 slide-in-from-top-3 duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform origin-top">
+        <div className="absolute top-full start-0 end-0 mt-2 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-2xl shadow-black/15 dark:shadow-black/70 overflow-hidden z-50 divide-y divide-[#E6E1D8]/60 dark:divide-[#27282D]/60 animate-dropdown-spring">
           {hasResults ? (
             <div className="max-h-[380px] overflow-y-auto p-2 sm:p-3 space-y-3">
               {/* Courses Group */}

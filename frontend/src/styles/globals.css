@@ -426,3 +426,107 @@ html[lang="en"] .font-num,
   animation: audio-bar-dance 0.75s ease-in-out 0.4s infinite;
 }
 
+/* ==========================================================================
+   Radix & Modal Tactile Smooth Spring Animations (Anti-Jank, Hardware Accelerated)
+   ========================================================================== */
+@keyframes radix-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes radix-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes radix-content-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes radix-content-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+}
+
+@keyframes search-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes search-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-spring-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Automatic Radix Dialog Smooth Easing */
+[data-radix-dialog-overlay][data-state='open'] {
+  animation: radix-fade-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-overlay][data-state='closed'] {
+  animation: radix-fade-out 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-content][data-state='open'] {
+  animation: radix-content-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-content][data-state='closed'] {
+  animation: radix-content-out 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.animate-search-backdrop {
+  animation: search-modal-backdrop-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.animate-search-modal {
+  animation: search-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.animate-dropdown-spring {
+  animation: dropdown-spring-in 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+

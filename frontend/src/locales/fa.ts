@@ -116,6 +116,8 @@ export const fa = {
   catalog_syllabus_toggle: 'فهرست جلسات و سرفصل‌ها',
   catalog_listen_sample: 'شنیدن نمونه',
   catalog_enter_course: 'مشاهده دوره',
+  courses_enter_hall: 'ورود به دوره',
+  currency_toman: 'تومان',
   roadmap_badge: 'نقشه راه ۵ مرحله‌ای جامع',
   roadmap_title: 'سیر مطالعاتی علوم عقلی و نقلی',
   roadmap_desc: 'از مبادی منطق تا قله‌های حکمت متعالیه و عرفان نظری با هدایت مستقیم استاد',

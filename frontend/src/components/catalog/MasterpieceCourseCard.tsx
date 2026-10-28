@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
+  ArrowRight,
   Bookmark,
   Clock,
   BookOpen,
@@ -62,7 +63,7 @@ function getDisciplineBanner(subject: string = '', lang: string = 'fa') {
     return {
       gradient: 'bg-gradient-to-br from-[#382818] via-[#251A10] to-[#150F09]',
       accent: '#E0A96D',
-      label: lang === 'en' ? 'Principles of Jurisprudence' : lang === 'ar' ? 'أصول الفقه والاجتهاد' : 'اصول فقه و اجتهاد',
+      label: lang === 'en' ? 'Jurisprudence & Usul' : lang === 'ar' ? 'أصول الفقه والاجتهاد' : 'اصول فقه و اجتهاد',
     };
   }
   if (s.includes('تفسیر') || s.includes('tafsir') || s.includes('quran')) {
@@ -93,7 +94,7 @@ export function MasterpieceCourseCard({
   const title = loc?.title || course.title_fa;
   const subject = loc?.subject || course.subject;
   const duration = loc?.duration || course.duration_fa;
-  const level = loc?.level || course.level_fa || (currentLang === 'en' ? 'Advanced Level' : 'سطح عالی و خارج');
+  const level = loc?.level || course.level_fa || (currentLang === 'en' ? 'Advanced Seminary Level' : 'سطح عالی و خارج');
   const price =
     loc?.price ||
     course.price_fa ||
@@ -103,7 +104,7 @@ export function MasterpieceCourseCard({
     loc?.desc ||
     course.desc_fa ||
     (currentLang === 'en'
-      ? 'Rigorous philosophical discourse and analytical investigations under the auspices of classical rational sciences.'
+      ? 'Rigorous philosophical discourse and analytical investigations under classical rational sciences.'
       : currentLang === 'ar'
       ? 'دروس استدلالية رصينة ومباحث معمقة في العلوم العقلية وحكمة أهل البيت عليهم السلام.'
       : 'تدریس برهانی و متن‌محور متون اصیل فلسفه و حکمت اسلامی همراه با پاسخ به شبهات معاصر.');
@@ -117,9 +118,11 @@ export function MasterpieceCourseCard({
   const bookmarked = isBookmarked(course.id);
 
   // Stable scholar count computation
-  const studentsCount =
+  const rawScholars =
     course.enrolledCount ||
     (Math.abs(course.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 120)) % 150) + 85;
+
+  const studentsCount = currentLang === 'en' ? String(rawScholars) : toLocale(rawScholars);
 
   const isFree =
     price.toLowerCase().includes('رایگان') ||
@@ -127,15 +130,21 @@ export function MasterpieceCourseCard({
     price.toLowerCase().includes('مجاني') ||
     price.toLowerCase().includes('وقف');
 
-  const serialCode = `CRS-${String(index + 1).padStart(2, '0')}`;
+  // Strict serial code formatting per language
+  const paddedIndex = String(index + 1).padStart(2, '0');
+  const serialCode =
+    currentLang === 'en'
+      ? `CRS-${paddedIndex}`
+      : `CRS-${toLocale(paddedIndex)}`;
+
   const discipline = getDisciplineBanner(course.subject, currentLang);
 
   const sessionsSuffix =
     currentLang === 'en'
-      ? dict.catalog_sessions_suffix || 'Sessions'
+      ? (dict.catalog_sessions_suffix || 'Sessions')
       : currentLang === 'ar'
-      ? dict.catalog_sessions_suffix || 'جلسة'
-      : dict.catalog_sessions_suffix || 'جلسه';
+      ? (dict.catalog_sessions_suffix || 'جلسة')
+      : (dict.catalog_sessions_suffix || 'جلسه');
 
   const modeLabel = isOnline
     ? dict.skyroom_badge || (currentLang === 'en' ? 'Online Course' : currentLang === 'ar' ? 'دورة مباشرة' : 'دوره آنلاین')
@@ -144,6 +153,13 @@ export function MasterpieceCourseCard({
   const bookmarkLabel = bookmarked
     ? dict.catalog_bookmark_remove || 'حذف نشانک'
     : dict.catalog_bookmark_add || 'افزودن نشانک';
+
+  const enterButtonText =
+    currentLang === 'en'
+      ? 'Enter Course'
+      : currentLang === 'ar'
+      ? 'الدخول إلى قاعة الدرس'
+      : (dict.catalog_enter_course || 'ورود به دوره');
 
   const handleAuditionToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -167,14 +183,14 @@ export function MasterpieceCourseCard({
 
   return (
     <article
-      className={`group flex flex-col justify-between rounded-2xl border border-zinc-200/90 bg-white dark:border-zinc-800/80 dark:bg-[#141518] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 cursor-pointer ${
+      className={`group h-full flex flex-col justify-between rounded-2xl border border-zinc-200/90 bg-white dark:border-zinc-800/80 dark:bg-[#141518] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 cursor-pointer ${
         isThisCoursePlaying
           ? 'border-[#8A532B] dark:border-[#C58B43] ring-1 ring-[#8A532B]/30 dark:ring-[#C58B43]/30 shadow-md'
           : ''
       }`}
     >
       {/* 16:9 Sabzlearn-Inspired Media Banner */}
-      <div className="group/media relative aspect-video w-full overflow-hidden bg-[#0C0D0E] select-none">
+      <div className="group/media relative aspect-video w-full overflow-hidden bg-[#0C0D0E] select-none shrink-0">
         {course.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -184,36 +200,38 @@ export function MasterpieceCourseCard({
           />
         ) : (
           <div
-            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3.5 select-none transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover/media:scale-105`}
+            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover/media:scale-105`}
           >
             {/* Classical Manuscript Filigree Borders */}
-            <div className="absolute inset-2 rounded-lg border border-white/10 pointer-events-none" />
-            <div className="absolute inset-2.5 rounded-md border border-dashed border-white/5 pointer-events-none" />
+            <div className="absolute inset-1.5 rounded-lg border border-white/10 pointer-events-none" />
+            <div className="absolute inset-2 rounded-md border border-dashed border-white/5 pointer-events-none" />
 
             {/* Header: Imprint & Discipline Badge */}
-            <div className="relative z-1 flex items-center justify-between text-[10px] tracking-wider font-mono text-white/70">
-              <span className="font-bold uppercase tracking-widest text-amber-200/80">DAR AL-HIKMAH</span>
-              <span className="px-2 py-0.5 rounded border border-white/15 bg-black/40 backdrop-blur-xs text-stone-200 text-[10px] font-medium font-sans">
+            <div className="relative z-1 flex items-center justify-between text-[10px] tracking-wider font-mono text-white/70 h-5">
+              <span className="font-bold uppercase tracking-widest text-amber-200/80 text-[9px]">
+                DAR AL-HIKMAH
+              </span>
+              <span className="px-1.5 py-0.5 rounded border border-white/15 bg-black/40 backdrop-blur-xs text-stone-200 text-[9px] font-medium font-sans truncate max-w-[130px]">
                 {discipline.label}
               </span>
             </div>
 
             {/* Center Calligraphic Title */}
-            <div className="relative z-1 my-auto text-center px-4 space-y-1">
-              <span className="block text-xs sm:text-sm font-bold text-white/95 line-clamp-2 leading-relaxed font-sans">
+            <div className="relative z-1 my-auto text-center px-2 space-y-1">
+              <span className="block text-xs sm:text-[13px] font-bold text-white/95 line-clamp-2 leading-relaxed font-sans">
                 {title}
               </span>
               <div className="flex items-center justify-center gap-1.5 text-[9px] text-amber-200/70 font-mono">
-                <span>✦</span>
+                <span>•</span>
                 <span className="tracking-widest">
-                  {currentLang === 'en' ? 'Official Discourse' : currentLang === 'ar' ? 'درس استدلالي رسمي' : 'درس‌گفتار رسمی خارج'}
+                  {currentLang === 'en' ? 'Official Lecture' : currentLang === 'ar' ? 'درس استدلالي رسمي' : 'درس‌گفتار رسمی خارج'}
                 </span>
-                <span>✦</span>
+                <span>•</span>
               </div>
             </div>
 
             {/* Bottom spacer for clean aesthetic */}
-            <div className="h-2" />
+            <div className="h-1" />
           </div>
         )}
 
@@ -249,12 +267,12 @@ export function MasterpieceCourseCard({
             </span>
           ) : (
             <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-num bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 shadow-xs backdrop-blur-xs">
-              {toLocale('20%')} {currentLang === 'en' ? 'OFF' : currentLang === 'ar' ? 'خصم' : 'تخفیف'}
+              {currentLang === 'en' ? '20% OFF' : currentLang === 'ar' ? '٢٠٪ خصم' : '۲۰٪ تخفیف'}
             </span>
           )}
         </div>
 
-        {/* Bottom-End: Serial / Format Pill */}
+        {/* Bottom-End: Serial Code Pill */}
         <div className="absolute bottom-2.5 end-2.5 z-10">
           <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
             [{serialCode}]
@@ -278,38 +296,42 @@ export function MasterpieceCourseCard({
         </button>
       </div>
 
-      {/* Body Content Stack */}
-      <div className="flex flex-col flex-1 p-3.5 pt-3 space-y-2.5">
+      {/* Body Content Stack (Strict Equal Height Alignment) */}
+      <div className="flex flex-col flex-1 p-3.5 pt-3 justify-between space-y-2">
         {/* Subject & Academic Level */}
-        <div className="flex items-center justify-between gap-2 text-xs">
-          <Badge variant="accent" className="text-[11px] font-medium px-2 py-0.5">
+        <div className="flex items-center justify-between gap-2 text-xs h-6">
+          <Badge variant="accent" className="text-[11px] font-medium px-2 py-0.5 shrink-0">
             {subject}
           </Badge>
-          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate">
+          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[140px] text-end">
             {level}
           </span>
         </div>
 
-        {/* Course Title */}
-        <Link href={`/courses/${course.id}`} className="group/title block">
-          <h3 className="line-clamp-2 min-h-[3rem] text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition-colors">
-            {title}
-          </h3>
-        </Link>
+        {/* Course Title (Exact fixed height container) */}
+        <div className="h-12 flex items-start overflow-hidden">
+          <Link href={`/courses/${course.id}`} className="group/title block w-full">
+            <h3 className="line-clamp-2 text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition-colors">
+              {title}
+            </h3>
+          </Link>
+        </div>
 
-        {/* Brief Excerpt (Sabzlearn-style) */}
-        <p className="line-clamp-2 min-h-[2.4rem] text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {descText}
-        </p>
+        {/* Brief Excerpt (Exact fixed height container) */}
+        <div className="h-9 flex items-start overflow-hidden">
+          <p className="line-clamp-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify">
+            {descText}
+          </p>
+        </div>
 
-        {/* Scholar Instructor & 5.0 Rating Row (Sabzlearn-style) */}
-        <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+        {/* Scholar Instructor & 5.0 Rating Row (Fixed height container) */}
+        <div className="h-7 flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
           <div className="flex items-center gap-2 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/ostad_zanjirzan.jpg"
               alt={dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
-              className="h-6 w-6 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
+              className="h-5 w-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
             />
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">
               {dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
@@ -318,38 +340,42 @@ export function MasterpieceCourseCard({
 
           <div className="flex items-center gap-1 text-xs font-bold text-amber-500 font-num shrink-0">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            <span>{toLocale('5.0')}</span>
+            <span>{currentLang === 'en' ? '5.0' : toLocale('5.0')}</span>
           </div>
         </div>
 
-        {/* 3-Column Metrics Bar (Sabzlearn-style) */}
-        <div className="grid grid-cols-3 gap-2 py-2 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60">
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400">
+        {/* 3-Column Metrics Bar (Fixed height container) */}
+        <div className="h-9 grid grid-cols-3 gap-1 py-1 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60 items-center">
+          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
             <Clock className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">{duration}</span>
           </div>
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400">
+          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
             <BookOpen className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">
-              {toLocale(sessionsCount)} {sessionsSuffix}
+              {currentLang === 'en' ? sessionsCount : toLocale(sessionsCount)} {sessionsSuffix}
             </span>
           </div>
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400">
+          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
             <Users className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">
-              {toLocale(studentsCount)} {currentLang === 'en' ? 'Scholars' : currentLang === 'ar' ? 'باحث' : 'پژوهشگر'}
+              {studentsCount} {currentLang === 'en' ? 'Scholars' : currentLang === 'ar' ? 'باحث' : 'پژوهشگر'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Card Footer: Pricing & Entrance Button (Sabzlearn-style) */}
-      <div className="border-t border-zinc-100 p-3.5 pt-2.5 dark:border-zinc-800/80 flex items-center justify-between gap-2">
+      {/* Card Footer: Pricing & Entrance Button (Strict Equal Height) */}
+      <div className="h-14 border-t border-zinc-100 p-3.5 py-2.5 dark:border-zinc-800/80 flex items-center justify-between gap-2 shrink-0">
         <div className="min-w-0">
           {isFree ? (
             <div>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-num leading-tight">
-                {toLocale('۴۵۰,۰۰۰')} {dict.currency_toman || 'تومان'}
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+                {currentLang === 'en'
+                  ? '$45.00'
+                  : currentLang === 'ar'
+                  ? '٤٥٠,٠٠٠ تومان'
+                  : `${toLocale('۴۵۰,۰۰۰')} تومان`}
               </span>
               <span className="text-sm font-bold text-[#8A532B] dark:text-[#C58B43] block">
                 {currentLang === 'en' ? 'Free (Endowment)' : currentLang === 'ar' ? 'وقف علمي مجاني' : 'رایگان (وقف عام)'}
@@ -357,8 +383,8 @@ export function MasterpieceCourseCard({
             </div>
           ) : (
             <div>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-num leading-tight">
-                {toLocale('۶۵۰,۰۰۰')}
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+                {currentLang === 'en' ? '$65.00' : `${toLocale('۶۵۰,۰۰۰')}`}
               </span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-num block">
                 {price}
@@ -374,8 +400,12 @@ export function MasterpieceCourseCard({
           className="text-xs font-bold hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-[#0C0D0E] transition-all group/btn shrink-0"
         >
           <Link href={`/courses/${course.id}`}>
-            <span>{dict.courses_enter_hall || 'ورود به کرسی درس'}</span>
-            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180 rtl:group-hover/btn:-translate-x-1 ltr:group-hover/btn:translate-x-1 transition-transform" />
+            <span>{enterButtonText}</span>
+            {currentLang === 'en' ? (
+              <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+            ) : (
+              <ArrowLeft className="w-3.5 h-3.5 group-hover/btn:-translate-x-1 transition-transform" />
+            )}
           </Link>
         </Button>
       </div>

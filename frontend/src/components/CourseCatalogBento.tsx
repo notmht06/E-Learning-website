@@ -92,7 +92,7 @@ export function CourseCatalogBento({
         </div>
 
         {/* شبکه ۳ ستونی کارت‌های استاندارد shadcn */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
           {filteredCourses.map((course, idx) => (
             <MasterpieceCourseCard key={course.id} course={course} index={idx} />
           ))}

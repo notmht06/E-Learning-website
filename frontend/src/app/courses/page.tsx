@@ -254,14 +254,15 @@ function CoursesContent() {
 
         {/* Courses Grid */}
         {coursesList.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2 lg:grid-cols-3">
-            {coursesList.map((c) => {
+          <div className="grid grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+            {coursesList.map((c, idx) => {
               const isCurrentPlaying = isPlaying && currentCourse?.id === c.id;
 
               return (
                 <CourseCard
                   key={c.id}
                   course={c}
+                  index={idx}
                   isPlaying={isCurrentPlaying}
                   onPlaySample={() => {
                     if (isCurrentPlaying) {

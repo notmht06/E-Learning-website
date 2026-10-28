@@ -117,6 +117,8 @@ export const en: Dictionary = {
   catalog_syllabus_toggle: 'Syllabus & Session Outlines',
   catalog_listen_sample: 'Play Sample',
   catalog_enter_course: 'Enter Lecture Hall',
+  courses_enter_hall: 'Enter Course',
+  currency_toman: 'Toman',
   roadmap_badge: '5-Stage Comprehensive Curriculum',
   roadmap_title: 'Analytical Rational Sciences Curriculum',
   roadmap_desc: 'From foundational logic to transcendent philosophy and theoretical mysticism.',
