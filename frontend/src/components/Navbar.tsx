@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { FloatingNavigationPill } from '@/components/navigation/FloatingNavigationPill';
+import { TopAnnouncementBanner } from '@/components/navigation/TopAnnouncementBanner';
 import { SupportedLang } from '@/locales';
 
 export interface NavbarProps {
@@ -18,10 +19,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
 }) => {
   return (
-    <FloatingNavigationPill
-      cartCount={cartCount}
-      onOpenCart={onOpenCart}
-    />
+    <>
+      <TopAnnouncementBanner />
+      <FloatingNavigationPill
+        cartCount={cartCount}
+        onOpenCart={onOpenCart}
+      />
+    </>
   );
 };
 

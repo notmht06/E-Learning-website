@@ -16,13 +16,16 @@ import {
   Compass,
   Headphones,
   Scroll,
+  ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useCart } from '@/context/CartContext';
+import { useData } from '@/context/DataContext';
 import { SCHOLAR_NAME, PLATFORM_NAME, getScholarName } from '@/lib/constants';
 import { SupportedLang } from '@/locales';
+import { NavbarCoursesMegaMenu } from './NavbarCoursesMegaMenu';
 
 import {
   DropdownMenu,
@@ -41,24 +44,31 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   onOpenCart,
   cartCount: propCartCount,
 }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const { currentLang, setLanguage, dict, isRtl, toLocale } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { items: cartItems, openCart } = useCart();
+  const { categories, courses } = useData();
+
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [activeMegaTab, setActiveMegaTab] = useState<'offline' | 'online'>('offline');
 
   const headerRef = useRef<HTMLElement | null>(null);
+  const megaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
         setIsMobileOpen(false);
+        setIsMegaMenuOpen(false);
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsMobileOpen(false);
+        setIsMegaMenuOpen(false);
       }
     };
 
@@ -67,6 +77,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
       document.removeEventListener('keydown', handleKeyDown);
+      if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
     };
   }, []);
 
@@ -84,6 +95,17 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
     } else {
       openCart();
     }
+  };
+
+  const handleMouseEnterCourses = () => {
+    if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
+    setIsMegaMenuOpen(true);
+  };
+
+  const handleMouseLeaveCourses = () => {
+    megaTimeoutRef.current = setTimeout(() => {
+      setIsMegaMenuOpen(false);
+    }, 240);
   };
 
   const languages: { code: SupportedLang; label: string; flag: string }[] = [
@@ -122,12 +144,44 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           aria-label="Navigation Links"
           className="hidden md:flex items-center gap-1 lg:gap-2 text-xs font-medium text-zinc-700 dark:text-zinc-300"
         >
-          <Link
-            href="/courses"
-            className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors"
+          {/* Courses with Mega-Menu Trigger */}
+          <div
+            className="relative"
+            onMouseEnter={handleMouseEnterCourses}
+            onMouseLeave={handleMouseLeaveCourses}
           >
-            {dict.pill_nav_catalog || 'دوره‌ها'}
-          </Link>
+            <Link
+              href="/courses"
+              className={`px-2.5 py-1.5 rounded-full transition-colors flex items-center gap-1 cursor-pointer ${
+                isMegaMenuOpen
+                  ? 'bg-black/5 dark:bg-white/5 text-[#8A532B] dark:text-[#C58B43]'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43]'
+              }`}
+            >
+              <span>{dict.pill_nav_catalog || 'دوره‌ها'}</span>
+              <ChevronDown
+                className={`w-3 h-3 transition-transform duration-200 ${
+                  isMegaMenuOpen ? 'rotate-180 text-[#8A532B] dark:text-[#C58B43]' : ''
+                }`}
+              />
+            </Link>
+
+            {/* Mega-Menu Panel positioned cleanly below pill */}
+            <div className="absolute start-0 top-full pt-3 z-50">
+              <NavbarCoursesMegaMenu
+                isOpen={isMegaMenuOpen}
+                onClose={() => setIsMegaMenuOpen(false)}
+                activeTab={activeMegaTab}
+                onTabChange={setActiveMegaTab}
+                categories={categories}
+                courses={courses}
+                currentLang={currentLang}
+                dict={dict}
+                toLocale={toLocale}
+              />
+            </div>
+          </div>
+
           <a
             href="/#stations"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors flex items-center gap-1"
@@ -135,6 +189,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <Compass className="w-3.5 h-3.5 text-[#8A532B]" />
             <span>{dict.pill_nav_stations || 'ایستگاه‌های حکمت'}</span>
           </a>
+
           <a
             href="/#discourse"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors flex items-center gap-1"
@@ -142,18 +197,21 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <Headphones className="w-3.5 h-3.5 text-[#8A532B]" />
             <span>{dict.pill_nav_discourse || 'گفتار و استودیو'}</span>
           </a>
+
           <Link
             href="/books"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors"
           >
             {dict.pill_nav_books || 'کتب و آثار'}
           </Link>
+
           <Link
             href="/roadmap"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors hidden lg:block"
           >
             {dict.pill_nav_roadmap || 'سیر مطالعاتی'}
           </Link>
+
           <Link
             href="/articles"
             className="px-2.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors hidden lg:block"
@@ -211,7 +269,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 <DropdownMenuItem
                   key={l.code}
                   onClick={() => setLanguage(l.code)}
-                  className={`flex items-center justify-between text-xs ${
+                  className={`flex items-center justify-between text-xs cursor-pointer ${
                     currentLang === l.code ? 'font-bold text-[#8A532B] dark:text-[#C58B43]' : ''
                   }`}
                 >
@@ -237,8 +295,10 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             )}
           </button>
 
-          {/* Student Auth Portal Link */}
-          {isAuthenticated ? (
+          {/* Student Auth Portal Link with Skeleton Pulse */}
+          {isAuthLoading ? (
+            <div className="hidden sm:block w-16 h-7 rounded-full bg-black/5 dark:bg-white/5 animate-pulse" />
+          ) : isAuthenticated ? (
             <Link
               href="/dashboard"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8A532B]/10 hover:bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 text-xs font-bold transition-colors"
@@ -276,6 +336,24 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           id="mobile-nav-drawer"
           className="md:hidden mt-2 mx-1 p-4 rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#121316]/95 backdrop-blur-2xl border border-[#E6E1D8] dark:border-[#22242A] shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
         >
+          {/* Quick Search Button in Mobile Drawer */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsMobileOpen(false);
+              handleOpenSearch();
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-500 hover:border-[#8A532B]/40 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-[#8A532B]" />
+              <span>{dict.nav_search_aria || 'جستجوی مباحث، کتب و دوره‌ها...'}</span>
+            </span>
+            <span className="font-mono text-[10px] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded">
+              Ctrl+K
+            </span>
+          </button>
+
           <div className="grid grid-cols-2 gap-2 text-xs font-medium">
             <Link
               href="/courses"
@@ -328,7 +406,9 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           </div>
 
           <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-            {isAuthenticated ? (
+            {isAuthLoading ? (
+              <div className="w-full h-10 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse" />
+            ) : isAuthenticated ? (
               <Link
                 href="/dashboard"
                 onClick={() => setIsMobileOpen(false)}
