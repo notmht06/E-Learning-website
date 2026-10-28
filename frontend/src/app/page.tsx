@@ -7,7 +7,6 @@ import { BentoHero } from '@/components/BentoHero';
 import { WisdomStationsSheet, DiscoursePlayerSection } from '@/components/home';
 import { CourseCatalogBento } from '@/components/CourseCatalogBento';
 import { ScholarDispatchBento } from '@/components/ScholarDispatchBento';
-import { BookReader3D } from '@/components/BookReader3D';
 import { CartModal } from '@/components/CartModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { useData } from '@/context/DataContext';
@@ -27,15 +26,6 @@ export default function HomePage() {
     removeItem,
   } = useCart();
 
-  // Modals state
-  const [isReaderOpen, setIsReaderOpen] = useState(false);
-  const [selectedBookId, setSelectedBookId] = useState('book1');
-
-  const handleOpenReader = (bookId: string) => {
-    setSelectedBookId(bookId);
-    setIsReaderOpen(true);
-  };
-
   const handleAddToBag = (book: any) => {
     addItem({
       id: book.id || `book-${Date.now()}`,
@@ -47,7 +37,6 @@ export default function HomePage() {
   };
 
   const allCourses = Object.values(courses);
-  const featuredBook = booksDatabase[selectedBookId] || booksDatabase['book1'];
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-[#8A532B]/20 selection:text-[#8A532B] dark:selection:text-[#C58B43] bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#18181B] dark:text-[#F4F4F6] transition-colors duration-200 font-sans antialiased">
@@ -72,7 +61,6 @@ export default function HomePage() {
         <CourseCatalogBento
           courses={allCourses}
           categories={categories}
-          onOpenBookReader={handleOpenReader}
           onAddToCart={handleAddToBag}
         />
 
@@ -108,15 +96,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-
-      {/* 3D Book Reader Modal */}
-      <BookReader3D
-        isOpen={isReaderOpen}
-        bookId={selectedBookId}
-        currentLang={currentLang}
-        onClose={() => setIsReaderOpen(false)}
-        onAddToBag={() => handleAddToBag(featuredBook)}
-      />
 
       {/* Cart Drawer */}
       <CartModal

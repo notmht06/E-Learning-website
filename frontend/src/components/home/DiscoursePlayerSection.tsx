@@ -24,6 +24,14 @@ import { coursesDatabase, AudioCourse } from '@/lib/data';
 import { apiClient } from '@/services/apiClient';
 import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
 import { getLocalizedChapterTitle } from '@/lib/localization';
+import {
+  Badge,
+  Button,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  ScrollArea,
+} from '@/components/ui';
 
 interface DiscoursePlayerSectionProps {
   initialCourseId?: string;
@@ -208,30 +216,26 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
             </p>
           </div>
 
-          {/* Course Switcher Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {[
-              { id: 'course-falsafe-asfar-1', labelKey: 'discourse_course_tab_asfar' as const, fallback: 'اسفار اربعه' },
-              { id: 'course-falsafe-ishraq', labelKey: 'discourse_course_tab_ishraq' as const, fallback: 'حکمت اشراق' },
-              { id: 'course-falsafe-isharat', labelKey: 'discourse_course_tab_isharat' as const, fallback: 'شرح اشارات' },
-            ].map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => {
-                  setActiveCourseId(c.id);
-                  setSelectedChapterIdx(0);
-                }}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                  activeCourseId === c.id
-                    ? 'bg-[#8A532B] text-white font-bold'
-                    : 'bg-white dark:bg-[#141518] text-zinc-600 dark:text-zinc-400 border border-[#E6E1D8] dark:border-[#22242A] hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                }`}
-              >
-                {dict[c.labelKey] || c.fallback}
-              </button>
-            ))}
-          </div>
+          {/* Course Switcher with shadcn Tabs */}
+          <Tabs
+            value={activeCourseId}
+            onValueChange={(val) => {
+              setActiveCourseId(val);
+              setSelectedChapterIdx(0);
+            }}
+          >
+            <TabsList>
+              {[
+                { id: 'course-falsafe-asfar-1', labelKey: 'discourse_course_tab_asfar' as const, fallback: 'اسفار اربعه' },
+                { id: 'course-falsafe-ishraq', labelKey: 'discourse_course_tab_ishraq' as const, fallback: 'حکمت اشراق' },
+                { id: 'course-falsafe-isharat', labelKey: 'discourse_course_tab_isharat' as const, fallback: 'شرح اشارات' },
+              ].map((c) => (
+                <TabsTrigger key={c.id} value={c.id} className="text-xs">
+                  {dict[c.labelKey] || c.fallback}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Main Editorial Discourse Studio Container */}
@@ -408,56 +412,59 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                 </span>
               </div>
 
-              {/* Chapter Timeline List */}
-              <div className="space-y-2 max-h-[280px] overflow-y-auto pe-1">
-                {featuredCourse.chapters.map((ch, idx) => {
-                  const isActive = isCurrentCourseActive
-                    ? currentChapterIndex === idx
-                    : activeChapterIndex === idx;
-                  return (
-                    <button
-                      key={ch.id}
-                      type="button"
-                      onClick={() => handleChapterClick(idx)}
-                      className={`w-full text-start p-2.5 rounded-2xl text-xs transition-all flex items-center justify-between gap-3 cursor-pointer ${
-                        isActive
-                          ? 'bg-[#8A532B] text-white shadow-xs font-bold'
-                          : 'bg-white dark:bg-[#141518] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 ${
-                            isActive
-                              ? 'bg-white text-[#8A532B] font-bold'
-                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
-                          }`}
-                        >
-                          {toLocale(ch.id)}
-                        </span>
-                        <span className="truncate">{getLocalizedChapterTitle(ch, currentLang)}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        {ch.isFreePreview && (
+              {/* Chapter Timeline with shadcn ScrollArea */}
+              <ScrollArea className="h-[280px] pe-2">
+                <div className="space-y-2">
+                  {featuredCourse.chapters.map((ch, idx) => {
+                    const isActive = isCurrentCourseActive
+                      ? currentChapterIndex === idx
+                      : activeChapterIndex === idx;
+                    return (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => handleChapterClick(idx)}
+                        className={`w-full text-start p-2.5 rounded-xl text-xs transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                          isActive
+                            ? 'bg-[#8A532B] text-white shadow-xs font-bold'
+                            : 'bg-white dark:bg-[#141518] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
                           <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 ${
                               isActive
-                                ? 'bg-white/20 text-white'
-                                : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
+                                ? 'bg-white text-[#8A532B] font-bold'
+                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
                             }`}
                           >
-                            {dict.discourse_chapter_preview || 'پیش‌نمایش'}
+                            {toLocale(ch.id)}
                           </span>
-                        )}
-                        <span className="font-num text-[11px] opacity-80">
-                          {toLocale(ch.duration)}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                          <span className="truncate">{getLocalizedChapterTitle(ch, currentLang)}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {ch.isFreePreview && (
+                            <Badge
+                              variant="secondary"
+                              className={`text-[10px] px-2 py-0.2 font-medium ${
+                                isActive
+                                  ? 'bg-white/20 text-white border-transparent'
+                                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-transparent'
+                              }`}
+                            >
+                              {dict.discourse_chapter_preview || 'پیش‌نمایش'}
+                            </Badge>
+                          )}
+                          <span className="font-num text-[11px] opacity-80">
+                            {toLocale(ch.duration)}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
             </div>
 
             {/* Course Link Footer */}

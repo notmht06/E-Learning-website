@@ -4,9 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
-import { BookReader3D } from '@/components/BookReader3D';
 import { CartModal } from '@/components/CartModal';
-import { BookCard } from '@/components/ui/BookCard';
+import { MasterpieceBookCard } from '@/components/catalog/MasterpieceBookCard';
 import { CategoryTabStrip, TabItem } from '@/components/ui/CategoryTabStrip';
 import { CompactHorizontalCard } from '@/components/ui/CompactHorizontalCard';
 import { useData } from '@/context/DataContext';
@@ -17,10 +16,7 @@ import { getLocalizedBook } from '@/lib/localization';
 export default function BooksPage() {
   const { currentLang, dict, toLocale } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedBookId, setSelectedBookId] = useState('book1');
-  const [isReaderOpen, setIsReaderOpen] = useState(false);
-  const {
+  const [selectedCategory, setSelectedCategory] = useState('all');  const {
     items: cartItems,
     isOpen: isCartOpen,
     openCart,
@@ -129,11 +125,6 @@ export default function BooksPage() {
     return allBooksList.slice(0, 3);
   }, [allBooksList]);
 
-  const handleOpenReader = (id: string) => {
-    setSelectedBookId(id);
-    setIsReaderOpen(true);
-  };
-
   const handleAddToBag = (title: string, price: string) => {
     addItem({
       id: `book-${Date.now()}`,
@@ -206,11 +197,10 @@ export default function BooksPage() {
         {books.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-4">
             {books.map((b) => (
-              <BookCard
+              <MasterpieceBookCard
                 key={b.id}
                 book={b}
-                onOpenReader={handleOpenReader}
-                onAddToBag={handleAddToBag}
+                onAddToCart={(item) => { const locItem = getLocalizedBook(item, currentLang); handleAddToBag(locItem?.title || item.title_fa, locItem?.price || item.price_fa); }}
               />
             ))}
           </div>
@@ -253,16 +243,6 @@ export default function BooksPage() {
         items={cartItems}
         onRemoveItem={removeItem}
       />
-
-      {/* 3D Book Reader Modal */}
-      {isReaderOpen && (
-        <BookReader3D
-          bookId={selectedBookId}
-          isOpen={isReaderOpen}
-          currentLang={currentLang}
-          onClose={() => setIsReaderOpen(false)}
-        />
-      )}
     </div>
   );
 }

@@ -24,6 +24,14 @@ import { useCart } from '@/context/CartContext';
 import { SCHOLAR_NAME, PLATFORM_NAME, getScholarName } from '@/lib/constants';
 import { SupportedLang } from '@/locales';
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  Button,
+} from '@/components/ui';
+
 interface FloatingNavigationPillProps {
   onOpenCart?: () => void;
   cartCount?: number;
@@ -38,16 +46,11 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   const { theme, toggleTheme } = useTheme();
   const { items: cartItems, openCart } = useCart();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
 
   const headerRef = useRef<HTMLElement | null>(null);
-  const langDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
-        setIsLangOpen(false);
-      }
       if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
         setIsMobileOpen(false);
       }
@@ -55,7 +58,6 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsLangOpen(false);
         setIsMobileOpen(false);
       }
     };
@@ -190,49 +192,35 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             )}
           </button>
 
-          {/* Language Selector Dropdown */}
-          <div className="relative" ref={langDropdownRef}>
-            <button
-              type="button"
-              onClick={() => setIsLangOpen(!isLangOpen)}
-              className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1 cursor-pointer"
-              aria-label={dict.pill_nav_lang_aria || 'انتخاب زبان'}
-              aria-haspopup="menu"
-              aria-expanded={isLangOpen}
-            >
-              <Globe className="w-4 h-4" />
-              <span className="text-[11px] font-bold uppercase hidden sm:inline">
-                {currentLang}
-              </span>
-            </button>
-
-            {isLangOpen && (
-              <div
-                className="absolute end-0 top-full mt-2 w-32 rounded-2xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] shadow-xl p-1.5 space-y-1 z-50 animate-in fade-in zoom-in-95 duration-150"
-                role="menu"
+          {/* Language Selector Dropdown with shadcn DropdownMenu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1 cursor-pointer"
+                aria-label={dict.pill_nav_lang_aria || 'انتخاب زبان'}
               >
-                {languages.map((l) => (
-                  <button
-                    key={l.code}
-                    type="button"
-                    onClick={() => {
-                      setLanguage(l.code);
-                      setIsLangOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
-                      currentLang === l.code
-                        ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] font-bold'
-                        : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    }`}
-                    role="menuitem"
-                  >
-                    <span>{l.label}</span>
-                    <span className="text-sm">{l.flag}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                <Globe className="w-4 h-4" />
+                <span className="text-[11px] font-bold uppercase hidden sm:inline">
+                  {currentLang}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              {languages.map((l) => (
+                <DropdownMenuItem
+                  key={l.code}
+                  onClick={() => setLanguage(l.code)}
+                  className={`flex items-center justify-between text-xs ${
+                    currentLang === l.code ? 'font-bold text-[#8A532B] dark:text-[#C58B43]' : ''
+                  }`}
+                >
+                  <span>{l.label}</span>
+                  <span className="text-sm">{l.flag}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Cart Drawer Trigger */}
           <button

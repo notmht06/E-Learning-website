@@ -22,6 +22,17 @@ import { scholarlyArticlesDatabase } from '@/lib/data';
 import { getLocalizedArticle, getLocalizedCourse } from '@/lib/localization';
 import { SCHOLAR_NAME } from '@/lib/constants';
 import { triggerTactileHaptic } from '@/lib/haptics';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Badge,
+  Button,
+  Separator,
+} from '@/components/ui';
 
 interface ArticleDetailClientProps {
   slug: string;
@@ -208,13 +219,13 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
         </nav>
 
         {/* Article Header Card */}
-        <article className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black">
-          <header className="space-y-4 border-b border-[#E6E1D8] dark:border-[#22242A] pb-6">
+        <Card className="p-6 sm:p-10 shadow-xs space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black">
+          <header className="space-y-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/25 text-xs font-bold">
+                <Badge variant="accent" className="text-xs font-bold">
                   {category}
-                </span>
+                </Badge>
                 <span className="text-[11px] font-mono text-zinc-400">
                   [{rawArticle.id.toUpperCase()}]
                 </span>
@@ -232,7 +243,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
               </div>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-snug">
               {title}
             </h1>
 
@@ -242,10 +253,10 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                 <img
                   src="/images/ostad_zanjirzan.jpg"
                   alt={authorName}
-                  className="w-10 h-10 rounded-full object-cover border border-[#E6E1D8] dark:border-[#22242A]"
+                  className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-800"
                 />
                 <div>
-                  <span className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5] block">
+                  <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
                     {authorName}
                   </span>
                   <span className="text-[11px] text-zinc-500 block">
@@ -255,10 +266,12 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
               </div>
 
               <div className="flex items-center gap-2 print:hidden">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => window.print()}
-                  className="px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 transition cursor-pointer"
+                  className="text-xs font-bold gap-1.5"
                 >
                   <Printer className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
                   <span>
@@ -268,12 +281,14 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                       ? 'طباعة / PDF'
                       : 'چاپ / دریافت PDF'}
                   </span>
-                </button>
+                </Button>
 
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="icon"
                   onClick={handleShare}
-                  className="p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-zinc-600 dark:text-zinc-300 transition cursor-pointer"
+                  className="h-8 w-8"
                   title={
                     copiedShare
                       ? currentLang === 'en'
@@ -293,13 +308,13 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                   ) : (
                     <Share2 className="w-4 h-4" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </header>
 
           {/* Abstract Box */}
-          <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-2">
+          <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-[#8A532B] dark:text-[#C58B43]">
               <Quote className="w-4 h-4" />
               <span>{dict.articles_modal_abstract || 'چکیده و مسئله‌شناسی مقاله:'}</span>
@@ -313,7 +328,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           <div className="space-y-6">
             {sections.map((sec, idx) => (
               <section key={idx} className="space-y-2.5">
-                <h2 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                   {sec.heading}
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-8 text-justify">
@@ -324,7 +339,8 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           </div>
 
           {/* Academic Citation Box */}
-          <footer className="pt-6 border-t border-[#E6E1D8] dark:border-[#22242A] space-y-3">
+          <Separator className="my-4" />
+          <footer className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                 {currentLang === 'en'
@@ -333,10 +349,12 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                   ? 'التوثيق العلمي للمقال:'
                   : 'نحوه ارجاع استاندارد علمی به این مقاله:'}
               </span>
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={handleCopyCitation}
-                className="px-3 py-1.5 rounded-xl bg-[#8A532B]/10 hover:bg-[#8A532B] text-[#8A532B] dark:text-[#C58B43] hover:text-[#FAF8F5] text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                className="gap-1.5 text-xs font-bold"
               >
                 {copiedCitation ? (
                   <>
@@ -357,18 +375,18 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                     </span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed select-all">
+            <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed select-all">
               {citationString}
             </div>
           </footer>
-        </article>
+        </Card>
 
         {/* Related Courses Section */}
         <section className="space-y-4 print:hidden">
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5] flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               <Headphones className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
               <span>
                 {currentLang === 'en'
@@ -394,26 +412,28 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                 <Link
                   key={rc.id}
                   href={`/courses/${rc.id}`}
-                  className="p-5 rounded-2xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] transition flex flex-col justify-between gap-3 group shadow-2xs"
+                  className="group block"
                 >
-                  <div className="space-y-1.5">
-                    <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-[11px] font-bold">
-                      {locRc?.subject || rc.subject}
-                    </span>
-                    <h3 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition line-clamp-2 min-h-[2.5rem]">
-                      {locRc?.title || rc.title_fa}
-                    </h3>
-                  </div>
-                  <div className="pt-2 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center justify-between text-xs text-zinc-500 font-num">
-                    <span>
-                      {toLocale(rc.episodes_count)} {dict.course_unit_sessions || 'جلسه'} •{' '}
-                      {locRc?.duration || rc.duration_fa}
-                    </span>
-                    <span className="font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
-                      <span>{dict.catalog_featured_action || 'مشاهده دوره'}</span>
-                      <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-                    </span>
-                  </div>
+                  <Card className="p-5 h-full flex flex-col justify-between gap-3 hover:border-[#8A532B] dark:hover:border-[#C58B43] transition">
+                    <div className="space-y-1.5">
+                      <Badge variant="accent" className="text-[11px] font-bold">
+                        {locRc?.subject || rc.subject}
+                      </Badge>
+                      <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition line-clamp-2 min-h-[2.5rem]">
+                        {locRc?.title || rc.title_fa}
+                      </h3>
+                    </div>
+                    <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 font-num">
+                      <span>
+                        {toLocale(rc.episodes_count)} {dict.course_unit_sessions || 'جلسه'} •{' '}
+                        {locRc?.duration || rc.duration_fa}
+                      </span>
+                      <span className="font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
+                        <span>{dict.catalog_featured_action || 'مشاهده دوره'}</span>
+                        <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+                      </span>
+                    </div>
+                  </Card>
                 </Link>
               );
             })}

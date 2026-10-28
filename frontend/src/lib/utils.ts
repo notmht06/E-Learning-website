@@ -1,8 +1,11 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 /**
- * Class name merger utility for Shadcn-inspired UI components.
+ * Standard shadcn class name merger utility with tailwind-merge and clsx.
  */
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
 }
 
 export function parseNumericPrice(priceStr: string | number): number {

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import * as React from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -8,29 +8,31 @@ import {
   Headphones,
   Play,
   Pause,
-  Radio,
+  Clock,
+  BookOpen,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { AudioCourse } from '@/lib/data';
 import { getLocalizedCourse } from '@/lib/localization';
-import { CourseFolderPreview } from '@/components/course/CourseFolderPreview';
 import { triggerTactileHaptic } from '@/lib/haptics';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Badge,
+  Button,
+} from '@/components/ui';
 
 export const EDITORIAL_SPRING = {
   type: 'spring' as const,
   stiffness: 420,
   damping: 34,
   mass: 0.75,
-};
-
-export const TACTILE_SPRING = {
-  type: 'spring' as const,
-  stiffness: 520,
-  damping: 28,
-  mass: 0.6,
 };
 
 interface MasterpieceCourseCardProps {
@@ -85,185 +87,98 @@ export function MasterpieceCourseCard({ course, index }: MasterpieceCourseCardPr
   };
 
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      whileHover={{ y: -3 }}
-      transition={EDITORIAL_SPRING}
-      className={`group relative rounded-2xl border bg-[#FAF8F5] dark:bg-[#121316] p-5 flex flex-col justify-between transition-colors duration-200 ${
+    <Card
+      className={`flex flex-col justify-between transition-all duration-200 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 ${
         isThisCoursePlaying
-          ? 'border-[#8A532B] dark:border-[#C58B43] shadow-[0_12px_32px_-12px_rgba(138,83,43,0.22)]'
-          : 'border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50'
+          ? 'border-[#8A532B] dark:border-[#C58B43] ring-1 ring-[#8A532B]/20 dark:ring-[#C58B43]/20 shadow-md'
+          : ''
       }`}
     >
-      <div className="space-y-4">
-        {/* بخش بالایی: شناسنامه آرشیوی، بج رشته علمی و دکمه نشان‌گذاری */}
+      <CardHeader className="space-y-2 pb-3">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43]">
+          <div className="flex items-center gap-1.5">
+            <Badge variant="accent" className="text-[11px]">
               {subject}
-            </span>
-            {isOnline ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20">
-                <Radio className="w-3 h-3" />
-                <span>{dict.skyroom_badge || 'دوره آنلاین'}</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-zinc-200/80 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                <Headphones className="w-3 h-3 text-[#8A532B] dark:text-[#C58B43]" />
-                <span>{dict.courses_offline_badge || 'صوت رسمی'}</span>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 tracking-wider">
+            </Badge>
+            <Badge variant="outline" className="text-[10px] font-mono text-zinc-500">
               [{serialCode}]
-            </span>
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.88 }}
-              transition={TACTILE_SPRING}
-              onClick={handleBookmarkClick}
-              aria-label={bookmarked ? (dict.catalog_bookmark_remove || 'حذف نشان') : (dict.catalog_bookmark_add || 'نشان‌گذاری درس')}
-              className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-colors cursor-pointer ${
-                bookmarked
-                  ? 'bg-[#8A532B]/15 border-[#8A532B]/40 text-[#8A532B] dark:text-[#C58B43]'
-                  : 'bg-white dark:bg-[#18191D] border-[#E6E1D8] dark:border-[#262830] text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-            </motion.button>
+            </Badge>
           </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBookmarkClick}
+            aria-label={dict.action_bookmark || 'نشان‌کردن'}
+            className="h-7 w-7 text-zinc-400 hover:text-[#8A532B] dark:hover:text-[#C58B43]"
+          >
+            <Bookmark className={`h-4 w-4 ${bookmarked ? 'fill-[#8A532B] text-[#8A532B] dark:fill-[#C58B43] dark:text-[#C58B43]' : ''}`} />
+          </Button>
         </div>
 
-        {/* عنوان دوره با ارتفاع استاندارد دو خطی برای حفظ تقارن شبکه‌ای */}
-        <div className="space-y-1">
-          <Link href={`/courses/${course.id}`} className="block focus:outline-none">
-            <h3 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition-colors line-clamp-2 min-h-[3.25rem] leading-snug">
-              {title}
-            </h3>
-          </Link>
-        </div>
+        <Link href={`/courses/${course.id}`} className="group/title block">
+          <CardTitle className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition-colors line-clamp-2 leading-snug">
+            {title}
+          </CardTitle>
+        </Link>
+      </CardHeader>
 
-        {/* نوار شنیدن نمونه استودیویی */}
-        <div
+      <CardContent className="space-y-3 pb-3">
+        {/* Sample Audio Mini Player Button */}
+        <button
+          type="button"
           onClick={handleAuditionToggle}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handleAuditionToggle(e as unknown as React.MouseEvent);
-          }}
-          className={`p-3 rounded-xl border transition-all cursor-pointer select-none flex items-center justify-between gap-3 ${
-            isThisCoursePlaying
-              ? 'bg-[#0C0D0E] text-[#FAF8F5] border-[#8A532B]'
-              : 'bg-white dark:bg-[#17181C] border-[#E6E1D8] dark:border-[#24262D] hover:border-[#8A532B]/50'
-          }`}
+          className="w-full flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 hover:border-[#8A532B]/40 text-start group/audition cursor-pointer transition-colors"
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <motion.div
-              whileTap={{ scale: 0.9 }}
-              transition={TACTILE_SPRING}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                isThisCoursePlaying
-                  ? 'bg-[#8A532B] text-[#FAF8F5]'
-                  : 'bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/25'
-              }`}
-            >
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-6 h-6 rounded-full bg-[#8A532B] text-white flex items-center justify-center shrink-0">
               {isThisCoursePlaying ? (
-                <Pause className="w-4 h-4 fill-current" />
+                <Pause className="w-3 h-3 fill-current" />
               ) : (
-                <Play className="w-4 h-4 fill-current ps-0.5" />
+                <Play className="w-3 h-3 fill-current ml-0.5" />
               )}
-            </motion.div>
-
+            </span>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`text-[10px] font-mono uppercase tracking-wider ${
-                    isThisCoursePlaying ? 'text-[#C58B43]' : 'text-[#8A532B] dark:text-[#C58B43]'
-                  }`}
-                >
-                  {isThisCoursePlaying
-                    ? dict.player_status_playing || 'در حال پخش نمونه'
-                    : dict.catalog_listen_sample || 'شنیدن نمونه'}
-                </span>
-              </div>
-              <p
-                className={`text-xs font-medium truncate mt-0.5 ${
-                  isThisCoursePlaying ? 'text-zinc-200' : 'text-zinc-700 dark:text-zinc-300'
-                }`}
-              >
+              <span className="text-[10px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
+                {isThisCoursePlaying ? (dict.player_playing || 'در حال پخش') : (dict.player_play_sample || 'شنیدن درس نمونه')}
+              </span>
+              <span className="text-xs text-zinc-700 dark:text-zinc-300 truncate block font-medium">
                 {firstChapterTitle}
-              </p>
+              </span>
             </div>
           </div>
+        </button>
 
-          {/* موج صوتی ۵ ستونی */}
-          <div
-            className="flex items-end gap-0.5 h-4 shrink-0 px-1 text-[#8A532B] dark:text-[#C58B43]"
-            aria-hidden="true"
-          >
-            {[45, 85, 60, 100, 55].map((h, i) => (
-              <span
-                key={i}
-                style={{ height: isThisCoursePlaying ? undefined : `${h * 0.45}%` }}
-                className={`soundwave-bar ${isThisCoursePlaying ? 'is-animating' : 'opacity-40'}`}
-              />
-            ))}
+        {/* Course Metrics */}
+        <div className="grid grid-cols-3 gap-2 py-1 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60 pt-2">
+          <div>
+            <span className="text-[10px] text-zinc-400 block">{dict.course_sessions || 'جلسات'}</span>
+            <span className="font-bold text-zinc-800 dark:text-zinc-200">{toLocale(sessionsCount)}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-zinc-400 block">{dict.course_duration || 'مدت زمان'}</span>
+            <span className="font-bold text-zinc-800 dark:text-zinc-200">{duration}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-zinc-400 block">{dict.course_tuition || 'شهریه'}</span>
+            <span className="font-bold text-[#8A532B] dark:text-[#C58B43]">{price}</span>
           </div>
         </div>
-      </div>
+      </CardContent>
 
-      {/* بخش پایینی: متادیتای دقیق و دکمه مشاهده دوره */}
-      <div className="pt-4 mt-4 border-t border-[#E6E1D8] dark:border-[#22242A] space-y-3.5">
-        <div className="grid grid-cols-3 gap-2 text-center bg-white/70 dark:bg-[#16171B] rounded-xl p-2 border border-[#ECE8E0] dark:border-[#202228]">
-          <div className="space-y-0.5">
-            <span className="text-[10px] text-zinc-400 block">
-              {dict.catalog_sessions_count || 'جلسات'}
-            </span>
-            <span className="text-xs font-bold font-num text-[#0C0D0E] dark:text-[#FAF8F5]">
-              {toLocale(sessionsCount)} {dict.course_unit_sessions || 'جلسه'}
-            </span>
-          </div>
-          <div className="space-y-0.5 border-x border-[#ECE8E0] dark:border-[#24262D] px-1">
-            <span className="text-[10px] text-zinc-400 block">
-              {dict.catalog_duration_label || 'مدت دوره'}
-            </span>
-            <span className="text-xs font-bold font-num text-[#0C0D0E] dark:text-[#FAF8F5] truncate block">
-              {duration}
-            </span>
-          </div>
-          <div className="space-y-0.5">
-            <span className="text-[10px] text-zinc-400 block">
-              {dict.course_tuition_label?.replace(':', '') || 'شهریه'}
-            </span>
-            <span className="text-xs font-bold font-num text-[#8A532B] dark:text-[#C58B43] truncate block">
-              {price}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400 leading-tight">
-            {level}
-          </span>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <CourseFolderPreview course={course} />
-            <Link
-              href={`/courses/${course.id}`}
-              onClick={() => triggerTactileHaptic('tick')}
-              className="px-4 py-2 rounded-xl bg-[#0C0D0E] hover:bg-[#8A532B] text-[#FAF8F5] dark:bg-[#1E2024] dark:border dark:border-[#C58B43]/30 dark:text-[#FAF8F5] dark:hover:bg-[#25282E] dark:hover:border-[#C58B43] text-xs font-bold transition-colors flex items-center gap-2 shrink-0 group/link shadow-xs"
-            >
-              <span>{dict.catalog_enter_course || 'مشاهده دوره'}</span>
-              <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180 rtl:group-hover/link:-translate-x-1 ltr:group-hover/link:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-      </div>
-    </motion.article>
+      <CardFooter className="pt-0">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="w-full text-xs font-bold hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-[#0C0D0E] transition-all group/btn"
+        >
+          <Link href={`/courses/${course.id}`}>
+            <span>{dict.courses_enter_hall || 'ورود به کرسی درس'}</span>
+            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180 rtl:group-hover/btn:-translate-x-1 ltr:group-hover/btn:translate-x-1 transition-transform" />
+          </Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

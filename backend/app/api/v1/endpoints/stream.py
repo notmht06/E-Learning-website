@@ -23,7 +23,7 @@ from backend.app.schemas.stream import (
 )
 from backend.app.services.drm_service import drm_service
 from backend.app.core.security import verify_drm_token, decode_drm_token
-from backend.app.api.deps import get_current_user
+from backend.app.api.deps import get_current_user, get_optional_user
 from backend.app.models.database import get_db
 from backend.app.models.models import AnalyticsLog, Enrollment
 
@@ -40,7 +40,7 @@ DEFAULT_AUDIO_PATH = os.path.abspath(
 async def issue_stream_token(
     req: DRMTokenRequest,
     request: Request,
-    user: dict = Depends(get_current_user),
+    user: Optional[dict] = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -48,7 +48,8 @@ async def issue_stream_token(
     and records the playback audit log in SQLite/PostgreSQL.
     Requires authentication and active course enrollment (or admin role).
     """
-    if user.get("role") != "admin":
+    is_admin = bool(user and user.get("role") == "admin")
+    if not is_admin:
         # Check if the requested chapter is an open free preview
         is_preview_chapter = False
         try:
@@ -79,6 +80,11 @@ async def issue_stream_token(
                 logger.debug("Failed querying Lesson for preview check: %s", exc)
 
         if not is_preview_chapter:
+            if not user:
+                raise HTTPException(
+                    status_code=401,
+                    detail="سرآیند احراز هویت (Authorization) یافت نشد."
+                )
             from backend.app.services.course_service import course_service
             candidate_ids = [req.course_id]
             alias_id = course_service.COURSE_ID_ALIASES.get(req.course_id)
@@ -99,7 +105,7 @@ async def issue_stream_token(
                     detail="شما در این دوره ثبت‌نام نکرده‌اید. دسترسی به استریم صوت نیازمند ثبت‌نام در دوره است."
                 )
 
-    effective_user_id = user["id"]
+    effective_user_id = user["id"] if user else (req.user_id or "usr-preview")
     token_data = drm_service.issue_token(
         user_id=effective_user_id,
         course_id=req.course_id,

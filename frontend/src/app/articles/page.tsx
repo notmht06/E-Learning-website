@@ -13,6 +13,16 @@ import {
 import { Navbar } from '@/components/Navbar';
 import { CartModal } from '@/components/CartModal';
 import { EmptyStateCard } from '@/components/ui/FeedbackStates';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Badge,
+  Button,
+} from '@/components/ui';
 import { scholarlyArticlesDatabase, ScholarlyArticle } from '@/lib/data';
 import { getLocalizedArticle } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
@@ -179,19 +189,19 @@ export default function ArticlesPage() {
               const artAbstract = loc?.abstract || art.abstract_fa || art.abstract;
 
               return (
-                <article
+                <Card
                   key={art.id}
-                  className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B]/50 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 transition group"
+                  className="hover:border-[#8A532B]/50 flex flex-col justify-between space-y-4 transition-all duration-200"
                 >
-                  <div className="space-y-3">
+                  <CardHeader className="space-y-3 pb-0">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-mono text-zinc-400">
                           [ART-0{toLocale(index + 1)}]
                         </span>
-                        <span className="px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] font-bold text-[11px]">
+                        <Badge variant="accent" className="text-[11px]">
                           {artCat}
-                        </span>
+                        </Badge>
                       </div>
                       <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px] font-num">
                         <Clock className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
@@ -201,31 +211,33 @@ export default function ArticlesPage() {
 
                     <div className="space-y-1">
                       <Link href={`/articles/${art.slug}`} className="block">
-                        <h2 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] leading-snug line-clamp-2 min-h-[2.75rem] transition">
+                        <CardTitle className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] hover:text-[#8A532B] dark:hover:text-[#C58B43] leading-snug line-clamp-2 min-h-[2.75rem] transition">
                           {artTitle}
-                        </h2>
+                        </CardTitle>
                       </Link>
-                      <p className="text-xs text-zinc-500">
+                      <CardDescription className="text-xs text-zinc-500">
                         {dict.articles_modal_author || 'نگارنده:'}{' '}
                         {dict.scholar_name || SCHOLAR_NAME}
-                      </p>
+                      </CardDescription>
                     </div>
 
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3 text-justify">
                       {artAbstract}
                     </p>
-                  </div>
+                  </CardHeader>
 
-                  <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center justify-between gap-2">
+                  <CardFooter className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center justify-between gap-2">
                     <span className="text-[11px] font-mono text-zinc-400 font-num">
                       {toLocale(artDate)}
                     </span>
 
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="sm"
                         onClick={() => setSelectedArticle(art)}
-                        className="px-3 py-2 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] hover:border-[#8A532B] text-xs font-bold text-zinc-600 dark:text-zinc-300 transition cursor-pointer flex items-center gap-1"
+                        className="text-xs font-bold gap-1"
                       >
                         <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
                         <span>
@@ -235,24 +247,28 @@ export default function ArticlesPage() {
                             ? 'ملخص سريع'
                             : 'چکیده سریع'}
                         </span>
-                      </button>
+                      </Button>
 
-                      <Link
-                        href={`/articles/${art.slug}`}
-                        className="px-3.5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold shadow-xs transition flex items-center gap-1.5"
+                      <Button
+                        asChild
+                        variant="default"
+                        size="sm"
+                        className="text-xs font-bold gap-1.5"
                       >
-                        <span>
-                          {currentLang === 'en'
-                            ? 'Read Full Treatise'
-                            : currentLang === 'ar'
-                            ? 'قراءة البحث كاملاً'
-                            : 'مطالعه کامل مقاله'}
-                        </span>
-                        <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-                      </Link>
+                        <Link href={`/articles/${art.slug}`}>
+                          <span>
+                            {currentLang === 'en'
+                              ? 'Read Full Treatise'
+                              : currentLang === 'ar'
+                              ? 'قراءة البحث كاملاً'
+                              : 'مطالعه کامل مقاله'}
+                          </span>
+                          <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
+                        </Link>
+                      </Button>
                     </div>
-                  </div>
-                </article>
+                  </CardFooter>
+                </Card>
               );
             })}
           </div>

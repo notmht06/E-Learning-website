@@ -18,6 +18,16 @@ import { useLanguage } from '@/context/LanguageContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { coursesDatabase, AudioCourse } from '@/lib/data';
 import { SCHOLAR_NAME } from '@/lib/constants';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Badge,
+  Button,
+} from '@/components/ui';
 
 interface StationItem {
   id: string;
@@ -256,9 +266,9 @@ export const WisdomStationsSheet: React.FC = () => {
               station.concepts.fa;
 
             return (
-              <article
+              <Card
                 key={station.id}
-                className="relative rounded-3xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] p-6 sm:p-7 flex flex-col justify-between gap-6 shadow-sm hover:border-[#8A532B]/40 dark:hover:border-[#C58B43]/40 transition-all duration-200"
+                className="p-6 sm:p-7 flex flex-col justify-between gap-6 hover:border-[#8A532B]/40 dark:hover:border-[#C58B43]/40 transition-all duration-200"
               >
                 {/* Top Station Meta */}
                 <div className="space-y-4">
@@ -330,14 +340,12 @@ export const WisdomStationsSheet: React.FC = () => {
 
                 {/* Bottom Action Footer */}
                 <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
-                  <button
+                  <Button
                     type="button"
+                    variant={isCoursePlaying ? 'default' : 'outline'}
+                    size="sm"
                     onClick={() => handlePlayStationPreview(station)}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                      isCoursePlaying
-                        ? 'bg-[#8A532B] text-white shadow-xs'
-                        : 'bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/30'
-                    }`}
+                    className="gap-2 text-xs font-bold"
                   >
                     {isCoursePlaying ? (
                       <>
@@ -350,17 +358,16 @@ export const WisdomStationsSheet: React.FC = () => {
                         <span>{dict.stations_btn_listen_preview || 'شنیدن درس نمونه'}</span>
                       </>
                     )}
-                  </button>
+                  </Button>
 
-                  <Link
-                    href={`/courses/${station.courseId}`}
-                    className="text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] flex items-center gap-1 group transition-colors"
-                  >
-                    <span>{dict.stations_btn_view_course || 'مشاهده سرفصل‌ها'}</span>
-                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 transition-transform group-hover:translate-x-[-2px] ltr:group-hover:translate-x-[2px]" />
-                  </Link>
+                  <Button asChild variant="link" size="sm" className="p-0 text-xs font-bold gap-1">
+                    <Link href={`/courses/${station.courseId}`}>
+                      <span>{dict.stations_btn_view_course || 'مشاهده سرفصل‌ها'}</span>
+                      <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+                    </Link>
+                  </Button>
                 </div>
-              </article>
+              </Card>
             );
           })}
         </div>
