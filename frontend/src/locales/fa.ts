@@ -42,7 +42,7 @@ export const fa = {
   nav_all_online_classes: 'مشاهده همه کلاس‌های آنلاین',
   nav_roadmap: 'سیر مطالعاتی',
   badge_soon: 'به‌زودی',
-  nav_quick_search_tooltip: 'جستجوی سریع (Ctrl+K)',
+  nav_quick_search_tooltip: 'جستجوی سریع',
   nav_search_aria: 'جستجو',
   nav_mobile_courses_topics: 'دوره‌ها و موضوعات',
   nav_mobile_all_courses: '• مشاهده تمام دوره‌ها',

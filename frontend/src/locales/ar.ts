@@ -43,7 +43,7 @@ export const ar: Dictionary = {
   nav_all_online_classes: 'عرض كافة الدروس المباشرة',
   nav_roadmap: 'المسار الدراسي',
   badge_soon: 'قريباً',
-  nav_quick_search_tooltip: 'البحث السريع (Ctrl+K)',
+  nav_quick_search_tooltip: 'البحث السريع',
   nav_search_aria: 'البحث',
   nav_mobile_courses_topics: 'الدورات والموضوعات',
   nav_mobile_all_courses: '• عرض جميع الدورات',

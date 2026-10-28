@@ -43,7 +43,7 @@ export const en: Dictionary = {
   nav_all_online_classes: 'View All Live Classes',
   nav_roadmap: 'Roadmap',
   badge_soon: 'Soon',
-  nav_quick_search_tooltip: 'Quick Search (Ctrl+K)',
+  nav_quick_search_tooltip: 'Quick Search',
   nav_search_aria: 'Search',
   nav_mobile_courses_topics: 'Courses & Disciplines',
   nav_mobile_all_courses: '• View All Courses',

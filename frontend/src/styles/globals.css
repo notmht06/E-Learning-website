@@ -513,7 +513,7 @@ html[lang="en"] .font-num,
 @keyframes search-modal-in {
   from {
     opacity: 0;
-    transform: translateY(-14px) scale(0.97);
+    transform: translateY(-12px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -524,7 +524,7 @@ html[lang="en"] .font-num,
 @keyframes dropdown-spring-in {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-6px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -532,33 +532,76 @@ html[lang="en"] .font-num,
   }
 }
 
-/* Automatic Radix Dialog Smooth Easing */
-[data-radix-dialog-overlay][data-state='open'] {
-  animation: radix-fade-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+@keyframes tab-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-[data-radix-dialog-overlay][data-state='closed'] {
+.animate-tab-fade {
+  animation: tab-fade-in 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hardware-Accelerated Radix Dialog & Modal Transitions */
+div[data-state='open'][class*='fixed inset-0'] {
+  animation: radix-fade-in 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+div[data-state='closed'][class*='fixed inset-0'] {
   animation: radix-fade-out 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
-[data-radix-dialog-content][data-state='open'] {
-  animation: radix-content-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+div[role='dialog'][data-state='open'] {
+  animation: radix-content-in 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
-[data-radix-dialog-content][data-state='closed'] {
+div[role='dialog'][data-state='closed'] {
   animation: radix-content-out 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
+/* Radix Dropdown Smooth Entrance */
+div[data-radix-menu-content][data-state='open'] {
+  animation: dropdown-spring-in 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
 .animate-search-backdrop {
-  animation: search-modal-backdrop-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: search-modal-backdrop-in 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 .animate-search-modal {
-  animation: search-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: search-modal-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 .animate-dropdown-spring {
-  animation: dropdown-spring-in 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: dropdown-spring-in 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* ==========================================================================
+   Universal Smooth Transitions & Tactile Feedback for All Buttons & Interactive Controls
+   ========================================================================== */
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+select {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:active,
+[role="button"]:active {
+  transform: scale(0.98);
+}
+
+a:active {
+  transform: scale(0.99);
 }
 
 

@@ -78,33 +78,39 @@ export function LessonWorkspaceTabs({
         })}
       </nav>
 
-      {/* Tab Panels */}
-      <div>
+      {/* Tab Panels with Smooth Hardware-Accelerated Fade */}
+      <div className="min-h-[300px]">
         {activeTab === 'notes' && (
-          <LessonNotesTab
-            courseId={courseId}
-            chapterId={chapterId}
-            courseTitle={courseTitle}
-            chapterTitle={chapterTitle}
-          />
+          <div key="tab-panel-notes" className="animate-tab-fade">
+            <LessonNotesTab
+              courseId={courseId}
+              chapterId={chapterId}
+              courseTitle={courseTitle}
+              chapterTitle={chapterTitle}
+            />
+          </div>
         )}
 
         {activeTab === 'attachments' && (
-          <LessonAttachmentsTab
-            courseId={courseId}
-            chapterId={chapterId}
-            courseTitle={courseTitle}
-            chapterTitle={chapterTitle}
-          />
+          <div key="tab-panel-attachments" className="animate-tab-fade">
+            <LessonAttachmentsTab
+              courseId={courseId}
+              chapterId={chapterId}
+              courseTitle={courseTitle}
+              chapterTitle={chapterTitle}
+            />
+          </div>
         )}
 
         {activeTab === 'ai' && (
-          <LessonAiQnATab
-            courseId={courseId}
-            chapterId={chapterId}
-            courseTitle={courseTitle}
-            chapterTitle={chapterTitle}
-          />
+          <div key="tab-panel-ai" className="animate-tab-fade">
+            <LessonAiQnATab
+              courseId={courseId}
+              chapterId={chapterId}
+              courseTitle={courseTitle}
+              chapterTitle={chapterTitle}
+            />
+          </div>
         )}
       </div>
     </div>

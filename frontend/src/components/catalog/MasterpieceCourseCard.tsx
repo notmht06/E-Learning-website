@@ -196,11 +196,11 @@ export function MasterpieceCourseCard({
           <img
             src={course.thumbnail}
             alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover/media:scale-105 motion-safe:[@media(hover:hover)]:group-hover/media:brightness-105"
+            className="h-full w-full object-cover transition-all duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105 motion-safe:[@media(hover:hover)]:group-hover:brightness-105"
           />
         ) : (
           <div
-            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover/media:scale-105`}
+            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105`}
           >
             {/* Classical Manuscript Filigree Borders */}
             <div className="absolute inset-1.5 rounded-lg border border-white/10 pointer-events-none" />

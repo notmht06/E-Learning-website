@@ -147,21 +147,21 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           {/* 1. Home */}
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             {dict.nav_home || 'صفحه نخست'}
           </Link>
 
           {/* 2. Courses with Mega-Menu Trigger */}
           <div
-            className="relative shrink-0 whitespace-nowrap"
+            className="relative shrink-0 flex items-center h-8 whitespace-nowrap"
             onMouseEnter={handleMouseEnterCourses}
             onMouseLeave={handleMouseLeaveCourses}
           >
             <button
               type="button"
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              className={`px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`inline-flex items-center justify-center h-8 px-3 rounded-full transition-colors gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
                 isMegaMenuOpen
                   ? 'bg-black/5 dark:bg-white/5 text-[#8A532B] dark:text-[#C58B43] font-bold'
                   : 'hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43]'
@@ -179,7 +179,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           {/* 3. Curriculum Roadmap */}
           <Link
             href="/roadmap"
-            className="px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors gap-1.5 whitespace-nowrap shrink-0"
           >
             <Compass className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="whitespace-nowrap">{dict.nav_roadmap || 'سیر مطالعاتی'}</span>
@@ -188,7 +188,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           {/* 4. Books and Publications */}
           <Link
             href="/books"
-            className="px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             <span className="whitespace-nowrap">{dict.nav_books || 'کتب و تالیفات'}</span>
           </Link>
@@ -196,7 +196,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           {/* 5. Scholarly Articles */}
           <Link
             href="/articles"
-            className="px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             <span className="whitespace-nowrap">{dict.nav_articles || 'مقالات علمی'}</span>
           </Link>
@@ -230,48 +230,62 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             )}
           </button>
 
-          {/* Tactile Segmented Language Switcher (1-Click Swiss Capsule) */}
-          <div
-            className="flex items-center p-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-[10px] sm:text-[11px] font-bold shrink-0 select-none"
-            dir="ltr"
-          >
-            <button
-              type="button"
-              onClick={() => setLanguage('fa')}
-              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
-                currentLang === 'fa'
-                  ? 'bg-[#8A532B] text-white shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-              }`}
-              title="فارسی"
+          {/* Elegant Dropdown Language Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-zinc-700 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] hover:border-[#8A532B]/30 transition-all duration-200 cursor-pointer shrink-0"
+                aria-label={dict.nav_language || 'تغییر زبان'}
+                title={dict.nav_language || 'تغییر زبان'}
+              >
+                <Globe className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+                <span className="text-[11px] font-bold tracking-wide">
+                  {currentLang === 'fa' ? 'فارسی' : currentLang === 'ar' ? 'العربية' : 'English'}
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-36 p-1.5 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-xl space-y-0.5 z-50 text-xs"
             >
-              فا
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage('ar')}
-              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
-                currentLang === 'ar'
-                  ? 'bg-[#8A532B] text-white shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-              }`}
-              title="العربية"
-            >
-              ع
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage('en')}
-              className={`px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-                currentLang === 'en'
-                  ? 'bg-[#8A532B] text-white shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-              }`}
-              title="English"
-            >
-              EN
-            </button>
-          </div>
+              <DropdownMenuItem
+                onClick={() => setLanguage('fa')}
+                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors ${
+                  currentLang === 'fa'
+                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <span>فارسی</span>
+                <span className="text-[10px] font-mono opacity-60">FA</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setLanguage('ar')}
+                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors ${
+                  currentLang === 'ar'
+                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <span>العربية</span>
+                <span className="text-[10px] font-mono opacity-60">AR</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setLanguage('en')}
+                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors font-sans ${
+                  currentLang === 'en'
+                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <span>English</span>
+                <span className="text-[10px] font-mono opacity-60">EN</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Cart Drawer Trigger */}
           <button
@@ -371,9 +385,6 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <span className="flex items-center gap-2">
               <Search className="w-4 h-4 text-[#8A532B] shrink-0" />
               <span>{dict.nav_search_aria || 'جستجوی دروس، کتب و مقالات...'}</span>
-            </span>
-            <span className="font-mono text-[10px] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded">
-              Ctrl+K
             </span>
           </button>
 

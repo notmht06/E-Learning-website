@@ -89,10 +89,10 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             <button
               type="button"
               onClick={() => onTabChange('offline')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+              className={`group/tab px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'offline'
                   ? 'bg-[#8A532B] text-white shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               <Headphones className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                 className={`text-[10px] px-2 py-0.5 rounded-full font-num font-bold transition-colors ${
                   activeTab === 'offline'
                     ? 'bg-white/25 text-white'
-                    : 'bg-black/5 dark:bg-white/10 text-zinc-600 dark:text-zinc-400'
+                    : 'bg-black/5 dark:bg-white/10 text-zinc-700 dark:text-zinc-300 group-hover/tab:text-[#8A532B] dark:group-hover/tab:text-[#C58B43] group-hover/tab:bg-[#8A532B]/10 dark:group-hover/tab:bg-[#C58B43]/15'
                 }`}
               >
                 {toLocale(Object.values(courses).filter((c) => c.course_type === 'offline').length)}
@@ -111,10 +111,10 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             <button
               type="button"
               onClick={() => onTabChange('online')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+              className={`group/tab px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'online'
                   ? 'bg-[#8A532B] text-white shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               <Radio className="w-3.5 h-3.5" />
@@ -123,7 +123,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                 className={`text-[10px] px-2 py-0.5 rounded-full font-num font-bold transition-colors ${
                   activeTab === 'online'
                     ? 'bg-white/25 text-white'
-                    : 'bg-[#8A532B]/15 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43]'
+                    : 'bg-black/5 dark:bg-white/10 text-zinc-700 dark:text-zinc-300 group-hover/tab:text-[#8A532B] dark:group-hover/tab:text-[#C58B43] group-hover/tab:bg-[#8A532B]/10 dark:group-hover/tab:bg-[#C58B43]/15'
                 }`}
               >
                 {toLocale(onlineCoursesList.length)}

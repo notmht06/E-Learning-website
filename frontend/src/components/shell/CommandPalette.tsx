@@ -38,6 +38,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onClose: controlledOnClose,
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
@@ -47,6 +49,22 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+
+  // Mount and smooth fade/scale transition controller
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isOpen) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setVisible(true));
+      });
+      return () => cancelAnimationFrame(raf);
+    } else {
+      setVisible(false);
+      timer = setTimeout(() => setMounted(false), 240);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     if (isControlled && controlledOnClose) {
@@ -86,13 +104,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     };
   }, [isOpen, isControlled, controlledOnClose]);
 
-  // Focus input when opened
+  // Focus input when opened and visible
   useEffect(() => {
-    if (isOpen) {
+    if (visible) {
       setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const timer = setTimeout(() => inputRef.current?.focus(), 60);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [visible]);
 
   // Aggregate search results
   const q = query.trim().toLowerCase();
@@ -231,15 +250,19 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     );
   }, [courses]);
 
-  if (!isOpen) return null;
+  if (!mounted) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-8 px-4 bg-black/60 backdrop-blur-xs animate-search-backdrop"
+      className={`fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-16 px-4 bg-black/60 backdrop-blur-xs transition-opacity duration-240 ease-out ${
+        visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
       onClick={handleClose}
     >
       <div
-        className="w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] animate-search-modal"
+        className={`w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] transition-all duration-240 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          visible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-3'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Search Input Bar */}
