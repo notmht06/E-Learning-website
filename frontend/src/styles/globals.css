@@ -187,8 +187,40 @@ html[lang="ar"] *,
   letter-spacing: normal !important;
 }
 
-input, button, select, textarea {
+html[dir="rtl"] input,
+html[dir="rtl"] button,
+html[dir="rtl"] select,
+html[dir="rtl"] textarea,
+html[lang="fa"] input,
+html[lang="fa"] button,
+html[lang="fa"] select,
+html[lang="fa"] textarea,
+html[lang="ar"] input,
+html[lang="ar"] button,
+html[lang="ar"] select,
+html[lang="ar"] textarea {
   font-family: 'Dana', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+html[lang="en"] input,
+html[lang="en"] button,
+html[lang="en"] select,
+html[lang="en"] textarea,
+html[dir="ltr"] input,
+html[dir="ltr"] button,
+html[dir="ltr"] select,
+html[dir="ltr"] textarea,
+[dir="ltr"] input,
+[dir="ltr"] button,
+[dir="ltr"] select,
+[dir="ltr"] textarea {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+html[lang="en"] .font-mono,
+html[dir="ltr"] .font-mono,
+[dir="ltr"] .font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
 }
 
 /* Persian and Latin Numerals Styling */
