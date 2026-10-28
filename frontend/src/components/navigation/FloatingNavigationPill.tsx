@@ -105,7 +105,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   const handleMouseLeaveCourses = () => {
     megaTimeoutRef.current = setTimeout(() => {
       setIsMegaMenuOpen(false);
-    }, 240);
+    }, 400);
   };
 
   const languages: { code: SupportedLang; label: string; flag: string }[] = [
@@ -117,7 +117,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   return (
     <header
       ref={headerRef}
-      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1.25rem)] sm:w-[calc(100%-2.5rem)] max-w-7xl transition-all duration-300"
+      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1.25rem)] sm:w-[calc(100%-2.5rem)] max-w-7xl transition-all duration-300 relative"
     >
       <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3.5 sm:px-6 py-2 flex items-center justify-between gap-3 sm:gap-6 flex-nowrap shrink-0 overflow-visible">
         {/* Brand Identity / Scholar */}
@@ -158,8 +158,9 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             onMouseEnter={handleMouseEnterCourses}
             onMouseLeave={handleMouseLeaveCourses}
           >
-            <Link
-              href="/courses"
+            <button
+              type="button"
+              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
               className={`px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
                 isMegaMenuOpen
                   ? 'bg-black/5 dark:bg-white/5 text-[#8A532B] dark:text-[#C58B43] font-bold'
@@ -172,22 +173,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                   isMegaMenuOpen ? 'rotate-180 text-[#8A532B] dark:text-[#C58B43]' : ''
                 }`}
               />
-            </Link>
-
-            {/* Mega-Menu Panel positioned cleanly below pill */}
-            <div className="absolute start-0 top-full pt-3 z-50">
-              <NavbarCoursesMegaMenu
-                isOpen={isMegaMenuOpen}
-                onClose={() => setIsMegaMenuOpen(false)}
-                activeTab={activeMegaTab}
-                onTabChange={setActiveMegaTab}
-                categories={categories}
-                courses={courses}
-                currentLang={currentLang}
-                dict={dict}
-                toLocale={toLocale}
-              />
-            </div>
+            </button>
           </div>
 
           {/* 3. Curriculum Roadmap */}
@@ -341,6 +327,21 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Desktop Courses Mega-Menu (Centered below pill) */}
+      <NavbarCoursesMegaMenu
+        isOpen={isMegaMenuOpen}
+        onClose={() => setIsMegaMenuOpen(false)}
+        activeTab={activeMegaTab}
+        onTabChange={setActiveMegaTab}
+        categories={categories}
+        courses={courses}
+        currentLang={currentLang}
+        dict={dict}
+        toLocale={toLocale}
+        onMouseEnter={handleMouseEnterCourses}
+        onMouseLeave={handleMouseLeaveCourses}
+      />
 
       {/* Mobile Drawer Dropdown */}
       {isMobileOpen && (
