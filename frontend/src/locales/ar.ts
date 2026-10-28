@@ -1026,4 +1026,18 @@ export const ar: Dictionary = {
   discourse_course_tab_ishraq: 'حكمة الإشراق',
   discourse_course_tab_isharat: 'شرح الإشارات',
   discourse_progress_aria: 'مؤشر تقدم تشغيل الصوت',
+
+  // Stage 8: Learning Theater & Access Guard
+  guard_access_required: 'محتوى مخصص للدارسين المسجلين',
+  guard_access_desc: 'للاستماع إلى هذه الجلسة والاطلاع على التقريرات والملفات الصوتية، يرجى التسجيل في الدورة أو تسجيل الدخول إلى حسابك.',
+  guard_enroll_btn: 'التسجيل في الدورة والوصول الفوري',
+  guard_login_btn: 'تسجيل الدخول',
+  guard_back_to_course: 'العودة لصفحة تفاصيل الدورة',
+  guard_benefit_1: 'وصول دائم إلى التسجيلات الصوتية بدقة ٤٨kHz والتقريرات المفصلة',
+  guard_benefit_2: 'إمكانية المشاركة في الورش والجلسات المباشرة',
+  guard_benefit_3: 'طرح الإشكالات والأسئلة العلمية مع المساعد الذكي',
+  guard_benefit_4: 'إصدار شهادة تخرج رسمية معتمدة',
+  player_mark_completed: 'تحديد كجلسة مكتملة',
+  player_completed_badge: 'تم إكمال الجلسة',
+  player_speed_normal: '١.٠x (عادي)',
 };

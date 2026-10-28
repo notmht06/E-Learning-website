@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Loader2,
   CheckCircle2,
+  ChevronUp,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
@@ -20,6 +21,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { apiClient } from '@/services/apiClient';
 import { triggerTactileHaptic } from '@/lib/haptics';
 import { getCourseSubtitles, getActiveSubtitleText, SubtitleLang } from '@/lib/subtitles';
+import { LearningAccessGuard } from './LearningAccessGuard';
 
 export interface AudioVideoPlayerEngineProps {
   courseId?: string;
@@ -31,6 +33,11 @@ export interface AudioVideoPlayerEngineProps {
   videoUrl?: string;
   audioUrl?: string;
   initialPositionSec?: number;
+  isLocked?: boolean;
+  isCompleted?: boolean;
+  price?: string | number;
+  isFree?: boolean;
+  onToggleComplete?: () => void;
   onChapterComplete?: () => void;
   onProgressSync?: (chapterId: number, percent: number, currentSec: number) => void;
 }
@@ -45,6 +52,11 @@ export function AudioVideoPlayerEngine({
   videoUrl,
   audioUrl = '/audio/sample_lecture.wav',
   initialPositionSec = 0,
+  isLocked = false,
+  isCompleted = false,
+  price = 0,
+  isFree = false,
+  onToggleComplete,
   onChapterComplete,
   onProgressSync,
 }: AudioVideoPlayerEngineProps) {
@@ -65,7 +77,23 @@ export function AudioVideoPlayerEngine({
   const [isBuffering, setIsBuffering] = useState(false);
   const [currentTime, setCurrentTime] = useState(initialPositionSec || 0);
   const [duration, setDuration] = useState(durationSeconds || 180);
-  const [speed, setSpeed] = useState(1);
+
+  // Hydrate preferred speed from localStorage
+  const [speed, setSpeed] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('zanjirzan_playback_speed');
+        if (saved) {
+          const parsed = parseFloat(saved);
+          if ([0.75, 1, 1.25, 1.5, 1.75, 2].includes(parsed)) return parsed;
+        }
+      } catch (err) {
+        console.debug('Failed to read speed from localStorage:', err);
+      }
+    }
+    return 1;
+  });
+
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mediaMode, setMediaMode] = useState<'audio' | 'video'>('audio');
@@ -74,6 +102,7 @@ export function AudioVideoPlayerEngine({
   const [serverWatermark, setServerWatermark] = useState<string | null>(null);
   const [syncIndicator, setSyncIndicator] = useState(false);
   const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
+  const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState<
     'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
   >('top-end');
@@ -87,15 +116,20 @@ export function AudioVideoPlayerEngine({
 
   const activeSubtitle = getActiveSubtitleText(subtitleCues, currentTime, subtitleLang);
 
+  // Close popover menus when clicking outside
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (isSubtitleMenuOpen && !(e.target as HTMLElement).closest('.cc-menu-container')) {
+      const target = e.target as HTMLElement;
+      if (isSubtitleMenuOpen && !target.closest('.cc-menu-container')) {
         setIsSubtitleMenuOpen(false);
+      }
+      if (isSpeedMenuOpen && !target.closest('.speed-menu-container')) {
+        setIsSpeedMenuOpen(false);
       }
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
-  }, [isSubtitleMenuOpen]);
+  }, [isSubtitleMenuOpen, isSpeedMenuOpen]);
 
   useEffect(() => {
     currentTimeRef.current = currentTime;
@@ -118,8 +152,9 @@ export function AudioVideoPlayerEngine({
     return audioRef.current;
   }, [mediaMode, videoUrl]);
 
-  // 1. Issue DRM Token on course/chapter change
+  // 1. Issue DRM Token on course/chapter change (only if not locked)
   useEffect(() => {
+    if (isLocked) return;
     let mounted = true;
     setDrmStreamUrl(null);
     const uid = user?.id || 'guest-scholar';
@@ -140,7 +175,7 @@ export function AudioVideoPlayerEngine({
     return () => {
       mounted = false;
     };
-  }, [user?.id, courseId, chapterId]);
+  }, [user?.id, courseId, chapterId, isLocked]);
 
   // 2. Reset or restore playback position when chapter changes
   useEffect(() => {
@@ -207,7 +242,7 @@ export function AudioVideoPlayerEngine({
 
   // 5. Fallback simulation timer ONLY if browser blocks or lacks physical media stream
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || isLocked) return;
     const interval = setInterval(() => {
       const el = getActiveMediaElement();
       const isNativeAdvancing = el && !el.paused && !el.ended && el.readyState >= 2;
@@ -232,11 +267,11 @@ export function AudioVideoPlayerEngine({
     }, 1000 / speed);
 
     return () => clearInterval(interval);
-  }, [isPlaying, speed, duration, getActiveMediaElement, onChapterComplete, pushProgressToServer]);
+  }, [isPlaying, isLocked, speed, duration, getActiveMediaElement, onChapterComplete, pushProgressToServer]);
 
   const handleTogglePlay = () => {
+    if (isLocked) return;
     triggerTactileHaptic('thump');
-    // Pause global floating island player if it is currently playing
     if (!isPlaying && isGlobalIslandPlaying) {
       toggleGlobalIsland();
     }
@@ -322,13 +357,19 @@ export function AudioVideoPlayerEngine({
     }
   };
 
-  const toggleSpeed = () => {
+  const handleSelectSpeed = (newSpeed: number) => {
     triggerTactileHaptic('tick');
-    const speeds = [0.75, 1, 1.25, 1.5, 2];
-    const nextSpeed = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
-    setSpeed(nextSpeed);
-    if (audioRef.current) audioRef.current.playbackRate = nextSpeed;
-    if (videoRef.current) videoRef.current.playbackRate = nextSpeed;
+    setSpeed(newSpeed);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('zanjirzan_playback_speed', String(newSpeed));
+      } catch (err) {
+        console.debug('Failed to save speed to localStorage:', err);
+      }
+    }
+    if (audioRef.current) audioRef.current.playbackRate = newSpeed;
+    if (videoRef.current) videoRef.current.playbackRate = newSpeed;
+    setIsSpeedMenuOpen(false);
   };
 
   const handleToggleMute = () => {
@@ -354,6 +395,21 @@ export function AudioVideoPlayerEngine({
   };
 
   const progressPercent = Math.min(100, Math.max(0, Math.round((currentTime / (duration || 1)) * 100)));
+
+  // If chapter is locked, render LearningAccessGuard in place of media player
+  if (isLocked) {
+    return (
+      <div ref={containerRef}>
+        <LearningAccessGuard
+          courseId={courseId}
+          courseTitle={courseTitle}
+          chapterTitle={chapterTitle}
+          price={price}
+          isFree={isFree}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -466,7 +522,7 @@ export function AudioVideoPlayerEngine({
           </div>
         )}
 
-        {/* On-Stage Multilingual Subtitle Display (Coursera / Udemy Inspired) */}
+        {/* On-Stage Multilingual Subtitle Display */}
         {activeSubtitle && (
           <div className="absolute bottom-6 inset-x-4 sm:inset-x-12 z-25 flex justify-center pointer-events-none animate-in fade-in duration-200">
             <div
@@ -504,18 +560,21 @@ export function AudioVideoPlayerEngine({
         {/* Controls Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
+            {/* 10s Rewind */}
             <button
               type="button"
               onClick={() => skipSeconds(-10)}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
+              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
               title={
                 dict.player_skip_10s ||
                 (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
               }
             >
               <RotateCcw className="w-4 h-4" />
+              <span className="text-[10px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
             </button>
 
+            {/* Play / Pause Toggle */}
             <button
               type="button"
               onClick={handleTogglePlay}
@@ -529,18 +588,21 @@ export function AudioVideoPlayerEngine({
               )}
             </button>
 
+            {/* 10s Forward */}
             <button
               type="button"
-              onClick={() => skipSeconds(30)}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
+              onClick={() => skipSeconds(10)}
+              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
               title={
-                dict.player_skip_30s ||
-                (currentLang === 'en' ? '30s Forward' : currentLang === 'ar' ? '٣٠ ثانية للأمام' : '۳۰ ثانیه به جلو')
+                dict.player_skip_forward ||
+                (currentLang === 'en' ? '10s Forward' : currentLang === 'ar' ? '١٠ ثوانٍ للأمام' : '۱۰ ثانیه به جلو')
               }
             >
+              <span className="text-[10px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
               <RotateCw className="w-4 h-4" />
             </button>
 
+            {/* Volume Toggle */}
             <button
               type="button"
               onClick={handleToggleMute}
@@ -552,15 +614,71 @@ export function AudioVideoPlayerEngine({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Speed Toggle */}
-            <button
-              type="button"
-              onClick={toggleSpeed}
-              className="px-3 py-1.5 rounded-xl bg-[#0C0D0E] border border-[#22242A] text-zinc-200 hover:border-[#8A532B] text-xs font-mono font-bold transition cursor-pointer font-num"
-              title={dict.player_speed || 'سرعت پخش'}
-            >
-              {speed}x
-            </button>
+            {/* Mark as Completed Toggle Button */}
+            {onToggleComplete && (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerTactileHaptic('thump');
+                  onToggleComplete();
+                }}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  isCompleted
+                    ? 'bg-[#8A532B]/15 border-[#8A532B] text-[#E6CA85]'
+                    : 'bg-[#0C0D0E] border-[#22242A] text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                }`}
+                title={
+                  isCompleted
+                    ? dict.player_completed_badge || (currentLang === 'en' ? 'Completed' : currentLang === 'ar' ? 'تم إكمال الجلسة' : 'جلسه تکمیل شد')
+                    : dict.player_mark_completed || (currentLang === 'en' ? 'Mark as Completed' : currentLang === 'ar' ? 'تحديد كجلسة مكتملة' : 'علامت‌گذاری به عنوان پایان‌یافته')
+                }
+              >
+                <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#C58B43]' : 'text-zinc-500'}`} />
+                <span className="hidden sm:inline">
+                  {isCompleted
+                    ? dict.player_completed_badge || (currentLang === 'en' ? 'Completed' : currentLang === 'ar' ? 'تم إكمال الجلسة' : 'جلسه تکمیل شد')
+                    : dict.player_mark_completed || (currentLang === 'en' ? 'Mark as Completed' : currentLang === 'ar' ? 'تحديد كجلسة مكتملة' : 'علامت‌گذاری به عنوان پایان‌یافته')}
+                </span>
+              </button>
+            )}
+
+            {/* Speed Selector Popover Menu */}
+            <div className="relative speed-menu-container">
+              <button
+                type="button"
+                onClick={() => setIsSpeedMenuOpen((prev) => !prev)}
+                className="px-3 py-1.5 rounded-xl bg-[#0C0D0E] border border-[#22242A] text-zinc-200 hover:border-[#8A532B] text-xs font-mono font-bold transition cursor-pointer font-num flex items-center gap-1"
+                title={dict.player_speed || 'سرعت پخش'}
+              >
+                <span>{speed}x</span>
+                <ChevronUp className={`w-3 h-3 text-zinc-400 transition-transform ${isSpeedMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isSpeedMenuOpen && (
+                <div className="absolute bottom-full mb-2 end-0 z-50 w-36 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-3 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider border-b border-[#22242A]">
+                    {dict.player_speed || 'سرعت پخش'}
+                  </div>
+                  {[0.75, 1, 1.25, 1.5, 1.75, 2].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => handleSelectSpeed(s)}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-start cursor-pointer hover:bg-zinc-800 transition font-mono ${
+                        speed === s ? 'text-[#C58B43] font-bold' : 'text-zinc-300'
+                      }`}
+                    >
+                      <span>
+                        {s === 1
+                          ? dict.player_speed_normal || '1.0x (عادی)'
+                          : `${s}x`}
+                      </span>
+                      {speed === s && <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Subtitle / Closed Caption (CC) Switcher */}
             <div className="relative cc-menu-container">

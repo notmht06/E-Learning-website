@@ -66,16 +66,7 @@ export function CoursePlaylistSidebar({
               <button
                 type="button"
                 onClick={() => {
-                  if (isLocked) {
-                    const lockAlert = currentLang === 'en'
-                      ? 'This session requires enrollment in the course.'
-                      : currentLang === 'ar'
-                      ? 'هذه الجلسة تتطلب التسجيل في الدورة.'
-                      : 'این جلسه نیازمند ثبت‌نام در دوره است.';
-                    alert(lockAlert);
-                  } else {
-                    onSelectChapter(idx);
-                  }
+                  onSelectChapter(idx);
                 }}
                 aria-current={isActive ? 'step' : undefined}
                 className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl p-2 text-start transition-colors duration-150 ease-out active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A532B] ${

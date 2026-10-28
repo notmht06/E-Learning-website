@@ -81,6 +81,33 @@ export default function CourseLearnTheaterPage({
       : course.title_fa;
 
   const chapterTitle = getLocalizedChapterTitle(activeChapter, currentLang);
+  const locPrice =
+    currentLang === 'ar'
+      ? course.price_ar || course.price_fa
+      : currentLang === 'en'
+      ? course.price_en || course.price_fa
+      : course.price_fa;
+  const isFree = course.price_fa?.includes('رایگان') || course.price_fa === '0';
+  const isChapterPreview = !!activeChapter.isFreePreview || activeChapterIndex === 0;
+  const isChapterLocked = !isEnrolled && !isChapterPreview;
+  const isChapterCompleted = completedChapters.includes(activeChapter.id);
+
+  const handleToggleChapterComplete = () => {
+    const chId = activeChapter.id;
+    setCompletedChapters((prev) => {
+      const isCurrentlyDone = prev.includes(chId);
+      const updated = isCurrentlyDone
+        ? prev.filter((id) => id !== chId)
+        : [...prev, chId];
+
+      if (user) {
+        apiClient.courses
+          .syncProgress(course.id, chId, isCurrentlyDone ? 0 : 100, isCurrentlyDone ? 0 : 2700)
+          .catch((err) => console.warn('Failed to sync chapter completion toggle:', err));
+      }
+      return updated;
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-8">
@@ -172,6 +199,11 @@ export default function CourseLearnTheaterPage({
               audioUrl={activeChapter.audioUrl || course.sampleAudioUrl}
               videoUrl={activeChapter.videoUrl}
               initialPositionSec={chapterPositions[activeChapter.id] || 0}
+              isLocked={isChapterLocked}
+              isCompleted={isChapterCompleted}
+              price={locPrice}
+              isFree={isFree}
+              onToggleComplete={handleToggleChapterComplete}
               onProgressSync={(chId, pct, sec) => {
                 setChapterPositions((prev) => ({ ...prev, [chId]: sec }));
                 if (pct >= 90 && !completedChapters.includes(chId)) {

@@ -1025,4 +1025,18 @@ export const fa = {
   discourse_course_tab_ishraq: 'حکمت اشراق',
   discourse_course_tab_isharat: 'شرح اشارات',
   discourse_progress_aria: 'کنترل پیشرفت پخش صوت',
+
+  // Stage 8: Learning Theater & Access Guard
+  guard_access_required: 'دسترسی ویژه اعضای ثبت‌نام‌شده',
+  guard_access_desc: 'برای دسترسی به این جلسه، متون منقح تقریرات و استریم صوتی استودیویی، لطفاً در دوره ثبت‌نام فرمایید یا به حساب کاربری خود وارد شوید.',
+  guard_enroll_btn: 'ثبت‌نام در دوره و دسترسی آنی',
+  guard_login_btn: 'ورود به حساب کاربری',
+  guard_back_to_course: 'بازگشت به معرفی دوره',
+  guard_benefit_1: 'دسترسی همیشگی به صوت ۴۸kHz و تقریرات تفصیلی',
+  guard_benefit_2: 'امکان حضور در کارگاه‌ها و جلسات برخط اسکایروم',
+  guard_benefit_3: 'طرح اشکال و پرسش‌وپاسخ با دستیار علمی حکمت‌یار',
+  guard_benefit_4: 'صدور گواهی رسمی پایان دوره با تأیید استاد',
+  player_mark_completed: 'علامت‌گذاری به عنوان پایان‌یافته',
+  player_completed_badge: 'جلسه تکمیل شد',
+  player_speed_normal: '۱.۰x (عادی)',
 } as const;

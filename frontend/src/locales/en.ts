@@ -1026,4 +1026,18 @@ export const en: Dictionary = {
   discourse_course_tab_ishraq: 'Hikmat al-Ishraq',
   discourse_course_tab_isharat: 'Sharh al-Isharat',
   discourse_progress_aria: 'Audio progress scrubber',
+
+  // Stage 8: Learning Theater & Access Guard
+  guard_access_required: 'Enrollment Required',
+  guard_access_desc: 'To access this lecture session, edited monographs, and studio audio stream, please enroll in this course or sign in to your account.',
+  guard_enroll_btn: 'Enroll in Course & Get Instant Access',
+  guard_login_btn: 'Sign In to Account',
+  guard_back_to_course: 'Back to Course Overview',
+  guard_benefit_1: 'Lifetime access to 48kHz audio and detailed lecture monographs',
+  guard_benefit_2: 'Access to interactive live sessions & workshops',
+  guard_benefit_3: 'Scholarly debate and Q&A with the wisdom assistant',
+  guard_benefit_4: 'Official authenticated certificate of course completion',
+  player_mark_completed: 'Mark as Completed',
+  player_completed_badge: 'Completed',
+  player_speed_normal: '1.0x (Normal)',
 };
