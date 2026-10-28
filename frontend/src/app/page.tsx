@@ -1,18 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { BentoHero } from '@/components/BentoHero';
-import { WisdomStationsSheet, DiscoursePlayerSection } from '@/components/home';
+import {
+  WisdomStationsSheet,
+  DiscoursePlayerSection,
+  CourseCategoryCarousel,
+  MethodologyGuarantees,
+  RoadmapBannerSection,
+} from '@/components/home';
 import { CourseCatalogBento } from '@/components/CourseCatalogBento';
 import { ScholarDispatchBento } from '@/components/ScholarDispatchBento';
 import { CartModal } from '@/components/CartModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { useData } from '@/context/DataContext';
 import { useCart } from '@/context/CartContext';
-import { booksDatabase } from '@/lib/data';
-import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
+import { getScholarName } from '@/lib/constants';
 
 export default function HomePage() {
   const { currentLang, dict } = useLanguage();
@@ -46,25 +51,34 @@ export default function HomePage() {
         onOpenCart={openCart}
       />
 
-      {/* 2. Main Content Layout (Scholastic Editorial Architecture) */}
-      <main className="flex-1 space-y-10 sm:space-y-14 pb-12">
-        {/* SECTION 1: Clean Scholar Hero */}
+      {/* 2. Main Content Layout (Sabzlearn-Inspired Scholastic Editorial Architecture) */}
+      <main className="flex-1 space-y-12 sm:space-y-16 pb-16">
+        {/* SECTION 1: Masterpiece Hero Banner & Instant Search */}
         <BentoHero />
 
-        {/* SECTION 2: Rising Wisdom Stations Sheet (Adapted from UTopia sheet-main & AlphaSchool value grid) */}
-        <WisdomStationsSheet />
+        {/* SECTION 2: 8 Academic Branches Category Carousel (Sabzlearn-style) */}
+        <CourseCategoryCarousel />
 
-        {/* SECTION 3: Multimedia Discourse Player Studio (Adapted from AlphaSchool AlphaGap) */}
-        <DiscoursePlayerSection />
-
-        {/* SECTION 4: Minimal Course & Book Catalog */}
+        {/* SECTION 3: Featured & Masterpiece Courses Catalog (Sabzlearn-style) */}
         <CourseCatalogBento
           courses={allCourses}
           categories={categories}
           onAddToCart={handleAddToBag}
         />
 
-        {/* SECTION 5: Minimal Scholar Dispatch */}
+        {/* SECTION 4: 6 Core Pillars of Instruction & Guarantees (Sabzlearn-style) */}
+        <MethodologyGuarantees />
+
+        {/* SECTION 5: Comprehensive Learning Roadmap Banner */}
+        <RoadmapBannerSection />
+
+        {/* SECTION 6: Rising Wisdom Stations Sheet */}
+        <WisdomStationsSheet />
+
+        {/* SECTION 7: Multimedia Discourse Player Studio */}
+        <DiscoursePlayerSection />
+
+        {/* SECTION 8: Scholar Dispatch & Articles */}
         <ScholarDispatchBento />
       </main>
 
@@ -73,7 +87,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-0.5 text-center sm:text-start">
             <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              {dict.scholar_name || getScholarName(currentLang)}
+              {dict.scholar_full_title || getScholarName(currentLang)}
             </h4>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}
