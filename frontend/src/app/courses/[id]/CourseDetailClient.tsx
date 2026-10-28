@@ -8,7 +8,9 @@ import { getLocalizedCourse } from '@/lib/localization';
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { CourseDetailHero } from '@/components/course/CourseDetailHero';
-import { CourseSyllabusList } from '@/components/course/CourseSyllabusList';
+import { CourseSyllabusAccordion } from '@/components/course/CourseSyllabusAccordion';
+import { CourseInstructorCard } from '@/components/course/CourseInstructorCard';
+import { CourseFaqAccordion } from '@/components/course/CourseFaqAccordion';
 import { CourseEnrollmentCard } from '@/components/course/CourseEnrollmentCard';
 import { StickyEnrollmentBar } from '@/components/course/StickyEnrollmentBar';
 import { useCourseEnrollment } from '@/components/course/useCourseEnrollment';
@@ -56,34 +58,42 @@ export function CourseDetailClient({ courseId }: { courseId: string }) {
           toLocale={toLocale}
         />
 
-        {/* Course Syllabus & Ancillary Information Grid */}
+        {/* Stage 7: Course Syllabus Accordion, Scholar Biography & FAQ Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-4 border-t border-[#E6E1D8] dark:border-[#24262D]">
-          <CourseSyllabusList
-            course={course}
-            chapters={course.chapters || []}
-            locChapters={locCourse?.chapters}
-            dict={dict}
-            currentLang={currentLang}
-            toLocale={toLocale}
-          />
+          {/* Main 8-Column Content Flow */}
+          <div className="lg:col-span-8 space-y-10">
+            <CourseSyllabusAccordion
+              course={course}
+              chapters={course.chapters || []}
+              locChapters={locCourse?.chapters}
+              isEnrolled={isEnrolled}
+            />
 
-          <CourseEnrollmentCard
-            courseId={course.id}
-            price={price}
-            isEnrolled={isEnrolled}
-            isLoading={isLoading}
-            error={error}
-            driveFolderId={course.driveFolderId}
-            telegramUrl={course.telegramUrl}
-            courseType={course.course_type}
-            schedule={course.schedule}
-            capacity={course.capacity}
-            enrolledCount={course.enrolledCount}
-            skyroomUrl={course.skyroomUrl}
-            onEnroll={() => handleEnroll(title, price)}
-            dict={dict}
-            currentLang={currentLang}
-          />
+            <CourseInstructorCard />
+
+            <CourseFaqAccordion />
+          </div>
+
+          {/* Sticky Enrollment Card Sidebar */}
+          <div className="lg:col-span-4 sticky top-24">
+            <CourseEnrollmentCard
+              courseId={course.id}
+              price={price}
+              isEnrolled={isEnrolled}
+              isLoading={isLoading}
+              error={error}
+              driveFolderId={course.driveFolderId}
+              telegramUrl={course.telegramUrl}
+              courseType={course.course_type}
+              schedule={course.schedule}
+              capacity={course.capacity}
+              enrolledCount={course.enrolledCount}
+              skyroomUrl={course.skyroomUrl}
+              onEnroll={() => handleEnroll(title, price)}
+              dict={dict}
+              currentLang={currentLang}
+            />
+          </div>
         </div>
       </main>
 
