@@ -57,6 +57,20 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setIsMounted(true);
+    if (typeof window !== 'undefined') {
+      try {
+        const savedCoupon = localStorage.getItem('zan_applied_coupon');
+        if (savedCoupon) {
+          const parsed = JSON.parse(savedCoupon);
+          if (parsed && parsed.code && parsed.percent) {
+            setAppliedCoupon({ code: parsed.code, percent: parsed.percent });
+            setCouponCode(parsed.code);
+          }
+        }
+      } catch (err) {
+        console.debug('Failed to read saved coupon in checkout:', err);
+      }
+    }
   }, []);
 
   // Auth gate: Guest users must authenticate before step 2 (shipping) or step 3 (payment)
