@@ -117,9 +117,9 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   return (
     <header
       ref={headerRef}
-      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1.25rem)] sm:w-[calc(100%-2.5rem)] max-w-7xl transition-all duration-300 relative"
+      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1rem)] sm:w-[calc(100%-1.5rem)] max-w-7xl transition-all duration-300 relative"
     >
-      <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3.5 sm:px-6 py-2 flex items-center justify-between gap-3 sm:gap-6 flex-nowrap shrink-0 overflow-visible">
+      <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5 xl:gap-3 2xl:gap-5 flex-nowrap shrink-0 overflow-visible">
         {/* Brand Identity / Scholar */}
         <Link
           href="/"
@@ -142,7 +142,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
         {/* Center Desktop Navigation Links (Previous titles + Swiss capsule design) */}
         <nav
           aria-label="Desktop Navigation Links"
-          className="hidden xl:flex items-center gap-1 xl:gap-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 flex-nowrap shrink-0 whitespace-nowrap"
+          className="hidden xl:flex items-center gap-1 xl:gap-1.5 2xl:gap-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 flex-nowrap shrink-0 whitespace-nowrap"
         >
           {/* 1. Home */}
           <Link
