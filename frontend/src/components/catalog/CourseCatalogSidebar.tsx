@@ -50,9 +50,9 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
     free_only: dict.catalog_filter_free_only || 'فقط دوره‌های رایگان',
     clear_all: dict.catalog_filter_clear_all || 'پاک‌سازی فیلترها',
     all_disciplines: dict.catalog_type_all || 'همه شاخه‌ها',
-    type_all: dict.catalog_type_all || 'همه',
-    type_offline: dict.catalog_type_offline || 'دوره‌های آفلاین',
-    type_online: dict.catalog_type_online || 'کارگاه‌های آنلاین',
+    type_all: dict.catalog_type_all || 'همه دوره‌ها',
+    type_offline: dict.catalog_type_offline || 'آفلاین',
+    type_online: dict.catalog_type_online || 'آنلاین',
   };
 
   // Compute category counts
@@ -104,10 +104,10 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
             triggerTactileHaptic('tick');
             onSelectSubject('all');
           }}
-          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
+          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer ${
             selectedSubject === 'all'
-              ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold border border-[#8A532B]/20 dark:border-[#C58B43]/30'
-              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
+              ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold border border-[#8A532B]/20 dark:border-[#C58B43]/30 shadow-xs'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -142,10 +142,10 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
                 triggerTactileHaptic('tick');
                 onSelectSubject(cat.name);
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer ${
                 isSelected
-                  ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold border border-[#8A532B]/20 dark:border-[#C58B43]/30'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
+                  ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] font-bold border border-[#8A532B]/20 dark:border-[#C58B43]/30 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-zinc-900 dark:hover:text-zinc-100'
               }`}
             >
               <div className="flex items-center gap-2 truncate">
@@ -179,7 +179,7 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
               triggerTactileHaptic('tick');
               onSelectType('all');
             }}
-            className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+            className={`py-1.5 rounded-lg transition-all duration-200 ease-out font-medium cursor-pointer active:scale-[0.97] ${
               selectedType === 'all'
                 ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -192,7 +192,7 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
               triggerTactileHaptic('tick');
               onSelectType('offline');
             }}
-            className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+            className={`py-1.5 rounded-lg transition-all duration-200 ease-out font-medium cursor-pointer active:scale-[0.97] ${
               selectedType === 'offline'
                 ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -206,7 +206,7 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
               triggerTactileHaptic('tick');
               onSelectType('online');
             }}
-            className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+            className={`py-1.5 rounded-lg transition-all duration-200 ease-out font-medium cursor-pointer active:scale-[0.97] ${
               selectedType === 'online'
                 ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'

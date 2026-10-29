@@ -70,9 +70,9 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
     apply: dict.catalog_filter_mobile_apply || 'اعمال فیلترها',
     show: dict.catalog_filter_show_courses || 'مشاهده',
     all_disciplines: dict.catalog_type_all || 'همه شاخه‌ها',
-    type_all: dict.catalog_type_all || 'همه',
-    type_offline: dict.catalog_type_offline || 'دوره‌های آفلاین',
-    type_online: dict.catalog_type_online || 'کارگاه‌های آنلاین',
+    type_all: dict.catalog_type_all || 'همه دوره‌ها',
+    type_offline: dict.catalog_type_offline || 'آفلاین',
+    type_online: dict.catalog_type_online || 'آنلاین',
     sort_title: dict.catalog_sort_label || 'مرتب‌سازی:',
     sort_default: dict.catalog_sort_default || 'همه',
     sort_newest: dict.catalog_sort_newest || 'جدیدترین',
@@ -134,7 +134,6 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                 { id: 'default', label: t.sort_default },
                 { id: 'newest', label: t.sort_newest },
                 { id: 'popular', label: t.sort_popular },
-                { id: 'price_asc', label: t.sort_price_asc },
                 { id: 'price_desc', label: t.sort_price_desc },
               ].map((opt) => (
                 <button
@@ -143,7 +142,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                     triggerTactileHaptic('tick');
                     onSelectSortBy(opt.id);
                   }}
-                  className={`py-2 px-3 rounded-xl text-xs text-start transition cursor-pointer flex items-center justify-between ${
+                  className={`py-2 px-3 rounded-xl text-xs text-start transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer flex items-center justify-between ${
                     sortBy === opt.id
                       ? 'bg-[#8A532B] text-white font-bold dark:bg-[#C58B43]'
                       : 'bg-white dark:bg-[#1C1E22] text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800'
@@ -167,7 +166,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('all');
                 }}
-                className={`py-2 rounded-lg transition font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'all'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'
@@ -180,7 +179,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('offline');
                 }}
-                className={`py-2 rounded-lg transition font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'offline'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'
@@ -194,7 +193,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('online');
                 }}
-                className={`py-2 rounded-lg transition font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'online'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'

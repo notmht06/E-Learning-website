@@ -7,7 +7,6 @@ import {
   Search,
   SlidersHorizontal,
   LayoutGrid,
-  List,
   RotateCcw,
   X,
   ArrowDown,
@@ -39,7 +38,6 @@ function CoursesContent() {
   const [selectedSubject, setSelectedSubject] = useState<string>(initialSubject);
   const [onlyFree, setOnlyFree] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>('default');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [visibleCount, setVisibleCount] = useState<number>(9);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
@@ -78,8 +76,8 @@ function CoursesContent() {
           dict.catalog_courses_page_subtitle ||
           'Collection of academic discourses by Hojjat al-Islam Dr. Zanjirzan Hosseini across 8 branches of rational and transmitted disciplines.',
         type_all: dict.catalog_type_all || 'All Courses',
-        type_offline: dict.catalog_type_offline || 'Offline Courses',
-        type_online: dict.catalog_type_online || 'Online Courses',
+        type_offline: dict.catalog_type_offline || 'Offline',
+        type_online: dict.catalog_type_online || 'Online',
         search_ph: dict.catalog_search_courses_ph || 'Search in course titles...',
         all_subjects: 'All Subjects',
         empty_title: 'No courses found matching your criteria',
@@ -116,8 +114,8 @@ function CoursesContent() {
           dict.catalog_courses_page_subtitle ||
           'مجموعة الدروس والمحاضرات العلمية لحجة الإسلام الدكتور زنجیر زن حسيني في ۸ فروع من العلوم العقلية والنقلية.',
         type_all: dict.catalog_type_all || 'جميع الدورات',
-        type_offline: dict.catalog_type_offline || 'الدورات المسجلة',
-        type_online: dict.catalog_type_online || 'الدورات المباشرة',
+        type_offline: dict.catalog_type_offline || 'مسجلة',
+        type_online: dict.catalog_type_online || 'مباشرة',
         search_ph: dict.catalog_search_courses_ph || 'البحث في عناوين الدروس...',
         all_subjects: 'جميع الفروع',
         empty_title: 'لم يتم العثور على دروس مطابقة',
@@ -153,8 +151,8 @@ function CoursesContent() {
         dict.catalog_courses_page_subtitle ||
         'مجموعه درس‌گفتارها و سلسله جلسات علمی حجت الاسلام دکتر زنجیر زن حسینی در ۸ شاخه علوم عقلی و نقلی.',
       type_all: dict.catalog_type_all || 'همه دوره‌ها',
-      type_offline: dict.catalog_type_offline || 'دوره‌های آفلاین',
-      type_online: dict.catalog_type_online || 'کارگاه‌های آنلاین',
+      type_offline: dict.catalog_type_offline || 'آفلاین',
+      type_online: dict.catalog_type_online || 'آنلاین',
       search_ph: dict.catalog_search_courses_ph || 'جستجو در عناوین دروس...',
       all_subjects: 'همه شاخه‌ها',
       empty_title: 'دوره‌ای با این مشخصات یافت نشد',
@@ -378,7 +376,6 @@ function CoursesContent() {
                 { id: 'default', label: t.sort_default },
                 { id: 'newest', label: t.sort_newest },
                 { id: 'popular', label: t.sort_popular },
-                { id: 'price_asc', label: t.sort_price_asc },
               ].map((opt) => (
                 <button
                   key={opt.id}
@@ -386,7 +383,7 @@ function CoursesContent() {
                     triggerTactileHaptic('tick');
                     setSortBy(opt.id);
                   }}
-                  className={`px-2.5 py-1 rounded-lg transition font-medium cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-lg transition-all duration-200 ease-out font-medium cursor-pointer active:scale-95 ${
                     sortBy === opt.id
                       ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -397,36 +394,14 @@ function CoursesContent() {
               ))}
             </div>
 
-            {/* View Mode Toggle (Grid vs List) */}
-            <div className="flex items-center gap-1 p-1 bg-zinc-50 dark:bg-[#1C1E22] border border-zinc-200 dark:border-zinc-800 rounded-xl">
-              <button
-                onClick={() => {
-                  triggerTactileHaptic('tick');
-                  setViewMode('grid');
-                }}
+            {/* View Mode Indicator (Square Grid Active) */}
+            <div className="flex items-center p-1 bg-zinc-50 dark:bg-[#1C1E22] border border-zinc-200 dark:border-zinc-800 rounded-xl">
+              <div
                 title={t.view_grid}
-                className={`p-1.5 rounded-lg transition cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
-                }`}
+                className="p-1.5 rounded-lg bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs cursor-default flex items-center justify-center"
               >
                 <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => {
-                  triggerTactileHaptic('tick');
-                  setViewMode('list');
-                }}
-                title={t.view_list}
-                className={`p-1.5 rounded-lg transition cursor-pointer ${
-                  viewMode === 'list'
-                    ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -502,34 +477,29 @@ function CoursesContent() {
           <div className="lg:col-span-8 xl:col-span-9 space-y-8">
             {displayedCourses.length > 0 ? (
               <>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch">
-                    {displayedCourses.map((c, idx) => {
-                      const isCurrentPlaying = isPlaying && currentCourse?.id === c.id;
-                      return (
-                        <CourseCard
-                          key={c.id}
-                          course={c}
-                          index={idx}
-                          isPlaying={isCurrentPlaying}
-                          onPlaySample={() => {
-                            if (isCurrentPlaying) {
-                              togglePlay();
-                            } else {
-                              playTrack(c, 0);
-                            }
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] rounded-2xl overflow-hidden shadow-xs">
-                    {displayedCourses.map((c) => (
-                      <CompactHorizontalCard key={`list-${c.id}`} course={c} />
-                    ))}
-                  </div>
-                )}
+                <div
+                  key={`courses-grid-${selectedSubject}-${selectedType}-${onlyFree}-${sortBy}-${searchQuery}-${visibleCount}`}
+                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch animate-tab-fade"
+                >
+                  {displayedCourses.map((c, idx) => {
+                    const isCurrentPlaying = isPlaying && currentCourse?.id === c.id;
+                    return (
+                      <CourseCard
+                        key={c.id}
+                        course={c}
+                        index={idx}
+                        isPlaying={isCurrentPlaying}
+                        onPlaySample={() => {
+                          if (isCurrentPlaying) {
+                            togglePlay();
+                          } else {
+                            playTrack(c, 0);
+                          }
+                        }}
+                      />
+                    );
+                  })}
+                </div>
 
                 {/* Incremental "Load More" Pagination Section */}
                 <div className="pt-6 flex flex-col items-center justify-center text-center space-y-3">
