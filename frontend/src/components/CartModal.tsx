@@ -64,9 +64,9 @@ export const CartModal: React.FC<CartModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md p-6 space-y-4">
-        <DialogHeader className="flex flex-row items-center gap-2 space-y-0 pb-2 border-b border-[#E6E1D8] dark:border-[#22242A]">
-          <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43]" />
-          <DialogTitle className="text-base font-bold">
+        <DialogHeader className="flex flex-row items-center gap-2 space-y-0 pb-2 border-b border-[#E6E1D8] dark:border-[#22242A] pe-10">
+          <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
+          <DialogTitle className="text-base font-bold truncate">
             {dict.cart_title || 'سبد خرید'}
           </DialogTitle>
         </DialogHeader>

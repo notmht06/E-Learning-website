@@ -98,7 +98,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="fixed inset-x-0 bottom-0 top-auto z-50 max-h-[88vh] w-full max-w-xl mx-auto rounded-t-3xl rounded-b-none border-t border-x border-b-0 border-[#E6E1D8] dark:border-[#24262D] bg-[#FAF8F5] dark:bg-[#141518] p-0 shadow-2xl flex flex-col translate-y-0"
+        className="fixed inset-x-0 bottom-0 top-auto z-50 max-h-[88vh] w-full max-w-xl mx-auto rounded-t-3xl rounded-b-none border-t border-x border-b-0 border-[#E6E1D8] dark:border-[#24262D] bg-[#FAF8F5] dark:bg-[#141518] p-0 shadow-2xl flex flex-col translate-y-0 [&>button:last-child]:hidden"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E6E1D8] dark:border-[#24262D] shrink-0">
