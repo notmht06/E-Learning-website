@@ -39,7 +39,12 @@ export function LessonWorkspaceTabs({
     },
     {
       key: 'ai',
-      label: dict.learn_tab_ai_discourse || 'دستیار هوشمند مباحثه',
+      label:
+        currentLang === 'en'
+          ? 'AI Course Tutor'
+          : currentLang === 'ar'
+          ? 'المساعد الذكي للدورة'
+          : (dict.learn_tab_ai_discourse || 'حکمتیار این دوره (AI)'),
       icon: Sparkles,
     },
   ];

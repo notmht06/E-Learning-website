@@ -274,8 +274,8 @@ export function MasterpieceCourseCard({
 
         {/* Bottom-End: Serial Code Pill */}
         <div className="absolute bottom-2.5 end-2.5 z-10">
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
-            [{serialCode}]
+          <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
+            {serialCode}
           </span>
         </div>
 
@@ -286,13 +286,13 @@ export function MasterpieceCourseCard({
           className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 opacity-0 transition-all duration-300 ease-out focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
           aria-label={isThisCoursePlaying ? 'توقف پخش نمونه' : 'پخش نمونه صوت'}
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 active:scale-95 shadow-xl hover:scale-105">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 active:scale-95 shadow-xl hover:scale-105">
             {isThisCoursePlaying ? (
               <Pause className="h-5 w-5 fill-current" />
             ) : (
               <Play className="h-5 w-5 fill-current ps-0.5" />
             )}
-          </span>
+          </div>
         </button>
       </div>
 

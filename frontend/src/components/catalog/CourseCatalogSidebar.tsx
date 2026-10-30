@@ -237,6 +237,8 @@ export const CourseCatalogSidebar: React.FC<CourseCatalogSidebarProps> = ({
             type="button"
             role="switch"
             aria-checked={onlyFree}
+            aria-label={t.free_only || 'دوره‌های رایگان'}
+            title={t.free_only || 'دوره‌های رایگان'}
             onClick={() => {
               triggerTactileHaptic('tick');
               onToggleOnlyFree(!onlyFree);

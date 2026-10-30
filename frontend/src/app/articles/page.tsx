@@ -197,7 +197,7 @@ export default function ArticlesPage() {
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-mono text-zinc-400">
-                          [ART-0{toLocale(index + 1)}]
+                          شماره {toLocale(index + 1)}
                         </span>
                         <Badge variant="accent" className="text-[11px]">
                           {artCat}

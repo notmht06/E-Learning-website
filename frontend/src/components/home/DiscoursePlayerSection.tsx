@@ -246,7 +246,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
             <div className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43]">
-                  [STUDIO-48KHZ]
+                  کیفیت استودیویی ۴۸kHz
                 </span>
 
                 <div

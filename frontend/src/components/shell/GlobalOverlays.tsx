@@ -11,11 +11,6 @@ const CommandPalette = dynamic(
   { ssr: false }
 );
 
-const ScholarlyAIAssistant = dynamic(
-  () => import('@/components/ScholarlyAIAssistant').then((mod) => mod.ScholarlyAIAssistant),
-  { ssr: false }
-);
-
 export function GlobalOverlays() {
   return (
     <>
@@ -25,7 +20,6 @@ export function GlobalOverlays() {
       <AudioPlayerIsland />
       <CommandPalette />
       <PWARegistration />
-      <ScholarlyAIAssistant />
     </>
   );
 }

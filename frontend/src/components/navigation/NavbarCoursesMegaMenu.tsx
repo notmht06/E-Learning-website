@@ -82,10 +82,10 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
       onMouseLeave={onMouseLeave}
       className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-[min(94vw,860px)] max-w-5xl z-50 transition-all duration-200 animate-in fade-in zoom-in-95 pointer-events-auto"
     >
-      <div className="bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-3xl p-5 sm:p-6 shadow-2xl shadow-black/15 dark:shadow-black/70 overflow-hidden text-start">
+      <div className="bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-[28px] p-5 sm:p-6 shadow-2xl shadow-black/15 dark:shadow-black/70 overflow-hidden text-start">
         {/* Top Segmented Tabs: Offline vs Online Skyroom */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#E6E1D8] dark:border-[#27282D]">
-          <div className="flex items-center gap-2 p-1 bg-black/[0.04] dark:bg-white/[0.06] rounded-2xl border border-black/5 dark:border-white/5">
+          <div className="flex items-center gap-2 p-1 bg-black/[0.04] dark:bg-white/[0.06] rounded-[14px] border border-black/5 dark:border-white/5">
             <button
               type="button"
               onClick={() => onTabChange('offline')}
@@ -159,7 +159,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                       key={cat.id}
                       href={`/courses?subject=${encodeURIComponent(cat.name)}`}
                       onClick={onClose}
-                      className="group p-2.5 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xs flex items-center justify-between gap-2 min-w-0"
+                      className="group p-2.5 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xs flex items-center justify-between gap-2 min-w-0"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#1E2024] shadow-xs flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 border border-black/5 dark:border-white/5">
@@ -184,7 +184,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             </div>
 
             {/* Left (RTL): Curated Offline Highlight Card */}
-            <div className="w-full lg:w-[270px] shrink-0 bg-white dark:bg-[#1A1C20] border border-[#E6E1D8] dark:border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-[#8A532B]/50">
+            <div className="w-full lg:w-[270px] shrink-0 bg-white dark:bg-[#1A1C20] border border-[#E6E1D8] dark:border-zinc-800 rounded-[18px] p-4 flex flex-col justify-between shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-[#8A532B]/50">
               <div className="space-y-2.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-[10px] font-bold">
                   <Sparkles className="w-3 h-3 shrink-0" />
@@ -230,7 +230,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                       key={oc.id}
                       href="/courses"
                       onClick={onClose}
-                      className="group p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition block"
+                      className="group p-3 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition block"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -260,7 +260,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
             </div>
 
             {/* Skyroom Info Banner */}
-            <div className="w-full lg:w-[270px] shrink-0 bg-[#8A532B]/10 dark:bg-[#1E2024] border border-[#8A532B]/20 dark:border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+            <div className="w-full lg:w-[270px] shrink-0 bg-[#8A532B]/10 dark:bg-[#1E2024] border border-[#8A532B]/20 dark:border-zinc-800 rounded-[18px] p-4 flex flex-col justify-between shadow-xs">
               <div className="space-y-2.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8A532B] text-white text-[10px] font-bold shadow-xs">
                   <Video className="w-3 h-3 shrink-0" />

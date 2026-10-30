@@ -36,6 +36,13 @@ function getCookie(name: string): string | null {
   return matches ? decodeURIComponent(matches[1]) : null;
 }
 
+function detectUrlLocale(): SupportedLang | null {
+  if (typeof window === 'undefined') return null;
+  const seg = window.location.pathname.split('/')[1];
+  if (seg === 'en' || seg === 'ar' || seg === 'fa') return seg as SupportedLang;
+  return null;
+}
+
 export const LanguageProvider: React.FC<{
   children: React.ReactNode;
   initialLang?: SupportedLang;
@@ -44,62 +51,30 @@ export const LanguageProvider: React.FC<{
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const pathname = window.location.pathname;
-
-      // 1. Check Subdirectory in URL first (/en or /ar)
-      if (pathname === '/en' || pathname.startsWith('/en/')) {
-        setCurrentLangState('en');
-        document.documentElement.lang = 'en';
-        document.documentElement.dir = 'ltr';
-        setCookie('zan_lang', 'en');
-        try { localStorage.setItem('zan_lang', 'en'); } catch {}
-        return;
-      }
-      if (pathname === '/ar' || pathname.startsWith('/ar/')) {
-        setCurrentLangState('ar');
-        document.documentElement.lang = 'ar';
-        document.documentElement.dir = 'rtl';
-        setCookie('zan_lang', 'ar');
-        try { localStorage.setItem('zan_lang', 'ar'); } catch {}
-        return;
-      }
-
-      // 2. Subdirectory architecture: Root paths without /en or /ar prefix represent default Persian (fa)
-      setCurrentLangState('fa');
-      document.documentElement.lang = 'fa';
-      document.documentElement.dir = 'rtl';
-      setCookie('zan_lang', 'fa');
-      try { localStorage.setItem('zan_lang', 'fa'); } catch {}
-      return;
-
-      // 3. First-time visit: auto-detect by browser locale & timezone
-      let detected: SupportedLang = initialLang;
+      const urlLocale = detectUrlLocale();
+      const cookieLang = getCookie('zan_lang') as SupportedLang | null;
+      let savedLang: SupportedLang | null = null;
       try {
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        const navLangs = navigator.languages || [navigator.language || ''];
-        const primary = (navLangs[0] || '').toLowerCase();
+        savedLang = (localStorage.getItem('zan_lang') as SupportedLang | null);
+      } catch (err) {
+        console.warn('Could not read zan_lang from localStorage:', err);
+      }
 
-        const isArabicTz = /^(Asia\/Baghdad|Asia\/Riyadh|Asia\/Dubai|Africa\/Cairo|Asia\/Kuwait|Asia\/Beirut|Asia\/Damascus|Asia\/Amman|Asia\/Muscat|Asia\/Qatar|Asia\/Bahrain)/i.test(tz);
-        const isTehranTz = tz === 'Asia/Tehran';
+      const activeLang = urlLocale || cookieLang || savedLang;
 
-        if (primary.startsWith('ar') || isArabicTz) {
-          detected = 'ar';
-        } else if (primary.startsWith('fa') || isTehranTz) {
-          detected = 'fa';
-        } else {
-          detected = 'en';
+      if (activeLang && (activeLang === 'fa' || activeLang === 'ar' || activeLang === 'en')) {
+        setCurrentLangState(activeLang);
+        document.documentElement.lang = activeLang;
+        document.documentElement.dir = activeLang === 'en' ? 'ltr' : 'rtl';
+        setCookie('zan_lang', activeLang);
+        try {
+          localStorage.setItem('zan_lang', activeLang);
+        } catch (err) {
+          console.warn('Could not persist zan_lang to localStorage:', err);
         }
-      } catch {
-        detected = initialLang;
+      } else {
+        setCookie('zan_lang', initialLang);
       }
-
-      setCurrentLangState(detected);
-      document.documentElement.lang = detected;
-      document.documentElement.dir = detected === 'en' ? 'ltr' : 'rtl';
-      try {
-        localStorage.setItem('zan_lang', detected);
-      } catch {}
-      setCookie('zan_lang', detected);
     }
   }, [initialLang]);
 
@@ -109,39 +84,40 @@ export const LanguageProvider: React.FC<{
       try {
         localStorage.setItem('zan_lang', lang);
       } catch (err) {
-        console.error('Failed to save language preference:', err);
+        console.warn('Could not persist zan_lang on language switch:', err);
       }
       setCookie('zan_lang', lang);
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
 
-      // Update URL to match subdirectory (/en/..., /ar/..., or /...)
+      // Update browser URL path to reflect /en, /ar, or root / for Persian
       const currentPath = window.location.pathname;
       const search = window.location.search;
       const hash = window.location.hash;
+      const cleanPath = currentPath.replace(/^\/(fa|en|ar)(\/|$)/, '/') || '/';
+      const nextPath =
+        lang === 'fa'
+          ? (cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath)
+          : `/${lang}${cleanPath === '/' ? '' : cleanPath}`;
 
-      let cleanPath = currentPath.replace(/^\/(en|ar)/, '') || '/';
-      if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
-
-      let newPath = cleanPath;
-      if (lang === 'en') {
-        newPath = cleanPath === '/' ? '/en' : `/en${cleanPath}`;
-      } else if (lang === 'ar') {
-        newPath = cleanPath === '/' ? '/ar' : `/ar${cleanPath}`;
-      } else {
-        newPath = cleanPath; // Default Persian is root /
-      }
-
-      if (newPath !== currentPath) {
-        window.location.href = newPath + search + hash;
+      if (nextPath !== currentPath) {
+        window.history.pushState({}, '', `${nextPath}${search}${hash}`);
       }
     }
   }, []);
 
   const isRtl = currentLang !== 'en';
   const dir: 'rtl' | 'ltr' = isRtl ? 'rtl' : 'ltr';
+
   const dict: Dictionary = useMemo(
     () => dictionaries[currentLang] || dictionaries.fa,
+    [currentLang]
+  );
+
+  const toLocale = useCallback(
+    (val: number | string, lang?: SupportedLang): string => {
+      return toLocaleDigits(val, lang || currentLang);
+    },
     [currentLang]
   );
 
@@ -156,19 +132,12 @@ export const LanguageProvider: React.FC<{
     [dict]
   );
 
-  const toLocale = useCallback(
-    (val: number | string, lang?: SupportedLang): string => {
-      return toLocaleDigits(val, lang || currentLang);
-    },
-    [currentLang]
-  );
-
   const localizeHref = useCallback(
     (path: string): string => {
       if (path.startsWith('http') || path.startsWith('#') || path.startsWith('mailto:') || path.startsWith('tel:')) {
         return path;
       }
-      let clean = path.replace(/^\/(en|ar)/, '') || '/';
+      let clean = path.replace(/^\/(fa|en|ar)(\/|$)/, '/') || '/';
       if (!clean.startsWith('/')) clean = '/' + clean;
       if (currentLang === 'en') return clean === '/' ? '/en' : `/en${clean}`;
       if (currentLang === 'ar') return clean === '/' ? '/ar' : `/ar${clean}`;
@@ -182,16 +151,20 @@ export const LanguageProvider: React.FC<{
       currentLang,
       setLanguage,
       dict,
-      t,
       isRtl,
       dir,
       toLocale,
+      t,
       localizeHref,
     }),
-    [currentLang, setLanguage, dict, t, isRtl, dir, toLocale, localizeHref]
+    [currentLang, setLanguage, dict, isRtl, dir, toLocale, t, localizeHref]
   );
 
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+    </LanguageContext.Provider>
+  );
 };
 
 export const useLanguage = (): LanguageContextType => {

@@ -9,8 +9,8 @@ import {
   BookMarked,
   Package,
   Award,
-  MessageSquare,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -26,6 +26,7 @@ import {
   DashboardCertificatesTab,
   DashboardSecurityTab,
 } from '@/components/dashboard/tabs';
+import { CourseScopedAITutor } from '@/components/learn/CourseScopedAITutor';
 
 const BookReader3D = dynamic(
   () => import('@/components/BookReader3D').then((mod) => mod.BookReader3D),
@@ -35,6 +36,7 @@ const BookReader3D = dynamic(
 export type DashboardTab =
   | 'overview'
   | 'courses'
+  | 'ai'
   | 'books'
   | 'notes'
   | 'orders'
@@ -45,6 +47,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
   fa: {
     overview: 'پیشخوان پژوهشی دانش‌پژوه',
     courses: 'درس‌گفتارهای ثبت‌نام‌شده من',
+    ai: 'حکمتیار دوره‌های دانش‌پژوه (AI)',
     books: 'کتابخانه و رسالات فلسفی',
     notes: 'دفتر یادداشت و حاشیه‌نگاری دروس',
     orders: 'سفارشات پستی و رهگیری مرسولات',
@@ -54,6 +57,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
   ar: {
     overview: 'لوحة الباحث العلمي',
     courses: 'دوراتي ومحاضراتي المسجلة',
+    ai: 'المساعد العلمي للدورات (AI)',
     books: 'المكتبة والرسائل الفلسفية',
     notes: 'دفتر الملاحظات والحواشي الدراسية',
     orders: 'الطلبات البريدية وتتبع الشحنات',
@@ -63,6 +67,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
   en: {
     overview: 'Student Scholarly Dashboard',
     courses: 'My Registered Lectures',
+    ai: 'AI Scholarly Tutor',
     books: 'Library & Philosophical Monographs',
     notes: 'Study Notes & Margin Commentary',
     orders: 'Postal Orders & Tracking',
@@ -75,6 +80,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
     overview: 'پیشخوان پژوهشی',
     courses: 'دوره‌های من',
+    ai: 'حکمتیار هوشمند (AI)',
     books: 'کتابخانه و رسالات',
     notes: 'دفتر یادداشت',
     orders: 'سفارشات پستی',
@@ -84,6 +90,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   ar: {
     overview: 'لوحة الباحث',
     courses: 'دوراتي',
+    ai: 'المساعد الذكي (AI)',
     books: 'المكتبة والرسائل',
     notes: 'دفتر الملاحظات',
     orders: 'الطلبات البريدية',
@@ -93,6 +100,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   en: {
     overview: 'Research Workspace',
     courses: 'My Lectures',
+    ai: 'AI Course Tutor',
     books: 'Library & Books',
     notes: 'Notes & Margins',
     orders: 'Postal Orders',
@@ -125,6 +133,7 @@ export default function UserDashboardPage() {
   const navItems: ShellNavItem[] = [
     { id: 'overview', label: t('dash_tab_overview', labels.overview), icon: Compass },
     { id: 'courses', label: t('dash_tab_courses', labels.courses), icon: Headphones },
+    { id: 'ai', label: t('dash_tab_ai', labels.ai), icon: Sparkles },
     { id: 'books', label: t('dash_tab_books', labels.books), icon: BookOpen },
     { id: 'notes', label: t('dash_tab_notes', labels.notes), icon: BookMarked },
     { id: 'orders', label: t('dash_tab_orders', labels.orders), icon: Package },
@@ -146,6 +155,8 @@ export default function UserDashboardPage() {
       ? 'مكتب الدراسات العلمية'
       : 'میز کار علمی دانش‌پژوه';
 
+  const firstEnrolledCourse = user.enrolledCourseIds?.[0] || 'course-student-enrolled';
+
   return (
     <>
       <ShellLayout
@@ -161,6 +172,19 @@ export default function UserDashboardPage() {
       >
         {activeTab === 'overview' && <DashboardOverviewTab />}
         {activeTab === 'courses' && <DashboardCoursesTab />}
+        {activeTab === 'ai' && (
+          <CourseScopedAITutor
+            courseId={firstEnrolledCourse}
+            courseTitle={
+              currentLang === 'en'
+                ? "Student's Enrolled Courses"
+                : currentLang === 'ar'
+                ? 'الدورات المسجلة للباحث'
+                : 'دوره‌های ثبت‌نام‌شده دانش‌پژوه'
+            }
+            subject="همه"
+          />
+        )}
         {activeTab === 'books' && (
           <DashboardBooksTab
             onOpenReader={(bookId) => {
