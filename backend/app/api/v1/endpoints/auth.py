@@ -112,6 +112,7 @@ async def verify_otp(req: OTPVerifyRequest, request: Request, db: AsyncSession =
             phone=req.phone,
             code=req.code,
             full_name=req.full_name,
+            password=req.password,
             db=db,
             ip_address=ip_address,
             user_agent=user_agent,

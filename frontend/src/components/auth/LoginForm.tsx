@@ -74,10 +74,10 @@ export function LoginForm({
       )}
 
       <AuthFormField
-        label="شماره تلفن همراه"
+        label={dict.auth_phone_label || 'شماره تلفن همراه'}
         name="login_phone"
         type="tel"
-        placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+        placeholder={dict.auth_phone_placeholder || '۰۹۱۲۳۴۵۶۷۸۹'}
         value={phone}
         onChange={onPhoneChange}
         error={errors.phone}
@@ -89,7 +89,7 @@ export function LoginForm({
 
       {authMode === 'password' ? (
         <AuthFormField
-          label="کلمه عبور"
+          label={dict.auth_password_label || 'کلمه عبور'}
           name="login_password"
           type="password"
           placeholder="••••••••"
@@ -102,9 +102,9 @@ export function LoginForm({
           icon={<Lock className="w-4 h-4" />}
         />
       ) : (
-        <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
+        <div className="p-3 rounded-xl bg-[#8A532B]/5 dark:bg-[#C58B43]/10 border border-[#8A532B]/20 dark:border-[#C58B43]/25 text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
           <KeyRound className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-          <span>کد تأیید ۶ رقمی یکبارمصرف به شماره شما ارسال خواهد شد.</span>
+          <span>{dict.auth_otp_login_notice || 'کد تأیید ۶ رقمی یکبارمصرف به شماره شما ارسال خواهد شد.'}</span>
         </div>
       )}
 
@@ -119,14 +119,14 @@ export function LoginForm({
             <span>
               {authMode === 'otp'
                 ? dict.auth_otp_sending || 'در حال ارسال کد تأیید...'
-                : 'در حال اعتبارسنجی و ورود...'}
+                : dict.auth_login_submitting || 'در حال اعتبارسنجی و ورود...'}
             </span>
           </>
         ) : (
           <span>
             {authMode === 'otp'
               ? dict.auth_otp_login_btn || 'دریافت کد تأیید ورود'
-              : 'ورود به سامانه جامع'}
+              : dict.auth_login_submit_btn || 'ورود به سامانه جامع'}
           </span>
         )}
       </button>

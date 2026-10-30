@@ -50,10 +50,10 @@ export function RegisterForm({
       )}
 
       <AuthFormField
-        label="نام و نام خانوادگی"
+        label={dict.auth_name_label || 'نام و نام خانوادگی'}
         name="register_name"
         type="text"
-        placeholder="مثال: علی موسوی"
+        placeholder={dict.auth_name_placeholder || 'مثال: علی موسوی'}
         value={fullName}
         onChange={onFullNameChange}
         error={errors.fullName}
@@ -63,10 +63,10 @@ export function RegisterForm({
       />
 
       <AuthFormField
-        label="شماره تلفن همراه"
+        label={dict.auth_phone_label || 'شماره تلفن همراه'}
         name="register_phone"
         type="tel"
-        placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+        placeholder={dict.auth_phone_placeholder || '۰۹۱۲۳۴۵۶۷۸۹'}
         value={phone}
         onChange={onPhoneChange}
         error={errors.phone}
@@ -77,10 +77,10 @@ export function RegisterForm({
       />
 
       <AuthFormField
-        label="کلمه عبور"
+        label={dict.auth_password_label || 'کلمه عبور'}
         name="register_password"
         type="password"
-        placeholder="حداقل ۶ نویسه"
+        placeholder={dict.auth_password_placeholder || 'حداقل ۶ نویسه'}
         value={password}
         onChange={onPasswordChange}
         error={errors.password}
@@ -91,10 +91,10 @@ export function RegisterForm({
       />
 
       <AuthFormField
-        label="تکرار کلمه عبور"
+        label={dict.auth_confirm_password_label || 'تکرار کلمه عبور'}
         name="register_confirm_password"
         type="password"
-        placeholder="تکرار کلمه عبور"
+        placeholder={dict.auth_confirm_password_placeholder || 'تکرار کلمه عبور'}
         value={confirmPassword}
         onChange={onConfirmPasswordChange}
         error={errors.confirmPassword}
@@ -130,7 +130,7 @@ export function RegisterForm({
             onClick={onDirectPasswordSubmit}
             className="w-full py-2 px-3 text-xs font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer text-center"
           >
-            <span>یا ثبت‌نام مستقیم با کلمه عبور بدون پیامک</span>
+            <span>{dict.auth_direct_register || 'یا ثبت‌نام مستقیم با کلمه عبور بدون پیامک'}</span>
           </button>
         )}
       </div>

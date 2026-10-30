@@ -98,7 +98,7 @@ export function AuthModal({
           type="button"
           onClick={onClose}
           disabled={isSubmitting}
-          aria-label="بستن پنجره"
+          aria-label={dict.auth_close_modal || 'بستن پنجره'}
           className="absolute top-4 left-4 sm:top-5 sm:left-5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50"
         >
           <X className="w-5 h-5" />
@@ -114,10 +114,10 @@ export function AuthModal({
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'
-              ? 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
+              ? dict.auth_step_otp_verify_desc || 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
               : activeTab === 'login'
-              ? 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
-              : 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
+              ? dict.auth_step_login_desc || 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
+              : dict.auth_step_register_desc || 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
           </p>
         </div>
 

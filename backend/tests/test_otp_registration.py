@@ -114,3 +114,88 @@ def test_otp_brute_force_shield_and_persian_digits(client):
     })
     assert success_res.status_code == 200
     assert "access_token" in success_res.json()
+
+
+def test_registration_with_otp_and_subsequent_password_login(client):
+    """
+    Ensure that when a user registers for the first time via OTP and supplies a password,
+    their password is securely hashed and they can subsequently log in with phone and password.
+    """
+    reg_phone = f"0918{uuid.uuid4().int % 10000000:07d}"
+    student_name = "دانشجوی منطق اشراق"
+    strong_pass = "WisdomPass#2026"
+
+    # 1. Dispatch 6-digit OTP
+    send_res = client.post("/api/v1/auth/otp/send", json={"phone": reg_phone})
+    assert send_res.status_code == 200
+    code = send_res.json().get("mock_code") or sms_provider.last_sent.get(reg_phone)
+    assert code is not None
+
+    # 2. Verify OTP with full_name and password
+    verify_res = client.post("/api/v1/auth/otp/verify", json={
+        "phone": reg_phone,
+        "code": str(code),
+        "full_name": student_name,
+        "password": strong_pass,
+    })
+    assert verify_res.status_code == 200
+    user_data = verify_res.json()
+    assert user_data["phone"] == reg_phone
+    assert user_data["full_name"] == student_name
+    assert "access_token" in user_data
+
+    # 3. Log in with password - must succeed
+    login_res = client.post("/api/v1/auth/login", json={
+        "phone": reg_phone,
+        "password": strong_pass,
+    })
+    assert login_res.status_code == 200
+    assert "access_token" in login_res.json()
+    assert login_res.json()["phone"] == reg_phone
+
+    # 4. Attempt login with wrong password - must fail with 401
+    bad_login = client.post("/api/v1/auth/login", json={
+        "phone": reg_phone,
+        "password": "WrongPassword123",
+    })
+    assert bad_login.status_code == 401
+
+
+def test_no_duplicate_sms_dispatch(client):
+    """
+    Ensure that requesting an OTP dispatches exactly one SMS via the provider service,
+    preventing duplicate messages and double-billing.
+    """
+    test_phone = f"0917{uuid.uuid4().int % 10000000:07d}"
+    send_res = client.post("/api/v1/auth/otp/send", json={"phone": test_phone})
+    assert send_res.status_code == 200
+
+    # Ensure SMS provider was called exactly once for this phone number
+    assert sms_provider.send_count.get(test_phone) == 1
+
+
+def test_pure_otp_user_cannot_login_with_otp_as_password(client):
+    """
+    Ensure that a user who signs up via OTP without supplying a password cannot have their
+    account compromised by guessing the OTP code as a permanent password.
+    """
+    otp_phone = f"0919{uuid.uuid4().int % 10000000:07d}"
+    send_res = client.post("/api/v1/auth/otp/send", json={"phone": otp_phone})
+    assert send_res.status_code == 200
+    code = send_res.json().get("mock_code") or sms_provider.last_sent.get(otp_phone)
+
+    # Verify OTP without password
+    verify_res = client.post("/api/v1/auth/otp/verify", json={
+        "phone": otp_phone,
+        "code": str(code),
+        "full_name": "کاربر بدون گذرواژه",
+    })
+    assert verify_res.status_code == 200
+
+    # Attempt to log in using the OTP code as password - MUST FAIL with 401
+    exploit_login = client.post("/api/v1/auth/login", json={
+        "phone": otp_phone,
+        "password": str(code),
+    })
+    assert exploit_login.status_code == 401
+

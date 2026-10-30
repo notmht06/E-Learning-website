@@ -15,6 +15,7 @@ logger = logging.getLogger("platform.sms")
 class SMSProviderService:
     def __init__(self):
         self.last_sent: Dict[str, str] = {}
+        self.send_count: Dict[str, int] = {}
 
     async def send_otp_sms(self, phone: str, code: str) -> Dict[str, Any]:
         """
@@ -22,6 +23,7 @@ class SMSProviderService:
         or logs it cleanly in development mode.
         """
         self.last_sent[phone] = code
+        self.send_count[phone] = self.send_count.get(phone, 0) + 1
         if settings.SMS_PROVIDER == "kavenegar" and settings.KAVENEGAR_API_KEY:
             return await asyncio.to_thread(self._send_kavenegar_lookup, phone, code)
 

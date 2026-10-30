@@ -9,7 +9,7 @@ interface OtpVerificationFormProps {
   fullName?: string;
   initialExpiresIn?: number;
   mockCode?: string;
-  onVerify: (code: string) => Promise<void>;
+  onVerify: (code: string) => Promise<any>;
   onResend: () => Promise<string | undefined>;
   onBack: () => void;
   isSubmitting: boolean;
@@ -113,12 +113,17 @@ export function OtpVerificationForm({
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowLeft' && index < 5) {
+    if (e.key === 'Backspace') {
+      if (!digits[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+        const next = [...digits];
+        next[index - 1] = '';
+        setDigits(next);
+      }
+    } else if (e.key === 'ArrowRight' && index < 5) {
       inputRefs.current[index + 1]?.focus();
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -193,11 +198,11 @@ export function OtpVerificationForm({
             </h2>
           </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            <span>کد تأیید ۶ رقمی به شماره </span>
+            <span>{dict.auth_otp_sent_prefix || 'کد تأیید ۶ رقمی به شماره '}</span>
             <span className="font-num font-bold text-zinc-800 dark:text-zinc-200 dir-ltr inline-block">
               {toLocale(phone)}
             </span>
-            <span> ارسال شد.</span>
+            <span>{dict.auth_otp_sent_suffix || ' ارسال شد.'}</span>
           </p>
         </div>
 
@@ -239,6 +244,7 @@ export function OtpVerificationForm({
               pattern="[0-9]*"
               maxLength={1}
               value={digit ? toLocale(digit) : ''}
+              onFocus={(e) => e.target.select()}
               onChange={(e) => handleDigitChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               disabled={isSubmitting}
@@ -251,10 +257,10 @@ export function OtpVerificationForm({
 
       {/* Mock Dev Code Quick-Fill Hint */}
       {mockCode && (
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300">
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#8A532B]/5 dark:bg-[#C58B43]/10 border border-[#8A532B]/20 dark:border-[#C58B43]/25 text-xs text-zinc-700 dark:text-zinc-300">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-            <span>کد آزمایشی سرور: </span>
+            <span>{dict.auth_otp_mock_server_label || 'کد آزمایشی سرور: '}</span>
             <span className="font-num font-bold text-zinc-900 dark:text-zinc-50">{toLocale(mockCode)}</span>
           </div>
           <button
@@ -262,7 +268,7 @@ export function OtpVerificationForm({
             onClick={fillMockCode}
             className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline cursor-pointer"
           >
-            درج خودکار کد
+            {dict.auth_otp_fill_mock_btn || 'درج خودکار کد'}
           </button>
         </div>
       )}
@@ -271,7 +277,7 @@ export function OtpVerificationForm({
       <div className="flex items-center justify-between text-xs pt-1">
         {countdown > 0 ? (
           <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400">
-            <span>امکان ارسال مجدد تا: </span>
+            <span>{dict.auth_otp_resend_prefix || 'امکان ارسال مجدد تا: '}</span>
             <span className="font-num font-bold text-[#8A532B] dark:text-[#C58B43] dir-ltr inline-block">
               {formatTimer(countdown)}
             </span>
@@ -298,7 +304,7 @@ export function OtpVerificationForm({
         )}
 
         <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-          {fullName ? `دانش‌پژوه: ${fullName}` : 'اعتبارسنجی پیامکی'}
+          {fullName ? `${dict.auth_otp_student_prefix || 'دانش‌پژوه: '}${fullName}` : (dict.auth_otp_sms_validation_tag || 'اعتبارسنجی پیامکی')}
         </span>
       </div>
 

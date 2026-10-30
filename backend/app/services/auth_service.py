@@ -241,7 +241,7 @@ class AuthService:
             cleaned = "0" + cleaned[4:]
         return cleaned
 
-    def request_otp(self, phone: str) -> Dict[str, Any]:
+    def request_otp(self, phone: str, dispatch_sms: bool = False) -> Dict[str, Any]:
         """
         Generates a 6-digit OTP code using CSPRNG in production (or deterministic test code in dev)
         and stores it with TTL in Redis and fallback store.
@@ -261,15 +261,16 @@ class AuthService:
         redis_service._fallback.set(f"otp:{clean_phone}", code, ex=settings.OTP_EXPIRE_SECONDS)
         redis_service._fallback.delete(f"otp_attempts:{clean_phone}")
 
-        # Schedule async redis persistence and SMS dispatch if an event loop is running
-        try:
-            loop = asyncio.get_running_loop()
-            loop.create_task(redis_service.set(f"otp:{clean_phone}", code, ex=settings.OTP_EXPIRE_SECONDS))
-            loop.create_task(redis_service.delete(f"otp_attempts:{clean_phone}"))
-            from backend.app.core.sms_provider import sms_provider
-            loop.create_task(sms_provider.send_otp_sms(clean_phone, code))
-        except RuntimeError as exc:
-            logger.debug("No running asyncio event loop in thread; deferred background task: %s", exc)
+        # Schedule async redis persistence and SMS dispatch if explicitly requested and an event loop is running
+        if dispatch_sms:
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(redis_service.set(f"otp:{clean_phone}", code, ex=settings.OTP_EXPIRE_SECONDS))
+                loop.create_task(redis_service.delete(f"otp_attempts:{clean_phone}"))
+                from backend.app.core.sms_provider import sms_provider
+                loop.create_task(sms_provider.send_otp_sms(clean_phone, code))
+            except RuntimeError as exc:
+                logger.debug("No running asyncio event loop in thread; deferred background task: %s", exc)
 
         response: Dict[str, Any] = {
             "success": True,
@@ -290,6 +291,7 @@ class AuthService:
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
         full_name: Optional[str] = None,
+        password: Optional[str] = None,
         **kwargs,
     ) -> Dict[str, Any]:
         """Verifies OTP with brute-force attempt limiting and establishes an authenticated session."""
@@ -299,6 +301,7 @@ class AuthService:
         actual_ip = ip_address or kwargs.get("ip_address")
         actual_ua = user_agent or kwargs.get("user_agent")
         actual_name = full_name or kwargs.get("full_name")
+        actual_password = password or kwargs.get("password")
         digit_trans = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
         if isinstance(phone_or_db, AsyncSession):
@@ -349,14 +352,14 @@ class AuthService:
                 res = await self._verify_otp_tx(
                     session, actual_phone, actual_code,
                     ip_address=actual_ip, user_agent=actual_ua,
-                    full_name=actual_name,
+                    full_name=actual_name, password=actual_password,
                 )
                 await session.commit()
                 return res
         return await self._verify_otp_tx(
             actual_db, actual_phone, actual_code,
             ip_address=actual_ip, user_agent=actual_ua,
-            full_name=actual_name,
+            full_name=actual_name, password=actual_password,
         )
 
     async def _verify_otp_tx(
@@ -367,25 +370,31 @@ class AuthService:
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
         full_name: Optional[str] = None,
+        password: Optional[str] = None,
     ) -> Dict[str, Any]:
         result = await db.execute(select(User).where(User.mobile == phone))
         user = result.scalar_one_or_none()
 
+        import secrets
         if not user:
             user_id = f"usr-{uuid.uuid4().hex[:8]}"
+            hashed_pwd = hash_password(password) if password else hash_password(secrets.token_urlsafe(32))
             user = User(
                 id=user_id,
                 mobile=phone,
                 full_name=full_name or "دانشجوی حکمت",
-                hashed_password=hash_password(code),
+                hashed_password=hashed_pwd,
                 role="student",
                 wallet_balance="50,000 Tomans",
                 is_active=True,
             )
             db.add(user)
             await db.flush()
-        elif full_name and (not user.full_name or user.full_name == "دانشجوی حکمت"):
-            user.full_name = full_name
+        else:
+            if full_name and (not user.full_name or user.full_name == "دانشجوی حکمت"):
+                user.full_name = full_name
+            if password and not user.hashed_password:
+                user.hashed_password = hash_password(password)
             await db.flush()
 
         jti = await session_service.register_device_session(

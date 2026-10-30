@@ -223,9 +223,16 @@ export function useAuthForm() {
     setIsSubmitting(true);
     setErrors({});
     try {
-      const user = await verifyOtp(phone.trim(), code.trim(), fullName.trim() || undefined);
+      const isRegistering = activeTab === 'register';
+      const user = await verifyOtp(
+        phone.trim(),
+        code.trim(),
+        isRegistering ? (fullName.trim() || undefined) : undefined,
+        isRegistering && password ? password : undefined,
+      );
       const defaultTarget = user.role === 'ADMIN' ? '/admin' : '/dashboard';
       router.push(localizeHref(safeRedirect || defaultTarget));
+      return user;
     } catch (err: any) {
       const msg = err?.message || 'کد تأیید واردشده نادرست یا منقضی شده است.';
       setErrors({ general: msg });

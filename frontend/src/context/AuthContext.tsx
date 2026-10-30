@@ -27,7 +27,7 @@ interface AuthContextType {
   login: (phone: string, password?: string) => Promise<UserProfile>;
   register: (fullName: string, phone: string, password: string) => Promise<UserProfile>;
   sendOtp: (phone: string) => Promise<{ success: boolean; phone: string; expires_in_seconds: number; mock_code?: string }>;
-  verifyOtp: (phone: string, code: string, fullName?: string) => Promise<UserProfile>;
+  verifyOtp: (phone: string, code: string, fullName?: string, password?: string) => Promise<UserProfile>;
   logout: () => void;
   enrollCourse: (courseId: string) => Promise<boolean>;
   purchaseBook: (bookId: string) => void;
@@ -136,8 +136,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await apiClient.auth.sendOtp(phone);
   };
 
-  const verifyOtp = async (phone: string, code: string, fullName?: string): Promise<UserProfile> => {
-    const userRes = await apiClient.auth.verifyOtp(phone, code, fullName);
+  const verifyOtp = async (phone: string, code: string, fullName?: string, password?: string): Promise<UserProfile> => {
+    const userRes = await apiClient.auth.verifyOtp(phone, code, fullName, password);
     if (userRes.access_token) {
       localStorage.setItem('zanjirzan_token', userRes.access_token);
     }

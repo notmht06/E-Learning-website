@@ -75,10 +75,15 @@ class ApiClient {
         body: JSON.stringify({ phone }),
       }),
 
-    verifyOtp: (phone: string, code: string, fullName?: string) =>
+    verifyOtp: (phone: string, code: string, fullName?: string, password?: string) =>
       this.request<User>('/auth/otp/verify', {
         method: 'POST',
-        body: JSON.stringify({ phone, code, ...(fullName ? { full_name: fullName } : {}) }),
+        body: JSON.stringify({
+          phone,
+          code,
+          ...(fullName ? { full_name: fullName } : {}),
+          ...(password ? { password } : {}),
+        }),
       }),
 
     getMe: () => this.request<User>('/auth/me'),

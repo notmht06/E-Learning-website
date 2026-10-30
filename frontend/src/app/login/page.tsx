@@ -58,10 +58,10 @@ function LoginContent() {
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'
-              ? 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
+              ? dict.auth_step_otp_verify_desc || 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
               : activeTab === 'login'
-              ? 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
-              : 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
+              ? dict.auth_step_login_desc || 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
+              : dict.auth_step_register_desc || 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
           </p>
         </div>
 
@@ -132,7 +132,7 @@ function LoginContent() {
             href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline inline-flex items-center gap-1"
           >
-            <span>بازگشت به صفحه اصلی</span>
+            <span>{dict.auth_back_to_home || 'بازگشت به صفحه اصلی'}</span>
           </Link>
         </div>
 
