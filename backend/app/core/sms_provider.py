@@ -13,11 +13,15 @@ logger = logging.getLogger("platform.sms")
 
 
 class SMSProviderService:
+    def __init__(self):
+        self.last_sent: Dict[str, str] = {}
+
     async def send_otp_sms(self, phone: str, code: str) -> Dict[str, Any]:
         """
         Dispatches a 6-digit verification code via Kavenegar Lookup API in production,
         or logs it cleanly in development mode.
         """
+        self.last_sent[phone] = code
         if settings.SMS_PROVIDER == "kavenegar" and settings.KAVENEGAR_API_KEY:
             return await asyncio.to_thread(self._send_kavenegar_lookup, phone, code)
 

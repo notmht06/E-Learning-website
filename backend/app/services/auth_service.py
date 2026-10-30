@@ -289,6 +289,7 @@ class AuthService:
         db: Optional[AsyncSession] = None,
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
+        full_name: Optional[str] = None,
         **kwargs,
     ) -> Dict[str, Any]:
         """Verifies OTP with brute-force attempt limiting and establishes an authenticated session."""
@@ -297,6 +298,7 @@ class AuthService:
 
         actual_ip = ip_address or kwargs.get("ip_address")
         actual_ua = user_agent or kwargs.get("user_agent")
+        actual_name = full_name or kwargs.get("full_name")
         digit_trans = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
         if isinstance(phone_or_db, AsyncSession):
@@ -346,13 +348,15 @@ class AuthService:
             async with async_session() as session:
                 res = await self._verify_otp_tx(
                     session, actual_phone, actual_code,
-                    ip_address=actual_ip, user_agent=actual_ua
+                    ip_address=actual_ip, user_agent=actual_ua,
+                    full_name=actual_name,
                 )
                 await session.commit()
                 return res
         return await self._verify_otp_tx(
             actual_db, actual_phone, actual_code,
-            ip_address=actual_ip, user_agent=actual_ua
+            ip_address=actual_ip, user_agent=actual_ua,
+            full_name=actual_name,
         )
 
     async def _verify_otp_tx(
@@ -362,6 +366,7 @@ class AuthService:
         code: str,
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
+        full_name: Optional[str] = None,
     ) -> Dict[str, Any]:
         result = await db.execute(select(User).where(User.mobile == phone))
         user = result.scalar_one_or_none()
@@ -371,13 +376,16 @@ class AuthService:
             user = User(
                 id=user_id,
                 mobile=phone,
-                full_name="دانشجوی حکمت",
+                full_name=full_name or "دانشجوی حکمت",
                 hashed_password=hash_password(code),
                 role="student",
                 wallet_balance="50,000 Tomans",
                 is_active=True,
             )
             db.add(user)
+            await db.flush()
+        elif full_name and (not user.full_name or user.full_name == "دانشجوی حکمت"):
+            user.full_name = full_name
             await db.flush()
 
         jti = await session_service.register_device_session(

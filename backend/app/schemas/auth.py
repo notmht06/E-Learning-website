@@ -57,6 +57,7 @@ class OTPRequest(BaseModel):
 class OTPVerifyRequest(BaseModel):
     phone: str = Field(..., example="09123456789")
     code: str = Field(..., min_length=4, max_length=6, example="123456")
+    full_name: Optional[str] = Field(None, example="Ali Mousavi")
 
     @field_validator("phone", mode="before")
     @classmethod

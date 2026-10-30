@@ -26,6 +26,8 @@ interface AuthContextType {
   isLoading: boolean;
   login: (phone: string, password?: string) => Promise<UserProfile>;
   register: (fullName: string, phone: string, password: string) => Promise<UserProfile>;
+  sendOtp: (phone: string) => Promise<{ success: boolean; phone: string; expires_in_seconds: number; mock_code?: string }>;
+  verifyOtp: (phone: string, code: string, fullName?: string) => Promise<UserProfile>;
   logout: () => void;
   enrollCourse: (courseId: string) => Promise<boolean>;
   purchaseBook: (bookId: string) => void;
@@ -130,6 +132,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return profile;
   };
 
+  const sendOtp = async (phone: string) => {
+    return await apiClient.auth.sendOtp(phone);
+  };
+
+  const verifyOtp = async (phone: string, code: string, fullName?: string): Promise<UserProfile> => {
+    const userRes = await apiClient.auth.verifyOtp(phone, code, fullName);
+    if (userRes.access_token) {
+      localStorage.setItem('zanjirzan_token', userRes.access_token);
+    }
+    const profile = mapUserResponseToProfile(userRes, fullName);
+    setUser(profile);
+    localStorage.setItem('zanjirzan_user', JSON.stringify(profile));
+    return profile;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('zanjirzan_token');
@@ -173,6 +190,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        sendOtp,
+        verifyOtp,
         logout,
         enrollCourse,
         purchaseBook,

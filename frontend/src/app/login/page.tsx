@@ -8,13 +8,18 @@ import { useLanguage } from '@/context/LanguageContext';
 import { AuthTabs } from '@/components/auth/AuthTabs';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
+import { OtpVerificationForm } from '@/components/auth/OtpVerificationForm';
 import { QuickRoleSelector } from '@/components/auth/QuickRoleSelector';
 
 function LoginContent() {
-  const { localizeHref } = useLanguage();
+  const { localizeHref, dict } = useLanguage();
   const {
     activeTab,
     switchTab,
+    authMode,
+    setAuthMode,
+    step,
+    setStep,
     fullName,
     setFullName,
     phone,
@@ -23,10 +28,15 @@ function LoginContent() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
+    mockCode,
+    expiresIn,
     errors,
     isSubmitting,
     handleLoginSubmit,
     handleRegisterSubmit,
+    handleDirectPasswordRegister,
+    handleVerifyOtpCode,
+    handleResendOtp,
     handleQuickRole,
   } = useAuthForm();
 
@@ -47,52 +57,74 @@ function LoginContent() {
             پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-            {activeTab === 'login'
+            {step === 'otp_verify'
+              ? 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
+              : activeTab === 'login'
               ? 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
               : 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
           </p>
         </div>
 
-        {/* Tab Switcher: Login vs Register */}
-        <AuthTabs
-          activeTab={activeTab}
-          onTabChange={switchTab}
-          loginLabel="ورود به سامانه"
-          registerLabel="ثبت‌نام دانش‌پژوه"
-        />
-
-        {/* Dynamic Form View */}
-        {activeTab === 'login' ? (
-          <LoginForm
+        {/* Dynamic Step View: OTP verification vs Form */}
+        {step === 'otp_verify' ? (
+          <OtpVerificationForm
             phone={phone}
-            password={password}
-            errors={errors}
+            fullName={activeTab === 'register' ? fullName : undefined}
+            initialExpiresIn={expiresIn}
+            mockCode={mockCode}
+            onVerify={handleVerifyOtpCode}
+            onResend={handleResendOtp}
+            onBack={() => setStep('form')}
             isSubmitting={isSubmitting}
-            onPhoneChange={setPhone}
-            onPasswordChange={setPassword}
-            onSubmit={handleLoginSubmit}
+            externalError={errors.general}
           />
         ) : (
-          <RegisterForm
-            fullName={fullName}
-            phone={phone}
-            password={password}
-            confirmPassword={confirmPassword}
-            errors={errors}
-            isSubmitting={isSubmitting}
-            onFullNameChange={setFullName}
-            onPhoneChange={setPhone}
-            onPasswordChange={setPassword}
-            onConfirmPasswordChange={setConfirmPassword}
-            onSubmit={handleRegisterSubmit}
-          />
-        )}
+          <>
+            {/* Tab Switcher: Login vs Register */}
+            <AuthTabs
+              activeTab={activeTab}
+              onTabChange={switchTab}
+              loginLabel={dict.auth_tab_login || 'ورود به سامانه'}
+              registerLabel={dict.auth_tab_register || 'ثبت‌نام دانش‌پژوه'}
+            />
 
-        {/* Quick Role Evaluation Selector */}
-        <QuickRoleSelector
-          onSelectRole={handleQuickRole}
-          disabled={isSubmitting}
-        />
+            {/* Dynamic Form View */}
+            {activeTab === 'login' ? (
+              <LoginForm
+                phone={phone}
+                password={password}
+                errors={errors}
+                isSubmitting={isSubmitting}
+                authMode={authMode}
+                onToggleAuthMode={setAuthMode}
+                onPhoneChange={setPhone}
+                onPasswordChange={setPassword}
+                onSubmit={handleLoginSubmit}
+              />
+            ) : (
+              <RegisterForm
+                fullName={fullName}
+                phone={phone}
+                password={password}
+                confirmPassword={confirmPassword}
+                errors={errors}
+                isSubmitting={isSubmitting}
+                onFullNameChange={setFullName}
+                onPhoneChange={setPhone}
+                onPasswordChange={setPassword}
+                onConfirmPasswordChange={setConfirmPassword}
+                onSubmit={handleRegisterSubmit}
+                onDirectPasswordSubmit={handleDirectPasswordRegister}
+              />
+            )}
+
+            {/* Quick Role Evaluation Selector */}
+            <QuickRoleSelector
+              onSelectRole={handleQuickRole}
+              disabled={isSubmitting}
+            />
+          </>
+        )}
 
         {/* Back to Homepage Footer */}
         <div className="text-center pt-2">

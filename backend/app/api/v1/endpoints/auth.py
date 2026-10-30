@@ -27,12 +27,12 @@ router = APIRouter()
 @router.post("/register", response_model=UserResponse, summary="Register a new student account")
 async def register(req: UserRegisterRequest, request: Request, db: AsyncSession = Depends(get_db)):
     """
-    Registers a new student account in the persistent SQLite database.
+    Registers a new student account in the persistent SQLite database and dispatches a 6-digit OTP.
     """
     ip_address = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")
     try:
-        return await auth_service.register_user(
+        user_res = await auth_service.register_user(
             full_name=req.full_name,
             phone=req.phone,
             password=req.password,
@@ -40,6 +40,21 @@ async def register(req: UserRegisterRequest, request: Request, db: AsyncSession 
             ip_address=ip_address,
             user_agent=user_agent,
         )
+        clean_phone = auth_service.normalize_phone(req.phone)
+        try:
+            auth_service.request_otp(phone=clean_phone)
+            raw_code = auth_service.get_pending_otp(clean_phone)
+            if raw_code:
+                code = str(raw_code)
+                from backend.app.core.redis_client import redis_service
+                from backend.app.core.config import settings
+                from backend.app.core.sms_provider import sms_provider
+                await redis_service.set(f"otp:{clean_phone}", code, ex=settings.OTP_EXPIRE_SECONDS)
+                await redis_service.delete(f"otp_attempts:{clean_phone}")
+                await sms_provider.send_otp_sms(clean_phone, code)
+        except Exception as exc:
+            logger.warning("Could not dispatch registration OTP for %s: %s", clean_phone, exc)
+        return user_res
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
     except IntegrityError:
@@ -72,10 +87,10 @@ async def send_otp(req: OTPRequest):
     """
     clean_phone = auth_service.normalize_phone(req.phone)
     res = auth_service.request_otp(phone=clean_phone)
-    raw_code = auth_service.pending_otps.get(clean_phone)
+    raw_code = auth_service.get_pending_otp(clean_phone)
     if not raw_code:
         raise HTTPException(status_code=500, detail="خطا در تولید کد تأیید")
-    code = raw_code[0] if isinstance(raw_code, tuple) else str(raw_code)
+    code = str(raw_code)
     from backend.app.core.redis_client import redis_service
     from backend.app.core.config import settings
     await redis_service.set(f"otp:{clean_phone}", code, ex=settings.OTP_EXPIRE_SECONDS)
@@ -96,6 +111,7 @@ async def verify_otp(req: OTPVerifyRequest, request: Request, db: AsyncSession =
         return await auth_service.verify_otp(
             phone=req.phone,
             code=req.code,
+            full_name=req.full_name,
             db=db,
             ip_address=ip_address,
             user_agent=user_agent,

@@ -3,6 +3,7 @@ export * from './ui';
 export * from './shell';
 export * from './motion';
 export * from './admin';
+export * from './auth';
 export * from './dashboard';
 export * from './learn';
 export * from './reader';
