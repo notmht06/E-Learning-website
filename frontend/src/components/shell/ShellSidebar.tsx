@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -194,21 +195,33 @@ export function ShellSidebar({
       </aside>
 
       {/* Mobile Drawer Overlay */}
-      {isMobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
-            onClick={onCloseMobile}
-            aria-hidden="true"
-          />
+      <AnimatePresence>
+        {isMobileOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+              onClick={onCloseMobile}
+              aria-hidden="true"
+            />
 
-          {/* Drawer Body */}
-          <div className="relative w-72 max-w-[85vw] bg-white dark:bg-[#141518] border-e border-zinc-200 dark:border-zinc-800 h-full shadow-2xl z-10">
-            {sidebarContent}
+            {/* Drawer Body */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-72 max-w-[85vw] bg-white dark:bg-[#141518] border-e border-zinc-200 dark:border-zinc-800 h-full shadow-2xl z-10 overflow-y-auto"
+            >
+              {sidebarContent}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }

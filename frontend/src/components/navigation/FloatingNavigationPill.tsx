@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   BookOpen,
   Search,
@@ -342,12 +343,23 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="xl:hidden p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+            className="xl:hidden p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer shrink-0 active:scale-90"
             aria-label={dict.pill_nav_menu_toggle || 'منو'}
             aria-expanded={isMobileOpen}
             aria-controls="mobile-nav-drawer"
           >
-            {isMobileOpen ? <X className="w-4 h-4 shrink-0" /> : <Menu className="w-4 h-4 shrink-0" />}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={isMobileOpen ? 'open' : 'closed'}
+                initial={{ opacity: 0, rotate: isMobileOpen ? -90 : 90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: isMobileOpen ? 90 : -90 }}
+                transition={{ duration: 0.16, ease: 'easeOut' }}
+                className="block"
+              >
+                {isMobileOpen ? <X className="w-4 h-4 shrink-0" /> : <Menu className="w-4 h-4 shrink-0" />}
+              </motion.span>
+            </AnimatePresence>
           </button>
         </div>
       </div>
@@ -367,12 +379,18 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
         onMouseLeave={handleMouseLeaveCourses}
       />
 
-      {/* Mobile Drawer Dropdown */}
-      {isMobileOpen && (
-        <div
-          id="mobile-nav-drawer"
-          className="xl:hidden mt-2 mx-1 p-4 rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#121316]/95 backdrop-blur-2xl border border-[#E6E1D8] dark:border-[#22242A] shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
-        >
+      {/* Mobile Drawer Dropdown with Fluid Hardware-Accelerated Motion */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            id="mobile-nav-drawer"
+            key="mobile-nav-drawer"
+            initial={{ opacity: 0, y: -14, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="xl:hidden mt-2 mx-1 p-4 rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#121316]/95 backdrop-blur-2xl border border-[#E6E1D8] dark:border-[#22242A] shadow-xl space-y-3 origin-top overflow-hidden"
+          >
           {/* Quick Search Button in Mobile Drawer */}
           <button
             type="button"
@@ -466,8 +484,9 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               </Link>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 };

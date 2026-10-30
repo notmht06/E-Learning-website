@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Compass,
   ArrowLeft,
@@ -76,7 +77,7 @@ export default function RoadmapPage() {
             <div className="flex items-center gap-1 p-1 bg-black/[0.04] dark:bg-white/[0.06] rounded-2xl border border-black/5 dark:border-white/5 shrink-0 self-start sm:self-center">
               <button
                 onClick={() => setViewMode('timeline')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ease-out cursor-pointer active:scale-95 ${
                   viewMode === 'timeline'
                     ? 'bg-[#8A532B] text-white shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
@@ -86,7 +87,7 @@ export default function RoadmapPage() {
               </button>
               <button
                 onClick={() => setViewMode('graph')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ease-out cursor-pointer active:scale-95 ${
                   viewMode === 'graph'
                     ? 'bg-[#8A532B] text-white shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
@@ -98,9 +99,19 @@ export default function RoadmapPage() {
           </div>
         </div>
 
-        {/* Dynamic View Display */}
+        {/* Dynamic View Display with Smooth Fade Transition */}
         <section className="space-y-4">
-          {viewMode === 'timeline' ? <CurriculumRoadmap /> : <ConceptGraphVisualizer />}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={viewMode}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {viewMode === 'timeline' ? <CurriculumRoadmap /> : <ConceptGraphVisualizer />}
+            </motion.div>
+          </AnimatePresence>
         </section>
 
         {/* Study Methodology & FAQ Accordion */}
