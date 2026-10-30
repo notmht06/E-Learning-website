@@ -1043,7 +1043,7 @@ export const fa = {
   // Stage 9: Learning Workspace Tabs & AI Assistant
   learn_tab_transcripts: 'تقریرات و یادداشت‌ها',
   learn_tab_attachments: 'فایل‌های پیوست و دانلود',
-  learn_tab_ai_discourse: 'دستیار هوشمند مباحثه',
+  learn_tab_ai_discourse: 'حکمت‌یار این دوره (AI)',
   learn_monograph_title: 'متن پیاده‌شده و مصحح جلسه',
   learn_monograph_copy: 'کپی متن تقریر',
   learn_monograph_copied: 'متن تقریر کپی شد',
@@ -1076,8 +1076,18 @@ export const fa = {
   cart_final_payable: 'مبلغ نهایی قابل پرداخت:',
   cart_coupon_placeholder: 'کد تخفیف (مثال: NOOR20)...',
   cart_coupon_apply_btn: 'اعمال کد',
-  cart_coupon_success: 'کد تخفیف با موفقیت اعمال گردید',
+  cart_coupon_success: 'کد تخفیف با موفقیت اعمال شد',
   cart_coupon_invalid: 'کد تخفیف واردشده معتبر نیست یا منقضی شده است',
   cart_continue_shopping: 'ادامه انتخاب درس‌گفتارها',
   cart_security_guarantee: 'پرداخت امن تحت شبکه شاپرک با تضمین دسترسی آنی و بدون انقضا',
+
+  // Stage 11: Course-Scoped LangGraph AI Tutor
+  dash_tab_ai: 'حکمت‌یار دوره‌های دانش‌پژوه (AI)',
+  ai_tutor_title: 'حکمت‌یار اختصاصی این دوره (موتور استدلالی LangGraph RAG)',
+  ai_tutor_reset: 'گفتگوی جدید',
+  ai_tutor_citations_title: 'مستندات استخراج‌شده از صوت و متن این دوره:',
+  ai_tutor_input_placeholder: 'پرسش علمی خود درباره مباحث این دوره را بنویسید...',
+  ai_tutor_submit_btn: 'ارسال پرسش',
+  ai_tutor_error_msg: 'ارتباط با سرور دستیار هوشمند برقرار نشد. لطفاً مجدداً تلاش فرمایید.',
+  ai_tutor_enrolled_courses_title: 'دوره‌های ثبت‌نام‌شده دانش‌پژوه',
 } as const;

@@ -333,6 +333,7 @@ class ApiClient {
       message: string;
       history?: Array<{ role: string; content: string }>;
       subject_filter?: string;
+      course_id?: string;
       file_context?: string;
       file_name?: string;
       lang?: string;
@@ -360,6 +361,7 @@ class ApiClient {
         message: string;
         history?: Array<{ role: string; content: string }>;
         subject_filter?: string;
+        course_id?: string;
         file_context?: string;
         file_name?: string;
         lang?: string;

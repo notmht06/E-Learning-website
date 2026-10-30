@@ -15,6 +15,8 @@ from backend.app.services.rag_engine import rag_engine
 from backend.app.core.config import settings
 
 SCHOLAR_NAME = "حجت الاسلام دکتر زنجیر زن حسینی"
+SCHOLAR_NAME_AR = "حجة الإسلام الدكتور زنجير زن حسيني"
+SCHOLAR_NAME_EN = "Hojjat al-Islam Dr. Zanjirzan Hosseini"
 
 
 class ScholarTutorGraphState(TypedDict, total=False):
@@ -22,6 +24,7 @@ class ScholarTutorGraphState(TypedDict, total=False):
     rewritten_query: str
     course_id: Optional[str]
     subject_filter: Optional[str]
+    lang: Optional[str]
     retrieved_chunks: List[Dict[str, Any]]
     is_grounded: bool
     final_reply: str
@@ -30,10 +33,18 @@ class ScholarTutorGraphState(TypedDict, total=False):
     scholar_identity: str
 
 
+def _get_scholar_identity(lang: Optional[str] = "fa") -> str:
+    if lang == "en":
+        return SCHOLAR_NAME_EN
+    if lang == "ar":
+        return SCHOLAR_NAME_AR
+    return SCHOLAR_NAME
+
+
 def node_1_course_scope_guard(state: ScholarTutorGraphState) -> ScholarTutorGraphState:
     query = (state.get("raw_query") or "").strip()
-    state["rewritten_query"] = query
-    state["scholar_identity"] = SCHOLAR_NAME
+    lang = state.get("lang") or "fa"
+    state["scholar_identity"] = _get_scholar_identity(lang)
 
     # Extract course_id from query if embedded, e.g. "[دوره فعلی دانشجو: ... (course-xxx) - ...]"
     if not state.get("course_id"):
@@ -41,6 +52,9 @@ def node_1_course_scope_guard(state: ScholarTutorGraphState) -> ScholarTutorGrap
         if match:
             state["course_id"] = match.group(1)
 
+    # Clean query if wrapped in contextual prompt
+    clean_query = re.sub(r"^\[دوره فعلی دانشجو:[^\]]+\]\s*(پرسش:)?\s*", "", query).strip()
+    state["rewritten_query"] = clean_query or query
     return state
 
 
@@ -51,6 +65,7 @@ def node_2_philosophical_query_rewriter(state: ScholarTutorGraphState) -> Schola
         "اشراق": "حکمت اشراق سهروردی نورالانوار علم حضوری",
         "منطق": "مبادی منطق تصور تصدیق برهان صناعات خمس",
         "استصحاب": "اصول فقه استصحاب شیخ انصاری لا تنقض الیقین",
+        "حرکت جوهری": "حرکت جوهری زمان ربط حادث به قدیم",
     }
     for term, expanded in expansions.items():
         if term in q:
@@ -71,6 +86,25 @@ def node_3_scoped_multimedia_retriever(state: ScholarTutorGraphState) -> Scholar
         top_k=4,
         min_score=settings.AI_MIN_SIMILARITY_THRESHOLD,
     )
+
+    course_id = state.get("course_id")
+    if course_id and chunks:
+        # Prioritize chunks that align with the student's current course
+        def course_match_priority(c: Dict[str, Any]) -> int:
+            cid = str(c.get("course_id", "") or "")
+            chunk_id = str(c.get("id", "") or "")
+            source = str(c.get("source", "") or "")
+            if cid and cid == course_id:
+                return 3
+            if course_id in chunk_id or course_id in source:
+                return 2
+            cid_slug = course_id.replace("course-", "").split("-")[0]
+            if cid_slug and (cid_slug in chunk_id or cid_slug in source):
+                return 1
+            return 0
+
+        chunks = sorted(chunks, key=course_match_priority, reverse=True)
+
     state["retrieved_chunks"] = chunks
     return state
 
@@ -83,40 +117,98 @@ def node_4_grounding_hallucination_grader(state: ScholarTutorGraphState) -> Scho
 
 def node_5_sadrian_response_synthesizer(state: ScholarTutorGraphState) -> ScholarTutorGraphState:
     chunks = state.get("retrieved_chunks", [])
+    lang = state.get("lang") or "fa"
+    scholar = _get_scholar_identity(lang)
+    state["scholar_identity"] = scholar
+
     if not state.get("is_grounded") or not chunks:
-        state["final_reply"] = (
-            f"پرسش شما خارج از قلمرو مباحث ارائه‌شده در دروس و آثار مکتوب و شفاهی {SCHOLAR_NAME} است. "
-            "دستیار حکمت‌یار منحصراً موظف به تبیین و پاسخگویی بر پایه تقریرات، صوت‌ها، ویدیوها و کتب مصنف استاد است. "
-            "لطفاً پرسش خود را پیرامون موضوعات مطرح‌شده در دوره فعلی یا دروس مرتبط مطرح فرمایید."
-        )
+        if lang == "en":
+            state["final_reply"] = (
+                f"Your inquiry lies outside the scope of the topics presented in the courses and official treatises of {scholar}. "
+                "The HekmatYar assistant is strictly authorized to explain and answer queries grounded in the lectures, audio-visual recordings, and authored books of the scholar. "
+                "Please frame your question around subjects covered in this course."
+            )
+            state["suggested_followups"] = [
+                "What is the main thesis of this course?",
+                "Explain the key terminology of this session.",
+                "How does the professor prove the Primacy of Existence?",
+            ]
+        elif lang == "ar":
+            state["final_reply"] = (
+                f"سؤالكم خارج عن نطاق الأبحاث المطروحة في دروس ومؤلفات سماحة {scholar}. "
+                "المساعد حكمت‌یار مكلّف حصراً بالبيان والإجابة بالاستناد إلى تقريرات، تسجيلات وكتب الأستاذ المعتمدة. "
+                "يرجى طرح الأسئلة المتعلقة بمباحث هذه الدورة."
+            )
+            state["suggested_followups"] = [
+                "ما هي المسألة المحورية في هذه الدورة؟",
+                "اشرح المصطلحات الأساسية في هذه الجلسة.",
+                "كيف يقرر الأستاذ برهان أصالة الوجود؟",
+            ]
+        else:
+            state["final_reply"] = (
+                f"پرسش شما خارج از قلمرو مباحث ارائه‌شده در دروس و آثار مکتوب و شفاهی {scholar} است. "
+                "دستیار حکمت‌یار منحصراً موظف به تبیین و پاسخگویی بر پایه تقریرات، صوت‌ها، ویدیوها و کتب مصنف استاد است. "
+                "لطفاً پرسش خود را پیرامون موضوعات مطرح‌شده در دوره فعلی یا دروس مرتبط مطرح فرمایید."
+            )
+            state["suggested_followups"] = [
+                "محور اصلی مباحث این دوره چیست؟",
+                "اصطلاحات کلیدی جلسه را تبیین کن.",
+                "تقریر استاد از براهین اصالت وجود چیست؟",
+            ]
+
         state["citations"] = []
-        state["suggested_followups"] = [
-            "محور اصلی مباحث این دوره چیست؟",
-            "اصطلاحات کلیدی جلسه را تبیین کن.",
-            "تقریر استاد از براهین اصالت وجود چیست؟",
-        ]
         return state
 
     top_chunk = chunks[0]
     time_label = top_chunk.get("timestamp_label", "")
-    time_ref = f" در دقیقه «{time_label}»" if time_label else ""
     session_ref = f"«{top_chunk.get('page_or_session', '')}»"
     source_ref = f"«{top_chunk.get('source', '')}»"
 
-    lead = f"بر اساس مبانی برهانی و تقریرات درسی {SCHOLAR_NAME} در {source_ref} ({session_ref}{time_ref}):"
-    explanation = top_chunk.get("snippet", "")
+    if lang == "en":
+        time_ref = f" at minute «{time_label}»" if time_label else ""
+        lead = f"Based on the demonstrative principles and official lectures of {scholar} in {source_ref} ({session_ref}{time_ref}):"
+        explanation = top_chunk.get("snippet_en") or top_chunk.get("snippet", "")
+        conclusion = "This inquiry is systematically grounded in the official recorded segments of this curriculum."
+        state["suggested_followups"] = [
+            "What are the detailed proofs for this thesis?",
+            "How does the professor address objections to this theory?",
+            "What is the recommended study sequence for this topic?",
+        ]
+    elif lang == "ar":
+        time_ref = f" في الدقيقة «{time_label}»" if time_label else ""
+        lead = f"بناءً على الأسس البرهانية والتقريرات الرسمية لسماحة {scholar} في {source_ref} ({session_ref}{time_ref}):"
+        explanation = top_chunk.get("snippet", "")
+        conclusion = "تم تثبيت هذا البحث في القطعة الزمنية المحددة من الدرس."
+        state["suggested_followups"] = [
+            "ما هي البراهين التفصيلية لهذه المسألة؟",
+            "كيف يقرر الأستاذ الإشكالات الواردة على هذه النظرية؟",
+            "ما هو السير الدراسي المرتبط بهذا المبحث؟",
+        ]
+    else:
+        time_ref = f" در دقیقه «{time_label}»" if time_label else ""
+        lead = f"بر اساس مبانی برهانی و تقریرات درسی {scholar} در {source_ref} ({session_ref}{time_ref}):"
+        explanation = top_chunk.get("snippet", "")
+        conclusion = "این مبحث در قطعه زماندار درس تثبیت شده است."
+        state["suggested_followups"] = [
+            "براهین تفصیلی این مسئله چیست؟",
+            "تقریر استاد از اشکالات وارد بر این نظریه چیست؟",
+            "سیر مطالعاتی مرتبط با این مبحث کدام است؟",
+        ]
 
-    state["final_reply"] = (
-        f"{lead}\n\n"
-        f"{explanation}\n\n"
-        f"این مبحث در قطعه زماندار درس تثبیت شده است."
-    )
-    state["citations"] = chunks
-    state["suggested_followups"] = [
-        "براهین تفصیلی این مسئله چیست؟",
-        "تقریر استاد از اشکالات وارد بر این نظریه چیست؟",
-        "سیر مطالعاتی مرتبط با این مبحث کدام است؟",
-    ]
+    state["final_reply"] = f"{lead}\n\n{explanation}\n\n{conclusion}"
+
+    clean_citations: List[Dict[str, Any]] = []
+    for c in chunks:
+        clean_citations.append({
+            "source": c.get("source", ""),
+            "page_or_session": c.get("page_or_session", ""),
+            "snippet": c.get("snippet", "")[:240] + ("..." if len(c.get("snippet", "")) > 240 else ""),
+            "media_type": c.get("media_type", "text"),
+            "timestamp_label": c.get("timestamp_label"),
+            "start_sec": c.get("start_sec"),
+            "end_sec": c.get("end_sec"),
+        })
+    state["citations"] = clean_citations
     return state
 
 
@@ -208,6 +300,7 @@ def run_course_tutor(
     raw_query: str,
     course_id: Optional[str] = None,
     subject_filter: Optional[str] = None,
+    lang: str = "fa",
 ) -> ScholarTutorGraphState:
     """Executes the 5-node LangGraph pipeline for course-scoped inquiries."""
     initial_state: ScholarTutorGraphState = {
@@ -215,11 +308,12 @@ def run_course_tutor(
         "rewritten_query": raw_query,
         "course_id": course_id,
         "subject_filter": subject_filter,
+        "lang": lang,
         "retrieved_chunks": [],
         "is_grounded": False,
         "final_reply": "",
         "citations": [],
         "suggested_followups": [],
-        "scholar_identity": SCHOLAR_NAME,
+        "scholar_identity": _get_scholar_identity(lang),
     }
     return tutor_graph.invoke(initial_state)

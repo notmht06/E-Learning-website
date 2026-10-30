@@ -47,7 +47,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
   fa: {
     overview: 'پیشخوان پژوهشی دانش‌پژوه',
     courses: 'درس‌گفتارهای ثبت‌نام‌شده من',
-    ai: 'حکمتیار دوره‌های دانش‌پژوه (AI)',
+    ai: 'حکمت‌یار دوره‌های دانش‌پژوه (AI)',
     books: 'کتابخانه و رسالات فلسفی',
     notes: 'دفتر یادداشت و حاشیه‌نگاری دروس',
     orders: 'سفارشات پستی و رهگیری مرسولات',
@@ -80,7 +80,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
     overview: 'پیشخوان پژوهشی',
     courses: 'دوره‌های من',
-    ai: 'حکمتیار هوشمند (AI)',
+    ai: 'حکمت‌یار هوشمند (AI)',
     books: 'کتابخانه و رسالات',
     notes: 'دفتر یادداشت',
     orders: 'سفارشات پستی',
@@ -111,7 +111,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
 
 export default function UserDashboardPage() {
   const { user, login, logout } = useAuth();
-  const { currentLang, t } = useLanguage();
+  const { currentLang, t, dict } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [selectedBookId, setSelectedBookId] = useState<string>('book1');
@@ -175,13 +175,7 @@ export default function UserDashboardPage() {
         {activeTab === 'ai' && (
           <CourseScopedAITutor
             courseId={firstEnrolledCourse}
-            courseTitle={
-              currentLang === 'en'
-                ? "Student's Enrolled Courses"
-                : currentLang === 'ar'
-                ? 'الدورات المسجلة للباحث'
-                : 'دوره‌های ثبت‌نام‌شده دانش‌پژوه'
-            }
+            courseTitle={dict.ai_tutor_enrolled_courses_title || 'دوره‌های ثبت‌نام‌شده دانش‌پژوه'}
             subject="همه"
           />
         )}

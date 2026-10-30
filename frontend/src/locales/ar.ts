@@ -1044,7 +1044,7 @@ export const ar: Dictionary = {
   // Stage 9: Learning Workspace Tabs & AI Assistant
   learn_tab_transcripts: 'التقريرات والملاحظات',
   learn_tab_attachments: 'الملحقات والتحميل',
-  learn_tab_ai_discourse: 'المساعد الذكي للمباحثة',
+  learn_tab_ai_discourse: 'المساعد الذكي للدورة',
   learn_monograph_title: 'النص المحرر والمصحح للدرس',
   learn_monograph_copy: 'نسخ نص التقرير',
   learn_monograph_copied: 'تم نسخ النص',
@@ -1081,4 +1081,14 @@ export const ar: Dictionary = {
   cart_coupon_invalid: 'رمز الخصم غير صالح أو منتهي الصلاحية',
   cart_continue_shopping: 'متابعة تصفح الدروس',
   cart_security_guarantee: 'دفع آمن عبر الشبكة المصرفية مع ضمان الوصول الفوري الدائم',
+
+  // Stage 11: Course-Scoped LangGraph AI Tutor
+  dash_tab_ai: 'المساعد العلمي لدورات الباحث (AI)',
+  ai_tutor_title: 'المساعد العلمي الذكي الخاص بالدورة (LangGraph RAG)',
+  ai_tutor_reset: 'محادثة جديدة',
+  ai_tutor_citations_title: 'المصادر المستخرجة من المحاضرات:',
+  ai_tutor_input_placeholder: 'اطرح سؤالك حول مباحث هذه المحاضرة...',
+  ai_tutor_submit_btn: 'إرسال',
+  ai_tutor_error_msg: 'تعذر الاتصال بالمساعد الذكي للدورة. يرجى إعادة المحاولة.',
+  ai_tutor_enrolled_courses_title: 'الدورات المسجلة للباحث',
 };

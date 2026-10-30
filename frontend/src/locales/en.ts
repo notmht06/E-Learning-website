@@ -1044,7 +1044,7 @@ export const en: Dictionary = {
   // Stage 9: Learning Workspace Tabs & AI Assistant
   learn_tab_transcripts: 'Monographs & Notes',
   learn_tab_attachments: 'Attachments & Downloads',
-  learn_tab_ai_discourse: 'AI Scholarly Debate',
+  learn_tab_ai_discourse: 'AI Course Tutor',
   learn_monograph_title: 'Edited Lecture Monograph',
   learn_monograph_copy: 'Copy Monograph',
   learn_monograph_copied: 'Monograph Copied',
@@ -1081,4 +1081,14 @@ export const en: Dictionary = {
   cart_coupon_invalid: 'Invalid or expired coupon code',
   cart_continue_shopping: 'Continue Browsing Courses',
   cart_security_guarantee: 'Secure banking payment with guaranteed immediate lifetime access',
+
+  // Stage 11: Course-Scoped LangGraph AI Tutor
+  dash_tab_ai: 'Student Courses AI Tutor',
+  ai_tutor_title: 'Course-Specific AI Scholarly Tutor (LangGraph RAG)',
+  ai_tutor_reset: 'Reset',
+  ai_tutor_citations_title: 'Grounded Course Citations:',
+  ai_tutor_input_placeholder: 'Ask a question about this course lecture...',
+  ai_tutor_submit_btn: 'Ask',
+  ai_tutor_error_msg: 'Connection to the AI tutor encountered an error. Please try again.',
+  ai_tutor_enrolled_courses_title: "Student's Enrolled Courses",
 };

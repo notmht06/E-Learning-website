@@ -449,6 +449,35 @@ class AIScholarlyService:
         lang = self._detect_language(user_msg, getattr(req, "lang", None))
         scholar = self.get_scholar_name(lang)
 
+        # Route course-scoped queries through LangGraph 5-Node StateGraph
+        course_id = getattr(req, "course_id", None)
+        if "[دوره فعلی دانشجو:" in user_msg or course_id:
+            from backend.app.services.langgraph_tutor import run_course_tutor
+            tutor_res = run_course_tutor(
+                raw_query=user_msg,
+                course_id=course_id,
+                subject_filter=req.subject_filter,
+                lang=lang,
+            )
+            citations = [
+                AICitation(
+                    source=c.get("source", ""),
+                    page_or_session=c.get("page_or_session", ""),
+                    snippet=c.get("snippet", "")[:240] + ("..." if len(c.get("snippet", "")) > 240 else ""),
+                    media_type=c.get("media_type", "text"),
+                    timestamp_label=c.get("timestamp_label"),
+                    start_sec=c.get("start_sec"),
+                    end_sec=c.get("end_sec"),
+                )
+                for c in tutor_res.get("citations", [])
+            ]
+            return AIChatResponse(
+                reply=tutor_res["final_reply"],
+                citations=citations,
+                suggested_followups=tutor_res.get("suggested_followups", []),
+                scholar_identity=tutor_res.get("scholar_identity", scholar),
+            )
+
         matched_chunks = rag_engine.search(
             query=user_msg,
             subject_filter=req.subject_filter,
@@ -584,6 +613,46 @@ class AIScholarlyService:
         user_msg = req.message.strip()
         lang = self._detect_language(user_msg, getattr(req, "lang", None))
         scholar = self.get_scholar_name(lang)
+
+        # Route course-scoped queries through LangGraph 5-Node StateGraph
+        course_id = getattr(req, "course_id", None)
+        if "[دوره فعلی دانشجو:" in user_msg or course_id:
+            from backend.app.services.langgraph_tutor import run_course_tutor
+            tutor_res = run_course_tutor(
+                raw_query=user_msg,
+                course_id=course_id,
+                subject_filter=req.subject_filter,
+                lang=lang,
+            )
+            full_text = tutor_res["final_reply"]
+            tokens = re.findall(r"\S+\s*", full_text) or [full_text]
+            for token in tokens:
+                payload = {"chunk": token, "done": False}
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                await asyncio.sleep(0.005)
+
+            citations = [
+                AICitation(
+                    source=c.get("source", ""),
+                    page_or_session=c.get("page_or_session", ""),
+                    snippet=c.get("snippet", "")[:240] + ("..." if len(c.get("snippet", "")) > 240 else ""),
+                    media_type=c.get("media_type", "text"),
+                    timestamp_label=c.get("timestamp_label"),
+                    start_sec=c.get("start_sec"),
+                    end_sec=c.get("end_sec"),
+                ).model_dump()
+                for c in tutor_res.get("citations", [])
+            ]
+            terminal_payload = {
+                "chunk": "",
+                "done": True,
+                "reply": full_text,
+                "citations": citations,
+                "suggested_followups": tutor_res.get("suggested_followups", []),
+                "scholar_identity": tutor_res.get("scholar_identity", scholar),
+            }
+            yield f"data: {json.dumps(terminal_payload, ensure_ascii=False)}\n\n"
+            return
 
         matched_chunks = rag_engine.search(
             query=user_msg,

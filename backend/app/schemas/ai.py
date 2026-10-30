@@ -12,6 +12,7 @@ class AIChatRequest(BaseModel):
     message: str = Field(..., description="User philosophical or course inquiry")
     history: Optional[List[ChatMessage]] = Field(default=[], description="Prior multi-turn chat history")
     subject_filter: Optional[str] = Field(default=None, description="Optional discipline filter (e.g. حکمت متعالیه, فلسفه اشراق)")
+    course_id: Optional[str] = Field(default=None, description="Optional course identifier for scoped tutoring")
     file_context: Optional[str] = Field(default=None, description="Extracted content from uploaded PDF/document")
     file_name: Optional[str] = Field(default=None, description="Name of the uploaded file")
     lang: Optional[str] = Field(default=None, description="Target response language ('fa', 'en', 'ar')")
