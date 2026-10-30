@@ -36,7 +36,7 @@ export const CartModal: React.FC<CartModalProps> = ({
   onClose,
   onRemoveItem,
 }) => {
-  const { currentLang: ctxLang, dict } = useLanguage();
+  const { currentLang: ctxLang, dict, localizeHref } = useLanguage();
   const currentLang = propLang || ctxLang;
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -53,7 +53,7 @@ export const CartModal: React.FC<CartModalProps> = ({
         const serialized = JSON.stringify(items);
         localStorage.setItem('zan_cart', serialized);
         localStorage.setItem('zan_cart_items', serialized);
-        window.location.href = '/checkout';
+        window.location.href = localizeHref('/checkout');
       }
       onClose();
     } finally {

@@ -24,7 +24,7 @@ export function LearningAccessGuard({
   isFree = false,
   onDismiss,
 }: LearningAccessGuardProps) {
-  const { toLocale, dict, currentLang } = useLanguage();
+  const { toLocale, dict, currentLang, localizeHref } = useLanguage();
   const { user } = useAuth();
 
   const formattedPrice =
@@ -140,7 +140,7 @@ export function LearningAccessGuard({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Primary Enroll / Checkout CTA */}
             <Link
-              href={`/checkout?courseId=${encodeURIComponent(courseId)}`}
+              href={localizeHref(`/checkout?courseId=${encodeURIComponent(courseId)}`)}
               onClick={() => triggerTactileHaptic('thump')}
               className="px-6 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
@@ -158,7 +158,7 @@ export function LearningAccessGuard({
             {/* Login CTA if not logged in */}
             {!user && (
               <Link
-                href={`/login?redirect=${encodeURIComponent(`/courses/${courseId}/learn`)}`}
+                href={localizeHref(`/login?redirect=${encodeURIComponent(localizeHref(`/courses/${courseId}/learn`))}`)}
                 onClick={() => triggerTactileHaptic('tick')}
                 className="px-4 py-3 rounded-xl bg-[#141518] border border-[#22242A] hover:border-[#8A532B] text-zinc-300 hover:text-[#FAF8F5] text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer"
               >
@@ -177,7 +177,7 @@ export function LearningAccessGuard({
 
           {/* Secondary Back to Course Overview link */}
           <Link
-            href={`/courses/${courseId}`}
+            href={localizeHref(`/courses/${courseId}`)}
             onClick={() => triggerTactileHaptic('tick')}
             className="px-4 py-2.5 text-xs text-zinc-400 hover:text-zinc-200 transition flex items-center justify-center gap-1.5 self-center sm:self-auto cursor-pointer"
           >

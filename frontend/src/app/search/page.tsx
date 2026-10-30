@@ -15,7 +15,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
 export default function SearchPage() {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
   const [query, setQuery] = useState<string>('');
@@ -140,7 +140,7 @@ export default function SearchPage() {
                   </div>
                 </div>
                 <Link
-                  href={`/books/${b.id}`}
+                  href={localizeHref(`/books/${b.id}`)}
                   className="px-3.5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <span>{dict.books_colophon_btn}</span>
@@ -170,7 +170,7 @@ export default function SearchPage() {
                   </div>
                 </div>
                 <Link
-                  href={`/courses/${c.id}`}
+                  href={localizeHref(`/courses/${c.id}`)}
                   className="px-3.5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <span>{dict.btn_enroll_course}</span>

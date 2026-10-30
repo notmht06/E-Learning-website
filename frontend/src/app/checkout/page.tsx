@@ -26,7 +26,7 @@ import { parseNumericPrice } from '@/lib/utils';
 export default function CheckoutPage() {
   const router = useRouter();
   const { coupons } = useData();
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { items, removeItem } = useCart();
   const { user, isAuthenticated } = useAuth();
 
@@ -77,7 +77,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (isMounted && step > 1 && !user && !isAuthenticated) {
       setStep(1);
-      router.push('/login?redirect=/checkout');
+      router.push(localizeHref('/login?redirect=/checkout'));
     }
   }, [step, user, isAuthenticated, isMounted, router]);
 
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
   const handleGoToShipping = () => {
     if (items.length === 0) return;
     if (!user && !isAuthenticated) {
-      router.push('/login?redirect=/checkout');
+      router.push(localizeHref('/login?redirect=/checkout'));
       return;
     }
     setStep(2);
@@ -263,7 +263,7 @@ export default function CheckoutPage() {
       {/* Checkout Minimal Header */}
       <header className="border-b border-book-border dark:border-[#22242A] bg-white/80 dark:bg-[#141518]/90 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 text-book-accent hover:opacity-80 transition group">
+          <Link href={localizeHref('/')} className="flex items-center gap-3 text-book-accent hover:opacity-80 transition group">
             <div className="w-9 h-9 rounded-2xl bg-book-accent text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-105 transition">
               <ShoppingBag className="w-5 h-5" />
             </div>
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
           </div>
 
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 transition flex items-center gap-1"
           >
             <span>{dict.checkout_btn_home || 'صفحه اصلی'}</span>
@@ -340,13 +340,13 @@ export default function CheckoutPage() {
                       </p>
                       <div className="flex items-center justify-center gap-3 pt-2">
                         <Link
-                          href="/courses"
+                          href={localizeHref('/courses')}
                           className="inline-flex px-6 py-3 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs transition"
                         >
                           {dict.hero_btn_courses || 'مشاهده دوره‌ها'}
                         </Link>
                         <Link
-                          href="/books"
+                          href={localizeHref('/books')}
                           className="inline-flex px-6 py-3 rounded-full border border-book-border dark:border-[#22242A] hover:bg-stone-100 dark:hover:bg-zinc-800 text-book-text dark:text-white text-xs sm:text-sm font-bold transition"
                         >
                           مشاهده کتب و آثار
@@ -463,7 +463,7 @@ export default function CheckoutPage() {
 
                   {!user && !isAuthenticated ? (
                     <button
-                      onClick={() => router.push('/login?redirect=/checkout')}
+                      onClick={() => router.push(localizeHref('/login?redirect=/checkout'))}
                       className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
                     >
                       <LogIn className="w-4 h-4" />
@@ -736,7 +736,7 @@ export default function CheckoutPage() {
                     </div>
                     {!user && !isAuthenticated && (
                       <Link
-                        href="/login?redirect=/checkout"
+                        href={localizeHref('/login?redirect=/checkout')}
                         className="inline-flex items-center gap-1.5 font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline pt-1 text-xs"
                       >
                         <LogIn className="w-3.5 h-3.5" />

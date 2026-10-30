@@ -105,7 +105,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
 export default function AdminPage() {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
-  const { currentLang, t } = useLanguage();
+  const { currentLang, t, localizeHref } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
   const langKey = (currentLang === 'ar' || currentLang === 'en') ? currentLang : 'fa';
@@ -114,9 +114,9 @@ export default function AdminPage() {
 
   React.useEffect(() => {
     if (!user || !isAdmin) {
-      router.push('/login');
+      router.push(localizeHref('/login'));
     }
-  }, [user, isAdmin, router]);
+  }, [user, isAdmin, router, localizeHref]);
 
   // If user is not authenticated or not admin, show minimal access gate
   if (!user || !isAdmin) {
@@ -124,7 +124,7 @@ export default function AdminPage() {
       <ShellAuthGate
         portalType="admin"
         demoActionLabel={currentLang === 'en' ? 'Go to Login' : currentLang === 'ar' ? 'الانتقال إلى تسجيل الدخول' : 'ورود به سامانه'}
-        onDemoLogin={() => router.push('/login')}
+        onDemoLogin={() => router.push(localizeHref('/login'))}
       />
     );
   }

@@ -21,7 +21,7 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
   const { books } = useData();
   const book = books[bookId] || books['book1'] || booksDatabase['book1'];
 
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
   const [isReaderOpen, setIsReaderOpen] = useState<boolean>(false);
   const {
     items: cartItems,
@@ -64,9 +64,9 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full text-start">
         <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-zinc-400">
-          <Link href="/" className="hover:text-[#8A532B]">{dict.nav_home || 'صفحه اصلی'}</Link>
+          <Link href={localizeHref('/')} className="hover:text-[#8A532B]">{dict.nav_home || 'صفحه اصلی'}</Link>
           <span>/</span>
-          <Link href="/books" className="hover:text-[#8A532B]">{dict.nav_books || 'کتب'}</Link>
+          <Link href={localizeHref('/books')} className="hover:text-[#8A532B]">{dict.nav_books || 'کتب'}</Link>
           <span>/</span>
           <span className="text-zinc-900 dark:text-zinc-100 line-clamp-1">{title}</span>
         </div>

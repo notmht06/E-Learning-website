@@ -18,7 +18,7 @@ export { roadmapStagesData };
 export type { StageData };
 
 export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
-  const { toLocale, dict, currentLang } = useLanguage();
+  const { toLocale, dict, currentLang, localizeHref } = useLanguage();
   const [completedStages, setCompletedStages] = useState<number[]>([1]);
   const [expandedStageIds, setExpandedStageIds] = useState<string[]>(['stage-1', 'stage-2']);
 
@@ -242,7 +242,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                         {stage.coursesList.map((course, idx) => (
                           <Link
                             key={idx}
-                            href="/courses"
+                            href={localizeHref(course.slug ? `/courses/${course.slug}` : '/courses')}
                             className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-[#8A532B]/40 dark:hover:border-[#C58B43]/40 transition flex items-center justify-between gap-2 group"
                           >
                             <div className="min-w-0">

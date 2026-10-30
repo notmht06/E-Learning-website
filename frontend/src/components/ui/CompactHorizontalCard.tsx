@@ -33,7 +33,7 @@ function getDisciplineGradient(subject: string = '') {
 }
 
 export function CompactHorizontalCard({ course, book }: CompactHorizontalCardProps) {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
 
   if (course) {
     const loc = getLocalizedCourse(course, currentLang);
@@ -172,7 +172,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
           </div>
 
           <Link
-            href={`/courses/${course.id}`}
+            href={localizeHref(`/courses/${course.id}`)}
             className="px-3.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-zinc-950 transition flex items-center gap-1 cursor-pointer group/link"
           >
             <span>{viewText}</span>
@@ -225,7 +225,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
             </span>
           </div>
 
-          <Link href={`/books/${book.id}`} className="block">
+          <Link href={localizeHref(`/books/${book.id}`)} className="block">
             <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition line-clamp-1">
               {title}
             </h4>
@@ -255,7 +255,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
             {price}
           </span>
           <Link
-            href={`/books/${book.id}`}
+            href={localizeHref(`/books/${book.id}`)}
             className="px-3.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-zinc-950 transition flex items-center gap-1 cursor-pointer group/link"
           >
             <span>{viewText}</span>

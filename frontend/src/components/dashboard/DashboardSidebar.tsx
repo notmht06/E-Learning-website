@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/LanguageContext';
 
 export type DashboardTab = 'overview' | 'courses' | 'books' | 'notes' | 'orders' | 'certificates';
 
@@ -34,6 +35,7 @@ export function DashboardSidebar({
   setIsCollapsed,
   onLogout,
 }: DashboardSidebarProps) {
+  const { localizeHref } = useLanguage();
   const navItems: { id: DashboardTab; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'داشبورد', icon: Compass },
     { id: 'courses', label: 'دوره‌های من', icon: Headphones },
@@ -100,7 +102,7 @@ export function DashboardSidebar({
       {/* Bottom Footer Actions */}
       <div className="p-2 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
         <Link
-          href="/"
+          href={localizeHref('/')}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
           title={isCollapsed ? 'مشاهده سایت اصلی' : undefined}
         >

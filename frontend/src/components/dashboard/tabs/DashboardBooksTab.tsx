@@ -17,7 +17,7 @@ interface DashboardBooksTabProps {
 
 export function DashboardBooksTab({ onOpenReader }: DashboardBooksTabProps) {
   const { books } = useData();
-  const { currentLang } = useLanguage();
+  const { currentLang, localizeHref } = useLanguage();
   const booksList = Object.values(books);
 
   const bannerTitle = currentLang === 'en'
@@ -110,7 +110,7 @@ export function DashboardBooksTab({ onOpenReader }: DashboardBooksTabProps) {
                     </button>
                   )}
                   <Link
-                    href={`/books/${book.id}`}
+                    href={localizeHref(`/books/${book.id}`)}
                     className="px-3 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium transition"
                   >
                     {viewBtnLabel}

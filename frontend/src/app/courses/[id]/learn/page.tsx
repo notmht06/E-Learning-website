@@ -23,7 +23,7 @@ export default function CourseLearnTheaterPage({
   const resolvedParams = use(params);
   const courseId = resolvedParams.id || 'course-mantiq-mabadi';
   const { courses } = useData();
-  const { dict, currentLang } = useLanguage();
+  const { dict, currentLang, localizeHref } = useLanguage();
   const { user } = useAuth();
 
   const course =
@@ -118,7 +118,7 @@ export default function CourseLearnTheaterPage({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <Link href="/courses" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+              <Link href={localizeHref('/courses')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
                 {dict.learn_breadcrumb_courses || dict.nav_lectures || 'درس‌گفتارها'}
               </Link>
               <span>/</span>
@@ -136,7 +136,7 @@ export default function CourseLearnTheaterPage({
           </div>
 
           <Link
-            href={`/courses/${course.id}`}
+            href={localizeHref(`/courses/${course.id}`)}
             className="px-4 py-2 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] transition flex items-center gap-2 self-start sm:self-auto"
           >
             <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />

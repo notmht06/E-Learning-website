@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '@/services/apiClient';
 import { useCart } from '@/context/CartContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ReceiptData {
   referenceId: string;
@@ -66,6 +67,7 @@ function CallbackLoadingFallback() {
 function CallbackContent() {
   const searchParams = useSearchParams();
   const { clearCart } = useCart();
+  const { localizeHref } = useLanguage();
 
   const authority = searchParams.get('Authority') || searchParams.get('authority') || '';
   const rawStatus = searchParams.get('Status') || searchParams.get('status') || '';
@@ -260,14 +262,14 @@ function CallbackContent() {
             </button>
 
             <Link
-              href="/dashboard"
+              href={localizeHref('/dashboard')}
               className="flex-1 py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] dark:bg-[#C58B43] dark:hover:bg-[#a57335] text-white text-xs sm:text-sm font-bold shadow-xs transition text-center flex items-center justify-center gap-2"
             >
               <span>ورود به پنل کاربری و مشاهده دوره‌ها</span>
             </Link>
 
             <Link
-              href="/"
+              href={localizeHref('/')}
               className="py-3.5 px-6 rounded-xl border border-book-border dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-zinc-800 text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 text-xs sm:text-sm font-bold transition text-center"
             >
               <span>صفحه اصلی</span>
@@ -304,14 +306,14 @@ function CallbackContent() {
 
             <div className="flex flex-col sm:flex-row gap-3 pt-3">
               <Link
-                href="/checkout"
+                href={localizeHref('/checkout')}
                 className="flex-1 py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] dark:bg-[#C58B43] dark:hover:bg-[#a57335] text-white text-xs sm:text-sm font-bold shadow-xs transition text-center flex items-center justify-center gap-2"
               >
                 <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                 <span>تلاش مجدد و بازگشت به سبد خرید</span>
               </Link>
               <Link
-                href="/"
+                href={localizeHref('/')}
                 className="flex-1 py-3.5 rounded-xl border border-book-border dark:border-[#22242A] hover:bg-stone-100 dark:hover:bg-zinc-800 text-book-text dark:text-white text-xs sm:text-sm font-bold transition text-center"
               >
                 صفحه اصلی
@@ -325,12 +327,13 @@ function CallbackContent() {
 }
 
 export default function CheckoutCallbackPage() {
+  const { localizeHref } = useLanguage();
   return (
     <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0C0D0E] text-book-text dark:text-stone-100 flex flex-col font-sans transition-colors">
       {/* Minimal Header */}
       <header className="border-b border-book-border dark:border-[#22242A] bg-white/80 dark:bg-[#141518]/90 backdrop-blur-md sticky top-0 z-40 print:hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 text-book-accent hover:opacity-80 transition group">
+          <Link href={localizeHref('/')} className="flex items-center gap-3 text-book-accent hover:opacity-80 transition group">
             <div className="w-9 h-9 rounded-2xl bg-[#8A532B] dark:bg-[#C58B43] text-white flex items-center justify-center font-bold text-sm shadow-md">
               <ShoppingBag className="w-5 h-5" />
             </div>
@@ -344,7 +347,7 @@ export default function CheckoutCallbackPage() {
             </div>
           </Link>
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 transition flex items-center gap-1"
           >
             <span>صفحه اصلی</span>

@@ -30,7 +30,7 @@ import { apiClient } from '@/services/apiClient';
 export default function DedicatedCartPage() {
   const router = useRouter();
   const { items, removeItem, clearCart } = useCart();
-  const { dict, currentLang, toLocale } = useLanguage();
+  const { dict, currentLang, toLocale, localizeHref } = useLanguage();
   const { coupons } = useData();
 
   const [couponCode, setCouponCode] = useState('');
@@ -134,7 +134,7 @@ export default function DedicatedCartPage() {
     if (appliedCoupon && typeof window !== 'undefined') {
       localStorage.setItem('zan_applied_coupon', JSON.stringify(appliedCoupon));
     }
-    router.push('/checkout');
+    router.push(localizeHref('/checkout'));
   };
 
   const handleRemoveItem = (id: string) => {
@@ -151,7 +151,7 @@ export default function DedicatedCartPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E1D8] dark:border-[#22242A] pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+              <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
                 {dict.cart_breadcrumb_home || 'صفحه نخست'}
               </Link>
               <span>/</span>
@@ -202,7 +202,7 @@ export default function DedicatedCartPage() {
             </div>
 
             <Link
-              href="/courses"
+              href={localizeHref('/courses')}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition shadow-xs cursor-pointer"
             >
               <BookOpen className="w-4 h-4" />
@@ -411,7 +411,7 @@ export default function DedicatedCartPage() {
                 {/* Continue Shopping Link */}
                 <div className="text-center pt-1">
                   <Link
-                    href="/courses"
+                    href={localizeHref('/courses')}
                     className="text-xs text-zinc-500 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>{dict.cart_continue_shopping || 'ادامه انتخاب درس‌گفتارها'}</span>

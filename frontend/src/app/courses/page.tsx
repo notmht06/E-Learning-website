@@ -32,7 +32,7 @@ function CoursesContent() {
   const searchParams = useSearchParams();
   const initialSubject = searchParams.get('subject') || 'all';
 
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedType, setSelectedType] = useState<'all' | 'offline' | 'online'>('all');
   const [selectedSubject, setSelectedSubject] = useState<string>(initialSubject);
@@ -302,7 +302,7 @@ function CoursesContent() {
         {/* Page Header (Editorial & Traditional) */}
         <div className="space-y-2 border-b border-[#E6E1D8] dark:border-[#24262D] pb-5">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+            <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
               {t.breadcrumb_home}
             </Link>
             <span>/</span>

@@ -36,7 +36,7 @@ export function AdminSidebar({
   setIsCollapsed,
   onLogout,
 }: AdminSidebarProps) {
-  const { dict, toLocale } = useLanguage();
+  const { dict, toLocale, localizeHref } = useLanguage();
 
   const navItems: { id: AdminTab; label: string; icon: React.ElementType; badge?: string }[] = [
     { id: 'stats', label: dict.admin_tab_stats || 'آمار و هوش تجاری', icon: TrendingUp },
@@ -106,7 +106,7 @@ export function AdminSidebar({
       {/* Bottom Footer Actions */}
       <div className="p-2 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
         <Link
-          href="/"
+          href={localizeHref('/')}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
           title={isCollapsed ? (dict.admin_btn_home || 'مشاهده وب‌سایت') : undefined}
         >

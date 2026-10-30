@@ -49,6 +49,36 @@ export const LanguageProvider: React.FC<{
 }> = ({ children, initialLang = 'fa' }) => {
   const [currentLang, setCurrentLangState] = useState<SupportedLang>(initialLang);
 
+  const localizeHref = useCallback(
+    (path: string): string => {
+      if (!path) return path;
+      if (
+        path.startsWith('http://') ||
+        path.startsWith('https://') ||
+        path.startsWith('#') ||
+        path.startsWith('mailto:') ||
+        path.startsWith('tel:') ||
+        path.startsWith('javascript:')
+      ) {
+        return path;
+      }
+      let clean = path.replace(/^\/(fa|en|ar)(\/|$)/, '/') || '/';
+      if (!clean.startsWith('/')) clean = '/' + clean;
+
+      if (clean.startsWith('/?')) {
+        const query = clean.slice(1);
+        if (currentLang === 'en') return `/en${query}`;
+        if (currentLang === 'ar') return `/ar${query}`;
+        return clean;
+      }
+
+      if (currentLang === 'en') return clean === '/' ? '/en' : `/en${clean}`;
+      if (currentLang === 'ar') return clean === '/' ? '/ar' : `/ar${clean}`;
+      return clean;
+    },
+    [currentLang]
+  );
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlLocale = detectUrlLocale();
@@ -75,8 +105,67 @@ export const LanguageProvider: React.FC<{
       } else {
         setCookie('zan_lang', initialLang);
       }
+
+      const handlePopState = () => {
+        const currentUrlLocale = detectUrlLocale();
+        if (currentUrlLocale && (currentUrlLocale === 'fa' || currentUrlLocale === 'ar' || currentUrlLocale === 'en')) {
+          setCurrentLangState(currentUrlLocale);
+          document.documentElement.lang = currentUrlLocale;
+          document.documentElement.dir = currentUrlLocale === 'en' ? 'ltr' : 'rtl';
+          setCookie('zan_lang', currentUrlLocale);
+          try {
+            localStorage.setItem('zan_lang', currentUrlLocale);
+          } catch (e) {
+            console.warn(e);
+          }
+        } else if (!currentUrlLocale) {
+          setCurrentLangState('fa');
+          document.documentElement.lang = 'fa';
+          document.documentElement.dir = 'rtl';
+          setCookie('zan_lang', 'fa');
+          try {
+            localStorage.setItem('zan_lang', 'fa');
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+      };
+
+      const handleDocumentClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+        const anchor = target.closest('a');
+        if (!anchor) return;
+        const rawHref = anchor.getAttribute('href');
+        if (
+          !rawHref ||
+          rawHref.startsWith('http://') ||
+          rawHref.startsWith('https://') ||
+          rawHref.startsWith('#') ||
+          rawHref.startsWith('mailto:') ||
+          rawHref.startsWith('tel:') ||
+          rawHref.startsWith('javascript:') ||
+          rawHref.startsWith('/api') ||
+          rawHref.startsWith('/stream') ||
+          rawHref.startsWith('/_next')
+        ) {
+          return;
+        }
+        const localized = localizeHref(rawHref);
+        if (localized !== rawHref) {
+          anchor.setAttribute('href', localized);
+        }
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      document.addEventListener('click', handleDocumentClick, true);
+
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+        document.removeEventListener('click', handleDocumentClick, true);
+      };
     }
-  }, [initialLang]);
+  }, [initialLang, localizeHref]);
 
   const setLanguage = useCallback((lang: SupportedLang) => {
     setCurrentLangState(lang);
@@ -130,20 +219,6 @@ export const LanguageProvider: React.FC<{
       return (dictionaries.fa as Record<string, string>)[key] || fallback || String(key);
     },
     [dict]
-  );
-
-  const localizeHref = useCallback(
-    (path: string): string => {
-      if (path.startsWith('http') || path.startsWith('#') || path.startsWith('mailto:') || path.startsWith('tel:')) {
-        return path;
-      }
-      let clean = path.replace(/^\/(fa|en|ar)(\/|$)/, '/') || '/';
-      if (!clean.startsWith('/')) clean = '/' + clean;
-      if (currentLang === 'en') return clean === '/' ? '/en' : `/en${clean}`;
-      if (currentLang === 'ar') return clean === '/' ? '/ar' : `/ar${clean}`;
-      return clean;
-    },
-    [currentLang]
   );
 
   const value = useMemo(

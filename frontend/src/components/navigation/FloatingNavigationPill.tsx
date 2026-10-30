@@ -46,7 +46,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   cartCount: propCartCount,
 }) => {
   const { isAuthenticated, isAdmin, user, isLoading: isAuthLoading } = useAuth();
-  const { currentLang, setLanguage, dict, isRtl, toLocale } = useLanguage();
+  const { currentLang, setLanguage, dict, isRtl, toLocale, localizeHref } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { items: cartItems, openCart } = useCart();
   const { categories, courses } = useData();
@@ -123,7 +123,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
       <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5 xl:gap-3 2xl:gap-5 flex-nowrap shrink-0 overflow-visible">
         {/* Brand Identity / Scholar */}
         <Link
-          href="/"
+          href={localizeHref('/')}
           className="flex items-center gap-2.5 sm:gap-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A532B] rounded-full pe-1 whitespace-nowrap"
           title={dict.nav_home || 'صفحه نخست'}
         >
@@ -147,7 +147,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
         >
           {/* 1. Home */}
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             {dict.nav_home || 'صفحه نخست'}
@@ -179,7 +179,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
           {/* 3. Curriculum Roadmap */}
           <Link
-            href="/roadmap"
+            href={localizeHref('/roadmap')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors gap-1.5 whitespace-nowrap shrink-0"
           >
             <Compass className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
@@ -188,7 +188,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
           {/* 4. Books and Publications */}
           <Link
-            href="/books"
+            href={localizeHref('/books')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             <span className="whitespace-nowrap">{dict.nav_books || 'کتب و تالیفات'}</span>
@@ -196,7 +196,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
           {/* 5. Scholarly Articles */}
           <Link
-            href="/articles"
+            href={localizeHref('/articles')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
             <span className="whitespace-nowrap">{dict.nav_articles || 'مقالات علمی'}</span>
@@ -311,7 +311,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <div className="hidden sm:flex items-center gap-1.5 shrink-0">
               {isAdmin && (
                 <Link
-                  href="/admin"
+                  href={localizeHref('/admin')}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8A532B]/10 hover:bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 text-xs font-bold transition-colors whitespace-nowrap shrink-0"
                   title={dict.nav_admin || 'مدیریت'}
                 >
@@ -320,7 +320,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 </Link>
               )}
               <Link
-                href="/dashboard"
+                href={localizeHref('/dashboard')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8A532B]/10 hover:bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 text-xs font-bold transition-colors whitespace-nowrap shrink-0"
                 title={dict.nav_dashboard || 'پورتال دانشجو'}
               >
@@ -330,7 +330,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             </div>
           ) : (
             <Link
-              href="/login"
+              href={localizeHref('/login')}
               className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold shadow-xs transition-colors whitespace-nowrap shrink-0"
               title={dict.pill_nav_portal || dict.nav_login || 'ورود به سامانه'}
             >
@@ -375,6 +375,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
         currentLang={currentLang}
         dict={dict}
         toLocale={toLocale}
+        localizeHref={localizeHref}
         onMouseEnter={handleMouseEnterCourses}
         onMouseLeave={handleMouseLeaveCourses}
       />
@@ -408,7 +409,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
 
           <div className="grid grid-cols-2 gap-2 text-xs font-medium">
             <Link
-              href="/"
+              href={localizeHref('/')}
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -416,7 +417,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.nav_home || 'صفحه نخست'}</span>
             </Link>
             <Link
-              href="/courses"
+              href={localizeHref('/courses')}
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -424,7 +425,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.nav_courses || 'دوره‌ها'}</span>
             </Link>
             <Link
-              href="/roadmap"
+              href={localizeHref('/roadmap')}
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -432,7 +433,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.nav_roadmap || 'سیر مطالعاتی'}</span>
             </Link>
             <Link
-              href="/books"
+              href={localizeHref('/books')}
               onClick={() => setIsMobileOpen(false)}
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -440,7 +441,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.nav_books || 'کتب و تالیفات'}</span>
             </Link>
             <Link
-              href="/articles"
+              href={localizeHref('/articles')}
               onClick={() => setIsMobileOpen(false)}
               className="col-span-2 p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
@@ -456,7 +457,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <>
                 {isAdmin && (
                   <Link
-                    href="/admin"
+                    href={localizeHref('/admin')}
                     onClick={() => setIsMobileOpen(false)}
                     className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center gap-2 font-bold text-xs"
                   >
@@ -465,7 +466,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                   </Link>
                 )}
                 <Link
-                  href="/dashboard"
+                  href={localizeHref('/dashboard')}
                   onClick={() => setIsMobileOpen(false)}
                   className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center gap-2 font-bold text-xs"
                 >
@@ -475,7 +476,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               </>
             ) : (
               <Link
-                href="/login"
+                href={localizeHref('/login')}
                 onClick={() => setIsMobileOpen(false)}
                 className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B] text-white flex items-center justify-center gap-2 font-bold text-xs shadow-xs"
               >

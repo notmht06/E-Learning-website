@@ -15,7 +15,7 @@ import { ConceptGraphVisualizer } from '@/components/concept-graph';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function RoadmapPage() {
-  const { dict, toLocale } = useLanguage();
+  const { dict, toLocale, localizeHref } = useLanguage();
   const [viewMode, setViewMode] = useState<'timeline' | 'graph'>('timeline');
 
   // Dynamic localization of FAQ items across Persian, Arabic, and English
@@ -56,7 +56,7 @@ export default function RoadmapPage() {
         {/* Header Breadcrumb & Title */}
         <div className="space-y-4 text-start border-b border-zinc-200 dark:border-zinc-800 pb-5">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+            <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
               {dict.nav_home || 'صفحه اصلی'}
             </Link>
             <span>/</span>

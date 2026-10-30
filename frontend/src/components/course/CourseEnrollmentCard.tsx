@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 import { CheckCircle2, Play, ShoppingBag, ArrowUpRight, Disc, Radio, AlertCircle } from 'lucide-react';
 
 interface EnrollmentCardProps {
@@ -39,6 +40,7 @@ export function CourseEnrollmentCard({
   dict,
   currentLang,
 }: EnrollmentCardProps) {
+  const { localizeHref } = useLanguage();
   const driveHref = driveFolderId
     ? `https://drive.google.com/drive/folders/${driveFolderId}`
     : 'https://drive.google.com/drive/folders/1sUP_2GUpJsDLK1dRkXw4Vu065y9bza30?usp=sharing';
@@ -94,7 +96,7 @@ export function CourseEnrollmentCard({
           )}
 
           <Link
-            href={`/courses/${courseId}/learn`}
+            href={localizeHref(`/courses/${courseId}/learn`)}
             className="w-full py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current" />

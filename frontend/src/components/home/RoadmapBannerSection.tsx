@@ -7,7 +7,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui';
 
 export function RoadmapBannerSection() {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
 
   const STEPS = [
     {
@@ -93,7 +93,7 @@ export function RoadmapBannerSection() {
             size="lg"
             className="bg-[#8A532B] text-white hover:bg-[#724423] dark:bg-[#C58B43] dark:text-[#0C0D0E] dark:hover:bg-[#b07b39] font-bold text-sm gap-2 shrink-0 self-start lg:self-center shadow-lg transition-transform duration-200 active:scale-95 group/btn"
           >
-            <Link href="/roadmap">
+            <Link href={localizeHref('/roadmap')}>
               <span>
                 {currentLang === 'en'
                   ? 'Explore Full Interactive Roadmap'

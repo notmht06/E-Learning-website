@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/fonts') ||
     pathname.startsWith('/audio') ||
     pathname.startsWith('/sample-books') ||
-    pathname.includes('.')
+    /\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|js|woff|woff2|ttf|eot|mp3|mp4|m4a|pdf|json|txt|xml|map)$/i.test(pathname)
   ) {
     return NextResponse.next();
   }
@@ -43,7 +43,15 @@ export function middleware(request: NextRequest) {
     const targetUrl = new URL(strippedPathname === '' ? '/' : strippedPathname, request.url);
     targetUrl.search = search;
 
-    const response = NextResponse.rewrite(targetUrl);
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-zan-locale', locale);
+    requestHeaders.set('x-zan-lang', locale);
+
+    const response = NextResponse.rewrite(targetUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
     response.cookies.set('zan_lang', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' });
     response.headers.set('x-zan-locale', locale);
     response.headers.set('x-zan-lang', locale);

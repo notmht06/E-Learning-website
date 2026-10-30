@@ -30,7 +30,7 @@ interface ConceptGraphVisualizerProps {
 }
 
 export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ className = '' }) => {
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
   const [selectedDiscipline, setSelectedDiscipline] = useState<DisciplineType | 'all'>('all');
   const [activeNodeId, setActiveNodeId] = useState<string>('asalat-al-wojood');
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -456,7 +456,7 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
           {/* Action Link to Associated Audio Lecture */}
           <div className="pt-4 border-t border-[#EAE6DF] dark:border-[#27282D]">
             <Link
-              href={`/courses/${activeNode.relatedCourseSlug}`}
+              href={localizeHref(`/courses/${activeNode.relatedCourseSlug}`)}
               className="w-full py-2.5 px-4 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold transition flex items-center justify-between shadow-xs"
             >
               <span className="truncate">{getRelatedCourseTitle(activeNode)}</span>

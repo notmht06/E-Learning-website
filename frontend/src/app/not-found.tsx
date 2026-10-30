@@ -8,7 +8,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { SCHOLAR_NAME } from '@/lib/constants';
 
 export default function NotFoundPage() {
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
 
   const title =
     currentLang === 'en'
@@ -66,7 +66,7 @@ export default function NotFoundPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
             <Link
-              href="/"
+              href={localizeHref('/')}
               className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs"
             >
               <span>{homeBtn}</span>
@@ -74,7 +74,7 @@ export default function NotFoundPage() {
             </Link>
 
             <Link
-              href="/courses"
+              href={localizeHref('/courses')}
               className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#FAF8F5] dark:bg-[#18191D] hover:border-[#8A532B] text-[#0C0D0E] dark:text-[#FAF8F5] border border-[#E6E1D8] dark:border-[#262830] text-xs font-bold transition flex items-center justify-center gap-2"
             >
               <Compass className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />

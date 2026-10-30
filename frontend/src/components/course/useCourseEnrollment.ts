@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function useCourseEnrollment(courseId: string) {
   const router = useRouter();
+  const { localizeHref } = useLanguage();
   const { user, enrollCourse } = useAuth();
   const {
     items: cartItems,
@@ -23,7 +25,7 @@ export function useCourseEnrollment(courseId: string) {
 
   const handleEnroll = async (title: string, price: string) => {
     if (!user) {
-      router.push('/login');
+      router.push(localizeHref('/login'));
       return;
     }
     setIsLoading(true);

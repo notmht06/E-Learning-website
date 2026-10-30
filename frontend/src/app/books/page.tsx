@@ -14,7 +14,7 @@ import { useCart } from '@/context/CartContext';
 import { getLocalizedBook } from '@/lib/localization';
 
 export default function BooksPage() {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');  const {
     items: cartItems,
@@ -148,7 +148,7 @@ export default function BooksPage() {
         {/* Header */}
         <div className="space-y-2 border-b border-zinc-200 dark:border-zinc-800 pb-5">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+            <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
               {t.breadcrumb_home}
             </Link>
             <span>/</span>

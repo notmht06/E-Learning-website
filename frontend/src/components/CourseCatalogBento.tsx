@@ -31,7 +31,7 @@ export function CourseCatalogBento({
   onOpenBookReader,
   onAddToCart,
 }: CourseCatalogBentoProps) {
-  const { dict, toLocale } = useLanguage();
+  const { dict, toLocale, localizeHref } = useLanguage();
   const [filterType, setFilterType] = useState<string>('all');
 
   const offlineCount = useMemo(
@@ -101,7 +101,7 @@ export function CourseCatalogBento({
         {/* نوار دسترسی به کل آرشیو با دکمه shadcn Button */}
         <div className="pt-2 flex justify-center">
           <Button asChild variant="outline" size="default" className="font-bold text-xs gap-2">
-            <Link href="/courses">
+            <Link href={localizeHref('/courses')}>
               <span>
                 {dict.courses_view_all || 'مشاهده کل آرشیو دروس'} ({toLocale(courses.length)}{' '}
                 {dict.courses_count_suffix || 'دوره کامل'})
@@ -125,7 +125,7 @@ export function CourseCatalogBento({
           </div>
 
           <Button asChild variant="link" size="sm" className="font-bold text-xs p-0 gap-1 self-start sm:self-auto">
-            <Link href="/books">
+            <Link href={localizeHref('/books')}>
               <span>{dict.books_view_all || 'مشاهده تالار کتب و رسالات'}</span>
               <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
             </Link>

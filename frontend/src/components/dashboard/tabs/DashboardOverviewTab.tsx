@@ -29,7 +29,7 @@ function isCourseEnrolled(courseId: string, enrolledIds: string[]): boolean {
 export function DashboardOverviewTab() {
   const { user } = useAuth();
   const { courses, orders } = useData();
-  const { currentLang, toLocale, t } = useLanguage();
+  const { currentLang, toLocale, t, localizeHref } = useLanguage();
   const langKey = (currentLang === 'ar' || currentLang === 'en') ? currentLang : 'fa';
   const text = overviewText[langKey];
 
@@ -142,7 +142,7 @@ export function DashboardOverviewTab() {
           </div>
 
           <Link
-            href={`/courses/${firstCourse.id}/learn`}
+            href={localizeHref(`/courses/${firstCourse.id}/learn`)}
             className="px-5 py-3 rounded-full bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Play className="w-4 h-4 fill-current ps-0.5" />

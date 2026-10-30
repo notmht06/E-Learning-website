@@ -4,12 +4,14 @@ import React from 'react';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
 import { useAuthForm } from '@/hooks/useAuthForm';
+import { useLanguage } from '@/context/LanguageContext';
 import { AuthTabs } from '@/components/auth/AuthTabs';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { QuickRoleSelector } from '@/components/auth/QuickRoleSelector';
 
 function LoginContent() {
+  const { localizeHref } = useLanguage();
   const {
     activeTab,
     switchTab,
@@ -35,7 +37,7 @@ function LoginContent() {
         {/* Scholar Branding & Title */}
         <div className="text-center space-y-2">
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="inline-flex w-12 h-12 rounded-xl bg-[#8A532B] text-white items-center justify-center shadow-xs mx-auto hover:bg-[#724424] active:scale-95 transition cursor-pointer"
             title="صفحه اصلی"
           >
@@ -95,7 +97,7 @@ function LoginContent() {
         {/* Back to Homepage Footer */}
         <div className="text-center pt-2">
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline inline-flex items-center gap-1"
           >
             <span>بازگشت به صفحه اصلی</span>

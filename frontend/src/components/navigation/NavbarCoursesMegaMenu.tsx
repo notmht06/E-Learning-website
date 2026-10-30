@@ -29,6 +29,7 @@ interface NavbarCoursesMegaMenuProps {
   currentLang: SupportedLang;
   dict: Record<string, string>;
   toLocale: (val: number | string) => string;
+  localizeHref?: (path: string) => string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }
@@ -66,9 +67,11 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
   currentLang,
   dict,
   toLocale,
+  localizeHref,
   onMouseEnter,
   onMouseLeave,
 }) => {
+  const toUrl = localizeHref || ((p: string) => p);
   if (!isOpen) return null;
 
   const onlineCoursesList = Object.values(courses).filter((c) => c.course_type === 'online');
@@ -132,7 +135,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
           </div>
 
           <Link
-            href="/courses"
+            href={toUrl('/courses')}
             onClick={onClose}
             className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1.5 transition-colors"
           >
@@ -157,7 +160,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                   return (
                     <Link
                       key={cat.id}
-                      href={`/courses?subject=${encodeURIComponent(cat.name)}`}
+                      href={toUrl(`/courses?subject=${encodeURIComponent(cat.name)}`)}
                       onClick={onClose}
                       className="group p-2.5 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xs flex items-center justify-between gap-2 min-w-0"
                     >
@@ -199,7 +202,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
               </div>
 
               <Link
-                href="/courses/course-falsafe-asfar-1"
+                href={toUrl('/courses/course-falsafe-asfar-1')}
                 onClick={onClose}
                 className="mt-4 w-full py-2 px-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               >
@@ -228,7 +231,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
                   return (
                     <Link
                       key={oc.id}
-                      href="/courses"
+                      href={toUrl('/courses')}
                       onClick={onClose}
                       className="group p-3 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/15 border border-transparent hover:border-[#8A532B]/30 transition block"
                     >
@@ -286,7 +289,7 @@ export const NavbarCoursesMegaMenu: React.FC<NavbarCoursesMegaMenuProps> = ({
               </div>
 
               <Link
-                href="/courses"
+                href={toUrl('/courses')}
                 onClick={onClose}
                 className="mt-4 w-full py-2 px-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold text-center transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               >

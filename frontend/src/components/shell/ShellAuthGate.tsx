@@ -22,7 +22,7 @@ export function ShellAuthGate({
   onDemoLogin,
   returnHomeLabel,
 }: ShellAuthGateProps) {
-  const { isRtl, dict } = useLanguage();
+  const { isRtl, dict, localizeHref } = useLanguage();
 
   const defaultTitle = portalType === 'admin'
     ? dict.auth_login_admin
@@ -82,7 +82,7 @@ export function ShellAuthGate({
           </button>
 
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="w-full py-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition flex items-center justify-center gap-2"
           >
             <ArrowLeft className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />

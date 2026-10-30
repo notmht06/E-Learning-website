@@ -80,7 +80,7 @@ export function CourseCard({
   onPlaySample,
   index = 0,
 }: CourseCardProps) {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { playTrack, togglePlay, currentCourse, isPlaying: playerIsPlaying } = usePlayer();
 
@@ -300,7 +300,7 @@ export function CourseCard({
 
         {/* Course Title (Exact fixed height container) */}
         <div className="h-12 flex items-start overflow-hidden">
-          <Link href={`/courses/${course.id}`} className="group/title block w-full">
+          <Link href={localizeHref(`/courses/${course.id}`)} className="group/title block w-full">
             <h3 className="line-clamp-2 text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition-colors">
               {title}
             </h3>
@@ -391,7 +391,7 @@ export function CourseCard({
             size="sm"
             className="text-xs font-bold hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-[#0C0D0E] transition-all group/btn"
           >
-            <Link href={`/courses/${course.id}`}>
+            <Link href={localizeHref(`/courses/${course.id}`)}>
               <span>{enterButtonText}</span>
               {currentLang === 'en' ? (
                 <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />

@@ -44,7 +44,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
   const { courses, categories } = useData();
-  const { currentLang, toLocale, dict, isRtl } = useLanguage();
+  const { currentLang, toLocale, dict, isRtl, localizeHref } = useLanguage();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isControlled = controlledIsOpen !== undefined;
@@ -168,7 +168,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           type: 'course',
           title: locCat?.name || cat.name,
           subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${locCat?.description || cat.description}`,
-          url: `/courses?subject=${encodeURIComponent(cat.name)}`,
+          url: localizeHref(`/courses?subject=${encodeURIComponent(cat.name)}`),
           icon: Compass,
         });
       });
@@ -182,7 +182,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         type: 'course',
         title: loc?.title || c.title_fa,
         subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${loc?.subject || c.subject} • ${loc?.duration || c.duration_fa}`,
-        url: `/courses/${c.id}`,
+        url: localizeHref(`/courses/${c.id}`),
         icon: Headphones,
       });
     });
@@ -194,7 +194,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         type: 'book',
         title: loc?.title || b.title_fa,
         subtitle: `${dict.cmd_author_label || 'مؤلف:'} ${dict.scholar_name}`,
-        url: `/books/${b.id}`,
+        url: localizeHref(`/books/${b.id}`),
         icon: BookOpen,
       });
     });
@@ -206,13 +206,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         type: 'article',
         title: loc?.title || a.title,
         subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${loc?.category || a.category} • ${loc?.readTime || a.readTime}`,
-        url: `/articles/${a.slug}`,
+        url: localizeHref(`/articles/${a.slug}`),
         icon: FileText,
       });
     });
 
     return list;
-  }, [q, categories, matchedCourses, matchedBooks, matchedArticles, currentLang, dict]);
+  }, [q, categories, matchedCourses, matchedBooks, matchedArticles, currentLang, dict, localizeHref]);
 
   // Arrow key navigation & Enter trigger
   useEffect(() => {
@@ -311,7 +311,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <button
                       key={cat.id}
                       onClick={() => {
-                        router.push(`/courses?subject=${encodeURIComponent(cat.name)}`);
+                        router.push(localizeHref(`/courses?subject=${encodeURIComponent(cat.name)}`));
                         handleClose();
                       }}
                       onMouseEnter={() => setSelectedIndex(idx)}
@@ -363,7 +363,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <div
                         key={c.id}
                         onClick={() => {
-                          router.push(`/courses/${c.id}`);
+                          router.push(localizeHref(`/courses/${c.id}`));
                           handleClose();
                         }}
                         onMouseEnter={() => setSelectedIndex(itemIndex)}
@@ -422,7 +422,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <div
                         key={b.id}
                         onClick={() => {
-                          router.push(`/books/${b.id}`);
+                          router.push(localizeHref(`/books/${b.id}`));
                           handleClose();
                         }}
                         onMouseEnter={() => setSelectedIndex(itemIndex)}
@@ -481,7 +481,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <div
                         key={a.id}
                         onClick={() => {
-                          router.push(`/articles/${a.slug}`);
+                          router.push(localizeHref(`/articles/${a.slug}`));
                           handleClose();
                         }}
                         onMouseEnter={() => setSelectedIndex(itemIndex)}

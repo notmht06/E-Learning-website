@@ -32,7 +32,7 @@ const FOLDER_SPRING = {
 export function CourseFolderPreview({ course, className = '' }: CourseFolderPreviewProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
 
   const loc = getLocalizedCourse(course, currentLang);
   const title = loc?.title || course.title_fa;
@@ -151,7 +151,7 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
             <div className="space-y-2">
               {/* 1. PDF Handouts & Syllabus */}
               <Link
-                href={`/courses/${course.id}#syllabus`}
+                href={localizeHref(`/courses/${course.id}#syllabus`)}
                 onClick={() => setIsOpen(false)}
                 className="group flex items-start gap-2.5 rounded-xl border border-[#ECE8E0] bg-white/80 p-2.5 transition-colors hover:border-[#8A532B]/60 dark:border-[#202228] dark:bg-[#18191D] dark:hover:border-[#C58B43]/60"
               >

@@ -6,7 +6,7 @@ import { ArrowLeft, Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function TopAnnouncementBanner() {
-  const { currentLang, isRtl } = useLanguage();
+  const { currentLang, isRtl, localizeHref } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export function TopAnnouncementBanner() {
         {/* Right Side: Action Link + Close Button */}
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <Link
-            href="/courses/course-falsafe-asfar-1"
+            href={localizeHref('/courses/course-falsafe-asfar-1')}
             className="inline-flex items-center gap-1 font-bold text-[#E6CA85] hover:text-white transition-colors text-[11px] sm:text-xs"
           >
             <span>{content.action}</span>

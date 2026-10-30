@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { CourseCategory, SupportedLang } from '@/lib/data';
 import { getLocalizedCategory } from '@/lib/localization';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface NavbarMobileDrawerProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface NavbarMobileDrawerProps {
   onThemeToggle?: () => void;
   categories: CourseCategory[];
   dict: Record<string, string>;
+  localizeHref?: (path: string) => string;
 }
 
 export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
@@ -37,7 +39,10 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
   onThemeToggle,
   categories,
   dict,
+  localizeHref: propLocalizeHref,
 }) => {
+  const { localizeHref: contextLocalizeHref } = useLanguage();
+  const toUrl = propLocalizeHref || contextLocalizeHref || ((p: string) => p);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>('courses');
 
   if (!isOpen) return null;
@@ -61,7 +66,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
         </button>
         {isAuthenticated ? (
           <Link
-            href="/dashboard"
+            href={toUrl('/dashboard')}
             onClick={onClose}
             className="px-3 py-2 rounded-xl bg-[#8A532B] text-white text-xs font-bold flex items-center gap-2"
           >
@@ -70,7 +75,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           </Link>
         ) : (
           <Link
-            href="/login"
+            href={toUrl('/login')}
             onClick={onClose}
             className="px-3 py-2 rounded-xl bg-[#8A532B] text-white text-xs font-bold flex items-center gap-2"
           >
@@ -82,7 +87,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
 
       <div className="space-y-1">
         <Link
-          href="/"
+          href={toUrl('/')}
           onClick={onClose}
           className="block px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.05]"
         >
@@ -109,7 +114,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           {mobileAccordion === 'courses' && (
             <div className="ps-4 pe-2 pt-2 space-y-2 border-s-2 border-book-accent/30 ms-4 mt-1">
               <Link
-                href="/courses"
+                href={toUrl('/courses')}
                 onClick={onClose}
                 className="block text-xs font-bold text-book-accent py-1"
               >
@@ -124,7 +129,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
                   return (
                     <Link
                       key={c.id}
-                      href={`/courses?subject=${encodeURIComponent(c.name)}`}
+                      href={toUrl(`/courses?subject=${encodeURIComponent(c.name)}`)}
                       onClick={onClose}
                       className="text-xs text-book-text dark:text-stone-300 py-1 px-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.03] block"
                     >
@@ -138,7 +143,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
         </div>
 
         <Link
-          href="/roadmap"
+          href={toUrl('/roadmap')}
           onClick={onClose}
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >
@@ -147,7 +152,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
         </Link>
 
         <Link
-          href="/articles"
+          href={toUrl('/articles')}
           onClick={onClose}
           className="block px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >
@@ -155,7 +160,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
         </Link>
 
         <Link
-          href="/books"
+          href={toUrl('/books')}
           onClick={onClose}
           className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >

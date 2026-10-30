@@ -30,7 +30,7 @@ import { useCart } from '@/context/CartContext';
 import { SCHOLAR_NAME } from '@/lib/constants';
 
 export default function ArticlesPage() {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
   const [search, setSearch] = useState('');
@@ -94,7 +94,7 @@ export default function ArticlesPage() {
         {/* Header */}
         <div className="border-b border-[#E6E1D8] dark:border-[#22242A] pb-5 space-y-2">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+            <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
               {dict.nav_home || 'صفحه نخست'}
             </Link>
             <span>/</span>
@@ -210,7 +210,7 @@ export default function ArticlesPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <Link href={`/articles/${art.slug}`} className="block">
+                      <Link href={localizeHref(`/articles/${art.slug}`)} className="block">
                         <CardTitle className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5] hover:text-[#8A532B] dark:hover:text-[#C58B43] leading-snug line-clamp-2 min-h-[2.75rem] transition">
                           {artTitle}
                         </CardTitle>
@@ -255,7 +255,7 @@ export default function ArticlesPage() {
                         size="sm"
                         className="text-xs font-bold gap-1.5"
                       >
-                        <Link href={`/articles/${art.slug}`}>
+                        <Link href={localizeHref(`/articles/${art.slug}`)}>
                           <span>
                             {currentLang === 'en'
                               ? 'Read Full Treatise'

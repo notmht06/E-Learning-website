@@ -18,6 +18,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { AudioCourse } from '@/lib/data';
+import { useLanguage } from '@/context/LanguageContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
@@ -97,6 +98,7 @@ export function CourseDetailHero({
   toLocale,
 }: CourseDetailHeroProps) {
   const { playTrack, togglePlay, currentCourse, isPlaying } = usePlayer();
+  const { localizeHref } = useLanguage();
   const disciplineBanner = getDisciplineBanner(course.subject, currentLang);
   const isCurrentPlaying = isPlaying && currentCourse?.id === course.id;
 
@@ -156,16 +158,16 @@ export function CourseDetailHero({
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
       <nav aria-label="نشانی مسیر" className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-        <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+        <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
           {t.home}
         </Link>
         <span>/</span>
-        <Link href="/courses" className="hover:text-zinc-700 dark:hover:text-zinc-200">
+        <Link href={localizeHref('/courses')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
           {t.courses}
         </Link>
         <span>/</span>
         <Link
-          href={`/courses?subject=${encodeURIComponent(course.subject)}`}
+          href={localizeHref(`/courses?subject=${encodeURIComponent(course.subject)}`)}
           className="hover:text-zinc-700 dark:hover:text-zinc-200 text-[#8A532B] dark:text-[#C58B43]"
         >
           {disciplineBanner.label}
@@ -366,7 +368,7 @@ export function CourseDetailHero({
             {/* Primary Action Button */}
             {isEnrolled ? (
               <Link
-                href={`/courses/${course.id}/learn`}
+                href={localizeHref(`/courses/${course.id}/learn`)}
                 onClick={() => triggerTactileHaptic('tick')}
                 className="w-full py-3 px-5 rounded-2xl bg-[#8A532B] hover:bg-[#724423] dark:bg-[#C58B43] dark:hover:bg-[#B37932] text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               >

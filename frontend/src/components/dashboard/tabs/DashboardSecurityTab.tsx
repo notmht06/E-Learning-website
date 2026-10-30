@@ -28,7 +28,7 @@ interface ActiveDeviceItem {
 export function DashboardSecurityTab() {
   const { drmSessions } = useData();
   const { user, logout } = useAuth();
-  const { toLocale, currentLang } = useLanguage();
+  const { toLocale, currentLang, localizeHref } = useLanguage();
 
   const [devices, setDevices] = useState<ActiveDeviceItem[]>([]);
   const [maxDevices, setMaxDevices] = useState<number>(3);
@@ -87,7 +87,7 @@ export function DashboardSecurityTab() {
       if (isCurrentDevice) {
         logout();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.href = localizeHref('/login');
         }
       }
     } catch (err) {

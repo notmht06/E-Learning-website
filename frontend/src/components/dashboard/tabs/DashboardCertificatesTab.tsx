@@ -20,7 +20,7 @@ interface CertItem {
 }
 
 export function DashboardCertificatesTab() {
-  const { currentLang } = useLanguage();
+  const { currentLang, localizeHref } = useLanguage();
   const { courses } = useData();
   const [certs, setCerts] = useState<CertItem[]>([]);
 
@@ -193,7 +193,7 @@ export function DashboardCertificatesTab() {
               </span>
               <div className="flex items-center gap-2">
                 <Link
-                  href={`/verify/${encodeURIComponent(cert.id)}`}
+                  href={localizeHref(`/verify/${encodeURIComponent(cert.id)}`)}
                   className="px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-[#8A532B] text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs"
                 >
                   <QrCode className="w-3.5 h-3.5 text-[#8A532B]" />

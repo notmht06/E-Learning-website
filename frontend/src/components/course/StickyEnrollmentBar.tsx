@@ -25,7 +25,7 @@ export function StickyEnrollmentBar({
   onEnroll,
 }: StickyEnrollmentBarProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,7 +95,7 @@ export function StickyEnrollmentBar({
           {/* Action Button */}
           {isEnrolled ? (
             <Link
-              href={`/courses/${course.id}/learn`}
+              href={localizeHref(`/courses/${course.id}/learn`)}
               onClick={() => triggerTactileHaptic('tick')}
               className="px-4 sm:px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724423] dark:bg-[#C58B43] dark:hover:bg-[#B37932] text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer"
             >

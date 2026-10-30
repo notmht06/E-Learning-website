@@ -20,7 +20,7 @@ import { useCart } from '@/context/CartContext';
 import { getScholarName } from '@/lib/constants';
 
 export default function HomePage() {
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
   const { courses, categories } = useData();
   const {
     items: cartItems,
@@ -95,16 +95,16 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-6 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-            <Link href="/courses" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
+            <Link href={localizeHref('/courses')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_courses || 'دوره‌ها'}
             </Link>
-            <Link href="/books" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
+            <Link href={localizeHref('/books')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_books || 'کتب'}
             </Link>
-            <Link href="/articles" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
+            <Link href={localizeHref('/articles')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_articles || 'مقالات علمی'}
             </Link>
-            <Link href="/roadmap" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
+            <Link href={localizeHref('/roadmap')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_roadmap || 'سیر مطالعاتی'}
             </Link>
           </div>

@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 import { AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 
 export default function GlobalErrorPage({
@@ -11,6 +12,7 @@ export default function GlobalErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { localizeHref } = useLanguage();
   useEffect(() => {
     console.error('Hayat Runtime Error:', error);
   }, [error]);
@@ -45,7 +47,7 @@ export default function GlobalErrorPage({
           </button>
 
           <Link
-            href="/"
+            href={localizeHref('/')}
             className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#E6E1D8] dark:border-[#262830] text-xs font-bold flex items-center justify-center gap-2 hover:border-[#8A532B] transition"
           >
             <span>صفحه نخست</span>

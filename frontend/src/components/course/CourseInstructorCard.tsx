@@ -18,7 +18,7 @@ interface CourseInstructorCardProps {
 }
 
 export function CourseInstructorCard({ className = '' }: CourseInstructorCardProps) {
-  const { currentLang, dict } = useLanguage();
+  const { currentLang, dict, localizeHref } = useLanguage();
 
   const scholarName =
     currentLang === 'en'
@@ -111,7 +111,7 @@ export function CourseInstructorCard({ className = '' }: CourseInstructorCardPro
       {/* Action Link */}
       <div className="pt-2">
         <Link
-          href="/courses"
+          href={localizeHref('/courses')}
           onClick={() => triggerTactileHaptic('tick')}
           className="inline-flex items-center gap-2 text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline cursor-pointer"
         >

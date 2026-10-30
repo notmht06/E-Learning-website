@@ -39,7 +39,7 @@ interface ArticleDetailClientProps {
 }
 
 export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { courses } = useData();
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
@@ -189,12 +189,12 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4 text-xs print:hidden"
         >
           <div className="flex items-center gap-2 font-mono text-zinc-500">
-            <Link href="/" className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition">
+            <Link href={localizeHref('/')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition">
               {dict.nav_home || 'صفحه نخست'}
             </Link>
             <span>/</span>
             <Link
-              href="/articles"
+              href={localizeHref('/articles')}
               className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
             >
               {dict.nav_articles || 'مقالات علمی'}
@@ -204,7 +204,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           </div>
 
           <Link
-            href="/articles"
+            href={localizeHref('/articles')}
             className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
           >
             <span>
@@ -397,7 +397,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
               </span>
             </h2>
             <Link
-              href="/courses"
+              href={localizeHref('/courses')}
               className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1"
             >
               <span>{dict.courses_view_all || 'مشاهده همه دوره‌ها'}</span>
@@ -411,7 +411,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
               return (
                 <Link
                   key={rc.id}
-                  href={`/courses/${rc.id}`}
+                  href={localizeHref(`/courses/${rc.id}`)}
                   className="group block"
                 >
                   <Card className="p-5 h-full flex flex-col justify-between gap-3 hover:border-[#8A532B] dark:hover:border-[#C58B43] transition">

@@ -26,7 +26,7 @@ function isCourseEnrolled(courseId: string, enrolledIds: string[]): boolean {
 export function DashboardCoursesTab() {
   const { user } = useAuth();
   const { courses } = useData();
-  const { toLocale, currentLang, dict } = useLanguage();
+  const { toLocale, currentLang, dict, localizeHref } = useLanguage();
 
   const enrolledCourseIds = user?.enrolledCourseIds || [];
   const allCourses = Object.values(courses);
@@ -96,7 +96,7 @@ export function DashboardCoursesTab() {
             {emptyDesc}
           </p>
           <Link
-            href="/courses"
+            href={localizeHref('/courses')}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition"
           >
             <BookOpen className="w-4 h-4" />
@@ -168,13 +168,13 @@ export function DashboardCoursesTab() {
 
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/courses/${course.id}`}
+                      href={localizeHref(`/courses/${course.id}`)}
                       className="px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                     >
                       {syllabusBtnLabel}
                     </Link>
                     <Link
-                      href={`/courses/${course.id}/learn`}
+                      href={localizeHref(`/courses/${course.id}/learn`)}
                       className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2"
                     >
                       <Play className="w-3.5 h-3.5 fill-current ps-0.5" />

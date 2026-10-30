@@ -40,7 +40,7 @@ interface DiscoursePlayerSectionProps {
 export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
   initialCourseId = 'course-falsafe-asfar-1',
 }) => {
-  const { dict, toLocale, isRtl, currentLang } = useLanguage();
+  const { dict, toLocale, isRtl, currentLang, localizeHref } = useLanguage();
   const { user, isAuthenticated } = useAuth();
   const {
     currentCourse,
@@ -470,7 +470,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
             {/* Course Link Footer */}
             <div className="pt-2 border-t border-zinc-200/80 dark:border-zinc-800">
               <Link
-                href={`/courses/${featuredCourse.id}`}
+                href={localizeHref(`/courses/${featuredCourse.id}`)}
                 className="w-full py-2.5 px-4 rounded-2xl bg-zinc-900 hover:bg-black text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs"
               >
                 <span>{dict.discourse_view_course_full || 'مشاهده کامل دوره و ثبت‌نام'}</span>

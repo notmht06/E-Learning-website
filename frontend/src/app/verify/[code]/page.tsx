@@ -47,7 +47,7 @@ export default function CertificateVerifyPage({
     safeCertCode = (resolvedParams.code || '').trim();
   }
 
-  const { currentLang } = useLanguage();
+  const { currentLang, localizeHref } = useLanguage();
 
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -301,7 +301,7 @@ export default function CertificateVerifyPage({
           {/* Action Link */}
           <div className="pt-2">
             <Link
-              href="/"
+              href={localizeHref('/')}
               className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs"
             >
               <span>بازگشت به صفحه نخست حیات</span>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { PlayerProvider } from '@/context/PlayerContext';
@@ -39,11 +39,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
+  const headerList = await headers();
   const themeCookie = cookieStore.get('zan_theme')?.value;
   const langCookie = cookieStore.get('zan_lang')?.value;
+  const headerLocale = headerList.get('x-zan-locale');
 
   const initialLang: SupportedLang =
-    langCookie === 'en' || langCookie === 'ar' || langCookie === 'fa' ? langCookie : 'fa';
+    headerLocale === 'en' || headerLocale === 'ar' || headerLocale === 'fa'
+      ? headerLocale
+      : langCookie === 'en' || langCookie === 'ar' || langCookie === 'fa'
+      ? langCookie
+      : 'fa';
   const initialDir = initialLang === 'en' ? 'ltr' : 'rtl';
   const initialTheme: Theme = themeCookie === 'dark' ? 'dark' : 'light';
 

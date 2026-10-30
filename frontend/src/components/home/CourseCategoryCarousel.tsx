@@ -32,7 +32,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 };
 
 export function CourseCategoryCarousel() {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { categories, courses } = useData();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -90,7 +90,7 @@ export function CourseCategoryCarousel() {
         {/* Desktop Carousel Controls & View All Link */}
         <div className="flex items-center gap-3 shrink-0">
           <Link
-            href="/courses"
+            href={localizeHref('/courses')}
             className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1 group/all py-1.5 px-3 rounded-lg hover:bg-[#8A532B]/10 transition-colors"
           >
             <span>{dict.courses_view_all || 'مشاهده کل کاتالوگ'}</span>
@@ -136,7 +136,7 @@ export function CourseCategoryCarousel() {
           return (
             <Link
               key={cat.id}
-              href={`/courses?subject=${encodeURIComponent(cat.name)}`}
+              href={localizeHref(`/courses?subject=${encodeURIComponent(cat.name)}`)}
               className="snap-start shrink-0 w-[240px] sm:w-[260px] rounded-2xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#141518] p-4 sm:p-5 flex flex-col justify-between hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group cursor-pointer"
             >
               {/* Card Header: Icon & Course Count Pill */}
