@@ -105,7 +105,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
             </span>
           </div>
 
-          <Link href={`/courses/${course.id}`} className="block">
+          <Link href={localizeHref(`/courses/${course.id}`)} className="block">
             <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition line-clamp-1">
               {title}
             </h4>

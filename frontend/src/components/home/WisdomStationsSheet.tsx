@@ -162,7 +162,7 @@ const STATIONS: StationItem[] = [
 ];
 
 export const WisdomStationsSheet: React.FC = () => {
-  const { dict, toLocale, isRtl, currentLang } = useLanguage();
+  const { dict, toLocale, isRtl, currentLang, localizeHref } = useLanguage();
   const { playTrack, currentCourse, isPlaying } = usePlayer();
   const [selectedStationId, setSelectedStationId] = useState<string>('all');
 
@@ -361,7 +361,7 @@ export const WisdomStationsSheet: React.FC = () => {
                   </Button>
 
                   <Button asChild variant="link" size="sm" className="p-0 text-xs font-bold gap-1">
-                    <Link href={`/courses/${station.courseId}`}>
+                    <Link href={localizeHref(`/courses/${station.courseId}`)}>
                       <span>{dict.stations_btn_view_course || 'مشاهده سرفصل‌ها'}</span>
                       <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                     </Link>

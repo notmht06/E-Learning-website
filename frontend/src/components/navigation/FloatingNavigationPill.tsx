@@ -159,9 +159,8 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             onMouseEnter={handleMouseEnterCourses}
             onMouseLeave={handleMouseLeaveCourses}
           >
-            <button
-              type="button"
-              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            <Link
+              href={localizeHref('/courses')}
               className={`inline-flex items-center justify-center h-8 px-3 rounded-full transition-colors gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
                 isMegaMenuOpen
                   ? 'bg-black/5 dark:bg-white/5 text-[#8A532B] dark:text-[#C58B43] font-bold'
@@ -174,7 +173,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                   isMegaMenuOpen ? 'rotate-180 text-[#8A532B] dark:text-[#C58B43]' : ''
                 }`}
               />
-            </button>
+            </Link>
           </div>
 
           {/* 3. Curriculum Roadmap */}

@@ -16,7 +16,7 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, onOpenReader, onAddToBag }: BookCardProps) {
-  const { currentLang, dict, toLocale } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const bookmarked = isBookmarked(book.id);
 
@@ -193,7 +193,7 @@ export function BookCard({ book, onOpenReader, onAddToBag }: BookCardProps) {
             </span>
           </div>
 
-          <Link href={`/books/${book.id}`} className="block group/title">
+          <Link href={localizeHref(`/books/${book.id}`)} className="block group/title">
             <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 line-clamp-1 group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition">
               {title}
             </h3>
@@ -241,7 +241,7 @@ export function BookCard({ book, onOpenReader, onAddToBag }: BookCardProps) {
           </button>
         ) : (
           <Link
-            href={`/books/${book.id}`}
+            href={localizeHref(`/books/${book.id}`)}
             className="py-2 px-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 text-center group/btn"
           >
             <span className="truncate">{orderText}</span>

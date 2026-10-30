@@ -327,7 +327,7 @@ export default function ArticlesPage() {
               </button>
 
               <Link
-                href={`/articles/${selectedArticle.slug}`}
+                href={localizeHref(`/articles/${selectedArticle.slug}`)}
                 onClick={() => setSelectedArticle(null)}
                 className="px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold flex items-center gap-2 transition"
               >

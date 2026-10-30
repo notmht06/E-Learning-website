@@ -58,7 +58,15 @@ export const LanguageProvider: React.FC<{
         path.startsWith('#') ||
         path.startsWith('mailto:') ||
         path.startsWith('tel:') ||
-        path.startsWith('javascript:')
+        path.startsWith('javascript:') ||
+        path.startsWith('/api') ||
+        path.startsWith('/stream') ||
+        path.startsWith('/_next') ||
+        path.startsWith('/static') ||
+        path.startsWith('/images') ||
+        path.startsWith('/fonts') ||
+        path.startsWith('/audio') ||
+        path.startsWith('/sample-books')
       ) {
         return path;
       }
@@ -69,6 +77,13 @@ export const LanguageProvider: React.FC<{
         const query = clean.slice(1);
         if (currentLang === 'en') return `/en${query}`;
         if (currentLang === 'ar') return `/ar${query}`;
+        return clean;
+      }
+
+      if (clean.startsWith('/#')) {
+        const hash = clean.slice(1);
+        if (currentLang === 'en') return `/en${hash}`;
+        if (currentLang === 'ar') return `/ar${hash}`;
         return clean;
       }
 
@@ -106,6 +121,23 @@ export const LanguageProvider: React.FC<{
         setCookie('zan_lang', initialLang);
       }
 
+      const originalPushState = window.history.pushState;
+      const originalReplaceState = window.history.replaceState;
+
+      window.history.pushState = function (state: any, title: string, url?: string | URL | null) {
+        if (url && typeof url === 'string') {
+          url = localizeHref(url);
+        }
+        return originalPushState.apply(this, [state, title, url]);
+      };
+
+      window.history.replaceState = function (state: any, title: string, url?: string | URL | null) {
+        if (url && typeof url === 'string') {
+          url = localizeHref(url);
+        }
+        return originalReplaceState.apply(this, [state, title, url]);
+      };
+
       const handlePopState = () => {
         const currentUrlLocale = detectUrlLocale();
         if (currentUrlLocale && (currentUrlLocale === 'fa' || currentUrlLocale === 'ar' || currentUrlLocale === 'en')) {
@@ -119,22 +151,30 @@ export const LanguageProvider: React.FC<{
             console.warn(e);
           }
         } else if (!currentUrlLocale) {
-          setCurrentLangState('fa');
-          document.documentElement.lang = 'fa';
-          document.documentElement.dir = 'rtl';
-          setCookie('zan_lang', 'fa');
-          try {
-            localStorage.setItem('zan_lang', 'fa');
-          } catch (e) {
-            console.warn(e);
+          const saved = (getCookie('zan_lang') as SupportedLang) || 'fa';
+          if (saved === 'en' || saved === 'ar') {
+            setCurrentLangState(saved);
+            document.documentElement.lang = saved;
+            document.documentElement.dir = saved === 'en' ? 'ltr' : 'rtl';
+            const cleanPath = window.location.pathname;
+            const search = window.location.search;
+            const hash = window.location.hash;
+            originalReplaceState.call(window.history, {}, '', `/${saved}${cleanPath === '/' ? '' : cleanPath}${search}${hash}`);
+          } else {
+            setCurrentLangState('fa');
+            document.documentElement.lang = 'fa';
+            document.documentElement.dir = 'rtl';
+            setCookie('zan_lang', 'fa');
+            try {
+              localStorage.setItem('zan_lang', 'fa');
+            } catch (e) {
+              console.warn(e);
+            }
           }
         }
       };
 
-      const handleDocumentClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement | null;
-        if (!target) return;
-        const anchor = target.closest('a');
+      const patchAnchorHref = (anchor: HTMLAnchorElement | null) => {
         if (!anchor) return;
         const rawHref = anchor.getAttribute('href');
         if (
@@ -147,7 +187,12 @@ export const LanguageProvider: React.FC<{
           rawHref.startsWith('javascript:') ||
           rawHref.startsWith('/api') ||
           rawHref.startsWith('/stream') ||
-          rawHref.startsWith('/_next')
+          rawHref.startsWith('/_next') ||
+          rawHref.startsWith('/static') ||
+          rawHref.startsWith('/images') ||
+          rawHref.startsWith('/fonts') ||
+          rawHref.startsWith('/audio') ||
+          rawHref.startsWith('/sample-books')
         ) {
           return;
         }
@@ -157,12 +202,30 @@ export const LanguageProvider: React.FC<{
         }
       };
 
+      const handleDocumentClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+        const anchor = target.closest('a');
+        patchAnchorHref(anchor);
+      };
+
+      const handleDocumentMouseOver = (e: MouseEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+        const anchor = target.closest('a');
+        patchAnchorHref(anchor);
+      };
+
       window.addEventListener('popstate', handlePopState);
       document.addEventListener('click', handleDocumentClick, true);
+      document.addEventListener('mouseover', handleDocumentMouseOver, true);
 
       return () => {
+        window.history.pushState = originalPushState;
+        window.history.replaceState = originalReplaceState;
         window.removeEventListener('popstate', handlePopState);
         document.removeEventListener('click', handleDocumentClick, true);
+        document.removeEventListener('mouseover', handleDocumentMouseOver, true);
       };
     }
   }, [initialLang, localizeHref]);
@@ -248,4 +311,9 @@ export const useLanguage = (): LanguageContextType => {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
+};
+
+export const useLocalizedPath = () => {
+  const { localizeHref, currentLang, isRtl } = useLanguage();
+  return { localizeHref, currentLang, isRtl };
 };

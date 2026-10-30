@@ -9,3 +9,4 @@ export * from './slider';
 export * from './scroll-area';
 export * from './accordion';
 export * from './FeedbackStates';
+export * from '../LocalizedLink';

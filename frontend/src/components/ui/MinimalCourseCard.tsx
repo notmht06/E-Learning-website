@@ -17,6 +17,7 @@ import { ShadcnBadge } from '@/components/ui/ShadcnBadge';
 import { AudioCourse, toLocaleDigits, SupportedLang } from '@/lib/data';
 import { getLocalizedCourse } from '@/lib/localization';
 import { SCHOLAR_NAME } from '@/lib/constants';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface MinimalCourseCardProps {
   course: AudioCourse;
@@ -32,8 +33,8 @@ interface MinimalCourseCardProps {
 
 export function MinimalCourseCard({
   course,
-  currentLang = 'fa',
-  dict = {},
+  currentLang: propLang,
+  dict: propDict,
   isPlaying = false,
   onPlaySample,
   statusBadgeText,
@@ -41,6 +42,9 @@ export function MinimalCourseCard({
   progressPercent,
   showProgress,
 }: MinimalCourseCardProps) {
+  const { currentLang: ctxLang, dict: ctxDict, localizeHref } = useLanguage();
+  const currentLang = propLang || ctxLang;
+  const dict = propDict && Object.keys(propDict).length > 0 ? propDict : ctxDict;
   const loc = getLocalizedCourse(course, currentLang);
   const title = loc?.title || course.title_fa;
   const isOnline = course.course_type === 'online';
@@ -116,7 +120,7 @@ export function MinimalCourseCard({
         {/* Course Details (Title, Instructor, Session Meta, Progress Bar if enrolled) */}
         <div className="flex-1 min-w-0 space-y-2 w-full">
           
-          <Link href={`/courses/${course.id}`} className="group/link block">
+          <Link href={localizeHref(`/courses/${course.id}`)} className="group/link block">
             <h3 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 group-hover/link:text-[#8A532B] dark:group-hover/link:text-[#C58B43] transition leading-snug truncate">
               {title}
             </h3>
@@ -195,7 +199,7 @@ export function MinimalCourseCard({
 
         {/* Primary Action Button (Matching Reference Screenshot) */}
         <Link
-          href={hasProgress ? `/courses/${course.id}/learn?session=${currentSessionNumber}` : `/courses/${course.id}`}
+          href={localizeHref(hasProgress ? `/courses/${course.id}/learn?session=${currentSessionNumber}` : `/courses/${course.id}`)}
           className="px-5 py-3 sm:px-6 sm:py-3 rounded-full bg-[#8A532B] hover:bg-[#724320] dark:bg-[#9E5F2E] dark:hover:bg-[#8A532B] text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow-md transition active:scale-95 flex items-center gap-2 cursor-pointer group/action"
         >
           <BookOpen className="w-4 h-4 shrink-0" />
