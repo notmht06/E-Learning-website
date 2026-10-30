@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   type SupportedLang,
   type Dictionary,
@@ -52,9 +52,26 @@ export const LanguageProvider: React.FC<{
   const localizeHref = useCallback(
     (path: string): string => {
       if (!path) return path;
+
+      // Handle full absolute URLs (e.g. http://localhost:3000/courses or https://zanjirzan.ir/courses)
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        try {
+          const origin = typeof window !== 'undefined' ? window.location.origin : 'https://zanjirzan.ir';
+          const parsed = new URL(path, origin);
+          const isSameOrigin = typeof window !== 'undefined'
+            ? parsed.origin === window.location.origin
+            : (parsed.hostname === 'zanjirzan.ir' || parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+
+          if (!isSameOrigin) {
+            return path;
+          }
+          path = parsed.pathname + parsed.search + parsed.hash;
+        } catch {
+          return path;
+        }
+      }
+
       if (
-        path.startsWith('http://') ||
-        path.startsWith('https://') ||
         path.startsWith('#') ||
         path.startsWith('mailto:') ||
         path.startsWith('tel:') ||
@@ -94,6 +111,11 @@ export const LanguageProvider: React.FC<{
     [currentLang]
   );
 
+  const localizeHrefRef = useRef(localizeHref);
+  useEffect(() => {
+    localizeHrefRef.current = localizeHref;
+  }, [localizeHref]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlLocale = detectUrlLocale();
@@ -124,18 +146,26 @@ export const LanguageProvider: React.FC<{
       const originalPushState = window.history.pushState;
       const originalReplaceState = window.history.replaceState;
 
-      window.history.pushState = function (state: any, title: string, url?: string | URL | null) {
-        if (url && typeof url === 'string') {
-          url = localizeHref(url);
+      const localizeUrlArg = (url?: string | URL | null): string | URL | null | undefined => {
+        if (!url) return url;
+        if (typeof url === 'string') {
+          return localizeHrefRef.current(url);
         }
-        return originalPushState.apply(this, [state, title, url]);
+        if (typeof url === 'object' && url instanceof URL) {
+          const localized = localizeHrefRef.current(url.pathname + url.search + url.hash);
+          return new URL(localized, url.origin);
+        }
+        return url;
+      };
+
+      window.history.pushState = function (state: any, title: string, url?: string | URL | null) {
+        const target = localizeUrlArg(url);
+        return originalPushState.apply(this, [state, title, target]);
       };
 
       window.history.replaceState = function (state: any, title: string, url?: string | URL | null) {
-        if (url && typeof url === 'string') {
-          url = localizeHref(url);
-        }
-        return originalReplaceState.apply(this, [state, title, url]);
+        const target = localizeUrlArg(url);
+        return originalReplaceState.apply(this, [state, title, target]);
       };
 
       const handlePopState = () => {
@@ -177,26 +207,8 @@ export const LanguageProvider: React.FC<{
       const patchAnchorHref = (anchor: HTMLAnchorElement | null) => {
         if (!anchor) return;
         const rawHref = anchor.getAttribute('href');
-        if (
-          !rawHref ||
-          rawHref.startsWith('http://') ||
-          rawHref.startsWith('https://') ||
-          rawHref.startsWith('#') ||
-          rawHref.startsWith('mailto:') ||
-          rawHref.startsWith('tel:') ||
-          rawHref.startsWith('javascript:') ||
-          rawHref.startsWith('/api') ||
-          rawHref.startsWith('/stream') ||
-          rawHref.startsWith('/_next') ||
-          rawHref.startsWith('/static') ||
-          rawHref.startsWith('/images') ||
-          rawHref.startsWith('/fonts') ||
-          rawHref.startsWith('/audio') ||
-          rawHref.startsWith('/sample-books')
-        ) {
-          return;
-        }
-        const localized = localizeHref(rawHref);
+        if (!rawHref) return;
+        const localized = localizeHrefRef.current(rawHref);
         if (localized !== rawHref) {
           anchor.setAttribute('href', localized);
         }
@@ -228,7 +240,7 @@ export const LanguageProvider: React.FC<{
         document.removeEventListener('mouseover', handleDocumentMouseOver, true);
       };
     }
-  }, [initialLang, localizeHref]);
+  }, [initialLang]);
 
   const setLanguage = useCallback((lang: SupportedLang) => {
     setCurrentLangState(lang);

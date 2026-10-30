@@ -9,6 +9,7 @@ import {
   Globe,
   Check,
   ChevronDown,
+  Home,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { SupportedLang } from '@/lib/data';
@@ -38,7 +39,7 @@ export function ShellHeader({
   userRole,
   onOpenMobileNav,
 }: ShellHeaderProps) {
-  const { currentLang, setLanguage } = useLanguage();
+  const { currentLang, setLanguage, localizeHref } = useLanguage();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +100,18 @@ export function ShellHeader({
             {getScholarName(currentLang)}
           </span>
         </div>
+
+        {/* Quick Link to Main Website */}
+        <Link
+          href={localizeHref('/')}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition text-xs font-medium"
+          title={currentLang === 'en' ? 'Main Website' : currentLang === 'ar' ? 'الموقع الرئيسي' : 'صفحه اصلی سایت'}
+        >
+          <Home className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+          <span className="hidden sm:inline">
+            {currentLang === 'en' ? 'Main Site' : currentLang === 'ar' ? 'الموقع الرئيسي' : 'صفحه اصلی'}
+          </span>
+        </Link>
 
         {/* Language Switcher Dropdown */}
         <div className="relative" ref={langRef}>

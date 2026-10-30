@@ -13,7 +13,15 @@ export interface LocalizedLinkProps
 export const LocalizedLink = forwardRef<HTMLAnchorElement, LocalizedLinkProps>(
   ({ href, ...props }, ref) => {
     const { localizeHref } = useLanguage();
-    const targetHref = typeof href === 'string' ? localizeHref(href) : href;
+    let targetHref = href;
+    if (typeof href === 'string') {
+      targetHref = localizeHref(href);
+    } else if (typeof href === 'object' && href !== null && href.pathname) {
+      targetHref = {
+        ...href,
+        pathname: localizeHref(href.pathname),
+      };
+    }
 
     return (
       <NextLink
