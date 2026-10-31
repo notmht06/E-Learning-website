@@ -150,6 +150,41 @@ class BookService:
                 book[k] = v
         return book
 
+    def create_book(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Creates and appends a new book to catalog."""
+        book_id = data.get("id") or f"book-{len(self.books) + 1}"
+        new_book = {
+            "id": book_id,
+            "title": data.get("title", "کتاب جدید"),
+            "subtitle": data.get("subtitle", ""),
+            "author": data.get("author", "حجت الاسلام دکتر زنجیر زن حسینی"),
+            "publisher": data.get("publisher", "انتشارات حیات"),
+            "print_edition": data.get("print_edition", "چاپ اول"),
+            "pages_count": data.get("pages_count", 350),
+            "isbn": data.get("isbn", "978-600-1234-56-7"),
+            "price": str(data.get("price", "۳۵۰,۰۰۰")),
+            "physical_price": str(data.get("physical_price", "۳۹۰,۰۰۰")),
+            "stock": data.get("stock", 50),
+            "format": data.get("format", "نسخه چاپی و دیجیتال"),
+            "cover_image": data.get("cover_image", "/images/book_cover_real.jpg"),
+            "sample_pdf_url": data.get("sample_pdf_url", f"/sample-books/{book_id}.pdf"),
+            "fidibo_reader_url": data.get("fidibo_reader_url", f"/books/{book_id}"),
+            "synopsis": data.get("synopsis", ""),
+            "is_coming_soon": data.get("is_coming_soon", False),
+            "table_of_contents": data.get("table_of_contents", []),
+            "sample_reading": data.get("sample_reading", []),
+        }
+        self.books.append(new_book)
+        return new_book
+
+    def delete_book(self, book_id: str) -> bool:
+        """Deletes book by ID."""
+        for i, b in enumerate(self.books):
+            if b["id"] == book_id:
+                self.books.pop(i)
+                return True
+        raise EntityNotFoundException(entity="Book", identifier=book_id)
+
 
 book_service = BookService()
 

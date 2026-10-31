@@ -11,6 +11,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
 interface CourseInstructorCardProps {
@@ -18,14 +19,15 @@ interface CourseInstructorCardProps {
 }
 
 export function CourseInstructorCard({ className = '' }: CourseInstructorCardProps) {
-  const { currentLang, dict, localizeHref } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref } = useLanguage();
+  const { siteConfig } = useData();
 
   const scholarName =
     currentLang === 'en'
-      ? 'Hojjat al-Islam Dr. Zanjirzan Hosseini'
+      ? (siteConfig?.scholar_name_en || 'Hojjat al-Islam Dr. Zanjirzan Hosseini')
       : currentLang === 'ar'
-      ? 'حجة الإسلام الدكتور زنجير زن حسيني'
-      : 'حجت الاسلام دکتر زنجیر زن حسینی';
+      ? (siteConfig?.scholar_name_ar || 'حجة الإسلام الدكتور زنجير زن حسيني')
+      : (siteConfig?.scholar_name_fa || 'حجت الاسلام دکتر زنجیر زن حسینی');
 
   const scholarTitle =
     dict.course_scholar_title_desc ||
@@ -36,7 +38,13 @@ export function CourseInstructorCard({ className = '' }: CourseInstructorCardPro
       : 'استاد سطوح عالی و خارج حوزه علمیه • پژوهشگر علوم عقلی و نقلی');
 
   const bio =
-    currentLang === 'en'
+    (currentLang === 'en' && siteConfig?.bio_en)
+      ? siteConfig.bio_en
+      : (currentLang === 'ar' && siteConfig?.bio_ar)
+      ? siteConfig.bio_ar
+      : (currentLang === 'fa' && siteConfig?.bio_fa)
+      ? siteConfig.bio_fa
+      : currentLang === 'en'
       ? "Professor of advanced seminary studies (Dars-e Kharij) in Jurisprudence, Legal Theory, Philosophy, and Rational Theology; critical commentator on Transcendent Philosophy and foundational treatises of Islamic wisdom with over 15 years of continuous scholarly research."
       : currentLang === 'ar'
       ? 'أستاذ السطوح العليا والبحث الخارج في الفقه والأصول والفلسفة والكلام في الحوزة العلمية؛ شارح الأسفار الأربعة وبداية ونهاية الحكمة بخبرة تمتد لأكثر من ١٥ عاماً في التدريس والتحقيق الحوزوي والأكاديمي.'
@@ -45,8 +53,12 @@ export function CourseInstructorCard({ className = '' }: CourseInstructorCardPro
   const t = {
     heading: dict.course_instructor_heading || 'استاد و مدرس کرسی درس',
     stat_courses: dict.course_instructor_stat_courses || '۳۳ دوره تدریس تخصصی',
-    stat_experience: dict.course_instructor_stat_experience || 'بیش از ۱۵ سال تدریس خارج',
-    stat_books: dict.course_instructor_stat_books || 'تالیف ۵ عنوان کتاب مرجع',
+    stat_experience: siteConfig?.stat_years
+      ? `${toLocale(siteConfig.stat_years)} سال تدریس خارج`
+      : (dict.course_instructor_stat_experience || 'بیش از ۱۵ سال تدریس خارج'),
+    stat_books: siteConfig?.stat_books
+      ? `تالیف ${toLocale(siteConfig.stat_books)} عنوان کتاب مرجع`
+      : (dict.course_instructor_stat_books || 'تالیف ۵ عنوان کتاب مرجع'),
     btn_courses: dict.course_instructor_courses_btn || 'مشاهده تمام آثار و دروس استاد',
   };
 

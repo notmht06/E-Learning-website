@@ -15,6 +15,7 @@ import {
 import { CourseCategory, SupportedLang } from '@/lib/data';
 import { getLocalizedCategory } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 
 interface NavbarMobileDrawerProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
   localizeHref: propLocalizeHref,
 }) => {
   const { localizeHref: contextLocalizeHref } = useLanguage();
+  const { siteConfig } = useData();
   const toUrl = propLocalizeHref || contextLocalizeHref || ((p: string) => p);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>('courses');
 
@@ -215,20 +217,20 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           </span>
           <div className="flex items-center gap-2 px-3">
             <a
-              href="https://t.me/Hekkmat7"
+              href={siteConfig?.telegram_support || "https://t.me/Hekkmat7"}
               target="_blank"
               rel="noreferrer"
               className="text-xs px-3 py-2 rounded-lg bg-[#8A532B]/10 text-[#8A532B] font-bold"
             >
-              تلگرام (@Hekkmat7)
+              {dict.support_telegram_admin || 'تلگرام (@Hekkmat7)'}
             </a>
             <a
-              href="https://eitaa.com/Hekkmat7"
+              href={siteConfig?.eitaa_channel || "https://eitaa.com/Hekkmat7"}
               target="_blank"
               rel="noreferrer"
               className="text-xs px-3 py-2 rounded-lg bg-[#8A532B]/10 text-[#8A532B] font-bold"
             >
-              ایتا (@Hekkmat7)
+              {dict.support_eitaa_admin || 'ایتا (@Hekkmat7)'}
             </a>
           </div>
         </div>

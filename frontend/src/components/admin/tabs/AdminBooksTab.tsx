@@ -9,13 +9,14 @@ import {
   Package,
   Layers,
   X,
+  Edit,
 } from 'lucide-react';
 import { useData, ExtendedBook } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { booksDatabase } from '@/lib/data';
 
 export function AdminBooksTab() {
-  const { books, addBook, deleteBook } = useData();
+  const { books, addBook, updateBook, deleteBook } = useData();
   const { toLocale, dict } = useLanguage();
 
   const [search, setSearch] = useState('');
@@ -28,6 +29,56 @@ export function AdminBooksTab() {
   const [newPrice, setNewPrice] = useState('۳۵۰,۰۰۰ تومان');
   const [newStock, setNewStock] = useState('50');
   const [newIsbn, setNewIsbn] = useState('978-600-1234-56-7');
+
+  // Edit Book State
+  const [editingBook, setEditingBook] = useState<ExtendedBook | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAuthor, setEditAuthor] = useState('حجت الاسلام دکتر زنجیر زن حسینی');
+  const [editCategory, setEditCategory] = useState('حکمت متعالیه');
+  const [editPrice, setEditPrice] = useState('۳۵۰,۰۰۰ تومان');
+  const [editStock, setEditStock] = useState('50');
+  const [editIsbn, setEditIsbn] = useState('978-600-1234-56-7');
+  const [editPages, setEditPages] = useState('350');
+  const [editPdfSample, setEditPdfSample] = useState('');
+  const [editComingSoon, setEditComingSoon] = useState(false);
+  const [editDesc, setEditDesc] = useState('');
+
+  const handleOpenEditBook = (b: ExtendedBook) => {
+    setEditingBook(b);
+    setEditTitle(b.title_fa || '');
+    setEditAuthor(b.author_fa || 'حجت الاسلام دکتر زنجیر زن حسینی');
+    setEditCategory(b.subjectCategory || b.category_fa || 'حکمت متعالیه');
+    setEditPrice(b.price_fa || '۳۵۰,۰۰۰ تومان');
+    setEditStock(String(b.stock || 50));
+    setEditIsbn(b.isbn || '978-600-1234-56-7');
+    setEditPages(String(b.pageCount || b.pages_count || 350));
+    setEditPdfSample(b.pdfSampleUrl || b.pdf_sample_url || '');
+    setEditComingSoon(Boolean(b.is_coming_soon || b.isComingSoon));
+    setEditDesc(b.desc_fa || '');
+  };
+
+  const handleSaveEditBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBook || !editTitle.trim()) return;
+
+    await updateBook(editingBook.id, {
+      title_fa: editTitle,
+      author_fa: editAuthor,
+      subjectCategory: editCategory,
+      category_fa: editCategory,
+      price_fa: editPrice,
+      stock: Number(editStock) || 50,
+      isbn: editIsbn,
+      pageCount: Number(editPages) || 350,
+      pages_count: Number(editPages) || 350,
+      pdfSampleUrl: editPdfSample || undefined,
+      pdf_sample_url: editPdfSample || undefined,
+      is_coming_soon: editComingSoon,
+      isComingSoon: editComingSoon,
+      desc_fa: editDesc,
+    });
+    setEditingBook(null);
+  };
 
   const booksList = Object.values(books).filter((b) => {
     return !search || b.title_fa.includes(search);
@@ -124,17 +175,26 @@ export function AdminBooksTab() {
                     {book.price_fa}
                   </td>
                   <td className="py-3 px-4">
-                    <button
-                      onClick={() => {
-                        if (confirm(`${dict.admin_books_confirm_delete} (${book.title_fa})`)) {
-                          deleteBook(book.id);
-                        }
-                      }}
-                      className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 transition cursor-pointer"
-                      title={dict.admin_books_btn_delete_tooltip}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleOpenEditBook(book)}
+                        className="p-1 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                        title={dict.admin_books_btn_edit_tooltip}
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`${dict.admin_books_confirm_delete} (${book.title_fa})`)) {
+                            deleteBook(book.id);
+                          }
+                        }}
+                        className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 transition cursor-pointer"
+                        title={dict.admin_books_btn_delete_tooltip}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -242,6 +302,151 @@ export function AdminBooksTab() {
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium"
                 >
                   {dict.admin_books_btn_submit}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Book Modal */}
+      {editingBook && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 text-start shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                {dict.admin_books_modal_edit_title} ({editingBook.title_fa})
+              </h3>
+              <button
+                onClick={() => setEditingBook(null)}
+                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditBook} className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_title}</label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_author}</label>
+                  <input
+                    type="text"
+                    value={editAuthor}
+                    onChange={(e) => setEditAuthor(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_category}</label>
+                  <input
+                    type="text"
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_price}</label>
+                  <input
+                    type="text"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_stock}</label>
+                  <input
+                    type="number"
+                    value={editStock}
+                    onChange={(e) => setEditStock(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_pages}</label>
+                  <input
+                    type="number"
+                    value={editPages}
+                    onChange={(e) => setEditPages(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_isbn}</label>
+                  <input
+                    type="text"
+                    value={editIsbn}
+                    onChange={(e) => setEditIsbn(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_pdf_sample}</label>
+                  <input
+                    type="text"
+                    value={editPdfSample}
+                    placeholder="/assets/sample.pdf"
+                    onChange={(e) => setEditPdfSample(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">{dict.admin_books_field_synopsis}</label>
+                <textarea
+                  value={editDesc}
+                  rows={3}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="editComingSoonCheckbox"
+                  checked={editComingSoon}
+                  onChange={(e) => setEditComingSoon(e.target.checked)}
+                  className="w-4 h-4 rounded text-[#8A532B] focus:ring-[#8A532B]"
+                />
+                <label htmlFor="editComingSoonCheckbox" className="text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                  {dict.admin_books_field_coming_soon}
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingBook(null)}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
+                >
+                  {dict.admin_categories_btn_cancel}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium"
+                >
+                  {dict.admin_books_modal_btn_edit_submit}
                 </button>
               </div>
             </form>

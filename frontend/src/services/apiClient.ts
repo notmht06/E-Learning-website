@@ -330,6 +330,81 @@ class ApiClient {
         method: 'POST',
         body: JSON.stringify({ order_id: orderId, new_status: newStatus, postal_barcode: postalBarcode }),
       }),
+    getConfig: () => this.request<any>('/admin/public-config'),
+    updateConfig: (config: any) =>
+      this.request<{ success: boolean; config: any }>('/admin/site-config', {
+        method: 'PUT',
+        body: JSON.stringify(config),
+      }),
+    getArticles: () => this.request<any[]>('/admin/public-articles'),
+    createArticle: (data: any) =>
+      this.request<{ success: boolean; article: any }>('/admin/articles', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updateArticle: (id: string, data: any) =>
+      this.request<{ success: boolean; article: any }>(`/admin/articles/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    deleteArticle: (id: string) =>
+      this.request<{ success: boolean; id: string }>(`/admin/articles/${id}`, {
+        method: 'DELETE',
+      }),
+    getCategories: () => this.request<any[]>('/admin/public-categories'),
+    createCategory: (data: any) =>
+      this.request<{ success: boolean; category: any }>('/admin/categories', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updateCategory: (id: string, data: any) =>
+      this.request<{ success: boolean; category: any }>(`/admin/categories/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    deleteCategory: (id: string) =>
+      this.request<{ success: boolean; id: string }>(`/admin/categories/${id}`, {
+        method: 'DELETE',
+      }),
+    createBook: (data: any) =>
+      this.request<{ success: boolean; book: any }>('/admin/books', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    deleteBook: (bookId: string) =>
+      this.request<{ success: boolean; book_id: string }>(`/admin/books/${bookId}`, {
+        method: 'DELETE',
+      }),
+    getCoupons: () => this.request<any[]>('/admin/coupons'),
+    createCoupon: (data: any) =>
+      this.request<{ success: boolean; coupon: any }>('/admin/coupons', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    toggleCoupon: (code: string) =>
+      this.request<{ success: boolean; code: string; active: boolean }>(`/admin/coupons/${code}/toggle`, {
+        method: 'PUT',
+      }),
+    deleteCoupon: (code: string) =>
+      this.request<{ success: boolean; code: string }>(`/admin/coupons/${code}`, {
+        method: 'DELETE',
+      }),
+    getMetrics: () => this.request<any>('/observability/metrics'),
+    uploadMedia: async (file: File): Promise<{ success: boolean; file_url: string; filename: string; original_filename: string }> => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('zanjirzan_token') : null;
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE_URL}/admin/upload`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || err.message || 'خطا در بارگذاری فایل');
+      }
+      return await res.json();
+    },
   };
 
   // --- AI Scholarly Assistant ---
@@ -370,6 +445,7 @@ class ApiClient {
         file_context?: string;
         file_name?: string;
         lang?: string;
+        strict_corpus_only?: boolean;
       },
       onChunk?: (chunkOrAccumulated: string) => void,
       onDone?: (terminalData: {

@@ -285,11 +285,159 @@ class ChapterUpdateRequest(BaseModel):
 
 class BookUpdateRequest(BaseModel):
     title: Optional[str] = None
+    subtitle: Optional[str] = None
     author: Optional[str] = None
     publisher: Optional[str] = None
+    print_edition: Optional[str] = None
+    pages_count: Optional[int] = None
     price: Optional[str] = None
     physical_price: Optional[str] = None
+    stock: Optional[int] = None
     cover_image: Optional[str] = None
     synopsis: Optional[str] = None
     isbn: Optional[str] = None
+    sample_pdf_url: Optional[str] = None
+    fidibo_reader_url: Optional[str] = None
+    is_coming_soon: Optional[bool] = None
+
+
+class SiteConfigRequest(BaseModel):
+    model_config = {"extra": "allow"}
+
+    scholar_name_fa: Optional[str] = None
+    scholar_name_ar: Optional[str] = None
+    scholar_name_en: Optional[str] = None
+    hero_title_fa: Optional[str] = None
+    hero_title_ar: Optional[str] = None
+    hero_title_en: Optional[str] = None
+    hero_subtitle_fa: Optional[str] = None
+    hero_subtitle_ar: Optional[str] = None
+    hero_subtitle_en: Optional[str] = None
+    quote_fa: Optional[str] = None
+    announcement_bar_text: Optional[str] = None
+    announcement_bar_active: Optional[bool] = None
+    bio_fa: Optional[str] = None
+    stat_years: Optional[str] = None
+    stat_sessions: Optional[str] = None
+    stat_books: Optional[str] = None
+    stat_students: Optional[str] = None
+    telegram_support: Optional[str] = None
+    telegram_channel: Optional[str] = None
+    eitaa_channel: Optional[str] = None
+    skyroom_default_url: Optional[str] = None
+    footer_copyright_fa: Optional[str] = None
+    ai_welcome_message: Optional[str] = None
+    suggested_questions: Optional[List[str]] = None
+    strict_corpus_only: Optional[bool] = None
+
+
+class ArticleCreateRequest(BaseModel):
+    id: Optional[str] = None
+    slug: Optional[str] = None
+    title: Optional[str] = None
+    title_fa: Optional[str] = None
+    title_ar: Optional[str] = None
+    title_en: Optional[str] = None
+    category: Optional[str] = None
+    category_fa: Optional[str] = "فلسفه"
+    category_ar: Optional[str] = None
+    category_en: Optional[str] = None
+    read_time_fa: Optional[str] = "۱۰ دقیقه مطالعه"
+    read_time_ar: Optional[str] = None
+    read_time_en: Optional[str] = None
+    publish_date_fa: Optional[str] = "۱۴۰۳"
+    publish_date_ar: Optional[str] = None
+    publish_date_en: Optional[str] = None
+    abstract_fa: Optional[str] = None
+    abstract_ar: Optional[str] = None
+    abstract_en: Optional[str] = None
+    content_fa: Optional[str] = None
+    content_ar: Optional[str] = None
+    content_en: Optional[str] = None
+    pdf_url: Optional[str] = None
+    author: Optional[str] = "حجت الاسلام دکتر زنجیر زن حسینی"
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_article(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if not data.get("title_fa") and data.get("title"):
+                data["title_fa"] = str(data["title"]).strip()
+            if not data.get("category_fa") and data.get("category"):
+                data["category_fa"] = str(data["category"]).strip()
+            if not data.get("read_time_fa") and data.get("readTime"):
+                data["read_time_fa"] = str(data["readTime"]).strip()
+            if not data.get("publish_date_fa") and data.get("publishDate"):
+                data["publish_date_fa"] = str(data["publishDate"]).strip()
+            if not data.get("abstract_fa") and data.get("abstract"):
+                data["abstract_fa"] = str(data["abstract"]).strip()
+        return data
+
+
+class ArticleUpdateRequest(BaseModel):
+    title_fa: Optional[str] = None
+    title_ar: Optional[str] = None
+    title_en: Optional[str] = None
+    category_fa: Optional[str] = None
+    category_ar: Optional[str] = None
+    category_en: Optional[str] = None
+    read_time_fa: Optional[str] = None
+    read_time_ar: Optional[str] = None
+    read_time_en: Optional[str] = None
+    publish_date_fa: Optional[str] = None
+    publish_date_ar: Optional[str] = None
+    publish_date_en: Optional[str] = None
+    abstract_fa: Optional[str] = None
+    abstract_ar: Optional[str] = None
+    abstract_en: Optional[str] = None
+    content_fa: Optional[str] = None
+    content_ar: Optional[str] = None
+    content_en: Optional[str] = None
+    pdf_url: Optional[str] = None
+    author: Optional[str] = None
+    slug: Optional[str] = None
+
+
+class CategoryCreateRequest(BaseModel):
+    id: Optional[str] = None
+    name: str
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    icon_name: Optional[str] = "Compass"
+    display_order: Optional[int] = 0
+
+
+class CategoryUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    icon_name: Optional[str] = None
+    display_order: Optional[int] = None
+
+
+class BookCreateRequest(BaseModel):
+    id: Optional[str] = None
+    title: str
+    subtitle: Optional[str] = None
+    author: Optional[str] = "حجت الاسلام دکتر زنجیر زن حسینی"
+    publisher: Optional[str] = "انتشارات حیات"
+    print_edition: Optional[str] = "چاپ اول"
+    pages_count: Optional[int] = 350
+    isbn: Optional[str] = "978-600-1234-56-7"
+    price: Optional[str] = "۳۵۰,۰۰۰"
+    physical_price: Optional[str] = "۳۹۰,۰۰۰"
+    stock: Optional[int] = 50
+    cover_image: Optional[str] = "/images/book_cover_real.jpg"
+    synopsis: Optional[str] = None
+    sample_pdf_url: Optional[str] = None
+    fidibo_reader_url: Optional[str] = None
+    is_coming_soon: Optional[bool] = False
+
+
+class CouponCreateRequest(BaseModel):
+    code: str
+    discount_percent: int
+    max_uses: Optional[int] = 100
+    expires_at: Optional[str] = "2027-12-30T23:59:59"
+    is_active: Optional[bool] = True
 

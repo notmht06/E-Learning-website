@@ -34,3 +34,12 @@ api_router.include_router(qa.router, prefix="/qa", tags=["10. Scholarly Discussi
 api_router.include_router(admin.router, prefix="/admin", tags=["11. Admin Cockpit & Analytics"])
 api_router.include_router(ai.router, prefix="/ai", tags=["12. AI Scholarly Assistant"])
 api_router.include_router(certificates.router, prefix="/certificates", tags=["13. Academic Certificates"])
+
+observability_router = APIRouter()
+
+@observability_router.get("/metrics")
+async def get_metrics():
+    from backend.app.api.v1.endpoints.admin import get_observability_metrics
+    return await get_observability_metrics()
+
+api_router.include_router(observability_router, prefix="/observability", tags=["14. SRE & Observability"])

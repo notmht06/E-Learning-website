@@ -193,6 +193,9 @@ export interface ScholarlyArticle {
   abstract_en?: string;
   author: string;
   slug: string;
+  content_fa?: string;
+  pdf_url?: string;
+  published_at?: string;
 }
 
 export const scholarlyArticlesDatabase: ScholarlyArticle[] = [

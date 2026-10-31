@@ -26,12 +26,16 @@ export interface AudioChapter {
 }
 
 export interface ExtendedBook extends Book {
+  subtitle?: string;
   stock?: number;
   isbn?: string;
   category_fa?: string;
   pageCount?: number;
   pages_count?: number;
   print_edition?: string;
+  pdfSampleUrl?: string;
+  pdf_sample_url?: string;
+  is_coming_soon?: boolean;
 }
 
 export interface OrderRecord {
@@ -88,6 +92,8 @@ interface DataContextType {
   categories: CourseCategory[];
   articles: ScholarlyArticle[];
   enrolledOnlineIds: string[];
+  siteConfig: Record<string, any>;
+  updateSiteConfig: (config: any) => Promise<void>;
   
   // Category actions
   addCategory: (category: CourseCategory) => void;
@@ -105,10 +111,15 @@ interface DataContextType {
   updateEpisode: (courseId: string, chapterId: number, partial: Partial<AudioChapter>) => Promise<void>;
   deleteEpisode: (courseId: string, chapterId: number) => Promise<void>;
 
+  // Article actions
+  addArticle: (article: ScholarlyArticle) => Promise<void>;
+  updateArticle: (id: string, partial: Partial<ScholarlyArticle>) => Promise<void>;
+  deleteArticle: (id: string) => Promise<void>;
+
   // Book actions
-  addBook: (book: ExtendedBook) => void;
-  updateBook: (id: string, partial: Partial<ExtendedBook>) => void;
-  deleteBook: (id: string) => void;
+  addBook: (book: ExtendedBook) => Promise<void>;
+  updateBook: (id: string, partial: Partial<ExtendedBook>) => Promise<void>;
+  deleteBook: (id: string) => Promise<void>;
 
   // Order actions
   createOrder: (order: OrderRecord) => void;
@@ -120,6 +131,7 @@ interface DataContextType {
   // Coupon actions
   addCoupon: (coupon: CouponRecord) => void;
   toggleCoupon: (code: string) => void;
+  deleteCoupon: (code: string) => void;
 }
 
 const initialOrders: OrderRecord[] = [];
@@ -127,12 +139,40 @@ const initialDrmSessions: DrmSessionRecord[] = [];
 const initialCoupons: CouponRecord[] = [];
 const initialAuditLogs: AuditLogRecord[] = [];
 
+const defaultSiteConfig = {
+  scholar_name_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
+  scholar_name_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
+  scholar_name_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
+  hero_title_fa: 'پایگاه تخصصی حکمت اسلامی و علوم عقلی',
+  hero_subtitle_fa: 'تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی',
+  announcement_bar_text: 'آغاز ثبت‌نام دوره جامع حکمت اشراق و اسفار اربعه — سال تحصیلی جدید',
+  announcement_bar_active: true,
+  bio_fa: 'حجت الاسلام دکتر زنجیر زن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.',
+  stat_years: '۲۵+',
+  stat_sessions: '۱,۲۰۰+',
+  stat_books: '۱۴',
+  stat_students: '۵,۰۰۰+',
+  telegram_support: 'https://t.me/zanjirzan_support',
+  telegram_channel: 'https://t.me/zanjirzan_philosophy',
+  eitaa_channel: 'https://eitaa.com/zanjirzan_philosophy',
+  skyroom_default_url: 'https://www.skyroom.online/ch/zanjirzan/live',
+  footer_copyright_fa: 'تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.',
+  ai_welcome_message: 'سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.',
+  suggested_questions: [
+    'اصالت وجود در حکمت متعالیه چیست؟',
+    'سلسله مراتب انوار در حکمت اشراق',
+    'برهان صدیقین در اثبات واجب تعالی',
+  ],
+  strict_corpus_only: true,
+};
+
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [courses, setCourses] = useState<Record<string, AudioCourse>>(coursesDatabase);
   const [categories, setCategories] = useState<CourseCategory[]>(initialCategories);
-  const [articles] = useState<ScholarlyArticle[]>(scholarlyArticlesDatabase);
+  const [articles, setArticles] = useState<ScholarlyArticle[]>(scholarlyArticlesDatabase);
+  const [siteConfig, setSiteConfig] = useState<Record<string, any>>(defaultSiteConfig);
   const [enrolledOnlineIds, setEnrolledOnlineIds] = useState<string[]>([]);
   const [books, setBooks] = useState<Record<string, ExtendedBook>>(() => {
     const initial: Record<string, ExtendedBook> = {};
@@ -254,7 +294,95 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 })));
               }
             })
-            .catch((err) => { console.warn('Failed to fetch coupons during hydration:', err); });
+          // دریافت همگام تنظیمات کلان سایت از API بک‌اند
+          apiClient.admin.getConfig()
+            .then((cfg: any) => {
+              if (cfg && typeof cfg === 'object') {
+                setSiteConfig(prev => ({ ...prev, ...cfg }));
+              }
+            })
+            .catch((err) => { console.warn('Failed to fetch site config during hydration:', err); });
+
+          // دریافت همگام مقالات از API بک‌اند
+          apiClient.admin.getArticles()
+            .then((backendArticles: any) => {
+              if (Array.isArray(backendArticles) && backendArticles.length > 0) {
+                setArticles(backendArticles);
+              }
+            })
+            .catch((err) => { console.warn('Failed to fetch articles during hydration:', err); });
+
+          // دریافت همگام شاخه‌های علمی از API بک‌اند
+          apiClient.admin.getCategories()
+            .then((backendCats: any) => {
+              if (Array.isArray(backendCats) && backendCats.length > 0) {
+                setCategories(backendCats.map((c: any) => ({
+                  id: c.id,
+                  name: c.name || c.name_fa,
+                  name_fa: c.name_fa || c.name,
+                  name_ar: c.name_ar || c.name,
+                  name_en: c.name_en || c.slug,
+                  slug: c.slug,
+                  description: c.description || '',
+                  description_fa: c.description_fa || c.description || '',
+                  description_ar: c.description_ar || '',
+                  description_en: c.description_en || '',
+                  iconName: c.icon_name || c.iconName || 'Compass',
+                  courseCount: c.count || 0,
+                })));
+              }
+            })
+            .catch((err) => { console.warn('Failed to fetch categories during hydration:', err); });
+
+          // دریافت همگام کتب از API بک‌اند
+          apiClient.books.getAll()
+            .then((backendBooks: any) => {
+              if (Array.isArray(backendBooks) && backendBooks.length > 0) {
+                setBooks(prev => {
+                  const merged = { ...prev };
+                  for (const b of backendBooks) {
+                    if (merged[b.id]) {
+                      merged[b.id] = {
+                        ...merged[b.id],
+                        title_fa: b.title || merged[b.id].title_fa,
+                        price_fa: b.price ? `${b.price} تومان` : merged[b.id].price_fa,
+                        stock: b.stock !== undefined ? b.stock : merged[b.id].stock,
+                        isbn: b.isbn || merged[b.id].isbn,
+                        pdfSampleUrl: b.pdf_sample_url || b.sample_pdf_url || merged[b.id].pdfSampleUrl,
+                        is_coming_soon: b.is_coming_soon !== undefined ? b.is_coming_soon : merged[b.id].is_coming_soon,
+                      };
+                    } else if (b.id && b.title) {
+                      const base = booksDatabase['book1'] || Object.values(booksDatabase)[0];
+                      merged[b.id] = {
+                        ...base,
+                        id: b.id,
+                        title_fa: b.title,
+                        title_ar: b.title_ar || b.title,
+                        title_en: b.title_en || b.title,
+                        subtitle: b.subtitle,
+                        author_fa: b.author || 'حجت الاسلام دکتر زنجیر زن حسینی',
+                        author_ar: b.author_ar || 'حجة الإسلام الدكتور زنجير زن حسيني',
+                        author_en: b.author_en || 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
+                        formatCategory: 'کتاب چاپی (گالینگور طلاکوب)',
+                        subjectCategory: b.category || 'حکمت متعالیه',
+                        desc_fa: b.synopsis || b.description || `کتاب تالیف ${b.author || 'حجت الاسلام دکتر زنجیر زن حسینی'} چاپ‌شده بر روی کاغذ بالکی.`,
+                        price_fa: b.price ? `${b.price} تومان` : '۳۵۰,۰۰۰ تومان',
+                        price_ar: b.price ? `${b.price} تومان` : '۳۵۰,۰۰۰ تومان',
+                        price_en: '$25.00',
+                        stock: b.stock || 50,
+                        isbn: b.isbn || '978-600-1234-56-7',
+                        category_fa: b.category || 'حکمت متعالیه',
+                        pageCount: b.pages_count || 320,
+                        pdfSampleUrl: b.pdf_sample_url || b.sample_pdf_url,
+                        is_coming_soon: Boolean(b.is_coming_soon),
+                      };
+                    }
+                  }
+                  return merged;
+                });
+              }
+            })
+            .catch((err) => { console.warn('Failed to fetch books during hydration:', err); });
         });
       } catch (err) {
         console.error('Error hydrating DataContext:', err);
@@ -452,36 +580,180 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Site Config Actions
+  const updateSiteConfig = async (newConfig: any) => {
+    setSiteConfig(prev => ({ ...prev, ...newConfig }));
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.updateConfig(newConfig);
+      const { toast } = await import('sonner');
+      toast.success('تنظیمات پایگاه با موفقیت در سرور ذخیره شد.');
+    } catch (err) {
+      console.error('Failed to save site config:', err);
+      const { toast } = await import('sonner');
+      toast.error('خطا در ذخیره تنظیمات در سرور.');
+      throw err;
+    }
+  };
+
+  // Article Actions
+  const addArticle = async (article: ScholarlyArticle) => {
+    const updated = [article, ...articles];
+    setArticles(updated);
+    logAction('افزودن مقاله', `مقاله «${article.title_fa}» افزوده شد.`, 'course');
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.createArticle({
+        title_fa: article.title_fa,
+        title_ar: article.title_ar,
+        title_en: article.title_en,
+        abstract_fa: article.abstract_fa,
+        abstract_ar: article.abstract_ar,
+        abstract_en: article.abstract_en,
+        content_fa: article.content_fa || '',
+        category: article.category,
+        author: article.author || 'حجت الاسلام دکتر زنجیر زن حسینی',
+        pdf_url: article.pdf_url,
+        published_at: article.published_at || article.publishDate || new Date().toISOString(),
+      });
+      const { toast } = await import('sonner');
+      toast.success('مقاله پژوهشی با موفقیت در پایگاه داده ثبت شد.');
+    } catch (err) {
+      console.error('Backend article create failed:', err);
+      setArticles(articles);
+      const { toast } = await import('sonner');
+      toast.error('خطا در ثبت مقاله در سرور.');
+      throw err;
+    }
+  };
+
+  const updateArticle = async (id: string, partial: Partial<ScholarlyArticle>) => {
+    const prevArticles = [...articles];
+    const updated = articles.map(a => (a.id === id ? { ...a, ...partial } : a));
+    setArticles(updated);
+    logAction('ویرایش مقاله', `مقاله با شناسه «${id}» ویرایش شد.`, 'course');
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.updateArticle(id, partial);
+      const { toast } = await import('sonner');
+      toast.success('مقاله با موفقیت به‌روزرسانی شد.');
+    } catch (err) {
+      console.error('Backend article update failed:', err);
+      setArticles(prevArticles);
+      const { toast } = await import('sonner');
+      toast.error('خطا در به‌روزرسانی مقاله در سرور.');
+      throw err;
+    }
+  };
+
+  const deleteArticle = async (id: string) => {
+    const prevArticles = [...articles];
+    const target = articles.find(a => a.id === id);
+    const updated = articles.filter(a => a.id !== id);
+    setArticles(updated);
+    logAction('حذف مقاله', `مقاله «${target?.title_fa || id}» حذف شد.`, 'course');
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.deleteArticle(id);
+      const { toast } = await import('sonner');
+      toast.success('مقاله از پایگاه داده حذف شد.');
+    } catch (err) {
+      console.error('Backend article delete failed:', err);
+      setArticles(prevArticles);
+      const { toast } = await import('sonner');
+      toast.error('خطا در حذف مقاله در سرور.');
+      throw err;
+    }
+  };
+
   // Book Actions
-  const addBook = (book: ExtendedBook) => {
+  const addBook = async (book: ExtendedBook) => {
+    const prevBooks = { ...books };
     const updated = { ...books, [book.id]: book };
     saveBooksToStorage(updated);
     logAction('افزودن کتاب جدید', `کتاب «${book.title_fa}» به فهرست آثار انتشارات افزوده شد.`, 'book');
 
-    import('@/services/apiClient').then(({ apiClient }) => {
-      apiClient.admin.updateBook(book.id, book)
-        .catch(err => console.debug('Backend addBook sync skipped or failed:', err));
-    });
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.createBook({
+        id: book.id,
+        title: book.title_fa,
+        subtitle: book.subtitle,
+        author: book.author_fa || 'حجت الاسلام دکتر زنجیر زن حسینی',
+        publisher: 'انتشارات حیات',
+        print_edition: book.print_edition || 'چاپ اول',
+        pages_count: book.pageCount || book.pages_count || 350,
+        isbn: book.isbn,
+        price: book.price_fa || '۳۵۰,۰۰۰',
+        physical_price: book.price_fa || '۳۹۰,۰۰۰',
+        stock: book.stock || 50,
+        synopsis: book.desc_fa,
+        sample_pdf_url: book.pdfSampleUrl || book.pdf_sample_url,
+        is_coming_soon: Boolean(book.is_coming_soon),
+      });
+      const { toast } = await import('sonner');
+      toast.success(`کتاب «${book.title_fa}» با موفقیت در پایگاه داده ثبت شد.`);
+    } catch (err: any) {
+      console.error('Backend createBook failed:', err);
+      saveBooksToStorage(prevBooks);
+      const { toast } = await import('sonner');
+      toast.error('خطا در ثبت کتاب در پایگاه داده.');
+      throw err;
+    }
   };
 
-  const updateBook = (id: string, partial: Partial<ExtendedBook>) => {
+  const updateBook = async (id: string, partial: Partial<ExtendedBook>) => {
     if (!books[id]) return;
+    const prevBooks = { ...books };
     const updated = { ...books, [id]: { ...books[id], ...partial } };
     saveBooksToStorage(updated);
     logAction('ویرایش کتاب', `مشخصات کتاب «${books[id].title_fa}» به‌روز شد.`, 'book');
 
-    import('@/services/apiClient').then(({ apiClient }) => {
-      apiClient.admin.updateBook(id, partial)
-        .catch(err => console.debug('Backend updateBook sync skipped or failed:', err));
-    });
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.updateBook(id, {
+        title: partial.title_fa,
+        subtitle: partial.subtitle,
+        author: partial.author_fa,
+        price: partial.price_fa,
+        stock: partial.stock,
+        isbn: partial.isbn,
+        pages_count: partial.pageCount || partial.pages_count,
+        sample_pdf_url: partial.pdfSampleUrl || partial.pdf_sample_url,
+        synopsis: partial.desc_fa,
+        is_coming_soon: partial.is_coming_soon,
+      });
+      const { toast } = await import('sonner');
+      toast.success('مشخصات کتاب با موفقیت به‌روزرسانی شد.');
+    } catch (err: any) {
+      console.error('Backend updateBook failed:', err);
+      saveBooksToStorage(prevBooks);
+      const { toast } = await import('sonner');
+      toast.error('خطا در به‌روزرسانی کتاب در پایگاه داده.');
+      throw err;
+    }
   };
 
-  const deleteBook = (id: string) => {
+  const deleteBook = async (id: string) => {
+    const prevBooks = { ...books };
     const title = books[id]?.title_fa || id;
     const updated = { ...books };
     delete updated[id];
     saveBooksToStorage(updated);
     logAction('حذف کتاب', `کتاب «${title}» از فهرست آثار انتشارات حذف شد.`, 'book');
+
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      await apiClient.admin.deleteBook(id);
+      const { toast } = await import('sonner');
+      toast.success('کتاب از پایگاه داده حذف شد.');
+    } catch (err: any) {
+      console.error('Backend deleteBook failed:', err);
+      saveBooksToStorage(prevBooks);
+      const { toast } = await import('sonner');
+      toast.error('خطا در حذف کتاب از پایگاه داده.');
+      throw err;
+    }
   };
 
   // Order Actions
@@ -516,12 +788,37 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCoupons(updated);
     if (typeof window !== 'undefined') localStorage.setItem('zan_coupons', JSON.stringify(updated));
     logAction('ایجاد کوپن تخفیف', `کد تخفیف ${coupon.code} با ${coupon.discountPercent}٪ تخفیف فعال شد.`, 'sale');
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.createCoupon({
+        code: coupon.code,
+        discount_percent: coupon.discountPercent,
+        active: coupon.isActive,
+      }).catch(err => console.debug('Backend createCoupon skipped:', err));
+    });
   };
 
   const toggleCoupon = (code: string) => {
     const updated = coupons.map(c => (c.code === code ? { ...c, isActive: !c.isActive } : c));
     setCoupons(updated);
     if (typeof window !== 'undefined') localStorage.setItem('zan_coupons', JSON.stringify(updated));
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.toggleCoupon(code)
+        .catch(err => console.debug('Backend toggleCoupon skipped:', err));
+    });
+  };
+
+  const deleteCoupon = (code: string) => {
+    const updated = coupons.filter(c => c.code !== code);
+    setCoupons(updated);
+    if (typeof window !== 'undefined') localStorage.setItem('zan_coupons', JSON.stringify(updated));
+    logAction('حذف کوپن تخفیف', `کوپن ${code} حذف شد.`, 'sale');
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.deleteCoupon(code)
+        .catch(err => console.debug('Backend deleteCoupon skipped:', err));
+    });
   };
 
   // Category Actions
@@ -536,12 +833,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const updated = [...categories, category];
     saveCategoriesToStorage(updated);
     logAction('افزودن موضوع جدید', `موضوع «${category.name}» با موفقیت افزوده شد.`, 'course');
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.createCategory({
+        id: category.id,
+        name: category.name,
+        name_fa: category.name_fa,
+        name_ar: category.name_ar,
+        name_en: category.name_en,
+        slug: category.slug,
+        description: category.description,
+        description_fa: category.description_fa,
+        icon_name: category.iconName,
+      }).catch(err => console.debug('Backend createCategory skipped:', err));
+    });
   };
 
   const updateCategory = (id: string, partial: Partial<CourseCategory>) => {
     const updated = categories.map(c => c.id === id ? { ...c, ...partial } : c);
     saveCategoriesToStorage(updated);
     logAction('ویرایش موضوع', `موضوع با شناسه «${id}» به‌روزرسانی شد.`, 'course');
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.updateCategory(id, partial)
+        .catch(err => console.debug('Backend updateCategory skipped:', err));
+    });
   };
 
   const deleteCategory = (id: string) => {
@@ -549,6 +865,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const updated = categories.filter(c => c.id !== id);
     saveCategoriesToStorage(updated);
     logAction('حذف موضوع', `موضوع «${target?.name || id}» از سامانه حذف شد.`, 'course');
+
+    import('@/services/apiClient').then(({ apiClient }) => {
+      apiClient.admin.deleteCategory(id)
+        .catch(err => console.debug('Backend deleteCategory skipped:', err));
+    });
   };
 
   // Online Course Enrollment Action
@@ -602,8 +923,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         revokeDrmSession,
         addCoupon,
         toggleCoupon,
+        deleteCoupon,
         categories,
         articles,
+        siteConfig,
+        updateSiteConfig,
+        addArticle,
+        updateArticle,
+        deleteArticle,
         enrolledOnlineIds,
         addCategory,
         updateCategory,

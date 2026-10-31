@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 
 export function TopAnnouncementBanner() {
   const { currentLang, isRtl, localizeHref } = useLanguage();
+  const { siteConfig } = useData();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -26,11 +28,12 @@ export function TopAnnouncementBanner() {
   };
 
   if (!isVisible) return null;
+  if (siteConfig?.announcement_bar_active === false) return null;
 
   const content = {
     fa: {
       badge: 'اطلاعیه رسمی کرسی درس خارج',
-      message: 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی (سال تحصیلی ۱۴۰۵-۱۴۰۶)',
+      message: siteConfig?.announcement_bar_text || 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی (سال تحصیلی ۱۴۰۵-۱۴۰۶)',
       action: 'مشاهده سرفصل‌ها و نمونه صوت',
     },
     ar: {
@@ -45,7 +48,7 @@ export function TopAnnouncementBanner() {
     },
   }[currentLang] || {
     badge: 'اطلاعیه رسمی کرسی درس خارج',
-    message: 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی',
+    message: siteConfig?.announcement_bar_text || 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی',
     action: 'مشاهده سرفصل‌ها و نمونه صوت',
   };
 

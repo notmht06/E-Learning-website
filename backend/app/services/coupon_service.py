@@ -132,4 +132,35 @@ class CouponService:
         return result
 
 
+    def toggle_coupon(self, code: str) -> Dict[str, Any]:
+        """Toggles active state of coupon."""
+        code_upper = code.strip().upper()
+        if code_upper not in self.coupons:
+            raise InvalidCouponException(message=f"کد تخفیف «{code}» یافت نشد.")
+        entry = self.coupons[code_upper]
+        if isinstance(entry, dict):
+            entry["is_active"] = not entry.get("is_active", True)
+            curr = entry["is_active"]
+        else:
+            self.coupons[code_upper] = {
+                "discount_percent": int(entry),
+                "is_active": False,
+                "expires_at": "2027-12-30T23:59:59"
+            }
+            curr = False
+        return {
+            "code": code_upper,
+            "active": curr,
+            "message": f"وضعیت کد تخفیف به {'فعال' if curr else 'غیرفعال'} تغییر یافت."
+        }
+
+    def delete_coupon(self, code: str) -> bool:
+        """Deletes coupon from system."""
+        code_upper = code.strip().upper()
+        if code_upper not in self.coupons:
+            raise InvalidCouponException(message=f"کد تخفیف «{code}» یافت نشد.")
+        del self.coupons[code_upper]
+        return True
+
+
 coupon_service = CouponService()

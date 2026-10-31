@@ -12,7 +12,7 @@ import { useData, CouponRecord } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function AdminCouponsTab() {
-  const { coupons, addCoupon, toggleCoupon } = useData();
+  const { coupons, addCoupon, toggleCoupon, deleteCoupon } = useData();
   const { toLocale, dict } = useLanguage();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,12 +100,25 @@ export function AdminCouponsTab() {
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    <button
-                      onClick={() => toggleCoupon(c.code)}
-                      className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-300 text-[11px] transition cursor-pointer"
-                    >
-                      {c.isActive ? dict.admin_coupons_btn_deactivate : dict.admin_coupons_btn_activate}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleCoupon(c.code)}
+                        className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-300 text-[11px] transition cursor-pointer"
+                      >
+                        {c.isActive ? dict.admin_coupons_btn_deactivate : dict.admin_coupons_btn_activate}
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`آیا از حذف کوپن تخفیف «${c.code}» مطمئن هستید؟`)) {
+                            deleteCoupon(c.code);
+                          }
+                        }}
+                        className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 transition cursor-pointer"
+                        title="حذف کوپن"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

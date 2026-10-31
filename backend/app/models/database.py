@@ -290,10 +290,191 @@ async def init_db():
 
     await seed_default_courses()
     await seed_default_users()
+    await seed_default_cms_data()
     _is_db_initialized = True
 
 seed_baseline_users = seed_default_users
 seed_baseline_courses = seed_default_courses
+
+
+async def seed_default_cms_data(db: Optional[AsyncSession] = None):
+    """
+    Seeds default SiteConfig, Category, BookModel, Coupon, and ArticleModel
+    into SQLite database idempotently.
+    """
+    if db is None:
+        async with async_session() as session:
+            await _seed_cms_data_tx(session)
+            await session.commit()
+    else:
+        await _seed_cms_data_tx(db)
+        await db.flush()
+
+
+async def _seed_cms_data_tx(session: AsyncSession):
+    import json
+    from backend.app.models.models import SiteConfig, Category, BookModel, Coupon, ArticleModel
+
+    # 1. Seed SiteConfig 'general'
+    res_cfg = await session.execute(select(SiteConfig).where(SiteConfig.key == "general"))
+    if not res_cfg.scalar_one_or_none():
+        cfg_dict = {
+            "scholar_name_fa": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "scholar_name_ar": "حجة الإسلام الدكتور زنجير زن حسيني",
+            "scholar_name_en": "Hojjat al-Islam Dr. Zanjirzan Hosseini",
+            "hero_title_fa": "پایگاه تخصصی حکمت اسلامی و علوم عقلی",
+            "hero_title_ar": "المنصة التخصصية للحكمة الإسلامية والعلوم العقلية",
+            "hero_title_en": "Specialized Platform for Islamic Wisdom and Rational Sciences",
+            "hero_subtitle_fa": "تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی",
+            "hero_subtitle_ar": "تحت إشراف وتدريس حجة الإسلام الدكتور زنجير زن حسيني",
+            "hero_subtitle_en": "Under the instruction and supervision of Hojjat al-Islam Dr. Zanjirzan Hosseini",
+            "quote_fa": "العلم نور يقذفه الله في قلب من يشاء من عباده",
+            "announcement_bar_text": "آغاز ثبت‌نام دوره جامع حکمت اشراق و اسفار اربعه — سال تحصیلی جدید",
+            "announcement_bar_active": True,
+            "bio_fa": "حجت الاسلام دکتر زنجیر زن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.",
+            "stat_years": "۲۵+",
+            "stat_sessions": "۱,۲۰۰+",
+            "stat_books": "۱۴",
+            "stat_students": "۵,۰۰۰+",
+            "telegram_support": "https://t.me/zanjirzan_support",
+            "telegram_channel": "https://t.me/zanjirzan_philosophy",
+            "eitaa_channel": "https://eitaa.com/zanjirzan_philosophy",
+            "skyroom_default_url": "https://www.skyroom.online/ch/zanjirzan/live",
+            "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.",
+            "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
+            "suggested_questions": [
+                "اصالت وجود در حکمت متعالیه چیست؟",
+                "سلسله مراتب انوار در حکمت اشراق",
+                "برهان صدیقین در اثبات واجب تعالی"
+            ],
+            "strict_corpus_only": True,
+        }
+        session.add(SiteConfig(key="general", value_json=json.dumps(cfg_dict, ensure_ascii=False)))
+
+    # 2. Seed default Categories
+    default_cats = [
+        {"id": "cat-mantiq", "name": "منطق", "slug": "mantiq", "description": "مبادی تفکر عقلانی، منطق صوری و مادی، نقد مغالطات و صناعات خمس", "icon_name": "Brain", "display_order": 1},
+        {"id": "cat-falsafe", "name": "فلسفه", "slug": "falsafe", "description": "حکمت مشاء، اشراق، حکمت متعالیه، بدایه، نهایه، اسفار اربعه و فلسفه غرب", "icon_name": "Compass", "display_order": 2},
+        {"id": "cat-fiqh", "name": "فقه", "slug": "fiqh", "description": "فقه استدلالی، مکاسب محرمه، شروط المتعاقدین و احکام معاملات", "icon_name": "Scale", "display_order": 3},
+        {"id": "cat-osul", "name": "اصول", "slug": "osul", "description": "اصول فقه تراز اجتهادی، فرائد الاصول (رسائل)، کفایة الاصول و حلقات شهید صدر", "icon_name": "Scroll", "display_order": 4},
+        {"id": "cat-tafsir", "name": "تفسیر", "slug": "tafsir", "description": "تفسیر عقلی و انفسی قرآن کریم، تفسیر ملاصدرا بر سوره حمد و سوره بقره", "icon_name": "BookOpen", "display_order": 5},
+        {"id": "cat-kalam", "name": "کلام", "slug": "kalam", "description": "کلام استدلالی، تجرید الاعتقاد نصیرالدین طوسی، کشف المراد علامه حلی", "icon_name": "ShieldCheck", "display_order": 6},
+        {"id": "cat-erfan-nazari", "name": "عرفان نظری", "slug": "erfan-nazari", "description": "مبانی عرفان، تمهید القواعد ابن‌ترکه، فصوص الحکم ابن‌عربی و مقدمه قیصری", "icon_name": "Sparkles", "display_order": 7},
+        {"id": "cat-erfan-amali", "name": "عرفان عملی", "slug": "erfan-amali", "description": "سلوک الی الله، منازل السائرین خواجه عبدالله انصاری و اوصاف الاشراف", "icon_name": "HeartHandshake", "display_order": 8},
+    ]
+    for c in default_cats:
+        res = await session.execute(select(Category).where(Category.id == c["id"]))
+        if not res.scalar_one_or_none():
+            session.add(Category(**c))
+
+    # 3. Seed default Books
+    from backend.app.services.book_service import book_service
+    for b in book_service.books:
+        res = await session.execute(select(BookModel).where(BookModel.id == b["id"]))
+        if not res.scalar_one_or_none():
+            session.add(
+                BookModel(
+                    id=b["id"],
+                    title=b["title"],
+                    subtitle=b.get("subtitle"),
+                    author=b.get("author", "حجت الاسلام دکتر زنجیر زن حسینی"),
+                    publisher=b.get("publisher", "انتشارات حیات"),
+                    print_edition=b.get("print_edition", "چاپ اول"),
+                    pages_count=b.get("pages_count", 380),
+                    isbn=b.get("isbn", "978-600-1234-56-7"),
+                    price=str(b.get("price", "۳۲۰,۰۰۰")),
+                    physical_price=str(b.get("physical_price", "۳۹۰,۰۰۰")),
+                    stock=50,
+                    cover_image=b.get("cover_image", "/images/book_cover_real.jpg"),
+                    synopsis=b.get("synopsis", ""),
+                    is_coming_soon=False,
+                )
+            )
+
+    # 4. Seed default Coupons
+    from backend.app.services.coupon_service import coupon_service
+    for code, cdata in coupon_service.coupons.items():
+        res = await session.execute(select(Coupon).where(Coupon.code == code))
+        if not res.scalar_one_or_none():
+            if isinstance(cdata, dict):
+                session.add(
+                    Coupon(
+                        code=code,
+                        discount_percent=cdata.get("discount_percent", 20),
+                        max_uses=100,
+                        used_count=0,
+                        expires_at=cdata.get("expires_at", "2027-12-30T23:59:59"),
+                        is_active=cdata.get("is_active", True),
+                    )
+                )
+
+    # 5. Seed default Articles
+    default_articles = [
+        {
+            "id": "art-1",
+            "slug": "aslat-vojood-seddiqin",
+            "title_fa": "اصالت وجود و برهان صدیقین: بازخوانی استدلال ملاصدرا در تراز معرفت‌شناسی تطبیقی",
+            "title_ar": "أصالة الوجود وبرهان الصديقين: قراءة استدلال الملا صدرا في ميزان المعرفة المقارنة",
+            "title_en": "Primacy of Existence & the Proof of the Sincere: Sadrian Argument in Comparative Epistemology",
+            "category_fa": "فلسفه",
+            "category_ar": "الفلسفة",
+            "category_en": "Philosophy",
+            "read_time_fa": "۱۵ دقیقه مطالعه",
+            "read_time_ar": "١٥ دقيقة قراءة",
+            "read_time_en": "15 min read",
+            "publish_date_fa": "شهریور ۱۴۰۳",
+            "publish_date_ar": "صفر ١٤٤٦",
+            "publish_date_en": "September 2024",
+            "abstract_fa": "این مقاله به بررسی برهان صدیقین بر اصالت و وحدت وجود پرداخته و تمایزات بنیادین تلقی صدرایی از مفهوم و حقیقت هستی را تحلیل می‌کند.",
+            "content_fa": "برهان صدیقین در حکمت متعالیه بر این اصل استوار است که حقیقت وجود، فی‌نفسه اصیل، بسیط و مشکک است...",
+            "pdf_url": "/sample-books/aslat-vojood.pdf",
+            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+        },
+        {
+            "id": "art-2",
+            "slug": "noor-al-anwar-ishraq",
+            "title_fa": "نورالانوار و مراتب اشراق: تحلیل هندسه وجودی شیخ شهاب‌الدین سهروردی",
+            "title_ar": "نور الأنوار ومراتب الإشراق: تحليل الهندسة الوجودية للشيخ شهاب الدين السهروردي",
+            "title_en": "The Light of Lights & Illuminationist Gradiation: Ontological Geometry of Suhrawardi",
+            "category_fa": "فلسفه",
+            "category_ar": "الفلسفة",
+            "category_en": "Philosophy",
+            "read_time_fa": "۱۲ دقیقه مطالعه",
+            "read_time_ar": "١٢ دقيقة قراءة",
+            "read_time_en": "12 min read",
+            "publish_date_fa": "مرداد ۱۴۰۳",
+            "publish_date_ar": "محرم ١٤٤٦",
+            "publish_date_en": "August 2024",
+            "abstract_fa": "پژوهشی در ساختار نظام اشراقی، انوار قاهره و اسفهبدیه و نسبت آنها با نورالانوار و مقایسه آن با نظریه عقول ده‌گانه سینوی.",
+            "content_fa": "شیخ اشراق در حکمة‌الاشراق، حقیقت نور را ظاهر بالذات و مظهر للغیر تعریف می‌کند...",
+            "pdf_url": "/sample-books/noor-al-anwar.pdf",
+            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+        },
+        {
+            "id": "art-3",
+            "slug": "mantiq-borhan-maghaleteh",
+            "title_fa": "روش‌شناسی صناعت برهان در منطق صوری و تفکیک آن از مغالطات رایج معاصر",
+            "title_ar": "منهجية صناعة البرهان في المنطق الصوري وتمييزه عن المغالطات المعاصرة",
+            "title_en": "Methodology of Demonstration in Formal Logic & Demarcation from Modern Fallacies",
+            "category_fa": "منطق",
+            "category_ar": "المنطق",
+            "category_en": "Logic",
+            "read_time_fa": "۱۰ دقیقه مطالعه",
+            "read_time_ar": "١٠ دقائق قراءة",
+            "read_time_en": "10 min read",
+            "publish_date_fa": "تیر ۱۴۰۳",
+            "publish_date_ar": "ذو الحجة ١٤٤٥",
+            "publish_date_en": "July 2024",
+            "abstract_fa": "بررسی شروط مواد قیاس برهانی، بدیهیات اولی، و راهکارهای شناسایی مغالطات زبانی و ساختاری در استدلال‌های فلسفی معاصر.",
+            "content_fa": "برهان، شریف‌ترین صناعات خمس است که مطلوب آن یقین تام و دائم است...",
+            "pdf_url": "/sample-books/mantiq-borhan.pdf",
+            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+        },
+    ]
+    for a in default_articles:
+        res = await session.execute(select(ArticleModel).where(ArticleModel.id == a["id"]))
+        if not res.scalar_one_or_none():
+            session.add(ArticleModel(**a))
 
 
 async def ensure_db_initialized():

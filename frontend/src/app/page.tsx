@@ -21,7 +21,7 @@ import { getScholarName } from '@/lib/constants';
 
 export default function HomePage() {
   const { currentLang, dict, localizeHref } = useLanguage();
-  const { courses, categories } = useData();
+  const { courses, categories, siteConfig } = useData();
   const {
     items: cartItems,
     isOpen: isCartOpen,
@@ -90,7 +90,7 @@ export default function HomePage() {
               {dict.scholar_full_title || getScholarName(currentLang)}
             </h4>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}
+              {siteConfig?.footer_copyright_fa || dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}
             </p>
           </div>
 

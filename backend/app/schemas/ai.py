@@ -16,6 +16,7 @@ class AIChatRequest(BaseModel):
     file_context: Optional[str] = Field(default=None, description="Extracted content from uploaded PDF/document")
     file_name: Optional[str] = Field(default=None, description="Name of the uploaded file")
     lang: Optional[str] = Field(default=None, description="Target response language ('fa', 'en', 'ar')")
+    strict_corpus_only: Optional[bool] = Field(default=None, description="Enforce strict corpus answers")
 
 
 class AICitation(BaseModel):

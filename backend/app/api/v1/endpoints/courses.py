@@ -29,6 +29,15 @@ async def list_courses():
     return course_service.get_all_courses()
 
 
+@router.get("/site-config", summary="Get public dynamic site configuration")
+async def get_courses_site_config(db: AsyncSession = Depends(get_db)):
+    """
+    Returns public site configuration.
+    """
+    from backend.app.api.v1.endpoints.admin import get_public_config
+    return await get_public_config(db=db)
+
+
 @router.get("/enrolled", response_model=List[CourseDetailSchema], summary="Get enrolled courses of current student")
 async def get_enrolled_courses(
     user: dict = Depends(get_current_user),

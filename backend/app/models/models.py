@@ -2,6 +2,7 @@
 SQLAlchemy ORM Database Models for the Platform.
 Complies with BACKEND_SYSTEM_DESIGN.md.
 """
+import json
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from sqlalchemy import (
@@ -30,6 +31,24 @@ class Category(Base):
     display_order = Column(Integer, default=0)
 
     courses = relationship("Course", back_populates="category", cascade="all, delete-orphan")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "name_fa": self.name,
+            "name_ar": self.name,
+            "name_en": self.slug,
+            "slug": self.slug,
+            "description": self.description or "",
+            "description_fa": self.description or "",
+            "description_ar": self.description or "",
+            "description_en": self.description or "",
+            "iconName": self.icon_name or "BookOpen",
+            "icon_name": self.icon_name or "BookOpen",
+            "display_order": self.display_order,
+            "count": len(self.courses) if "courses" in self.__dict__ and self.courses else 0,
+        }
 
 
 class Course(Base):
@@ -526,5 +545,84 @@ class PaymentTransaction(Base):
             "card_mask": self.card_mask,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "paid_at": self.paid_at.isoformat() if self.paid_at else None,
+        }
+
+
+class SiteConfig(Base):
+    __tablename__ = "site_configs"
+
+    key = Column(String(100), primary_key=True, index=True)
+    value_json = Column(Text, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self) -> Dict[str, Any]:
+        try:
+            val = json.loads(self.value_json)
+        except Exception:
+            val = self.value_json
+        return {
+            "key": self.key,
+            "value": val,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else datetime.utcnow().isoformat(),
+        }
+
+
+class ArticleModel(Base):
+    __tablename__ = "articles"
+
+    id = Column(String(50), primary_key=True, index=True)
+    slug = Column(String(100), unique=True, index=True, nullable=False)
+    title_fa = Column(String(255), nullable=False)
+    title_ar = Column(String(255), nullable=True)
+    title_en = Column(String(255), nullable=True)
+    category_fa = Column(String(100), default="فلسفه")
+    category_ar = Column(String(100), nullable=True)
+    category_en = Column(String(100), nullable=True)
+    read_time_fa = Column(String(50), default="۱۰ دقیقه مطالعه")
+    read_time_ar = Column(String(50), nullable=True)
+    read_time_en = Column(String(50), nullable=True)
+    publish_date_fa = Column(String(50), default="۱۴۰۳")
+    publish_date_ar = Column(String(50), nullable=True)
+    publish_date_en = Column(String(50), nullable=True)
+    abstract_fa = Column(Text, nullable=True)
+    abstract_ar = Column(Text, nullable=True)
+    abstract_en = Column(Text, nullable=True)
+    content_fa = Column(Text, nullable=True)
+    content_ar = Column(Text, nullable=True)
+    content_en = Column(Text, nullable=True)
+    pdf_url = Column(String(500), nullable=True)
+    author = Column(String(255), default="حجت الاسلام دکتر زنجیر زن حسینی")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "slug": self.slug,
+            "title": self.title_fa,
+            "title_fa": self.title_fa,
+            "title_ar": self.title_ar or self.title_fa,
+            "title_en": self.title_en or self.title_fa,
+            "category": self.category_fa,
+            "category_fa": self.category_fa,
+            "category_ar": self.category_ar or self.category_fa,
+            "category_en": self.category_en or self.category_fa,
+            "readTime": self.read_time_fa,
+            "readTime_fa": self.read_time_fa,
+            "readTime_ar": self.read_time_ar or self.read_time_fa,
+            "readTime_en": self.read_time_en or self.read_time_fa,
+            "publishDate": self.publish_date_fa,
+            "publishDate_fa": self.publish_date_fa,
+            "publishDate_ar": self.publish_date_ar or self.publish_date_fa,
+            "publishDate_en": self.publish_date_en or self.publish_date_fa,
+            "abstract": self.abstract_fa or "",
+            "abstract_fa": self.abstract_fa or "",
+            "abstract_ar": self.abstract_ar or self.abstract_fa or "",
+            "abstract_en": self.abstract_en or self.abstract_fa or "",
+            "content_fa": self.content_fa or "",
+            "content_ar": self.content_ar or "",
+            "content_en": self.content_en or "",
+            "pdf_url": self.pdf_url or "",
+            "author": self.author,
+            "created_at": self.created_at.isoformat() if self.created_at else datetime.utcnow().isoformat(),
         }
 

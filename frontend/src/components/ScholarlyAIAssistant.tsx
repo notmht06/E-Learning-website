@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 import { apiClient } from '@/services/apiClient';
 
 interface Message {
@@ -42,18 +43,22 @@ interface Message {
   timestamp: string;
 }
 
-const getInitialWelcome = (lang: string): Message => ({
+const getInitialWelcome = (lang: string, siteConfig?: any): Message => ({
   id: 'welcome',
   role: 'assistant',
   content:
-    lang === 'en'
+    lang === 'fa' && siteConfig?.ai_welcome_message
+      ? siteConfig.ai_welcome_message
+      : lang === 'en'
       ? 'Greetings. I am the Scholarly AI Assistant grounded in the rational treatises and lectures of Hojjat al-Islam Dr. Zanjirzan Hosseini. You may ask philosophical questions, upload treatises for inspection, or record voice queries.'
       : lang === 'ar'
       ? 'أهلاً بكم. أنا المساعد الذكي المستند إلى أبحاث ودروس سماحة حجت الاسلام دکتر زنجیر زن حسینی. يمكنكم طرح الأسئلة الفلسفية أو رفع الملفات للتحليل أو التسجيل الصوتي.'
       : 'سلام و درود. من دستیار هوشمند علمی پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید پرسش‌های علمی و فلسفی خود را مطرح کنید، فایل متنی بارگذاری نمایید یا به صورت صوتی گفتگو فرمایید.',
   timestamp: lang === 'en' ? 'Just now' : lang === 'ar' ? 'الآن' : 'هم‌اکنون',
   suggestedFollowups:
-    lang === 'en'
+    (lang === 'fa' && Array.isArray(siteConfig?.suggested_questions) && siteConfig.suggested_questions.length > 0)
+      ? siteConfig.suggested_questions
+      : lang === 'en'
       ? [
           'What are the proofs for the Principality of Existence in Asfar?',
           'What is the structure of lights in Suhrawardi’s Illuminationism?',
@@ -74,8 +79,9 @@ const getInitialWelcome = (lang: string): Message => ({
 
 export function ScholarlyAIAssistant() {
   const { currentLang, dict, toLocale } = useLanguage();
+  const { siteConfig } = useData();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([getInitialWelcome(currentLang)]);
+  const [messages, setMessages] = useState<Message[]>([getInitialWelcome(currentLang, siteConfig)]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeSubject, setActiveSubject] = useState<string>('همه');
@@ -84,11 +90,11 @@ export function ScholarlyAIAssistant() {
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length === 1 && (prev[0].id === 'welcome' || prev[0].id === 'welcome-reset')) {
-        return [getInitialWelcome(currentLang)];
+        return [getInitialWelcome(currentLang, siteConfig)];
       }
       return prev;
     });
-  }, [currentLang]);
+  }, [currentLang, siteConfig]);
 
   const subjectOptions = useMemo(() => {
     if (currentLang === 'en') {
@@ -311,6 +317,7 @@ export function ScholarlyAIAssistant() {
           file_context: uploadedFile?.content,
           file_name: uploadedFile?.name,
           lang: currentLang,
+          strict_corpus_only: siteConfig?.strict_corpus_only ?? true,
         },
         (liveAccumulatedText) => {
           if (!controller.signal.aborted) {

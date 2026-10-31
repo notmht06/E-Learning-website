@@ -6,3 +6,6 @@ export * from './AdminCategoriesTab';
 export * from './AdminCouponsTab';
 export * from './AdminMediaTab';
 export * from './AdminOrdersTab';
+export * from './AdminArticlesTab';
+export * from './AdminQATab';
+export * from './AdminSettingsTab';

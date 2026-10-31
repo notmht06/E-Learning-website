@@ -101,6 +101,10 @@ class AdminService:
                     db_course.course_type = data["course_type"]
                 if "capacity" in data and data["capacity"] is not None:
                     db_course.capacity = data["capacity"]
+                if "skyroom_url" in data and data["skyroom_url"] is not None:
+                    db_course.skyroom_url = data["skyroom_url"]
+                if "schedule" in data and data["schedule"] is not None:
+                    db_course.schedule = data["schedule"]
                 if "cover_image" in data and data["cover_image"] is not None:
                     db_course.cover_image = data["cover_image"]
                 await db.flush()

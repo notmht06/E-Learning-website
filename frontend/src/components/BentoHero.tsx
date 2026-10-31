@@ -10,6 +10,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 import { AudioCourse } from '@/lib/data';
 import { getScholarName } from '@/lib/constants';
 import { HeroInstantSearch } from './home/HeroInstantSearch';
@@ -20,11 +21,35 @@ interface BentoHeroProps {
 }
 
 export function BentoHero({}: BentoHeroProps) {
-  const { currentLang, dict, localizeHref = (p) => p } = useLanguage();
+  const { currentLang, dict, toLocale, localizeHref = (p) => p } = useLanguage();
+  const { siteConfig } = useData();
 
-  const heroBadge = dict.hero_badge || 'پایگاه رسمی نشر آثار فلسفی';
-  const scholarTitle = dict.scholar_name || getScholarName(currentLang);
-  const subtitle = dict.hero_subtitle || 'مرکز نشر کتاب‌ها و آثار تخصصی فلسفه و کلام اسلامی و آرشیو جامع دوره‌های آموزشی.';
+  const heroBadge =
+    (currentLang === 'fa' && siteConfig?.hero_title_fa)
+      ? siteConfig.hero_title_fa
+      : (currentLang === 'ar' && siteConfig?.hero_title_ar)
+      ? siteConfig.hero_title_ar
+      : (currentLang === 'en' && siteConfig?.hero_title_en)
+      ? siteConfig.hero_title_en
+      : (dict.hero_badge || 'پایگاه رسمی نشر آثار فلسفی');
+
+  const scholarTitle =
+    (currentLang === 'fa' && siteConfig?.scholar_name_fa)
+      ? siteConfig.scholar_name_fa
+      : (currentLang === 'ar' && siteConfig?.scholar_name_ar)
+      ? siteConfig.scholar_name_ar
+      : (currentLang === 'en' && siteConfig?.scholar_name_en)
+      ? siteConfig.scholar_name_en
+      : (dict.scholar_name || getScholarName(currentLang));
+
+  const subtitle =
+    (currentLang === 'fa' && siteConfig?.hero_subtitle_fa)
+      ? siteConfig.hero_subtitle_fa
+      : (currentLang === 'ar' && siteConfig?.hero_subtitle_ar)
+      ? siteConfig.hero_subtitle_ar
+      : (currentLang === 'en' && siteConfig?.hero_subtitle_en)
+      ? siteConfig.hero_subtitle_en
+      : (dict.hero_subtitle || 'مرکز نشر کتاب‌ها و آثار تخصصی فلسفه و کلام اسلامی و آرشیو جامع دوره‌های آموزشی.');
 
   const coursesBtn = dict.hero_all_courses_btn || dict.nav_courses || 'مشاهده آرشیو دوره‌ها';
   const roadmapBtn = dict.hero_roadmap_btn || dict.nav_roadmap || 'سیر مطالعاتی گام‌به‌گام';
@@ -106,7 +131,7 @@ export function BentoHero({}: BentoHeroProps) {
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
               <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
-                {dict.hero_stat_1_num || '۱۶۰+'}
+                {siteConfig?.stat_sessions ? `${toLocale(siteConfig.stat_sessions)}+` : (dict.hero_stat_1_num || '۱۶۰+')}
               </span>
               <Layers className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
             </div>
@@ -122,7 +147,7 @@ export function BentoHero({}: BentoHeroProps) {
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
               <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
-                {dict.hero_stat_2_num || '۸'}
+                {siteConfig?.stat_books ? toLocale(siteConfig.stat_books) : (dict.hero_stat_2_num || '۸')}
               </span>
               <Compass className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
             </div>
@@ -138,7 +163,7 @@ export function BentoHero({}: BentoHeroProps) {
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
               <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
-                {dict.hero_stat_3_num || '۱۰۰٪'}
+                {siteConfig?.stat_students ? `${toLocale(siteConfig.stat_students)}+` : (dict.hero_stat_3_num || '۱۰۰٪')}
               </span>
               <CheckCircle2 className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
             </div>

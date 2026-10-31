@@ -150,12 +150,16 @@ export interface StudyNote {
 export interface QADiscussion {
   id: string;
   course_id: string;
+  chapter_id?: number;
+  user_id?: string;
   user_name: string;
   title: string;
   question_text: string;
   answer_text?: string;
-  is_resolved: boolean;
+  is_resolved?: boolean;
+  is_answered?: boolean;
   created_at: string;
+  answered_at?: string;
 }
 
 export interface AdminKPIAnalytics {
