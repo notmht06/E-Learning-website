@@ -60,7 +60,7 @@ export function CourseSyllabusList({
                       : 'bg-zinc-100 dark:bg-zinc-800 hover:bg-[#8A532B] hover:text-white text-zinc-700 dark:text-zinc-200'
                   }`}
                   title={dict.btn_sample_lecture_play}
-                  aria-label="پخش صوت جلسه"
+                  aria-label={dict.btn_sample_lecture_play}
                 >
                   {isCurrent ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ps-0.5" />}
                 </button>
@@ -71,7 +71,7 @@ export function CourseSyllabusList({
                     </span>
                     {isSample && (
                       <span className="px-2 py-0.5 rounded bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-xs font-bold">
-                        {currentLang === 'en' ? 'Free Preview' : currentLang === 'ar' ? 'معاينة مجانية' : 'نمونه رایگان'}
+                        {dict.course_session_free}
                       </span>
                     )}
                   </div>

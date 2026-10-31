@@ -222,7 +222,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
               rel="noreferrer"
               className="text-xs px-3 py-2 rounded-lg bg-[#8A532B]/10 text-[#8A532B] font-bold"
             >
-              {dict.support_telegram_admin || 'تلگرام (@Hekkmat7)'}
+              {dict.support_telegram_admin}
             </a>
             <a
               href={siteConfig?.eitaa_channel || "https://eitaa.com/Hekkmat7"}
@@ -230,7 +230,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
               rel="noreferrer"
               className="text-xs px-3 py-2 rounded-lg bg-[#8A532B]/10 text-[#8A532B] font-bold"
             >
-              {dict.support_eitaa_admin || 'ایتا (@Hekkmat7)'}
+              {dict.support_eitaa_admin}
             </a>
           </div>
         </div>

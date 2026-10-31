@@ -173,12 +173,12 @@ class ApiClient {
         body: JSON.stringify({ user_id: userId, course_id: courseId, chapter_id: chapterId }),
       }),
 
-    heartbeat: (token: string, userId: string, courseId: string, chapterId: number, playbackPositionSec: number) =>
+    heartbeat: (token: string, userId?: string, courseId?: string, chapterId?: number, playbackPositionSec?: number) =>
       this.request<{ valid: boolean; next_heartbeat_in_seconds: number; watermark: string }>('/stream/heartbeat', {
         method: 'POST',
         body: JSON.stringify({
           token,
-          user_id: userId,
+          ...(userId ? { user_id: userId } : {}),
           course_id: courseId,
           chapter_id: chapterId,
           playback_position_sec: playbackPositionSec,

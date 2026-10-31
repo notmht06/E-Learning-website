@@ -95,12 +95,12 @@ export default function ArticlesPage() {
             </span>
           </div>
 
+          {/* Scholar official identity: حجت الاسلام دکتر زنجیر زن حسینی */}
           <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
             {dict.articles_home_title}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-            {dict.articles_home_desc ||
-              'مجموعه مقالات تخصصی و آثار تحلیلی تبیین‌شده توسط حجت الاسلام دکتر زنجیر زن حسینی در تراز آکادمیک و حوزوی.'}
+            {dict.articles_home_desc}
           </p>
         </div>
 

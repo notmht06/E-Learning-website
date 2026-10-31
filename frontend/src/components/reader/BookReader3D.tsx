@@ -475,10 +475,10 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
             <div className="space-y-2 max-h-80 overflow-y-auto pe-1">
               {[
-                { page: 0, title: currentLang === 'en' ? 'Hardcover Edition' : currentLang === 'ar' ? 'الغلاف وتفاصيل الكتاب' : 'جلد نفیس و معرفی اثر', desc: currentLang === 'en' ? 'Vaziri Format' : 'قطع وزیری' },
-                { page: 1, title: currentLang === 'en' ? 'Preface & Prolegomena' : currentLang === 'ar' ? 'تصدير المؤلف والمقدمة' : 'دیباچه مؤلف و مقدمه ناشر', desc: currentLang === 'en' ? 'Pages 12-15' : currentLang === 'ar' ? 'ص ١٢ - ١٥' : 'ص ۱۲ تا ۱۵' },
-                { page: 2, title: currentLang === 'en' ? 'Chapter 1: Existence & Quiddity' : currentLang === 'ar' ? 'الفصل الأول: تمايز الوجود والماهية' : 'فصل اول: تمایز وجود و ماهیت', desc: currentLang === 'en' ? 'Pages 16-25' : currentLang === 'ar' ? 'ص ١٦ - ٢٥' : 'ص ۱۶ تا ۲۵' },
-                { page: 3, title: currentLang === 'en' ? 'Chapter 2: Gradation of Being' : currentLang === 'ar' ? 'الفصل الثاني: تشكيك الوجود والأنوار' : 'فصل دوم: تشکیک وجود و انوار', desc: currentLang === 'en' ? 'Pages 26-38' : currentLang === 'ar' ? 'ص ٢٦ - ٣٨' : 'ص ۲۶ تا ۳۸' },
+                { page: 0, title: dict.book_reader_toc_cover_title, desc: dict.book_reader_toc_cover_desc },
+                { page: 1, title: dict.book_reader_toc_preface_title, desc: dict.book_reader_toc_preface_desc },
+                { page: 2, title: dict.book_reader_toc_ch1_title, desc: dict.book_reader_toc_ch1_desc },
+                { page: 3, title: dict.book_reader_toc_ch2_title, desc: dict.book_reader_toc_ch2_desc },
               ].map(item => (
                 <button
                   key={item.page}
@@ -506,11 +506,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
         <div className="px-4 py-2 bg-[#8A532B]/10 border-b border-[#8A532B]/20 text-center flex items-center justify-center gap-2 text-xs text-[#E6CA85] shrink-0">
           <Info className="w-3.5 h-3.5 text-[#E6CA85] shrink-0" />
           <span>
-            {currentLang === 'en'
-              ? 'Previewing free sample pages • To receive the complete 385-page luxury hardcover volume, please place an order.'
-              : currentLang === 'ar'
-              ? 'تصفح عينة مجانية (الفصل الأول) • لطلب النسخة الورقية الكاملة الفاخرة (٣٨٥ صفحة)، يُرجى تأكيد الطلب.'
-              : 'در حال مشاهده نمونه صفحات رایگان کتاب (فصل اول) • برای دریافت تمام ۳۸۵ صفحه نسخه چاپی نفیس، لطفاً سفارش خود را ثبت فرمایید.'}
+            {dict.book_reader_sample_notice}
           </span>
           {onAddToBag && (
             <button
@@ -680,7 +676,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                 currentPage === 0 ? 'bg-[#8A532B] text-white shadow-xs' : 'bg-stone-800 text-stone-400 hover:text-white'
               }`}
             >
-              {currentLang === 'en' ? 'Cover' : currentLang === 'ar' ? 'الغلاف' : 'جلد کتاب'}
+              {dict.book_reader_cover_btn}
             </button>
             {[1, 2, 3].map(p => (
               <button
@@ -724,7 +720,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                 onClick={() => setIsNoteModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-stone-400 hover:text-white"
               >
-                {currentLang === 'en' ? 'Cancel' : currentLang === 'ar' ? 'إلغاء' : 'انصراف'}
+                {dict.ui_cancel}
               </button>
               <button
                 onClick={handleSaveMarginNote}

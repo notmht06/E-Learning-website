@@ -80,7 +80,7 @@ export function CourseEnrollmentCard({
         <div className="space-y-3">
           <div className="p-3.5 rounded-xl bg-[#8A532B]/10 border border-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43] text-xs sm:text-sm font-bold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-            <span>{currentLang === 'en' ? 'Enrolled. All sessions are unlocked.' : currentLang === 'ar' ? 'تم التسجيل في هذه الدورة. جميع الجلسات متاحة.' : 'ثبت‌نام شده • تمامی جلسات باز است'}</span>
+            <span>{dict.course_enrolled_all_sessions}</span>
           </div>
 
           {courseType === 'online' && skyroomUrl && (
@@ -91,7 +91,7 @@ export function CourseEnrollmentCard({
               className="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
             >
               <Radio className="w-4 h-4 text-emerald-300" />
-              <span>{currentLang === 'en' ? 'Enter Live Skyroom Class' : currentLang === 'ar' ? 'الدخول إلى الصف المباشر (سكاي روم)' : 'ورود به کلاس آنلاین (اسکای‌روم)'}</span>
+              <span>{dict.course_enter_live_skyroom}</span>
             </a>
           )}
 
@@ -100,7 +100,7 @@ export function CourseEnrollmentCard({
             className="w-full py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>{currentLang === 'en' ? 'Enter Course Player & Archive' : currentLang === 'ar' ? 'دخول بيئة التعلم ومشاهدة التسجيلات' : 'محیط یادگیری و جلسات ضبط‌شده'}</span>
+            <span>{dict.course_enter_player_archive}</span>
           </Link>
         </div>
       ) : (
@@ -122,7 +122,7 @@ export function CourseEnrollmentCard({
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-          <span>{currentLang === 'en' ? 'Direct scholarly interaction' : currentLang === 'ar' ? 'المباحثة العلمية مع الأستاذ' : 'امکان پرسش و پاسخ کتبی با استاد'}</span>
+          <span>{dict.course_direct_interaction}</span>
         </div>
       </div>
 

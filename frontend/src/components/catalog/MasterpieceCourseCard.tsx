@@ -36,47 +36,47 @@ interface MasterpieceCourseCardProps {
   onPlaySample?: () => void;
 }
 
-function getDisciplineBanner(subject: string = '', lang: string = 'fa') {
+function getDisciplineBanner(subject: string = '', dict: Record<string, string>) {
   const s = subject.trim().toLowerCase();
   if (s.includes('منطق') || s.includes('logic')) {
     return {
       gradient: 'bg-gradient-to-br from-[#1E2D4A] via-[#152035] to-[#0D1422]',
       accent: '#7EB0EA',
-      label: lang === 'en' ? 'Logic & Epistemology' : lang === 'ar' ? 'المنطق والمناهج' : 'منطق و روش‌شناسی',
+      label: dict.discipline_mantiq,
     };
   }
   if (s.includes('کلام') || s.includes('theology')) {
     return {
       gradient: 'bg-gradient-to-br from-[#163326] via-[#0F231A] to-[#08140E]',
       accent: '#5EEAD4',
-      label: lang === 'en' ? 'Rational Theology' : lang === 'ar' ? 'علم الكلام والعقائد' : 'کلام و عقاید عقلی',
+      label: dict.discipline_kalam,
     };
   }
   if (s.includes('عرفان') || s.includes('mysticism')) {
     return {
       gradient: 'bg-gradient-to-br from-[#3B1824] via-[#281018] to-[#14080C]',
       accent: '#F472B6',
-      label: lang === 'en' ? 'Theoretical Mysticism' : lang === 'ar' ? 'العرفان النظري' : 'عرفان نظری و سلوک',
+      label: dict.discipline_irfan,
     };
   }
   if (s.includes('اصول') || s.includes('فقه') || s.includes('jurisprudence')) {
     return {
       gradient: 'bg-gradient-to-br from-[#382818] via-[#251A10] to-[#150F09]',
       accent: '#E0A96D',
-      label: lang === 'en' ? 'Jurisprudence & Usul' : lang === 'ar' ? 'أصول الفقه والاجتهاد' : 'اصول فقه و اجتهاد',
+      label: dict.discipline_usul,
     };
   }
   if (s.includes('تفسیر') || s.includes('tafsir') || s.includes('quran')) {
     return {
       gradient: 'bg-gradient-to-br from-[#143038] via-[#0D2026] to-[#071317]',
       accent: '#2DD4BF',
-      label: lang === 'en' ? 'Rational Exegesis' : lang === 'ar' ? 'التفسير العقلي' : 'تفسیر عقلی قرآن',
+      label: dict.discipline_exegesis,
     };
   }
   return {
     gradient: 'bg-gradient-to-br from-[#3D2314] via-[#2A180E] to-[#170C06]',
     accent: '#C58B43',
-    label: lang === 'en' ? 'Transcendent Philosophy' : lang === 'ar' ? 'الحكمة المتعالية والفلسفة' : 'فلسفه و حکمت متعالیه',
+    label: dict.discipline_hikmat,
   };
 }
 
@@ -133,7 +133,7 @@ export function MasterpieceCourseCard({
       ? `CRS-${paddedIndex}`
       : `CRS-${toLocale(paddedIndex)}`;
 
-  const discipline = getDisciplineBanner(course.subject, currentLang);
+  const discipline = getDisciplineBanner(course.subject, dict);
 
   const sessionsSuffix =
     currentLang === 'en'
@@ -219,7 +219,7 @@ export function MasterpieceCourseCard({
               </span>
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-amber-200/70 font-mono">
                 <span>•</span>
-                <span className="tracking-widest">
+                <span>
                   {dict.ui_official_lecture}
                 </span>
                 <span>•</span>

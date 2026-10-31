@@ -43,18 +43,14 @@ interface Message {
   timestamp: string;
 }
 
-const getInitialWelcome = (lang: string, siteConfig?: any): Message => ({
+const getInitialWelcome = (lang: string, siteConfig?: any, dict?: Record<string, string>): Message => ({
   id: 'welcome',
   role: 'assistant',
   content:
-    lang === 'fa' && siteConfig?.ai_welcome_message
+    (lang === 'fa' && siteConfig?.ai_welcome_message)
       ? siteConfig.ai_welcome_message
-      : lang === 'en'
-      ? 'Greetings. I am the Scholarly AI Assistant grounded in the rational treatises and lectures of Hojjat al-Islam Dr. Zanjirzan Hosseini. You may ask philosophical questions, upload treatises for inspection, or record voice queries.'
-      : lang === 'ar'
-      ? 'أهلاً بكم. أنا المساعد الذكي المستند إلى أبحاث ودروس سماحة حجت الاسلام دکتر زنجیر زن حسینی. يمكنكم طرح الأسئلة الفلسفية أو رفع الملفات للتحليل أو التسجيل الصوتي.'
-      : 'سلام و درود. من دستیار هوشمند علمی پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید پرسش‌های علمی و فلسفی خود را مطرح کنید، فایل متنی بارگذاری نمایید یا به صورت صوتی گفتگو فرمایید.',
-  timestamp: lang === 'en' ? 'Just now' : lang === 'ar' ? 'الآن' : 'هم‌اکنون',
+      : (dict ? dict.ai_welcome_default_greeting : ''),
+  timestamp: dict ? dict.ui_just_now : '',
   suggestedFollowups:
     (lang === 'fa' && Array.isArray(siteConfig?.suggested_questions) && siteConfig.suggested_questions.length > 0)
       ? siteConfig.suggested_questions
@@ -81,7 +77,7 @@ export function ScholarlyAIAssistant() {
   const { currentLang, dict, toLocale } = useLanguage();
   const { siteConfig } = useData();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([getInitialWelcome(currentLang, siteConfig)]);
+  const [messages, setMessages] = useState<Message[]>([getInitialWelcome(currentLang, siteConfig, dict)]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeSubject, setActiveSubject] = useState<string>('همه');
@@ -90,11 +86,11 @@ export function ScholarlyAIAssistant() {
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length === 1 && (prev[0].id === 'welcome' || prev[0].id === 'welcome-reset')) {
-        return [getInitialWelcome(currentLang, siteConfig)];
+        return [getInitialWelcome(currentLang, siteConfig, dict)];
       }
       return prev;
     });
-  }, [currentLang, siteConfig]);
+  }, [currentLang, siteConfig, dict]);
 
   const subjectOptions = useMemo(() => {
     if (currentLang === 'en') {
@@ -662,7 +658,7 @@ export function ScholarlyAIAssistant() {
                         ? 'bg-[#8A532B] text-white ring-2 ring-[#8A532B]/30 shadow-sm'
                         : 'bg-stone-100 dark:bg-neutral-800 text-stone-600 dark:text-stone-300 hover:text-[#8A532B]'
                     }`}
-                    title={isRecording ? (currentLang === 'en' ? 'Stop recording' : 'توقف ضبط صوت') : (currentLang === 'en' ? 'Voice query' : 'پرسش صوتی (تبدیل گفتار به متن)')}
+                    title={isRecording ? dict.ai_stop_recording : dict.ai_start_recording}
                   >
                     {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </button>

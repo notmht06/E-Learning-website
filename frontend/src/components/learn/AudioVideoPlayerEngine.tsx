@@ -216,7 +216,7 @@ export function AudioVideoPlayerEngine({
 
       if (drmToken) {
         apiClient.stream
-          .heartbeat(drmToken, user?.id || 'guest-scholar', courseId, chapterId, Math.floor(sec))
+          .heartbeat(drmToken, user?.id, courseId, chapterId, Math.floor(sec))
           .catch((err) => {
             console.warn('DRM heartbeat error:', err);
             if (err?.status === 403 || err?.message?.includes('403')) {
@@ -225,6 +225,9 @@ export function AudioVideoPlayerEngine({
                 activeEl.pause();
                 setIsPlaying(false);
               }
+              import('sonner').then(({ toast }) => {
+                toast.error(dict.drm_session_expired);
+              });
             }
           });
       }
