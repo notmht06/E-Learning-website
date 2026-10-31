@@ -7,7 +7,6 @@ import { Navbar } from '@/components/Navbar';
 import { CartModal } from '@/components/CartModal';
 import { MasterpieceBookCard } from '@/components/catalog/MasterpieceBookCard';
 import { CategoryTabStrip, TabItem } from '@/components/ui/CategoryTabStrip';
-import { CompactHorizontalCard } from '@/components/ui/CompactHorizontalCard';
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
@@ -43,8 +42,6 @@ export default function BooksPage() {
         books_count_suffix: 'Titles',
         empty_title: 'No books found',
         empty_desc: 'Please try searching with different keywords or categories.',
-        featured_eyebrow: '[ Rare Monographs & Seminal Publications ]',
-        featured_title: dict.catalog_books_featured_heading || 'Dar al-Hikmah Publications & Printed Works',
         categories_aria: 'Book subject categories',
       };
     }
@@ -61,8 +58,6 @@ export default function BooksPage() {
         books_count_suffix: 'عنوان كتاب',
         empty_title: 'لم يتم العثور على مصنفات',
         empty_desc: 'يرجى تجربة كلمات بحث أو تصنيفات أخرى.',
-        featured_eyebrow: '[ الرسائل والمونوغرافات البارزة ]',
-        featured_title: dict.catalog_books_featured_heading || 'آثار ومنشورات دار الحكمة المطبوعة',
         categories_aria: 'تصنيفات الكتب الموضوعية',
       };
     }
@@ -78,8 +73,6 @@ export default function BooksPage() {
       books_count_suffix: 'عنوان کتاب',
       empty_title: 'کتابی یافت نشد',
       empty_desc: 'لطفاً عبارات جستجو یا دسته‌بندی‌های دیگر را امتحان کنید.',
-      featured_eyebrow: '[ رسائل برگزیده و نسخ ویژه ]',
-      featured_title: dict.catalog_books_featured_heading || 'آثار و انتشارات مکتوب دارالحکمة',
       categories_aria: 'دسته‌بندی موضوعی کتب',
     };
   }, [currentLang, dict]);
@@ -119,11 +112,6 @@ export default function BooksPage() {
       return matchesSearch && matchesCat;
     });
   }, [allBooksList, currentLang, searchQuery, selectedCategory]);
-
-  // Featured Books (first 2-3 books)
-  const featuredBooks = useMemo(() => {
-    return allBooksList.slice(0, 3);
-  }, [allBooksList]);
 
   const handleAddToBag = (title: string, price: string) => {
     addItem({
@@ -213,26 +201,6 @@ export default function BooksPage() {
               {t.empty_desc}
             </p>
           </div>
-        )}
-
-        {/* Secondary "Featured" Row Separated by Thin Lines */}
-        {featuredBooks.length > 0 && (
-          <section className="pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-4">
-            <div className="space-y-1">
-              <span className="text-xs font-mono text-[#8A532B] dark:text-[#C58B43] font-bold block">
-                {t.featured_eyebrow}
-              </span>
-              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-                {t.featured_title}
-              </h2>
-            </div>
-
-            <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] rounded-2xl overflow-hidden shadow-xs">
-              {featuredBooks.map((fb) => (
-                <CompactHorizontalCard key={`featured-book-${fb.id}`} book={fb} />
-              ))}
-            </div>
-          </section>
         )}
       </main>
 

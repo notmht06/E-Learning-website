@@ -64,7 +64,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
     const viewText = currentLang === 'en' ? 'View' : currentLang === 'ar' ? 'مشاهدة' : 'مشاهده دوره';
 
     return (
-      <div className="p-3.5 sm:p-4.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141518] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 hover:shadow-lg transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
+      <div className="p-3.5 sm:p-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141518] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 hover:shadow-lg transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
         
         {/* 16:9 Thumbnail Preview */}
         <div className="relative w-full sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-[#0C0D0E] border border-zinc-200/80 dark:border-zinc-800/80 select-none">
@@ -118,7 +118,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
               <img
                 src="/images/ostad_zanjirzan.jpg"
                 alt={dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
-                className="w-4.5 h-4.5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
+                className="w-5 h-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
               />
               <span className="text-[11px] font-medium truncate max-w-[180px] sm:max-w-none">
                 {dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
@@ -192,7 +192,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
     const viewText = currentLang === 'en' ? 'Details' : currentLang === 'ar' ? 'التفاصيل' : 'مشاهده رساله';
 
     return (
-      <div className="p-3.5 sm:p-4.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141518] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 hover:shadow-lg transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
+      <div className="p-3.5 sm:p-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141518] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 hover:shadow-lg transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 rtl:hover:-translate-x-1 group">
         
         {/* Cover Preview */}
         <div className="relative w-full sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-zinc-900 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center p-2 text-center">
@@ -237,7 +237,7 @@ export function CompactHorizontalCard({ course, book }: CompactHorizontalCardPro
             <img
               src="/images/ostad_zanjirzan.jpg"
               alt={dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
-              className="w-4.5 h-4.5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
+              className="w-5 h-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
             />
             <span className="text-[11px] font-medium">
               {dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}

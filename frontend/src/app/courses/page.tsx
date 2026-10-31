@@ -16,7 +16,6 @@ import {
 import { Navbar } from '@/components/Navbar';
 import { CartModal } from '@/components/CartModal';
 import { CourseCard } from '@/components/ui/CourseCard';
-import { CompactHorizontalCard } from '@/components/ui/CompactHorizontalCard';
 import { CourseCatalogSidebar } from '@/components/catalog/CourseCatalogSidebar';
 import { CourseCatalogMobileFilterDrawer } from '@/components/catalog/CourseCatalogMobileFilterDrawer';
 import { usePlayer } from '@/context/PlayerContext';
@@ -82,8 +81,6 @@ function CoursesContent() {
         all_subjects: 'All Subjects',
         empty_title: 'No courses found matching your criteria',
         empty_desc: 'Try adjusting your search terms or clearing your filters.',
-        featured_eyebrow: '[ Selected Scholarly Chairs ]',
-        featured_title: dict.catalog_featured_heading || 'Featured Discourses & Special Debates',
         mobile_filter_btn: dict.catalog_filter_mobile_btn || 'Filters',
         sort_label: dict.catalog_sort_label || 'Sort by:',
         sort_default: dict.catalog_sort_default || 'Default',
@@ -120,8 +117,6 @@ function CoursesContent() {
         all_subjects: 'جميع الفروع',
         empty_title: 'لم يتم العثور على دروس مطابقة',
         empty_desc: 'يرجى تجربة كلمات بحث أو فلاتر أخرى.',
-        featured_eyebrow: '[ كراسی تدريسية بارزة ومختارة ]',
-        featured_title: dict.catalog_featured_heading || 'الدروس البارزة والمباحثات الخاصة',
         mobile_filter_btn: dict.catalog_filter_mobile_btn || 'الفلاتر',
         sort_label: dict.catalog_sort_label || 'الترتيب:',
         sort_default: dict.catalog_sort_default || 'الكل',
@@ -157,8 +152,6 @@ function CoursesContent() {
       all_subjects: 'همه شاخه‌ها',
       empty_title: 'دوره‌ای با این مشخصات یافت نشد',
       empty_desc: 'لطفاً عبارات جستجو یا فیلترهای دیگر را امتحان کنید.',
-      featured_eyebrow: '[ کرسی‌های برجسته و منتخب ]',
-      featured_title: dict.catalog_featured_heading || 'درس‌گفتارهای شاخص و مباحثات ویژه',
       mobile_filter_btn: dict.catalog_filter_mobile_btn || 'فیلترها',
       sort_label: dict.catalog_sort_label || 'مرتب‌سازی:',
       sort_default: dict.catalog_sort_default || 'همه',
@@ -246,11 +239,6 @@ function CoursesContent() {
   const displayedCourses = useMemo(() => {
     return sortedCourses.slice(0, visibleCount);
   }, [sortedCourses, visibleCount]);
-
-  // Featured Courses
-  const featuredCourses = useMemo(() => {
-    return uniqueCourses.slice(0, 3);
-  }, [uniqueCourses]);
 
   const getCategoryDisplayName = (subjectName: string) => {
     const cat = categories.find(
@@ -574,26 +562,6 @@ function CoursesContent() {
             />
           </div>
         </div>
-
-        {/* Secondary "Featured" Row Separated by Thin Lines */}
-        {featuredCourses.length > 0 && (
-          <section className="pt-10 border-t border-[#E6E1D8] dark:border-[#24262D] space-y-4">
-            <div className="space-y-1">
-              <span className="text-xs font-mono text-[#8A532B] dark:text-[#C58B43] font-bold block">
-                {t.featured_eyebrow}
-              </span>
-              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-                {t.featured_title}
-              </h2>
-            </div>
-
-            <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] rounded-2xl overflow-hidden shadow-xs">
-              {featuredCourses.map((fc) => (
-                <CompactHorizontalCard key={`featured-${fc.id}`} course={fc} />
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
       {/* Mobile Filter Drawer */}
