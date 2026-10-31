@@ -14,7 +14,7 @@ export type TranslationKey = keyof typeof fa;
  * تایپ سخت‌گیرانه دیکشنری جهت تضمین تقارن ۱۰۰٪ کلیدها در تمامی زبان‌ها
  * همراه با پشتیبانی از کلیدهای داینامیک قالبی
  */
-export type Dictionary = Record<TranslationKey, string> & Record<string, string>;
+export type Dictionary = Record<TranslationKey, string>;
 
 /**
  * ساختار کانتکست بین‌المللی‌سازی سامانه

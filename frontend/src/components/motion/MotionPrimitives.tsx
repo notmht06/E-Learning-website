@@ -77,7 +77,7 @@ export const FluidTabs: React.FC<FluidTabsProps> = ({
             <span>{tab.label}</span>
             {tab.count !== undefined && (
               <span
-                className={`text-[10px] px-2 py-0.2 rounded-full font-num transition-colors ${
+                className={`text-[11px] px-2 py-0.2 rounded-full font-num transition-colors ${
                   isActive
                     ? 'bg-black/20 text-white dark:text-black dark:bg-white/30'
                     : 'bg-stone-200/80 dark:bg-neutral-800 text-stone-500'

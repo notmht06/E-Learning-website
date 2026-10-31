@@ -42,28 +42,20 @@ export default function ArticlesPage() {
       {
         id: 'all',
         label:
-          currentLang === 'en'
-            ? 'All Treatises'
-            : currentLang === 'ar'
-            ? 'جميع الأبحاث'
-            : 'همه جستارها',
+          dict.ui_all_treatises,
       },
       {
         id: 'فلسفه',
-        label: currentLang === 'en' ? 'Philosophy' : currentLang === 'ar' ? 'الفلسفة' : 'فلسفه',
+        label: dict.ui_philosophy,
       },
       {
         id: 'منطق',
-        label: currentLang === 'en' ? 'Logic' : currentLang === 'ar' ? 'المنطق' : 'منطق',
+        label: dict.ui_logic,
       },
       {
         id: 'عرفان عملی',
         label:
-          currentLang === 'en'
-            ? 'Spiritual Wayfaring'
-            : currentLang === 'ar'
-            ? 'العرفان العملي'
-            : 'عرفان عملی',
+          dict.ui_spiritual_wayfaring,
       },
     ];
   }, [currentLang]);
@@ -95,16 +87,16 @@ export default function ArticlesPage() {
         <div className="border-b border-[#E6E1D8] dark:border-[#22242A] pb-5 space-y-2">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
-              {dict.nav_home || 'صفحه نخست'}
+              {dict.nav_home}
             </Link>
             <span>/</span>
             <span className="text-[#8A532B] dark:text-[#C58B43]">
-              {dict.nav_articles || 'مقالات علمی'}
+              {dict.nav_articles}
             </span>
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
-            {dict.articles_home_title || 'کتابخانه مقالات و جستارهای برهانی'}
+            {dict.articles_home_title}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
             {dict.articles_home_desc ||
@@ -119,11 +111,7 @@ export default function ArticlesPage() {
             <input
               type="text"
               placeholder={
-                currentLang === 'en'
-                  ? 'Search article titles & abstracts...'
-                  : currentLang === 'ar'
-                  ? 'البحث في عناوين وملخصات الأبحاث...'
-                  : 'جستجو در موضوعات و چکیده‌ها...'
+                dict.ui_search_article_titles_abstracts
               }
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -153,25 +141,13 @@ export default function ArticlesPage() {
         {articles.length === 0 ? (
           <EmptyStateCard
             title={
-              currentLang === 'en'
-                ? 'No matching articles found'
-                : currentLang === 'ar'
-                ? 'لم يتم العثور على مقالات مطابقة'
-                : 'مقاله‌ای با این عبارت یافت نشد'
+              dict.ui_no_matching_articles_found
             }
             description={
-              currentLang === 'en'
-                ? 'Try clearing your search filter or selecting another discipline.'
-                : currentLang === 'ar'
-                ? 'يرجى تغيير عبارة البحث أو اختيار تخصص آخر.'
-                : 'لطفاً فیلتر جستجو را تغییر دهید یا شاخه علمی دیگری را انتخاب کنید.'
+              dict.ui_try_clearing_your_search_filter_or_sel
             }
             actionLabel={
-              currentLang === 'en'
-                ? 'Reset Filters'
-                : currentLang === 'ar'
-                ? 'إعادة ضبط الفلتر'
-                : 'نمایش همه مقالات'
+              dict.ui_reset_filters
             }
             onActionClick={() => {
               setSearch('');
@@ -191,7 +167,7 @@ export default function ArticlesPage() {
               return (
                 <Card
                   key={art.id}
-                  className="hover:border-[#8A532B]/50 flex flex-col justify-between space-y-4 transition-all duration-200"
+                  className="hover:border-[#8A532B]/50 flex flex-col justify-between space-y-4 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200"
                 >
                   <CardHeader className="space-y-3 pb-0">
                     <div className="flex items-center justify-between text-xs">
@@ -216,7 +192,7 @@ export default function ArticlesPage() {
                         </CardTitle>
                       </Link>
                       <CardDescription className="text-xs text-zinc-500">
-                        {dict.articles_modal_author || 'نگارنده:'}{' '}
+                        {dict.articles_modal_author}{' '}
                         {dict.scholar_name || SCHOLAR_NAME}
                       </CardDescription>
                     </div>
@@ -241,11 +217,7 @@ export default function ArticlesPage() {
                       >
                         <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
                         <span>
-                          {currentLang === 'en'
-                            ? 'Quick Abstract'
-                            : currentLang === 'ar'
-                            ? 'ملخص سريع'
-                            : 'چکیده سریع'}
+                          {dict.ui_quick_abstract}
                         </span>
                       </Button>
 
@@ -257,11 +229,7 @@ export default function ArticlesPage() {
                       >
                         <Link href={localizeHref(`/articles/${art.slug}`)}>
                           <span>
-                            {currentLang === 'en'
-                              ? 'Read Full Treatise'
-                              : currentLang === 'ar'
-                              ? 'قراءة البحث كاملاً'
-                              : 'مطالعه کامل مقاله'}
+                            {dict.ui_read_full_treatise}
                           </span>
                           <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
                         </Link>
@@ -308,7 +276,7 @@ export default function ArticlesPage() {
             <div className="space-y-4 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
               <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-1.5">
                 <span className="font-bold text-[#8A532B] dark:text-[#C58B43] block text-xs">
-                  {dict.articles_modal_abstract || 'چکیده و مسئله‌شناسی مقاله:'}
+                  {dict.articles_modal_abstract}
                 </span>
                 <p>
                   {getLocalizedArticle(selectedArticle, currentLang)?.abstract ||
@@ -323,7 +291,7 @@ export default function ArticlesPage() {
                 onClick={() => setSelectedArticle(null)}
                 className="px-4 py-2.5 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs font-bold text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
-                {dict.articles_modal_close || 'بستن پنجره'}
+                {dict.articles_modal_close}
               </button>
 
               <Link
@@ -333,11 +301,7 @@ export default function ArticlesPage() {
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>
-                  {currentLang === 'en'
-                    ? 'Open Dedicated Article Page'
-                    : currentLang === 'ar'
-                    ? 'فتح الصفحة الكاملة للبحث'
-                    : 'ورود به صفحه کامل و مطالعه مقاله'}
+                  {dict.ui_open_dedicated_article_page}
                 </span>
                 <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
               </Link>

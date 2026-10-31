@@ -143,7 +143,7 @@ export function AudioVideoPlayerEngine({
 
   const watermarkText =
     serverWatermark ||
-    `${studentIdentifier} • ${dict.scholar_name || 'حجت الاسلام دکتر زنجیر زن حسینی'}`;
+    `${studentIdentifier} • ${dict.scholar_name}`;
 
   const getActiveMediaElement = useCallback((): HTMLMediaElement | null => {
     if (mediaMode === 'video' && videoRef.current && videoUrl && !videoUrl.includes('youtube.com')) {
@@ -217,7 +217,16 @@ export function AudioVideoPlayerEngine({
       if (drmToken) {
         apiClient.stream
           .heartbeat(drmToken, user?.id || 'guest-scholar', courseId, chapterId, Math.floor(sec))
-          .catch((err) => { console.debug('DRM heartbeat error ignored:', err); });
+          .catch((err) => {
+            console.warn('DRM heartbeat error:', err);
+            if (err?.status === 403 || err?.message?.includes('403')) {
+              const activeEl = getActiveMediaElement();
+              if (activeEl) {
+                activeEl.pause();
+                setIsPlaying(false);
+              }
+            }
+          });
       }
     },
     [chapterId, courseId, drmToken, durationSeconds, onProgressSync, user]
@@ -435,7 +444,7 @@ export function AudioVideoPlayerEngine({
       >
         {/* Dynamic Forensic Watermark Layer */}
         <div
-          className={`absolute pointer-events-none transition-all duration-1000 z-30 select-none opacity-60 font-mono text-[10px] sm:text-xs text-[#E6CA85] bg-[#0C0D0E]/85 px-3 py-1 rounded-lg backdrop-blur-xs border border-[#8A532B]/40 ${
+          className={`absolute pointer-events-none transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-1000 z-30 select-none opacity-60 font-mono text-[11px] sm:text-xs text-[#E6CA85] bg-[#0C0D0E]/85 px-3 py-1 rounded-lg backdrop-blur-xs border border-[#8A532B]/40 ${
             watermarkPos === 'top-start'
               ? 'top-4 start-4'
               : watermarkPos === 'top-end'
@@ -454,14 +463,10 @@ export function AudioVideoPlayerEngine({
 
         {/* Auto-Save Progress Indicator Badge */}
         {syncIndicator && (
-          <div className="absolute top-4 start-4 z-30 px-2.5 py-1 rounded-lg bg-[#141518]/90 border border-[#8A532B]/40 text-[#E6CA85] text-[10px] font-mono flex items-center gap-1.5">
+          <div className="absolute top-4 start-4 z-30 px-2.5 py-1 rounded-lg bg-[#141518]/90 border border-[#8A532B]/40 text-[#E6CA85] text-[11px] font-mono flex items-center gap-1.5">
             <CheckCircle2 className="w-3 h-3 text-[#C58B43]" />
             <span>
-              {currentLang === 'en'
-                ? 'Progress synced'
-                : currentLang === 'ar'
-                ? 'تم حفظ التقدم'
-                : 'ذخیره خودکار پیشرفت درس'}
+              {dict.ui_progress_synced}
             </span>
           </div>
         )}
@@ -498,8 +503,8 @@ export function AudioVideoPlayerEngine({
             <button
               type="button"
               onClick={handleTogglePlay}
-              className="w-16 h-16 rounded-full bg-[#8A532B] hover:bg-[#724424] border border-[#C58B43]/40 flex items-center justify-center text-[#FAF8F5] shadow-xl hover:scale-105 active:scale-95 transition cursor-pointer z-20"
-              aria-label={isPlaying ? dict.player_pause || 'توقف' : dict.player_play || 'پخش'}
+              className="w-16 h-16 rounded-full bg-[#8A532B] hover:bg-[#724424] border border-[#C58B43]/40 flex items-center justify-center text-[#FAF8F5] shadow-xl active:scale-95 transition cursor-pointer z-20"
+              aria-label={isPlaying ? dict.player_pause : dict.player_play}
             >
               {isBuffering ? (
                 <Loader2 className="w-7 h-7 animate-spin" />
@@ -566,12 +571,11 @@ export function AudioVideoPlayerEngine({
               onClick={() => skipSeconds(-10)}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
               title={
-                dict.player_skip_10s ||
-                (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
+                dict.player_skip_10s
               }
             >
               <RotateCcw className="w-4 h-4" />
-              <span className="text-[10px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
+              <span className="text-[11px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
             </button>
 
             {/* Play / Pause Toggle */}
@@ -579,7 +583,7 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleTogglePlay}
               className="w-10 h-10 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] flex items-center justify-center transition cursor-pointer shadow-xs"
-              title={isPlaying ? dict.player_pause || 'توقف' : dict.player_play || 'پخش'}
+              title={isPlaying ? dict.player_pause : dict.player_play}
             >
               {isPlaying ? (
                 <Pause className="w-4 h-4 fill-current" />
@@ -594,11 +598,10 @@ export function AudioVideoPlayerEngine({
               onClick={() => skipSeconds(10)}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
               title={
-                dict.player_skip_forward ||
-                (currentLang === 'en' ? '10s Forward' : currentLang === 'ar' ? '١٠ ثوانٍ للأمام' : '۱۰ ثانیه به جلو')
+                dict.player_skip_forward
               }
             >
-              <span className="text-[10px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
+              <span className="text-[11px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
               <RotateCw className="w-4 h-4" />
             </button>
 
@@ -607,7 +610,7 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleToggleMute}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.player_volume || 'صدا'}
+              title={dict.player_volume}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -629,15 +632,15 @@ export function AudioVideoPlayerEngine({
                 }`}
                 title={
                   isCompleted
-                    ? dict.player_completed_badge || (currentLang === 'en' ? 'Completed' : currentLang === 'ar' ? 'تم إكمال الجلسة' : 'جلسه تکمیل شد')
-                    : dict.player_mark_completed || (currentLang === 'en' ? 'Mark as Completed' : currentLang === 'ar' ? 'تحديد كجلسة مكتملة' : 'علامت‌گذاری به عنوان پایان‌یافته')
+                    ? dict.player_completed_badge
+                    : dict.player_mark_completed
                 }
               >
                 <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#C58B43]' : 'text-zinc-500'}`} />
                 <span className="hidden sm:inline">
                   {isCompleted
-                    ? dict.player_completed_badge || (currentLang === 'en' ? 'Completed' : currentLang === 'ar' ? 'تم إكمال الجلسة' : 'جلسه تکمیل شد')
-                    : dict.player_mark_completed || (currentLang === 'en' ? 'Mark as Completed' : currentLang === 'ar' ? 'تحديد كجلسة مكتملة' : 'علامت‌گذاری به عنوان پایان‌یافته')}
+                    ? dict.player_completed_badge
+                    : dict.player_mark_completed}
                 </span>
               </button>
             )}
@@ -648,7 +651,7 @@ export function AudioVideoPlayerEngine({
                 type="button"
                 onClick={() => setIsSpeedMenuOpen((prev) => !prev)}
                 className="px-3 py-1.5 rounded-xl bg-[#0C0D0E] border border-[#22242A] text-zinc-200 hover:border-[#8A532B] text-xs font-mono font-bold transition cursor-pointer font-num flex items-center gap-1"
-                title={dict.player_speed || 'سرعت پخش'}
+                title={dict.player_speed}
               >
                 <span>{speed}x</span>
                 <ChevronUp className={`w-3 h-3 text-zinc-400 transition-transform ${isSpeedMenuOpen ? 'rotate-180' : ''}`} />
@@ -656,8 +659,8 @@ export function AudioVideoPlayerEngine({
 
               {isSpeedMenuOpen && (
                 <div className="absolute bottom-full mb-2 end-0 z-50 w-36 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider border-b border-[#22242A]">
-                    {dict.player_speed || 'سرعت پخش'}
+                  <div className="px-3 py-1 text-[11px] font-bold text-zinc-500 border-b border-[#22242A]">
+                    {dict.player_speed}
                   </div>
                   {[0.75, 1, 1.25, 1.5, 1.75, 2].map((s) => (
                     <button
@@ -670,7 +673,7 @@ export function AudioVideoPlayerEngine({
                     >
                       <span>
                         {s === 1
-                          ? dict.player_speed_normal || '1.0x (عادی)'
+                          ? dict.player_speed_normal
                           : `${s}x`}
                       </span>
                       {speed === s && <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />}
@@ -691,18 +694,13 @@ export function AudioVideoPlayerEngine({
                     : 'bg-[#0C0D0E] border-[#22242A] text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
                 }`}
                 title={
-                  dict.player_subtitles ||
-                  (currentLang === 'en'
-                    ? 'Subtitles / Closed Captions'
-                    : currentLang === 'ar'
-                    ? 'الترجمة والشرح النصي'
-                    : 'زیرنویس همگام')
+                  dict.player_subtitles
                 }
                 aria-label="Closed Captions"
               >
-                <span className="text-[11px] tracking-wider uppercase font-black">CC</span>
+                <span className="text-[11px] font-bold">CC</span>
                 {subtitleLang !== 'off' && (
-                  <span className="text-[10px] uppercase text-[#E6CA85] font-mono">
+                  <span className="text-[11px] text-[#E6CA85] font-mono">
                     {subtitleLang}
                   </span>
                 )}
@@ -711,22 +709,14 @@ export function AudioVideoPlayerEngine({
               {/* CC Language Selector Popover Menu */}
               {isSubtitleMenuOpen && (
                 <div className="absolute bottom-full mb-2 end-0 z-50 w-44 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider border-b border-[#22242A]">
-                    {currentLang === 'en'
-                      ? 'Subtitles (CC)'
-                      : currentLang === 'ar'
-                      ? 'الترجمة النصية'
-                      : 'انتخاب زبان زیرنویس'}
+                  <div className="px-3 py-1 text-[11px] font-bold text-zinc-500 border-b border-[#22242A]">
+                    {dict.ui_subtitles_cc}
                   </div>
                   {[
                     {
                       code: 'off',
                       label:
-                        currentLang === 'en'
-                          ? 'Off'
-                          : currentLang === 'ar'
-                          ? 'إيقاف'
-                          : 'خاموش',
+                        dict.ui_off,
                     },
                     { code: 'fa', label: 'فارسی (FA)' },
                     { code: 'ar', label: 'العربية (AR)' },
@@ -766,7 +756,7 @@ export function AudioVideoPlayerEngine({
                     : 'text-zinc-400 hover:text-[#FAF8F5]'
                 }`}
               >
-                {dict.player_mode_audio || (currentLang === 'en' ? 'Audio 48kHz' : currentLang === 'ar' ? 'صوت ٤٨kHz' : 'صوت ۴۸kHz')}
+                {dict.player_mode_audio}
               </button>
               <button
                 type="button"
@@ -777,7 +767,7 @@ export function AudioVideoPlayerEngine({
                     : 'text-zinc-400 hover:text-[#FAF8F5]'
                 }`}
               >
-                {dict.player_mode_video || (currentLang === 'en' ? 'Video' : currentLang === 'ar' ? 'فيديو' : 'ویدیو')}
+                {dict.player_mode_video}
               </button>
             </div>
 
@@ -786,7 +776,7 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleToggleFullscreen}
               className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.reader_fullscreen || 'تمام‌صفحه'}
+              title={dict.reader_fullscreen}
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
             </button>

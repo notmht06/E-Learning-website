@@ -61,11 +61,11 @@ export function CourseCatalogBento({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] uppercase tracking-wider block">
+            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
               [ ARCHIVE OF RATIONAL SCIENCES ]
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.courses_section_title || dict.courses_section_badge || 'دوره‌ها و درس‌گفتارهای تخصصی'}
+              {dict.courses_section_title || dict.courses_section_badge}
             </h2>
           </div>
 
@@ -76,16 +76,16 @@ export function CourseCatalogBento({
           }}>
             <TabsList>
               <TabsTrigger value="all" className="gap-1.5 text-xs">
-                <span>{dict.catalog_type_all || 'همه دوره‌ها'}</span>
-                <span className="text-[10px] opacity-70">({toLocale(courses.length)})</span>
+                <span>{dict.catalog_type_all}</span>
+                <span className="text-[11px] opacity-70">({toLocale(courses.length)})</span>
               </TabsTrigger>
               <TabsTrigger value="offline" className="gap-1.5 text-xs">
-                <span>{dict.catalog_type_offline || 'دوره‌های آفلاین'}</span>
-                <span className="text-[10px] opacity-70">({toLocale(offlineCount)})</span>
+                <span>{dict.catalog_type_offline}</span>
+                <span className="text-[11px] opacity-70">({toLocale(offlineCount)})</span>
               </TabsTrigger>
               <TabsTrigger value="online" className="gap-1.5 text-xs">
-                <span>{dict.catalog_type_online || 'دوره‌های آنلاین'}</span>
-                <span className="text-[10px] opacity-70">({toLocale(onlineCount)})</span>
+                <span>{dict.catalog_type_online}</span>
+                <span className="text-[11px] opacity-70">({toLocale(onlineCount)})</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -103,8 +103,8 @@ export function CourseCatalogBento({
           <Button asChild variant="outline" size="default" className="font-bold text-xs gap-2">
             <Link href={localizeHref('/courses')}>
               <span>
-                {dict.courses_view_all || 'مشاهده کل آرشیو دروس'} ({toLocale(courses.length)}{' '}
-                {dict.courses_count_suffix || 'دوره کامل'})
+                {dict.courses_view_all} ({toLocale(courses.length)}{' '}
+                {dict.courses_count_suffix})
               </span>
               <ArrowLeft className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] rtl:rotate-0 ltr:rotate-180" />
             </Link>
@@ -116,17 +116,17 @@ export function CourseCatalogBento({
       <div className="space-y-6 pt-8 border-t border-[#E6E1D8] dark:border-[#22242A]">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div className="space-y-1">
-            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] uppercase tracking-wider block">
+            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
               [ HARDCOVER MONOGRAPHS • ROYAL OCTAVO ]
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.books_section_title || dict.nav_books || 'کتاب‌ها و آثار چاپی'}
+              {dict.books_section_title || dict.nav_books}
             </h2>
           </div>
 
           <Button asChild variant="link" size="sm" className="font-bold text-xs p-0 gap-1 self-start sm:self-auto">
             <Link href={localizeHref('/books')}>
-              <span>{dict.books_view_all || 'مشاهده تالار کتب و رسالات'}</span>
+              <span>{dict.books_view_all}</span>
               <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
             </Link>
           </Button>

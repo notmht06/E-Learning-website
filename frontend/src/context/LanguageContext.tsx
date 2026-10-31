@@ -317,6 +317,14 @@ export const LanguageProvider: React.FC<{
   );
 };
 
+/**
+ * Looks up a translation whose key is only known at runtime (data-driven keys such as
+ * `station.titleKey`). Returns undefined for unknown keys so callers choose the fallback.
+ * Static keys must use `dict.some_key`, which is checked at compile time.
+ */
+export const lookupDictionary = (dict: Dictionary, key: string): string | undefined =>
+  (dict as Record<string, string | undefined>)[key];
+
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (!context) {

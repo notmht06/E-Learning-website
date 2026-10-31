@@ -10,26 +10,18 @@ import { toLocaleDigits } from '@/lib/data';
 
 export function DashboardOrdersTab() {
   const { orders } = useData();
-  const { currentLang } = useLanguage();
+  const { dict, currentLang } = useLanguage();
 
-  const title = currentLang === 'en'
-    ? 'Postal Orders & Physical Books'
-    : currentLang === 'ar'
-    ? 'طلبات الكتب البريدية والطرود'
-    : 'سفارش‌های پستی کتب و بسته‌های فیزیکی';
+  const title = dict.ui_postal_orders_physical_books;
 
-  const subtitle = currentLang === 'en'
-    ? 'Real-time postal tracking via national 24-digit dispatch code'
-    : currentLang === 'ar'
-    ? 'تتبع فوري للشحنات البريدية عبر رمز التتبع الوطني'
-    : 'رهگیری لحظه‌ای مرسولات پستی با کد رهگیری ۲۴ رقمی شرکت ملی پست';
+  const subtitle = dict.ui_real_time_postal_tracking_via_national;
 
-  const colInvoice = currentLang === 'en' ? 'Invoice ID' : currentLang === 'ar' ? 'رقم الفاتورة' : 'شناسه فاکتور';
-  const colItem = currentLang === 'en' ? 'Item Title' : currentLang === 'ar' ? 'عنوان الأثر' : 'عنوان اثر';
-  const colAmount = currentLang === 'en' ? 'Amount Paid' : currentLang === 'ar' ? 'المبلغ المدفوع' : 'مبلغ پرداختی';
-  const colStatus = currentLang === 'en' ? 'Delivery Status' : currentLang === 'ar' ? 'حالة الشحن' : 'وضعیت ارسال';
-  const colTracking = currentLang === 'en' ? 'Express Tracking Code' : currentLang === 'ar' ? 'رمز تتبع البريد' : 'کد رهگیری پست پیشتاز';
-  const trackBtn = currentLang === 'en' ? 'Track' : currentLang === 'ar' ? 'تتبع' : 'رهگیری';
+  const colInvoice = dict.ui_invoice_id;
+  const colItem = dict.ui_item_title;
+  const colAmount = dict.ui_amount_paid;
+  const colStatus = dict.ui_delivery_status;
+  const colTracking = dict.ui_express_tracking_code;
+  const trackBtn = dict.ui_track;
 
   const formatStatus = (status: string) => {
     if (currentLang === 'en') {

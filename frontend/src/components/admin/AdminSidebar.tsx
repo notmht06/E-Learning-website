@@ -39,14 +39,14 @@ export function AdminSidebar({
   const { dict, toLocale, localizeHref } = useLanguage();
 
   const navItems: { id: AdminTab; label: string; icon: React.ElementType; badge?: string }[] = [
-    { id: 'stats', label: dict.admin_tab_stats || 'آمار و هوش تجاری', icon: TrendingUp },
-    { id: 'courses', label: dict.admin_tab_courses || 'مدیریت درس‌گفتارها', icon: Headphones },
-    { id: 'categories', label: dict.admin_tab_categories || 'دسته‌بندی‌های علمی', icon: Layers },
-    { id: 'books', label: dict.admin_tab_books || 'انبار و کتب چاپی', icon: BookOpen },
-    { id: 'orders', label: dict.admin_tab_orders || 'سفارش‌ها و مرسولات', icon: ShoppingBag },
-    { id: 'drm', label: dict.admin_tab_drm || 'نظارت بر امنیت DRM', icon: ShieldAlert },
-    { id: 'coupons', label: dict.admin_tab_coupons || 'کدهای تخفیف و کوپن', icon: Tag },
-    { id: 'media', label: dict.admin_tab_media || 'صف پالایش صوت ۴۸kHz', icon: Radio },
+    { id: 'stats', label: dict.admin_tab_stats, icon: TrendingUp },
+    { id: 'courses', label: dict.admin_tab_courses, icon: Headphones },
+    { id: 'categories', label: dict.admin_tab_categories, icon: Layers },
+    { id: 'books', label: dict.admin_tab_books, icon: BookOpen },
+    { id: 'orders', label: dict.admin_tab_orders, icon: ShoppingBag },
+    { id: 'drm', label: dict.admin_tab_drm, icon: ShieldAlert },
+    { id: 'coupons', label: dict.admin_tab_coupons, icon: Tag },
+    { id: 'media', label: dict.admin_tab_media, icon: Radio },
   ];
 
   return (
@@ -65,14 +65,14 @@ export function AdminSidebar({
                 [ ADMIN CONSOLE ]
               </span>
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate block">
-                {dict.admin_brand_name || 'حیات فلسفه'}
+                {dict.admin_brand_name}
               </span>
             </div>
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer mx-auto"
-            title={isCollapsed ? (dict.admin_menu_expand || 'گسترش منو') : (dict.admin_menu_collapse || 'جمع کردن منو')}
+            title={isCollapsed ? (dict.admin_menu_expand) : (dict.admin_menu_collapse)}
           >
             {isCollapsed ? <ChevronLeft className="w-4 h-4 rtl:rotate-180" /> : <ChevronRight className="w-4 h-4 rtl:rotate-180" />}
           </button>
@@ -108,18 +108,18 @@ export function AdminSidebar({
         <Link
           href={localizeHref('/')}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-          title={isCollapsed ? (dict.admin_btn_home || 'مشاهده وب‌سایت') : undefined}
+          title={isCollapsed ? (dict.admin_btn_home) : undefined}
         >
           <Home className="w-4 h-4 shrink-0 text-zinc-500" />
-          {!isCollapsed && <span>{dict.admin_btn_home || 'مشاهده وب‌سایت'}</span>}
+          {!isCollapsed && <span>{dict.admin_btn_home}</span>}
         </Link>
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs text-[#8A532B] dark:text-[#C58B43] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 transition cursor-pointer"
-          title={isCollapsed ? (dict.admin_btn_logout || 'خروج از پنل') : undefined}
+          title={isCollapsed ? (dict.admin_btn_logout) : undefined}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          {!isCollapsed && <span>{dict.admin_btn_logout || 'خروج از پنل'}</span>}
+          {!isCollapsed && <span>{dict.admin_btn_logout}</span>}
         </button>
       </div>
     </aside>

@@ -141,7 +141,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
         id: c.id,
         title: loc?.title || c.title_fa,
         url: `/courses/${c.id}`,
-        meta: isFree ? (dict.free_course_badge || 'رایگان') : (loc?.price || c.price_fa || ''),
+        meta: isFree ? (dict.course_free_badge) : (loc?.price || c.price_fa || ''),
       });
     });
 
@@ -243,7 +243,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
   return (
     <div ref={containerRef} className="w-full max-w-2xl mx-auto relative z-30">
       {/* 1. Main Search Console Input */}
-      <div className="relative flex items-center w-full rounded-2xl bg-white dark:bg-[#121316] border border-[#E6E1D8] dark:border-[#27282D] focus-within:border-[#8A532B] dark:focus-within:border-[#C58B43] shadow-xs focus-within:shadow-xl focus-within:shadow-black/5 dark:focus-within:shadow-black/30 focus-within:scale-[1.008] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      <div className="relative flex items-center w-full rounded-2xl bg-white dark:bg-[#121316] border border-[#E6E1D8] dark:border-[#27282D] focus-within:border-[#8A532B] dark:focus-within:border-[#C58B43] shadow-xs focus-within:shadow-xl focus-within:shadow-black/5 dark:focus-within:shadow-black/30 focus-within:scale-[1.008] transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
         {/* Search Icon */}
         <div className="ps-4 pe-2 text-[#8A532B] dark:text-[#C58B43] shrink-0 pointer-events-none transition-transform duration-300 group-focus-within:scale-110">
           <Search className="w-5 h-5" />
@@ -263,10 +263,10 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
             if (query.trim().length > 0) setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={dict.hero_search_input_placeholder || 'جستجو در میان دروس، متون فلسفی و تقریرات علمی...'}
+          placeholder={dict.hero_search_input_placeholder}
           className="w-full py-3.5 sm:py-4 bg-transparent border-0 outline-none focus:outline-none focus:ring-0 ring-0 text-sm sm:text-base text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
-          dir={dict.dir || (isRtl ? 'rtl' : 'ltr')}
+          dir={dict.dir}
         />
 
         {/* Right side controls: Clear / Submit */}
@@ -279,7 +279,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 setIsOpen(false);
                 inputRef.current?.focus();
               }}
-              className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 cursor-pointer"
+              className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 cursor-pointer"
               aria-label="Clear"
             >
               <X className="w-4 h-4" />
@@ -296,9 +296,9 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 handleSelect('/courses');
               }
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#734320] text-white text-xs sm:text-sm font-medium transition-all duration-300 ease-out cursor-pointer shadow-xs hover:shadow-md active:scale-95"
+            className="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#734320] text-white text-xs sm:text-sm font-medium transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-out cursor-pointer shadow-xs hover:shadow-md active:scale-95"
           >
-            <span>{dict.hero_search_btn || 'جستجو'}</span>
+            <span>{dict.hero_search_btn}</span>
             <ArrowIcon className="w-3.5 h-3.5 hidden sm:inline-block transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -314,7 +314,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 <div>
                   <div className="px-2.5 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Headphones className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
-                    <span>{dict.nav_courses || 'دوره‌ها'}</span>
+                    <span>{dict.nav_courses}</span>
                   </div>
                   <div className="mt-1 space-y-1">
                     {matchedCourses.map((c) => {
@@ -328,7 +328,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={c.id}
                           type="button"
                           onClick={() => handleSelect(`/courses/${c.id}`)}
-                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer ${
                             isSelected
                               ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
                               : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
@@ -339,7 +339,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                             <span className="font-medium truncate">{loc?.title || c.title_fa}</span>
                           </div>
                           <span className="text-[11px] text-zinc-500 dark:text-zinc-400 shrink-0 font-medium">
-                            {isFree ? (dict.free_course_badge || 'رایگان') : (loc?.price || c.price_fa)}
+                            {isFree ? (dict.course_free_badge) : (loc?.price || c.price_fa)}
                           </span>
                         </button>
                       );
@@ -353,7 +353,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 <div>
                   <div className="px-2.5 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
-                    <span>{dict.nav_books || 'کتب و تالیفات'}</span>
+                    <span>{dict.nav_books}</span>
                   </div>
                   <div className="mt-1 space-y-1">
                     {matchedBooks.map((b) => {
@@ -366,7 +366,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={b.id}
                           type="button"
                           onClick={() => handleSelect('/books')}
-                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer ${
                             isSelected
                               ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
                               : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
@@ -391,7 +391,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                 <div>
                   <div className="px-2.5 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <FileText className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
-                    <span>{dict.nav_articles || 'مقالات علمی'}</span>
+                    <span>{dict.nav_articles}</span>
                   </div>
                   <div className="mt-1 space-y-1">
                     {matchedArticles.map((a) => {
@@ -404,7 +404,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           key={a.id}
                           type="button"
                           onClick={() => handleSelect('/articles')}
-                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-all duration-200 ease-out cursor-pointer ${
+                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer ${
                             isSelected
                               ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
                               : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
@@ -426,7 +426,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
             </div>
           ) : (
             <div className="p-6 text-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 space-y-2">
-              <p>{dict.hero_search_no_results || 'موردی منطبق با جستجوی شما یافت نشد.'}</p>
+              <p>{dict.hero_search_no_results}</p>
             </div>
           )}
 
@@ -437,7 +437,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
               onClick={() => handleSelect(`/courses?search=${encodeURIComponent(query.trim())}`)}
               className="text-xs text-[#8A532B] dark:text-[#C58B43] hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
             >
-              <span>{dict.hero_search_view_all_results || 'مشاهده تمام نتایج در آرشیو دوره‌ها'}</span>
+              <span>{dict.hero_search_view_all_results}</span>
               <ArrowIcon className="w-3 h-3" />
             </button>
           </div>
@@ -447,14 +447,14 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
       {/* 3. Popular Topic Chips */}
       <div className="pt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-medium me-1">
-          {dict.hero_popular_topics_label || 'مباحث پرمخاطب:'}
+          {dict.hero_popular_topics_label}
         </span>
         {popularTopics.map((topic) => (
           <button
             key={topic.label}
             type="button"
             onClick={() => handleChipClick(topic.query)}
-            className="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium bg-white/80 dark:bg-zinc-900/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-700 dark:text-zinc-300 border border-[#E6E1D8] dark:border-[#27282D] hover:border-[#8A532B]/30 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-xs active:scale-95 cursor-pointer shadow-2xs"
+            className="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium bg-white/80 dark:bg-zinc-900/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-700 dark:text-zinc-300 border border-[#E6E1D8] dark:border-[#27282D] hover:border-[#8A532B]/30 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-xs active:scale-95 cursor-pointer shadow-2xs"
           >
             {topic.label}
           </button>

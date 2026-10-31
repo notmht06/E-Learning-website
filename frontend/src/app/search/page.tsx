@@ -49,18 +49,10 @@ export default function SearchPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full text-start">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            {currentLang === 'en'
-              ? 'Global Search in Treatises & Curricula'
-              : currentLang === 'ar'
-              ? 'البحث الشامل في الكتب والمحاضرات'
-              : 'جستجوی جامع در آثار، کتب و درس‌گفتارها'}
+            {dict.ui_global_search_in_treatises_curricula}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-            {currentLang === 'en'
-              ? 'Search by titles, concepts, Ishraq, Asfar, and rational epistemology'
-              : currentLang === 'ar'
-              ? 'ابحث حسب العناوين والمفاهيم الفلسفية والمنطقية'
-              : 'جستجو بر اساس عنوان دوره، نام کتاب، مفاهیم حکمت متعالیه، اشراق و منطق'}
+            {dict.ui_search_by_titles_concepts_ishraq_asfar}
           </p>
         </div>
 
@@ -69,11 +61,7 @@ export default function SearchPage() {
           <input
             type="text"
             placeholder={
-              currentLang === 'en'
-                ? 'e.g., Ishraq, Asalat al-Wujud, Tashkik, Asfar...'
-                : currentLang === 'ar'
-                ? 'مثال: الإشراق، أصالة الوجود، الأسفار...'
-                : 'مثلاً: اصالت وجود، حکمت اشراق، منطق مظفر، اسفار...'
+              dict.ui_e_g_ishraq_asalat_al_wujud_tashkik_asf
             }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -92,7 +80,7 @@ export default function SearchPage() {
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
-            {currentLang === 'en' ? 'All Results' : currentLang === 'ar' ? 'جميع النتائج' : 'همه نتایج'} (
+            {dict.ui_all_results} (
             {toLocale(matchedBooks.length + matchedCourses.length)})
           </button>
           <button

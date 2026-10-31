@@ -49,7 +49,7 @@ export function CourseEnrollmentCard({
     <aside aria-label="ثبت‌نام دوره" className="lg:col-span-4 bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 space-y-6 shadow-xs sticky top-24">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs sm:text-sm text-zinc-500 block font-bold">{dict.course_tuition_label || 'شهریه دوره'}</span>
+          <span className="text-xs sm:text-sm text-zinc-500 block font-bold">{dict.course_tuition_label}</span>
           {courseType === 'online' && (
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -111,14 +111,14 @@ export function CourseEnrollmentCard({
           className="w-full py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
         >
           <ShoppingBag className="w-4 h-4" />
-          <span>{isLoading ? 'در حال ثبت‌نام...' : (dict.course_enroll_btn || 'ثبت‌نام در دوره')}</span>
+          <span>{isLoading ? 'در حال ثبت‌نام...' : (dict.course_enroll_btn)}</span>
         </button>
       )}
 
       <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-          <span>{dict.hero_feature_stream || 'پخش بدون وقفه صوت'}</span>
+          <span>{dict.hero_feature_stream}</span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />

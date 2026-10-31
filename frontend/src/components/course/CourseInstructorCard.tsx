@@ -27,15 +27,9 @@ export function CourseInstructorCard({ className = '' }: CourseInstructorCardPro
       ? (siteConfig?.scholar_name_en || 'Hojjat al-Islam Dr. Zanjirzan Hosseini')
       : currentLang === 'ar'
       ? (siteConfig?.scholar_name_ar || 'حجة الإسلام الدكتور زنجير زن حسيني')
-      : (siteConfig?.scholar_name_fa || 'حجت الاسلام دکتر زنجیر زن حسینی');
+      : (siteConfig?.scholar_name_fa || dict.ui_hojjat_al_islam_dr_zanjirzan_hosseini);
 
-  const scholarTitle =
-    dict.course_scholar_title_desc ||
-    (currentLang === 'en'
-      ? 'Professor of Advanced Seminary Studies & Rational Sciences'
-      : currentLang === 'ar'
-      ? 'أستاذ السطوح العليا والبحث الخارج • باحث في العلوم العقلية والنقلية'
-      : 'استاد سطوح عالی و خارج حوزه علمیه • پژوهشگر علوم عقلی و نقلی');
+  const scholarTitle = dict.course_scholar_title_desc;
 
   const bio =
     (currentLang === 'en' && siteConfig?.bio_en)
@@ -44,22 +38,18 @@ export function CourseInstructorCard({ className = '' }: CourseInstructorCardPro
       ? siteConfig.bio_ar
       : (currentLang === 'fa' && siteConfig?.bio_fa)
       ? siteConfig.bio_fa
-      : currentLang === 'en'
-      ? "Professor of advanced seminary studies (Dars-e Kharij) in Jurisprudence, Legal Theory, Philosophy, and Rational Theology; critical commentator on Transcendent Philosophy and foundational treatises of Islamic wisdom with over 15 years of continuous scholarly research."
-      : currentLang === 'ar'
-      ? 'أستاذ السطوح العليا والبحث الخارج في الفقه والأصول والفلسفة والكلام في الحوزة العلمية؛ شارح الأسفار الأربعة وبداية ونهاية الحكمة بخبرة تمتد لأكثر من ١٥ عاماً في التدريس والتحقيق الحوزوي والأكاديمي.'
-      : 'مدرس سطوح عالی و درس خارج فقه، اصول، فلسفه و کلام در حوزه علمیه؛ شارح منظومه، بدایة الحکمة، نهایة الحکمة و اسفار اربعه صدرالمتألهین با بیش از ۱۵ سال سابقه پژوهش و تدریس متون مرجع حکمی.';
+      : dict.ui_professor_of_advanced_seminary_studies;
 
   const t = {
-    heading: dict.course_instructor_heading || 'استاد و مدرس کرسی درس',
-    stat_courses: dict.course_instructor_stat_courses || '۳۳ دوره تدریس تخصصی',
+    heading: dict.course_instructor_heading,
+    stat_courses: dict.course_instructor_stat_courses,
     stat_experience: siteConfig?.stat_years
       ? `${toLocale(siteConfig.stat_years)} سال تدریس خارج`
-      : (dict.course_instructor_stat_experience || 'بیش از ۱۵ سال تدریس خارج'),
+      : dict.course_instructor_stat_experience,
     stat_books: siteConfig?.stat_books
       ? `تالیف ${toLocale(siteConfig.stat_books)} عنوان کتاب مرجع`
-      : (dict.course_instructor_stat_books || 'تالیف ۵ عنوان کتاب مرجع'),
-    btn_courses: dict.course_instructor_courses_btn || 'مشاهده تمام آثار و دروس استاد',
+      : dict.course_instructor_stat_books,
+    btn_courses: dict.course_instructor_courses_btn,
   };
 
   return (

@@ -41,35 +41,15 @@ export function DashboardCoursesTab() {
     return false;
   });
 
-  const emptyTitle = currentLang === 'en'
-    ? 'No Enrolled Courses Found'
-    : currentLang === 'ar'
-    ? 'لا توجد دروس مسجلة حالياً'
-    : 'در حال حاضر در هیچ دوره‌ای ثبت‌نام نکرده‌اید';
+  const emptyTitle = dict.ui_no_enrolled_courses_found;
 
-  const emptyDesc = currentLang === 'en'
-    ? 'Browse the rational sciences catalog to enroll and listen to audio lectures.'
-    : currentLang === 'ar'
-    ? 'تصفح قائمة الدروس للتسجيل والوصول إلى البث الصوتي المعتمد.'
-    : 'برای گوش دادن به جلسات صوتی و مطالعه سرفصل‌ها، به کاتالوگ جامع دوره‌ها مراجعه کنید.';
+  const emptyDesc = dict.ui_browse_the_rational_sciences_catalog_t;
 
-  const browseLabel = currentLang === 'en'
-    ? 'Explore Course Catalog'
-    : currentLang === 'ar'
-    ? 'تصفح قائمة الدروس'
-    : 'مشاهده کاتالوگ درس‌گفتارها';
+  const browseLabel = dict.ui_explore_course_catalog;
 
-  const bannerTitle = currentLang === 'en'
-    ? 'Enrolled Lectures & Courses'
-    : currentLang === 'ar'
-    ? 'الدورات والمحاضرات المسجلة'
-    : 'درس‌گفتارهای ثبت‌نام‌شده';
+  const bannerTitle = dict.ui_enrolled_lectures_courses;
 
-  const bannerSub = currentLang === 'en'
-    ? 'Direct access to verified audio lectures and scholarly seminars'
-    : currentLang === 'ar'
-    ? 'الوصول المباشر إلى المحاضرات الصوتية والمباحثات العلمية'
-    : 'دسترسی مستقیم به جلسات صوتی و مباحثات علمی';
+  const bannerSub = dict.ui_direct_access_to_verified_audio_lectur;
 
   return (
     <div className="space-y-6 text-start">
@@ -111,8 +91,8 @@ export function DashboardCoursesTab() {
               : (currentLang === 'ar' && course.title_ar ? course.title_ar : course.title_fa);
 
             const badgeType = course.course_type === 'online'
-              ? (currentLang === 'en' ? '[ Online Workshop ]' : currentLang === 'ar' ? '[ ورشة تفاعلية ]' : '[ دوره آنلاین ]')
-              : (currentLang === 'en' ? '[ Recorded Curriculum ]' : currentLang === 'ar' ? '[ دورة مسجلة ]' : '[ دوره آفلاین ]');
+              ? (dict.ui_online_workshop)
+              : (dict.ui_recorded_curriculum);
 
             const instructorLabel = currentLang === 'en'
               ? `Instructor: ${getScholarName('en')}`
@@ -126,17 +106,9 @@ export function DashboardCoursesTab() {
               ? `${toLocale(course.chapters?.length || 12)} جلسات صوتية`
               : `${toLocale(course.chapters?.length || 12)} جلسه صوت`;
 
-            const syllabusBtnLabel = currentLang === 'en'
-              ? 'Syllabus'
-              : currentLang === 'ar'
-              ? 'سير الدروس'
-              : 'سرفصل‌ها';
+            const syllabusBtnLabel = dict.ui_syllabus;
 
-            const playBtnLabel = currentLang === 'en'
-              ? 'Play Sessions'
-              : currentLang === 'ar'
-              ? 'استماع للجلسات'
-              : 'پخش جلسات';
+            const playBtnLabel = dict.ui_play_sessions;
 
             return (
               <div

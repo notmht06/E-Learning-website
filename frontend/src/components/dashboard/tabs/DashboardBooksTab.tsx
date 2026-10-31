@@ -17,20 +17,12 @@ interface DashboardBooksTabProps {
 
 export function DashboardBooksTab({ onOpenReader }: DashboardBooksTabProps) {
   const { books } = useData();
-  const { currentLang, localizeHref } = useLanguage();
+  const { dict, currentLang, localizeHref } = useLanguage();
   const booksList = Object.values(books);
 
-  const bannerTitle = currentLang === 'en'
-    ? 'Specialized Library & Critical Editions'
-    : currentLang === 'ar'
-    ? 'المكتبة التخصصية والمصنفات المحققة'
-    : 'کتابخانه تخصصی و کتب مصحح';
+  const bannerTitle = dict.ui_specialized_library_critical_editions;
 
-  const bannerSub = currentLang === 'en'
-    ? 'Philosophical treatises and monographs with interactive page preview'
-    : currentLang === 'ar'
-    ? 'المؤلفات والرسائل الفلسفية مع استعراض نماذج الصفحات'
-    : 'کتاب‌ها و آثار چاپی فلسفی همراه با مشاهده نمونه صفحات کتاب';
+  const bannerSub = dict.ui_philosophical_treatises_and_monographs;
 
   return (
     <div className="space-y-6 text-start">
@@ -69,17 +61,9 @@ export function DashboardBooksTab({ onOpenReader }: DashboardBooksTabProps) {
             ? (book.price_ar || book.price_fa)
             : book.price_fa;
 
-          const readerBtnLabel = currentLang === 'en'
-            ? '3D Reader'
-            : currentLang === 'ar'
-            ? 'القارئ ثلاثي الأبعاد'
-            : 'ورق‌زن ۳بعدی';
+          const readerBtnLabel = dict.ui_3d_reader;
 
-          const viewBtnLabel = currentLang === 'en'
-            ? 'View Book'
-            : currentLang === 'ar'
-            ? 'عرض الكتاب'
-            : 'مشاهده اثر';
+          const viewBtnLabel = dict.ui_view_book;
 
           return (
             <div

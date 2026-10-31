@@ -70,14 +70,14 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
     };
   }, [isOpen]);
 
-  const tooltipText = dict.course_folder_tooltip || 'جزوات و آرشیو دوره';
-  const folderTitle = dict.course_folder_title || 'جزوات و آرشیو درس‌گفتار';
-  const handoutsTitle = dict.course_folder_handouts || 'جزوه و اسناد درسی (PDF)';
-  const handoutsDesc = dict.course_folder_handouts_desc || 'خلاصه مباحث، نمودارهای مفهومی و تقریرات جلسات';
-  const driveArchiveTitle = dict.course_folder_drive_archive || 'آرشیو کامل صوت در گوگل درایو';
-  const driveArchiveDesc = dict.course_folder_drive_desc || 'دسترسی مستقیم به پوشه فایل‌های صوتی با کیفیت بالا';
-  const telegramArchiveTitle = dict.course_folder_telegram_archive || 'آرشیو جلسات در کانال تلگرام';
-  const closeText = dict.course_folder_close || 'بستن';
+  const tooltipText = dict.course_folder_tooltip;
+  const folderTitle = dict.course_folder_title;
+  const handoutsTitle = dict.course_folder_handouts;
+  const handoutsDesc = dict.course_folder_handouts_desc;
+  const driveArchiveTitle = dict.course_folder_drive_archive;
+  const driveArchiveDesc = dict.course_folder_drive_desc;
+  const telegramArchiveTitle = dict.course_folder_telegram_archive;
+  const closeText = dict.course_folder_close;
 
   return (
     <div ref={containerRef} className={`relative inline-block ${className}`}>
@@ -124,7 +124,7 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
                   <FolderArchive className="h-3.5 w-3.5" />
                 </span>
                 <div>
-                  <span className="block text-[9px] font-mono tracking-wider text-[#8A532B] uppercase dark:text-[#C58B43]">
+                  <span className="block text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43]">
                     [ ARCHIVE & HANDOUTS ]
                   </span>
                   <h4 className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
@@ -163,12 +163,12 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
                     <span className="text-[11px] font-bold text-zinc-900 group-hover:text-[#8A532B] dark:text-zinc-100 dark:group-hover:text-[#C58B43]">
                       {handoutsTitle}
                     </span>
-                    <span className="flex items-center gap-1 text-[10px] text-zinc-500 font-num">
+                    <span className="flex items-center gap-1 text-[11px] text-zinc-500 font-num">
                       <BookOpen className="h-3 w-3" />
-                      {toLocale(sessionsCount)} {dict.course_unit_sessions || 'جلسه'}
+                      {toLocale(sessionsCount)} {dict.course_unit_sessions}
                     </span>
                   </div>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] text-zinc-500 dark:text-zinc-400">
                     {handoutsDesc}
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
                     </span>
                     <CheckCircle2 className="h-3 w-3 text-[#8A532B] dark:text-[#C58B43]" />
                   </div>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] text-zinc-500 dark:text-zinc-400">
                     {driveArchiveDesc}
                   </p>
                 </div>
@@ -213,7 +213,7 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
                   <span className="text-[11px] font-bold text-zinc-900 group-hover:text-[#8A532B] dark:text-zinc-100 dark:group-hover:text-[#C58B43]">
                     {telegramArchiveTitle}
                   </span>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] text-zinc-500 dark:text-zinc-400">
                     @AlNajmosageb313
                   </p>
                 </div>

@@ -110,30 +110,25 @@ export function CourseDetailHero({
       : 'حجت الاسلام دکتر زنجیر زن حسینی';
 
   const scholarRole =
-    dict.course_scholar_title_desc ||
-    (currentLang === 'en'
-      ? 'Professor of Advanced Seminary Studies & Rational Sciences'
-      : currentLang === 'ar'
-      ? 'أستاذ السطوح العليا والبحث الخارج • باحث في العلوم العقلية والنقلية'
-      : 'استاد سطوح عالی و خارج حوزه علمیه • پژوهشگر علوم عقلی و نقلی');
+    dict.course_scholar_title_desc;
 
   const t = {
-    home: dict.nav_home || 'صفحه اصلی',
-    courses: dict.nav_courses || 'دوره‌ها',
-    status_label: dict.course_status_label || 'وضعیت دوره',
-    status_completed: dict.course_status_completed || 'تکمیل‌شده',
-    status_in_progress: dict.course_status_in_progress || 'در حال ضبط و تکمیل',
-    duration_label: dict.catalog_duration_label || 'مدت زمان',
-    sessions_label: dict.catalog_lessons_count_label || 'تعداد جلسات',
-    sessions_unit: dict.course_unit_sessions || 'جلسه',
-    delivery_label: dict.course_delivery_method_label || 'روش دریافت',
-    delivery_val: dict.course_delivery_method_val || 'استریم آنلاین + دانلود جلسات',
-    preview_btn: dict.course_preview_sample_btn || 'پیش‌نمایش و صوت نمونه جلسه اول',
-    preview_playing: dict.course_preview_playing || 'در حال پخش نمونه صوتی...',
-    enroll_btn: dict.course_sticky_enroll_btn || 'ثبت‌نام در این کرسی درس',
-    enter_btn: dict.course_sticky_enter_btn || 'ورود به تئاتر یادگیری',
-    lifetime_support: dict.course_support_lifetime || 'دسترسی مادام‌العمر به محتوا و تقریرات',
-    tuition_label: dict.course_tuition_label || 'شهریه کرسی درس:',
+    home: dict.nav_home,
+    courses: dict.nav_courses,
+    status_label: dict.course_status_label,
+    status_completed: dict.course_status_completed,
+    status_in_progress: dict.course_status_in_progress,
+    duration_label: dict.catalog_duration_label,
+    sessions_label: dict.catalog_lessons_count_label,
+    sessions_unit: dict.course_unit_sessions,
+    delivery_label: dict.course_delivery_method_label,
+    delivery_val: dict.course_delivery_method_val,
+    preview_btn: dict.course_preview_sample_btn,
+    preview_playing: dict.course_preview_playing,
+    enroll_btn: dict.course_sticky_enroll_btn,
+    enter_btn: dict.course_sticky_enter_btn,
+    lifetime_support: dict.course_support_lifetime,
+    tuition_label: dict.course_tuition_label,
     strikethrough_tuition: currentLang === 'en' ? '$45.00' : '۴۵۰,۰۰۰ تومان',
     satisfaction: currentLang === 'en' ? '5.0 (100% Scholarly Satisfaction)' : currentLang === 'ar' ? '٥.٠ (رضا تام من الباحثين)' : '۵.۰ (رضایت کامل پژوهشگران)',
   };
@@ -207,7 +202,7 @@ export function CourseDetailHero({
           </div>
 
           {/* Course Main Heading */}
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight leading-snug">
+          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight leading-snug">
             {title}
           </h1>
 
@@ -298,7 +293,7 @@ export function CourseDetailHero({
           >
             {/* Top Frame Accents */}
             <div className="flex items-center justify-between z-10">
-              <span className="px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-mono flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[11px] font-mono flex items-center gap-1.5">
                 <span
                   className="w-1.5 h-1.5 rounded-full"
                   style={{ backgroundColor: disciplineBanner.accent }}
@@ -306,7 +301,7 @@ export function CourseDetailHero({
                 <span>{disciplineBanner.label}</span>
               </span>
 
-              <span className="text-[10px] font-mono text-zinc-400 bg-black/30 px-2 py-0.5 rounded-md">
+              <span className="text-[11px] font-mono text-zinc-400 bg-black/30 px-2 py-0.5 rounded-md">
                 [{course.id.slice(-6).toUpperCase()}]
               </span>
             </div>
@@ -322,7 +317,7 @@ export function CourseDetailHero({
                 {isCurrentPlaying ? (
                   <Pause className="w-7 h-7 fill-white" />
                 ) : (
-                  <Play className="w-7 h-7 fill-white translate-x-0.5 rtl:-translate-x-0.5 group-hover:scale-110 transition-transform" />
+                  <Play className="w-7 h-7 fill-white translate-x-0.5 rtl:-translate-x-0.5 transition-transform" />
                 )}
               </button>
 
@@ -333,10 +328,10 @@ export function CourseDetailHero({
               {/* Waveform Bars Animation when playing */}
               {isCurrentPlaying && (
                 <div className="flex items-center gap-1 h-3 pt-1">
-                  <span className="w-1 h-3 bg-[#E0A96D] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1 h-3.5 bg-[#E0A96D] rounded-full animate-bounce" />
-                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-bounce [animation-delay:-0.2s]" />
+                  <span className="w-1 h-3 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.3s]" />
+                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.15s]" />
+                  <span className="w-1 h-3.5 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none" />
+                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.2s]" />
                 </div>
               )}
             </div>

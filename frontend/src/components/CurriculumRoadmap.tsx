@@ -55,7 +55,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
       {/* Quick Navigation Anchor Bar */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-zinc-200 dark:border-zinc-800 scrollbar-none">
         <span className="text-xs font-bold text-zinc-500 shrink-0">
-          {dict.roadmap_quick_jump || 'جهش سریع به مرحله:'}
+          {dict.roadmap_quick_jump}
         </span>
         {roadmapStagesData.map((stage) => {
           const loc = getLocalizedStage(stage);
@@ -90,21 +90,21 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
               {isCompleted ? (
                 <div
                   className="absolute -start-[41px] sm:-start-[49px] top-2 w-8 h-8 rounded-full bg-[#8A532B] text-white flex items-center justify-center shadow-xs z-10"
-                  title={dict.roadmap_step_completed || 'مرحله سپری‌شده'}
+                  title={dict.roadmap_step_completed}
                 >
                   <Check className="w-4 h-4 stroke-[2.5]" />
                 </div>
               ) : isCurrent ? (
                 <div
                   className="absolute -start-[41px] sm:-start-[49px] top-2 w-8 h-8 rounded-full border-2 border-[#8A532B] bg-white dark:bg-[#0C0D0E] text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center text-xs font-bold font-num shadow-xs ring-4 ring-[#8A532B]/20 z-10"
-                  title={dict.roadmap_step_current || 'مرحله جاری مطالعاتی'}
+                  title={dict.roadmap_step_current}
                 >
                   ۰{stage.stepNumber}
                 </div>
               ) : (
                 <div
                   className="absolute -start-[41px] sm:-start-[49px] top-2 w-8 h-8 rounded-full border-2 border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#0C0D0E] text-zinc-400 dark:text-zinc-500 flex items-center justify-center text-xs font-bold font-num z-10"
-                  title={dict.roadmap_step_pending || 'مرحله در انتظار'}
+                  title={dict.roadmap_step_pending}
                 >
                   ۰{stage.stepNumber}
                 </div>
@@ -126,11 +126,11 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                         }`}
                       >
                         {isCompleted
-                          ? dict.roadmap_step_completed || 'مرحله سپری‌شده'
+                          ? dict.roadmap_step_completed
                           : isCurrent
-                          ? dict.roadmap_step_current || 'مرحله جاری مطالعاتی'
-                          : dict.roadmap_step_pending || 'مرحله در انتظار'}{' '}
-                        • {dict.roadmap_step_prefix || 'منزل'} {toLocale(stage.stepNumber)} {dict.reader_of || 'از'} {toLocale(5)}
+                          ? dict.roadmap_step_current
+                          : dict.roadmap_step_pending}{' '}
+                        • {dict.roadmap_step_prefix} {toLocale(stage.stepNumber)} {dict.reader_of} {toLocale(5)}
                       </span>
                       <span className="text-xs text-zinc-500 font-num flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-zinc-400" />
@@ -157,8 +157,8 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                     >
                       <span>
                         {isExpanded
-                          ? dict.roadmap_collapse_details || 'بستن جزئیات سرفصل'
-                          : dict.roadmap_toggle_details || 'جزئیات سرفصل‌ها و منابع'}
+                          ? dict.roadmap_collapse_details
+                          : dict.roadmap_toggle_details}
                       </span>
                       <ChevronDown
                         className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -179,12 +179,12 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                         <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
                           <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                             <ListTree className="w-3.5 h-3.5 text-[#8A532B]" />
-                            <span>{dict.roadmap_prerequisites || 'پیش‌نیازهای این مرحله:'}</span>
+                            <span>{dict.roadmap_prerequisites}</span>
                           </span>
                           <p className="text-xs text-zinc-600 dark:text-zinc-400">
                             {stage.stepNumber === 1
-                              ? (dict.roadmap_prereq_none || 'فاقد پیش‌نیاز (مرحله مدخل و آغازین علوم عقلی).')
-                              : `${dict.roadmap_step_prefix || 'منزل'} ${toLocale(stage.stepNumber - 1)} و تسلط بر کتب و متون درسی آن.`}
+                              ? (dict.roadmap_prereq_none)
+                              : `${dict.roadmap_step_prefix} ${toLocale(stage.stepNumber - 1)} و تسلط بر کتب و متون درسی آن.`}
                           </p>
                         </div>
 
@@ -195,7 +195,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                         {/* Learning Outcomes */}
                         <div className="space-y-2 pt-1">
                           <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 block">
-                            {dict.roadmap_learning_outcomes || dict.roadmap_outcomes_title || 'دستاوردهای علمی و مهارتی:'}
+                            {dict.roadmap_learning_outcomes || dict.roadmap_outcomes_title}
                           </span>
                           <ul className="space-y-2 text-xs text-zinc-600 dark:text-zinc-400">
                             {stage.outcomes.map((out, idx) => (
@@ -212,7 +212,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                       <div className="lg:col-span-5 bg-zinc-50 dark:bg-[#18191D] border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-3">
                         <div className="flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                           <BookOpen className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-                          <span>{dict.roadmap_reference_books || dict.roadmap_books_title || 'کتب و متون درسی مرجع:'}</span>
+                          <span>{dict.roadmap_reference_books || dict.roadmap_books_title}</span>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
@@ -227,7 +227,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                         </div>
 
                         <span className="text-[11px] text-zinc-500 block pt-1">
-                          {dict.course_instructor_label || 'مدرس:'} {dict.scholar_name || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                          {dict.course_instructor_label} {dict.scholar_name}
                         </span>
                       </div>
                     </div>
@@ -235,7 +235,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
                     {/* Course Linkage List */}
                     <div className="space-y-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block">
-                        {dict.roadmap_associated_courses || dict.roadmap_courses_title || 'درس‌گفتارهای مرتبط با این مرحله در آرشیو:'}
+                        {dict.roadmap_associated_courses || dict.roadmap_courses_title}
                       </span>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

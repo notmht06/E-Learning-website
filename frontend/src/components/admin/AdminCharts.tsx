@@ -230,7 +230,7 @@ export const AdminCharts: React.FC = () => {
 
           {hoveredIdx !== null && (
             <div className="bg-stone-900 text-white px-3.5 py-2 rounded-2xl text-xs font-bold shadow-lg animate-in fade-in duration-200">
-              <span className="text-stone-400 block text-[10px]">{data[hoveredIdx].label}</span>
+              <span className="text-stone-400 block text-[11px]">{data[hoveredIdx].label}</span>
               <span className="text-[#8A532B] font-num">
                 {toLocaleDigits(getMetricValue(data[hoveredIdx]).toLocaleString(), 'fa')} {getMetricUnit()}
               </span>
@@ -312,7 +312,7 @@ export const AdminCharts: React.FC = () => {
                     x={pt.x}
                     y={height - 5}
                     textAnchor="middle"
-                    className="text-[10px] font-bold fill-stone-400 font-num"
+                    className="text-[11px] font-bold fill-stone-400 font-num"
                   >
                     {pt.data.label}
                   </text>

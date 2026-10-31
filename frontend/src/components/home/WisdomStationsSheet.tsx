@@ -14,7 +14,7 @@ import {
   Volume2,
   CheckCircle2,
 } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
+import { useLanguage, lookupDictionary } from '@/context/LanguageContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { coursesDatabase, AudioCourse } from '@/lib/data';
 import { SCHOLAR_NAME } from '@/lib/constants';
@@ -181,7 +181,7 @@ export const WisdomStationsSheet: React.FC = () => {
   return (
     <section
       id="stations"
-      aria-label={dict.stations_title || 'ایستگاه‌های حکمت'}
+      aria-label={dict.stations_title}
       className="relative z-10 w-full mt-12 sm:mt-16 pt-8 pb-16 sm:pb-20 bg-[#FAF8F5] dark:bg-[#0C0D0E] rounded-t-[40px] sm:rounded-t-[56px] border-t border-[#E6E1D8] dark:border-[#22242A] shadow-2xl transition-colors duration-300"
     >
       {/* Tactile Sheet Drag Handle Indicator (Adapted from UTopia sheet-main) */}
@@ -197,16 +197,15 @@ export const WisdomStationsSheet: React.FC = () => {
         <div className="text-center space-y-3 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20">
             <Compass className="w-3.5 h-3.5" />
-            <span>{dict.stations_badge || 'چهار ایستگاه بنیادین تفکر برهانی'}</span>
+            <span>{dict.stations_badge}</span>
           </div>
 
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight leading-snug">
-            {dict.stations_title || 'منظومه ایستگاه‌های معرفتی علوم عقلی و وجودشناسی'}
+          <h2 className="text-lg sm:text-xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight leading-snug">
+            {dict.stations_title}
           </h2>
 
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify sm:text-center">
-            {dict.stations_desc ||
-              `بازخوانی روش‌مند و اجتهادی ارکان حکمت اسلامی در چهار ایستگاه درسی با تکیه بر متون مصحح و تدریس صوت استودیویی ${SCHOLAR_NAME}`}
+            {dict.stations_desc}
           </p>
         </div>
 
@@ -215,13 +214,13 @@ export const WisdomStationsSheet: React.FC = () => {
           <button
             type="button"
             onClick={() => setSelectedStationId('all')}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] cursor-pointer ${
               selectedStationId === 'all'
                 ? 'bg-[#8A532B] text-white shadow-xs'
                 : 'bg-white dark:bg-[#141518] text-zinc-600 dark:text-zinc-400 border border-[#E6E1D8] dark:border-[#22242A] hover:bg-zinc-50 dark:hover:bg-zinc-800'
             }`}
           >
-            {dict.stations_tab_all || 'همه ایستگاه‌ها'}
+            {dict.stations_tab_all}
           </button>
 
           {STATIONS.map((station) => {
@@ -234,7 +233,7 @@ export const WisdomStationsSheet: React.FC = () => {
                 key={station.id}
                 type="button"
                 onClick={() => setSelectedStationId(station.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] cursor-pointer flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-[#8A532B] text-white shadow-xs'
                     : 'bg-white dark:bg-[#141518] text-zinc-600 dark:text-zinc-400 border border-[#E6E1D8] dark:border-[#22242A] hover:bg-zinc-50 dark:hover:bg-zinc-800'
@@ -243,7 +242,7 @@ export const WisdomStationsSheet: React.FC = () => {
                 <span className="font-mono text-[11px] opacity-80">
                   [{toLocale(station.stationNumber)}]
                 </span>
-                <span>{dict[station.titleKey] || fallbackTitle}</span>
+                <span>{lookupDictionary(dict, station.titleKey) || fallbackTitle}</span>
               </button>
             );
           })}
@@ -268,7 +267,7 @@ export const WisdomStationsSheet: React.FC = () => {
             return (
               <Card
                 key={station.id}
-                className="p-6 sm:p-7 flex flex-col justify-between gap-6 hover:border-[#8A532B]/40 dark:hover:border-[#C58B43]/40 transition-all duration-200"
+                className="p-6 sm:p-7 flex flex-col justify-between gap-6 hover:border-[#8A532B]/40 dark:hover:border-[#C58B43]/40 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200"
               >
                 {/* Top Station Meta */}
                 <div className="space-y-4">
@@ -278,7 +277,7 @@ export const WisdomStationsSheet: React.FC = () => {
                         {station.serialTag}
                       </span>
                       <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                        {dict.stations_station_num_prefix || 'ایستگاه'}{' '}
+                        {dict.stations_station_num_prefix}{' '}
                         {toLocale(station.stationNumber)}
                       </span>
                     </div>
@@ -288,14 +287,14 @@ export const WisdomStationsSheet: React.FC = () => {
                         <Layers className="w-3 h-3 text-[#8A532B]" />
                         <span>
                           {toLocale(station.sessionsCount)}{' '}
-                          {dict.stations_metrics_sessions || 'جلسه'}
+                          {dict.stations_metrics_sessions}
                         </span>
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-[#8A532B]" />
                         <span>
                           {toLocale(station.durationHours)}{' '}
-                          {dict.stations_metrics_hours || 'ساعت'}
+                          {dict.stations_metrics_hours}
                         </span>
                       </span>
                     </div>
@@ -304,16 +303,16 @@ export const WisdomStationsSheet: React.FC = () => {
                   {/* Station Titles */}
                   <div className="space-y-1">
                     <h3 className="text-base sm:text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
-                      {dict[station.titleKey] || canonical}
+                      {lookupDictionary(dict, station.titleKey) || canonical}
                     </h3>
                     <p className="text-xs font-medium text-[#8A532B] dark:text-[#C58B43]">
-                      {dict[station.subtitleKey] || author}
+                      {lookupDictionary(dict, station.subtitleKey) || author}
                     </p>
                   </div>
 
                   {/* Scholarly Thesis Summary */}
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed text-justify">
-                    {dict[station.descKey]}
+                    {lookupDictionary(dict, station.descKey)}
                   </p>
 
                   {/* Canonical Treatise & Core Concepts */}
@@ -350,19 +349,19 @@ export const WisdomStationsSheet: React.FC = () => {
                     {isCoursePlaying ? (
                       <>
                         <Volume2 className="w-3.5 h-3.5" />
-                        <span>{dict.discourse_live_status || 'در حال پخش'}</span>
+                        <span>{dict.discourse_live_status}</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>{dict.stations_btn_listen_preview || 'شنیدن درس نمونه'}</span>
+                        <span>{dict.stations_btn_listen_preview}</span>
                       </>
                     )}
                   </Button>
 
                   <Button asChild variant="link" size="sm" className="p-0 text-xs font-bold gap-1">
                     <Link href={localizeHref(`/courses/${station.courseId}`)}>
-                      <span>{dict.stations_btn_view_course || 'مشاهده سرفصل‌ها'}</span>
+                      <span>{dict.stations_btn_view_course}</span>
                       <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                     </Link>
                   </Button>

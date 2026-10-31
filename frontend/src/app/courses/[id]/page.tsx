@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { coursesDatabase } from '@/lib/data';
 import { CourseDetailClient } from './CourseDetailClient';
+import { serializeJsonLd } from '@/lib/jsonLd';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -104,15 +105,15 @@ export default async function CourseDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(courseJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
       />
       <CourseDetailClient courseId={id} />
     </>

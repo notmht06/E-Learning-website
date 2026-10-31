@@ -134,7 +134,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
 export default function AdminPage() {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
-  const { currentLang, t, localizeHref } = useLanguage();
+  const { dict, currentLang, t, localizeHref } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
   const langKey = (currentLang === 'ar' || currentLang === 'en') ? currentLang : 'fa';
@@ -152,8 +152,8 @@ export default function AdminPage() {
     return (
       <ShellAuthGate
         portalType="admin"
-        demoActionLabel={currentLang === 'en' ? 'Go to Login' : currentLang === 'ar' ? 'الانتقال إلى تسجيل الدخول' : 'ورود به سامانه'}
-        onDemoLogin={() => router.push(localizeHref('/login'))}
+        demoActionLabel={dict.ui_go_to_login}
+        onLogin={() => router.push(localizeHref('/login'))}
       />
     );
   }
@@ -172,17 +172,8 @@ export default function AdminPage() {
     { id: 'settings', label: t('admin_settings_title', labels.settings), icon: Settings },
   ];
 
-  const portalBadge = currentLang === 'en'
-    ? 'ADMIN CONSOLE'
-    : currentLang === 'ar'
-    ? 'لوحة الإدارة'
-    : 'پنل مدیریت';
-
-  const portalTitle = currentLang === 'en'
-    ? 'Hayat Administration'
-    : currentLang === 'ar'
-    ? 'إدارة حياة'
-    : 'حیات فلسفه';
+  const portalBadge = dict.ui_admin_console;
+  const portalTitle = dict.ui_hayat_administration;
 
   return (
     <ShellLayout

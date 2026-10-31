@@ -37,6 +37,7 @@ export interface Book {
   motif: string;
   cover_image?: string;
   isbn?: string;
+  pages_count?: number;
   isComingSoon?: boolean;
   pages: {
     [pageNum: number]: {
@@ -424,7 +425,7 @@ export const booksDatabase: Record<string, Book> = {
           r_body: `
             <div class="p-3 bg-[#8A532B]/10 rounded-xl border border-[#8A532B]/30 text-center mb-3">
               <span class="font-bold text-book-accent block text-xs">نشر قائم آل علی (ع) — قم المقدسة</span>
-              <span class="text-[10px] text-book-subtext block font-num">شابک: ۹۷۸-۶۲۲-۰۲-۱۹۴۸-۱ • نوبت چاپ: دوم ۱۴۰۳</span>
+              <span class="text-[11px] text-book-subtext block font-num">شابک: ۹۷۸-۶۲۲-۰۲-۱۹۴۸-۱ • نوبت چاپ: دوم ۱۴۰۳</span>
             </div>
             <h5 class="font-bold text-book-accent text-sm">مقدمه و دیباچه مولف:</h5>
             <p class="text-justify text-xs text-book-text dark:text-stone-200 leading-[2.1]">
@@ -455,7 +456,7 @@ export const booksDatabase: Record<string, Book> = {
           r_body: `
             <div class="p-3 bg-[#8A532B]/10 rounded-xl border border-[#8A532B]/30 text-center mb-3">
               <span class="font-bold text-book-accent block text-xs">دار قائم آل محمد (ع) — قم المقدسة</span>
-              <span class="text-[10px] text-book-subtext block font-num">الترقيم الدولي: 978-622-02-1948-1 • الطبعة: الثانية</span>
+              <span class="text-[11px] text-book-subtext block font-num">الترقيم الدولي: 978-622-02-1948-1 • الطبعة: الثانية</span>
             </div>
             <h5 class="font-bold text-book-accent text-sm">مقدمة المؤلف:</h5>
             <p class="text-justify text-xs text-book-text dark:text-stone-200 leading-[2.1]">
@@ -486,7 +487,7 @@ export const booksDatabase: Record<string, Book> = {
           r_body: `
             <div class="p-3 bg-[#8A532B]/10 rounded-xl border border-[#8A532B]/30 text-center mb-3">
               <span class="font-bold text-book-accent block text-xs">Ghaem Publishing — Academic Series</span>
-              <span class="text-[10px] text-book-subtext block font-num">ISBN: 978-622-02-1948-1 • 2nd Edition 2024</span>
+              <span class="text-[11px] text-book-subtext block font-num">ISBN: 978-622-02-1948-1 • 2nd Edition 2024</span>
             </div>
             <h5 class="font-bold text-book-accent text-sm">Author’s Preface:</h5>
             <p class="text-justify text-xs text-book-text dark:text-stone-200 leading-[2.1]">
@@ -604,7 +605,7 @@ export const booksDatabase: Record<string, Book> = {
               </p>
             </div>
             <div class="text-center pt-2">
-              <span class="text-[10px] text-[#8A532B] font-bold block">برای مطالعه ادامه متن، می‌توانید نسخه چاپی را سفارش دهید.</span>
+              <span class="text-[11px] text-[#8A532B] font-bold block">برای مطالعه ادامه متن، می‌توانید نسخه چاپی را سفارش دهید.</span>
             </div>
           `
         },

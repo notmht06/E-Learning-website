@@ -24,11 +24,11 @@ export function CourseSyllabusList({
         <div className="flex items-center gap-2">
           <Disc className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43]" />
           <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            {dict.dash_courses_sessions_ready || 'فهرست جلسات تدریس'}
+            {dict.dash_courses_sessions_ready}
           </h2>
         </div>
         <span className="text-xs sm:text-sm text-zinc-500 font-num font-bold">
-          {toLocale(chapters.length)} {dict.course_unit_sessions || 'جلسه'}
+          {toLocale(chapters.length)} {dict.course_unit_sessions}
         </span>
       </div>
 
@@ -59,7 +59,7 @@ export function CourseSyllabusList({
                       ? 'bg-[#8A532B] text-white'
                       : 'bg-zinc-100 dark:bg-zinc-800 hover:bg-[#8A532B] hover:text-white text-zinc-700 dark:text-zinc-200'
                   }`}
-                  title={dict.btn_sample_lecture_play || 'پخش صوت'}
+                  title={dict.btn_sample_lecture_play}
                   aria-label="پخش صوت جلسه"
                 >
                   {isCurrent ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ps-0.5" />}
@@ -67,7 +67,7 @@ export function CourseSyllabusList({
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-zinc-400 font-num">
-                      {dict.reader_page || 'جلسه'} {toLocale(idx + 1)}
+                      {dict.reader_page} {toLocale(idx + 1)}
                     </span>
                     {isSample && (
                       <span className="px-2 py-0.5 rounded bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-xs font-bold">

@@ -42,8 +42,8 @@ export default function CheckoutPage() {
   const [shippingData, setShippingData] = useState({
     fullName: '',
     phone: '',
-    province: currentLang === 'en' ? 'Tehran' : currentLang === 'ar' ? 'طهران' : 'تهران',
-    city: currentLang === 'en' ? 'Tehran' : currentLang === 'ar' ? 'طهران' : 'تهران',
+    province: dict.ui_tehran,
+    city: dict.ui_tehran,
     postalCode: '',
     address: '',
     deliveryNotes: '',
@@ -131,7 +131,7 @@ export default function CheckoutPage() {
         setAppliedCoupon({ code: res.code || code.toUpperCase(), percent: res.discount_percent });
         setCouponCode('');
       } else {
-        setCouponError(res?.message || dict.checkout_coupon_err || 'کد تخفیف نامعتبر یا منقضی شده است.');
+        setCouponError(res?.message || dict.checkout_coupon_err);
       }
     } catch (err: any) {
       const found = coupons.find(c => c.code.toUpperCase() === code.toUpperCase() && c.isActive);
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
         setAppliedCoupon({ code: found.code, percent: found.discountPercent });
         setCouponCode('');
       } else {
-        setCouponError(err?.message || dict.checkout_coupon_err || 'کد تخفیف نامعتبر یا منقضی شده است.');
+        setCouponError(err?.message || dict.checkout_coupon_err);
       }
     }
   };
@@ -151,16 +151,16 @@ export default function CheckoutPage() {
   const validateShipping = () => {
     const errors: Record<string, string> = {};
     if (!shippingData.fullName.trim()) {
-      errors.fullName = currentLang === 'en' ? 'Full name is required.' : currentLang === 'ar' ? 'الاسم الكامل مطلوب.' : 'نام و نام‌خانوادگی الزامی است.';
+      errors.fullName = dict.ui_full_name_is_required;
     }
     if (!/^09\d{9}$/.test(shippingData.phone.replace(/\s+/g, ''))) {
-      errors.phone = currentLang === 'en' ? 'Valid mobile number required.' : currentLang === 'ar' ? 'رقم هاتف صالح مطلوب.' : 'شماره موبایل معتبر ۱۱ رقمی وارد فرمایید.';
+      errors.phone = dict.ui_valid_mobile_number_required;
     }
     if (!/^\d{10}$/.test(shippingData.postalCode.replace(/\s+/g, ''))) {
-      errors.postalCode = currentLang === 'en' ? '10-digit postal code required.' : currentLang === 'ar' ? 'الرمز البريدي يجب أن يكون 10 أرقام.' : 'کد پستی باید ۱۰ رقم باشد.';
+      errors.postalCode = dict.ui_10_digit_postal_code_required;
     }
     if (!shippingData.address.trim() || shippingData.address.length < 8) {
-      errors.address = currentLang === 'en' ? 'Accurate address required.' : currentLang === 'ar' ? 'العنوان التفصيلي مطلوب.' : 'نشانی پستی دقیق الزامی است.';
+      errors.address = dict.ui_accurate_address_required;
     }
 
     setShippingErrors(errors);
@@ -264,15 +264,15 @@ export default function CheckoutPage() {
       <header className="border-b border-book-border dark:border-[#22242A] bg-white/80 dark:bg-[#141518]/90 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href={localizeHref('/')} className="flex items-center gap-3 text-book-accent hover:opacity-80 transition group">
-            <div className="w-9 h-9 rounded-2xl bg-book-accent text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-105 transition">
+            <div className="w-9 h-9 rounded-2xl bg-book-accent text-white flex items-center justify-center font-bold text-sm shadow-md transition">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div className="text-start">
               <span className="font-bold text-xs sm:text-sm block text-book-text dark:text-white">
-                {dict.checkout_header_title || 'پایگاه علمی و انتشاراتی'}
+                {dict.checkout_header_title}
               </span>
               <span className="text-[11px] sm:text-xs text-book-subtext dark:text-stone-400">
-                {dict.checkout_header_sub || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                {dict.checkout_header_sub}
               </span>
             </div>
           </Link>
@@ -282,19 +282,19 @@ export default function CheckoutPage() {
             <span className={`flex items-center gap-2 px-3.5 py-2 rounded-full font-bold transition ${
               step >= 1 ? 'bg-book-accent text-white shadow-xs' : 'bg-stone-200 dark:bg-[#18191D] text-stone-500'
             }`}>
-              <span>{dict.checkout_step_cart || '۱. سبد خرید'}</span>
+              <span>{dict.checkout_step_cart}</span>
             </span>
             <ChevronLeft className="w-3.5 h-3.5 text-stone-400 rtl:rotate-0 ltr:rotate-180" />
             <span className={`flex items-center gap-2 px-3.5 py-2 rounded-full font-bold transition ${
               step >= 2 ? 'bg-book-accent text-white shadow-xs' : 'bg-stone-200 dark:bg-[#18191D] text-stone-500'
             }`}>
-              <span>{dict.checkout_step_shipping || '۲. اطلاعات گیرنده'}</span>
+              <span>{dict.checkout_step_shipping}</span>
             </span>
             <ChevronLeft className="w-3.5 h-3.5 text-stone-400 rtl:rotate-0 ltr:rotate-180" />
             <span className={`flex items-center gap-2 px-3.5 py-2 rounded-full font-bold transition ${
               step >= 3 ? 'bg-book-accent text-white shadow-xs' : 'bg-stone-200 dark:bg-[#18191D] text-stone-500'
             }`}>
-              <span>{dict.checkout_step_gateway || '۳. درگاه شاپرک'}</span>
+              <span>{dict.checkout_step_gateway}</span>
             </span>
           </div>
 
@@ -302,7 +302,7 @@ export default function CheckoutPage() {
             href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 transition flex items-center gap-1"
           >
-            <span>{dict.checkout_btn_home || 'صفحه اصلی'}</span>
+            <span>{dict.checkout_btn_home}</span>
           </Link>
         </div>
       </header>
@@ -325,10 +325,10 @@ export default function CheckoutPage() {
                   <div className="flex items-center justify-between pb-2 border-b border-book-border dark:border-[#22242A]">
                     <h2 className="text-sm sm:text-base font-bold text-book-text dark:text-white flex items-center gap-2">
                       <ShoppingBag className="w-5 h-5 text-[#8A532B]" />
-                      <span>{dict.cart_title || 'سبد خرید و ثبت‌نام‌ها'}</span>
+                      <span>{dict.cart_title}</span>
                     </h2>
                     <span className="text-xs sm:text-sm font-bold text-book-subtext dark:text-stone-400 font-num">
-                      {toLocale(items.length.toString())} {dict.books_count_suffix || 'مورد'}
+                      {toLocale(items.length.toString())} {dict.books_count_suffix}
                     </span>
                   </div>
 
@@ -336,14 +336,14 @@ export default function CheckoutPage() {
                     <div className="bg-white dark:bg-[#141518] rounded-xl p-8 sm:p-12 text-center border border-book-border dark:border-[#22242A] space-y-4 shadow-xs">
                       <ShoppingBag className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto" />
                       <p className="text-sm font-bold text-book-subtext dark:text-stone-400">
-                        {dict.cart_empty || 'سبد خرید شما در حال حاضر خالی است.'}
+                        {dict.cart_empty}
                       </p>
                       <div className="flex items-center justify-center gap-3 pt-2">
                         <Link
                           href={localizeHref('/courses')}
                           className="inline-flex px-6 py-3 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs transition"
                         >
-                          {dict.hero_btn_courses || 'مشاهده دوره‌ها'}
+                          {dict.hero_btn_courses}
                         </Link>
                         <Link
                           href={localizeHref('/books')}
@@ -381,7 +381,7 @@ export default function CheckoutPage() {
                             <button
                               onClick={() => handleRemoveItem(item.id)}
                               className="p-2 rounded-lg text-stone-400 hover:text-[#8A532B] hover:bg-stone-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                              title={dict.cart_remove_btn || 'حذف'}
+                              title={dict.cart_remove_btn}
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -393,7 +393,7 @@ export default function CheckoutPage() {
                       <div className="bg-white dark:bg-[#141518] rounded-xl p-4 border border-book-border dark:border-[#22242A] shadow-xs space-y-2">
                         <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white flex items-center gap-2">
                           <Tag className="w-4 h-4 text-[#8A532B]" />
-                          <span>{dict.checkout_coupon_label || 'کد تخفیف دانشجویی:'}</span>
+                          <span>{dict.checkout_coupon_label}</span>
                         </label>
                         <div className="flex gap-2">
                           <input
@@ -401,13 +401,13 @@ export default function CheckoutPage() {
                             placeholder="مثال: HEKMAT20 یا ZANJIRZAN"
                             value={couponCode}
                             onChange={e => setCouponCode(e.target.value)}
-                            className="flex-1 px-4 py-3 rounded-lg border border-book-border dark:border-zinc-700 bg-transparent text-xs sm:text-sm font-mono uppercase outline-none focus:border-[#8A532B] transition"
+                            className="flex-1 px-4 py-3 rounded-lg border border-book-border dark:border-zinc-700 bg-transparent text-xs sm:text-sm font-mono outline-none focus:border-[#8A532B] transition"
                           />
                           <button
                             onClick={handleApplyCoupon}
                             className="px-5 py-3 rounded-lg bg-stone-800 hover:bg-stone-700 text-white text-xs sm:text-sm font-bold transition cursor-pointer"
                           >
-                            {dict.checkout_coupon_apply || 'اعمال کد'}
+                            {dict.checkout_coupon_apply}
                           </button>
                         </div>
                         {couponError && (
@@ -419,7 +419,7 @@ export default function CheckoutPage() {
                         {appliedCoupon && (
                           <p className="text-xs text-[#8A532B] font-bold flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>{dict.checkout_coupon_success || 'کد تخفیف اعمال شد:'} ({appliedCoupon.code} - {appliedCoupon.percent}٪)</span>
+                            <span>{dict.checkout_coupon_success} ({appliedCoupon.code} - {appliedCoupon.percent}٪)</span>
                           </p>
                         )}
                       </div>
@@ -430,30 +430,30 @@ export default function CheckoutPage() {
                 {/* Price Summary Sidebar */}
                 <div className="bg-white dark:bg-[#141518] rounded-xl p-6 border border-book-border dark:border-[#22242A] shadow-xs space-y-5 h-fit text-start">
                   <h3 className="text-sm sm:text-base font-bold text-book-text dark:text-white border-b border-book-border dark:border-[#22242A] pb-3">
-                    {dict.checkout_summary_title || 'خلاصه سفارش و پرداخت'}
+                    {dict.checkout_summary_title}
                   </h3>
 
                   <div className="space-y-3 text-xs sm:text-sm">
                     <div className="flex justify-between text-book-subtext dark:text-stone-400">
-                      <span>{dict.checkout_raw_total || 'مجموع اقلام:'}</span>
+                      <span>{dict.checkout_raw_total}</span>
                       <span className="font-bold font-num text-book-text dark:text-white">{formatPrice(rawTotal)}</span>
                     </div>
 
                     {appliedCoupon && (
                       <div className="flex justify-between text-[#8A532B] dark:text-[#C58B43] font-bold">
-                        <span>{dict.checkout_discount || 'تخفیف اعمال‌شده:'}</span>
+                        <span>{dict.checkout_discount}</span>
                         <span className="font-num">-{formatPrice(discountAmount)}</span>
                       </div>
                     )}
 
                     <div className="flex justify-between text-book-subtext dark:text-stone-400">
-                      <span>{dict.checkout_shipping_fee || 'هزینه ارسال پستی:'}</span>
-                      <span className="font-bold text-[#8A532B] dark:text-[#C58B43]">{dict.checkout_shipping_free || 'رایگان'}</span>
+                      <span>{dict.checkout_shipping_fee}</span>
+                      <span className="font-bold text-[#8A532B] dark:text-[#C58B43]">{dict.checkout_shipping_free}</span>
                     </div>
 
                     <div className="pt-3 border-t border-book-border dark:border-[#22242A] flex justify-between items-center">
                       <span className="font-bold text-sm sm:text-base text-book-text dark:text-white">
-                        {dict.checkout_payable || 'مبلغ پرداختی:'}
+                        {dict.checkout_payable}
                       </span>
                       <span className="font-bold text-base sm:text-lg text-[#8A532B] dark:text-[#C58B43] font-num">
                         {formatPrice(payableTotal)}
@@ -467,7 +467,7 @@ export default function CheckoutPage() {
                       className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
                     >
                       <LogIn className="w-4 h-4" />
-                      <span>{dict.checkout_btn_login_to_continue || 'ورود به حساب کاربری و ادامه خرید'}</span>
+                      <span>{dict.checkout_btn_login_to_continue}</span>
                     </button>
                   ) : (
                     <button
@@ -475,7 +475,7 @@ export default function CheckoutPage() {
                       disabled={items.length === 0}
                       className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] disabled:opacity-40 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
                     >
-                      <span>{dict.checkout_btn_continue_shipping || 'ادامه و ثبت آدرس پستی'}</span>
+                      <span>{dict.checkout_btn_continue_shipping}</span>
                       <ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
                     </button>
                   )}
@@ -489,21 +489,21 @@ export default function CheckoutPage() {
                 <div className="flex items-center justify-between border-b border-book-border dark:border-[#22242A] pb-3">
                   <h2 className="text-sm sm:text-base font-bold text-book-text dark:text-white flex items-center gap-2">
                     <Truck className="w-5 h-5 text-[#8A532B]" />
-                    <span>{dict.checkout_step_shipping || 'مشخصات و آدرس پستی تحویل'}</span>
+                    <span>{dict.checkout_step_shipping}</span>
                   </h2>
                   <button
                     onClick={() => setStep(1)}
                     className="text-xs sm:text-sm font-bold text-book-subtext hover:text-book-text dark:text-stone-400 dark:hover:text-stone-200 flex items-center gap-1"
                   >
                     <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 ltr:rotate-0" />
-                    <span>{currentLang === 'en' ? 'Back to Bag' : currentLang === 'ar' ? 'العودة للسلة' : 'بازگشت به سبد'}</span>
+                    <span>{dict.ui_back_to_bag}</span>
                   </button>
                 </div>
 
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                      {dict.checkout_shipping_name || 'نام و نام‌خانوادگی گیرنده:'}
+                      {dict.checkout_shipping_name}
                     </label>
                     <input
                       type="text"
@@ -517,7 +517,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                        {dict.checkout_shipping_phone || 'شماره تماس همراه:'}
+                        {dict.checkout_shipping_phone}
                       </label>
                       <input
                         type="tel"
@@ -530,7 +530,7 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                        {dict.checkout_shipping_postal || 'کد پستی ۱۰ رقمی:'}
+                        {dict.checkout_shipping_postal}
                       </label>
                       <input
                         type="text"
@@ -545,7 +545,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                        {dict.checkout_shipping_province || 'استان:'}
+                        {dict.checkout_shipping_province}
                       </label>
                       <input
                         type="text"
@@ -557,7 +557,7 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                        {dict.checkout_shipping_city || 'شهر:'}
+                        {dict.checkout_shipping_city}
                       </label>
                       <input
                         type="text"
@@ -570,7 +570,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="text-xs sm:text-sm font-bold text-book-text dark:text-white block mb-1.5">
-                      {dict.checkout_shipping_address || 'نشانی پستی دقیق جهت تحویل کتاب:'}
+                      {dict.checkout_shipping_address}
                     </label>
                     <textarea
                       rows={3}
@@ -585,7 +585,7 @@ export default function CheckoutPage() {
                     onClick={handleGoToPayment}
                     className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <span>{dict.checkout_btn_to_payment || 'انتقال به درگاه پرداخت'}</span>
+                    <span>{dict.checkout_btn_to_payment}</span>
                     <ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
                   </button>
                 </div>
@@ -599,7 +599,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43]" />
                     <h2 className="text-sm sm:text-base font-bold text-book-text dark:text-white">
-                      {dict.checkout_gateway_title || 'انتخاب درگاه پرداخت شاپرک'}
+                      {dict.checkout_gateway_title}
                     </h2>
                   </div>
                   <span className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] bg-[#8A532B]/10 dark:bg-[#C58B43]/15 px-3 py-1 rounded-full">
@@ -609,7 +609,7 @@ export default function CheckoutPage() {
 
                 <div className="p-4 rounded-xl bg-[#FBF9F4] dark:bg-[#18191D] border border-book-border dark:border-[#22242A] flex justify-between items-center">
                   <span className="text-xs sm:text-sm font-bold text-book-subtext dark:text-stone-400">
-                    {dict.checkout_payable || 'مبلغ قابل پرداخت:'}
+                    {dict.checkout_payable}
                   </span>
                   <span className="text-base sm:text-lg font-bold text-[#8A532B] dark:text-[#C58B43] font-num">
                     {formatPrice(payableTotal)}

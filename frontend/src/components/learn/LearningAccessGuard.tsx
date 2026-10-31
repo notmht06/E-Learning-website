@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Lock, Sparkles, Check, ArrowLeft, Shield, LogIn } from 'lucide-react';
+import { Lock, Check, ArrowLeft, Shield, LogIn } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
@@ -31,34 +31,14 @@ export function LearningAccessGuard({
     typeof price === 'string' && price.length > 0
       ? price
       : isFree || price === 0 || !price
-      ? dict.course_free_badge || (currentLang === 'en' ? 'Free' : currentLang === 'ar' ? 'مجاني' : 'رایگان')
-      : `${toLocale(price.toLocaleString('fa-IR'))} ${dict.course_currency_toman || 'تومان'}`;
+      ? dict.course_free_badge
+      : `${toLocale(price.toLocaleString('fa-IR'))} ${dict.course_currency_toman}`;
 
   const benefits = [
-    dict.guard_benefit_1 ||
-      (currentLang === 'en'
-        ? 'Lifetime access to 48kHz audio and detailed lecture monographs'
-        : currentLang === 'ar'
-        ? 'وصول دائم إلى التسجيلات الصوتية بدقة ٤٨kHz والتقريرات المفصلة'
-        : 'دسترسی همیشگی به صوت ۴۸kHz و تقریرات تفصیلی'),
-    dict.guard_benefit_2 ||
-      (currentLang === 'en'
-        ? 'Access to interactive live sessions & workshops'
-        : currentLang === 'ar'
-        ? 'إمكانية المشاركة في الورش والجلسات المباشرة'
-        : 'امکان حضور در کارگاه‌ها و جلسات برخط اسکایروم'),
-    dict.guard_benefit_3 ||
-      (currentLang === 'en'
-        ? 'Scholarly debate and Q&A with the wisdom assistant'
-        : currentLang === 'ar'
-        ? 'طرح الإشكالات والأسئلة العلمية مع المساعد الذكي'
-        : 'طرح اشکال و پرسش‌وپاسخ با دستیار علمی حکمت‌یار'),
-    dict.guard_benefit_4 ||
-      (currentLang === 'en'
-        ? 'Official authenticated certificate of course completion'
-        : currentLang === 'ar'
-        ? 'إصدار شهادة تخرج رسمية معتمدة'
-        : 'صدور گواهی رسمی پایان دوره با تأیید استاد'),
+    dict.guard_benefit_1,
+    dict.guard_benefit_2,
+    dict.guard_benefit_3,
+    dict.guard_benefit_4,
   ];
 
   return (
@@ -78,13 +58,8 @@ export function LearningAccessGuard({
             </div>
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[#C58B43]">
-                  {dict.guard_access_required ||
-                    (currentLang === 'en'
-                      ? 'Enrollment Required'
-                      : currentLang === 'ar'
-                      ? 'محتوى مخصص للدارسين المسجلين'
-                      : 'دسترسی ویژه اعضای ثبت‌نام‌شده')}
+                <span className="text-[11px] font-mono text-[#C58B43]">
+                  {dict.guard_access_required}
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-bold text-[#FAF8F5]">
@@ -94,8 +69,8 @@ export function LearningAccessGuard({
           </div>
 
           <div className="text-start sm:text-end shrink-0">
-            <span className="text-[10px] text-zinc-500 block">
-              {dict.course_tuition_label || 'شهریه دوره'}
+            <span className="text-[11px] text-zinc-500 block">
+              {dict.course_tuition_label}
             </span>
             <span className="text-base font-bold text-[#E6CA85] font-num">
               {formattedPrice}
@@ -105,24 +80,15 @@ export function LearningAccessGuard({
 
         {/* Narrative Description */}
         <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-          {dict.guard_access_desc ||
-            (currentLang === 'en'
-              ? 'To access this lecture session, edited monographs, and studio audio stream, please enroll in this course or sign in to your account.'
-              : currentLang === 'ar'
-              ? 'للاستماع إلى هذه الجلسة والاطلاع على التقريرات والملفات الصوتية، يرجى التسجيل في الدورة أو تسجيل الدخول إلى حسابك.'
-              : 'برای دسترسی به این جلسه، متون منقح تقریرات و استریم صوتی استودیویی، لطفاً در دوره ثبت‌نام فرمایید یا به حساب کاربری خود وارد شوید.')}
+          {dict.guard_access_desc}
         </p>
 
         {/* Course Core Benefits */}
         <div className="bg-[#141518] border border-[#22242A] rounded-xl p-4 sm:p-5 space-y-2.5">
           <div className="flex items-center gap-2 text-xs font-bold text-[#C58B43]">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Shield className="w-3.5 h-3.5" />
             <span>
-              {currentLang === 'en'
-                ? 'Course Benefits & Academic Guarantees'
-                : currentLang === 'ar'
-                ? 'مزايا التسجيل والضمانات العلمية'
-                : 'امتیازات ثبت‌نام و تعهدات آموزشی دوره'}
+              {dict.ui_course_benefits_academic_guarantees}
             </span>
           </div>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
@@ -146,12 +112,7 @@ export function LearningAccessGuard({
             >
               <Shield className="w-4 h-4 text-[#E6CA85]" />
               <span>
-                {dict.guard_enroll_btn ||
-                  (currentLang === 'en'
-                    ? 'Enroll in Course & Get Instant Access'
-                    : currentLang === 'ar'
-                    ? 'التسجيل في الدورة والوصول الفوري'
-                    : 'ثبت‌نام در دوره و دسترسی آنی')}
+                {dict.guard_enroll_btn}
               </span>
             </Link>
 
@@ -164,12 +125,7 @@ export function LearningAccessGuard({
               >
                 <LogIn className="w-4 h-4 text-[#C58B43]" />
                 <span>
-                  {dict.guard_login_btn ||
-                    (currentLang === 'en'
-                      ? 'Sign In to Account'
-                      : currentLang === 'ar'
-                      ? 'تسجيل الدخول'
-                      : 'ورود به حساب کاربری')}
+                  {dict.guard_login_btn}
                 </span>
               </Link>
             )}
@@ -182,12 +138,7 @@ export function LearningAccessGuard({
             className="px-4 py-2.5 text-xs text-zinc-400 hover:text-zinc-200 transition flex items-center justify-center gap-1.5 self-center sm:self-auto cursor-pointer"
           >
             <span>
-              {dict.guard_back_to_course ||
-                (currentLang === 'en'
-                  ? 'Back to Course Overview'
-                  : currentLang === 'ar'
-                  ? 'العودة لصفحة تفاصيل الدورة'
-                  : 'بازگشت به معرفی دوره')}
+              {dict.guard_back_to_course}
             </span>
             <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
           </Link>

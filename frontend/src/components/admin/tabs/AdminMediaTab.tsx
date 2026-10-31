@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Radio,
-  Sparkles,
   CheckCircle2,
   FileAudio,
   Database,
@@ -108,7 +107,7 @@ export function AdminMediaTab() {
       <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+            <Database className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
             <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
               {dict.admin_media_rag_title}
             </h3>
@@ -200,7 +199,7 @@ export function AdminMediaTab() {
               {isIngesting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                <Sparkles className="w-3.5 h-3.5" />
+                <Database className="w-3.5 h-3.5" />
               )}
               <span>{dict.admin_media_btn_ingest}</span>
             </button>

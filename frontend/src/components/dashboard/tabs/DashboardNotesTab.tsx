@@ -197,10 +197,10 @@ function parseSolarDate(str: string): Date | null {
       <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-2xl p-5 shadow-xs flex items-center justify-between gap-4">
         <div>
           <h2 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-            {dict.dash_notes_header || 'یادداشت‌های درسی من'}
+            {dict.dash_notes_header}
           </h2>
           <p className="text-xs text-zinc-500">
-            {dict.dash_notes_sub || 'ثبت نکات کلیدی و یادداشت‌های درسی شما در طول دوره'}
+            {dict.dash_notes_sub}
           </p>
         </div>
         <button
@@ -209,7 +209,7 @@ function parseSolarDate(str: string): Date | null {
           className="px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold shadow-xs transition flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>{dict.dash_notes_add_btn || 'ثبت یادداشت جدید'}</span>
+          <span>{dict.dash_notes_add_btn}</span>
         </button>
       </div>
 
@@ -217,11 +217,7 @@ function parseSolarDate(str: string): Date | null {
         <div className="p-8 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin text-[#8A532B]" />
           <span>
-            {currentLang === 'en'
-              ? 'Loading study notes...'
-              : currentLang === 'ar'
-              ? 'جارٍ تحميل الملاحظات الدراسية...'
-              : 'در حال بارگذاری یادداشت‌ها...'}
+            {dict.ui_loading_study_notes}
           </span>
         </div>
       ) : (
@@ -241,12 +237,7 @@ function parseSolarDate(str: string): Date | null {
                     onClick={() => handleDeleteNote(note.id)}
                     className="text-zinc-400 hover:text-[#8A532B] transition cursor-pointer"
                     title={
-                      dict.dash_notes_del_title ||
-                      (currentLang === 'en'
-                        ? 'Delete Note'
-                        : currentLang === 'ar'
-                        ? 'حذف الملاحظة'
-                        : 'حذف یادداشت')
+                      dict.dash_notes_del_title
                     }
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -260,11 +251,7 @@ function parseSolarDate(str: string): Date | null {
 
               <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex justify-between text-[11px] text-zinc-400 font-num">
                 <span>
-                  {currentLang === 'en'
-                    ? 'Date: '
-                    : currentLang === 'ar'
-                    ? 'تاريخ التدوين: '
-                    : 'تاریخ ثبت: '}
+                  {dict.ui_date}
                   {formatNoteDate(note.date)}
                 </span>
               </div>
@@ -278,11 +265,7 @@ function parseSolarDate(str: string): Date | null {
           <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-2xl max-w-md w-full p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-[#E6E1D8] dark:border-[#22242A] pb-3">
               <h3 className="text-base font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-                {currentLang === 'en'
-                  ? 'Add New Study Note'
-                  : currentLang === 'ar'
-                  ? 'إضافة ملاحظة دراسية جديدة'
-                  : 'افزودن یادداشت جدید'}
+                {dict.ui_add_new_study_note}
               </h3>
               <button
                 type="button"
@@ -296,11 +279,7 @@ function parseSolarDate(str: string): Date | null {
             <form onSubmit={handleAddNote} className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {currentLang === 'en'
-                    ? 'Related Course ID / Title'
-                    : currentLang === 'ar'
-                    ? 'معرف أو عنوان الدورة المرتبطة'
-                    : 'شناسه یا عنوان دوره مرتبط'}
+                  {dict.ui_related_course_id_title}
                 </label>
                 <input
                   type="text"
@@ -312,20 +291,12 @@ function parseSolarDate(str: string): Date | null {
 
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {currentLang === 'en'
-                    ? 'Note Topic / Title'
-                    : currentLang === 'ar'
-                    ? 'موضوع الملاحظة'
-                    : 'موضوع یادداشت'}
+                  {dict.ui_note_topic_title}
                 </label>
                 <input
                   type="text"
                   placeholder={
-                    currentLang === 'en'
-                      ? 'e.g. The circularity problem in defining motion'
-                      : currentLang === 'ar'
-                      ? 'مثال: إشكال الدور في تعريف الحركة'
-                      : 'مثلاً: اشکال دور در تعریف حرکت'
+                    dict.ui_e_g_the_circularity_problem_in_definin
                   }
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
@@ -336,20 +307,12 @@ function parseSolarDate(str: string): Date | null {
 
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {currentLang === 'en'
-                    ? 'Analytical Content'
-                    : currentLang === 'ar'
-                    ? 'النص التحليلي للملاحظة'
-                    : 'متن تحلیلی یادداشت'}
+                  {dict.ui_analytical_content}
                 </label>
                 <textarea
                   rows={4}
                   placeholder={
-                    currentLang === 'en'
-                      ? 'Key insights expounded by the professor...'
-                      : currentLang === 'ar'
-                      ? 'النقاط التحقيقية التي تفضل بها الأستاذ...'
-                      : 'نکات فرموده‌شده توسط استاد...'
+                    dict.ui_key_insights_expounded_by_the_professo
                   }
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
@@ -364,11 +327,7 @@ function parseSolarDate(str: string): Date | null {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer"
                 >
-                  {currentLang === 'en'
-                    ? 'Cancel'
-                    : currentLang === 'ar'
-                    ? 'إلغاء'
-                    : 'انصراف'}
+                  {dict.ui_cancel}
                 </button>
                 <button
                   type="submit"
@@ -376,16 +335,8 @@ function parseSolarDate(str: string): Date | null {
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold cursor-pointer disabled:opacity-60"
                 >
                   {isSaving
-                    ? currentLang === 'en'
-                      ? 'Saving...'
-                      : currentLang === 'ar'
-                      ? 'جارٍ الحفظ...'
-                      : 'در حال ثبت...'
-                    : currentLang === 'en'
-                    ? 'Save Note'
-                    : currentLang === 'ar'
-                    ? 'حفظ الملاحظة'
-                    : 'ثبت یادداشت'}
+                    ? dict.ui_saving
+                    : dict.ui_save_note}
                 </button>
               </div>
             </form>

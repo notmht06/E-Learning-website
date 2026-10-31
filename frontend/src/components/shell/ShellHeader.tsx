@@ -39,7 +39,7 @@ export function ShellHeader({
   userRole,
   onOpenMobileNav,
 }: ShellHeaderProps) {
-  const { currentLang, setLanguage, localizeHref } = useLanguage();
+  const { dict, currentLang, setLanguage, localizeHref } = useLanguage();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
 
@@ -54,8 +54,8 @@ export function ShellHeader({
   }, []);
 
   const defaultRole = portalType === 'admin'
-    ? (currentLang === 'en' ? 'Administrator' : currentLang === 'ar' ? 'المشرف العام' : 'مدیر ارشد')
-    : (currentLang === 'en' ? 'Student' : currentLang === 'ar' ? 'باحث علمي' : 'دانش‌پژوه');
+    ? (dict.ui_administrator)
+    : (dict.ui_student);
 
   const defaultUserName = userName || (
     portalType === 'admin'
@@ -105,11 +105,11 @@ export function ShellHeader({
         <Link
           href={localizeHref('/')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition text-xs font-medium"
-          title={currentLang === 'en' ? 'Main Website' : currentLang === 'ar' ? 'الموقع الرئيسي' : 'صفحه اصلی سایت'}
+          title={dict.ui_main_website}
         >
           <Home className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
           <span className="hidden sm:inline">
-            {currentLang === 'en' ? 'Main Site' : currentLang === 'ar' ? 'الموقع الرئيسي' : 'صفحه اصلی'}
+            {dict.ui_main_site}
           </span>
         </Link>
 
@@ -163,7 +163,7 @@ export function ShellHeader({
             <span className="text-zinc-800 dark:text-zinc-200 font-medium block truncate max-w-[130px]">
               {defaultUserName}
             </span>
-            <span className="text-[10px] text-zinc-400 block font-mono">
+            <span className="text-[11px] text-zinc-400 block font-mono">
               {userRole || defaultRole}
             </span>
           </div>

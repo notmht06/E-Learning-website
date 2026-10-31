@@ -153,7 +153,7 @@ export function OtpVerificationForm({
     try {
       await onVerify(codeString);
     } catch (err: any) {
-      const msg = err?.message || dict.auth_otp_invalid_error || 'کد تأیید واردشده نادرست یا منقضی شده است.';
+      const msg = err?.message || dict.auth_otp_invalid_error;
       setErrorMessage(msg);
     }
   };
@@ -194,15 +194,15 @@ export function OtpVerificationForm({
               <KeyRound className="w-4 h-4" />
             </span>
             <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50">
-              {dict.auth_otp_step_title || 'تأیید شماره تلفن همراه'}
+              {dict.auth_otp_step_title}
             </h2>
           </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            <span>{dict.auth_otp_sent_prefix || 'کد تأیید ۶ رقمی به شماره '}</span>
+            <span>{dict.auth_otp_sent_prefix}</span>
             <span className="font-num font-bold text-zinc-800 dark:text-zinc-200 dir-ltr inline-block">
               {toLocale(phone)}
             </span>
-            <span>{dict.auth_otp_sent_suffix || ' ارسال شد.'}</span>
+            <span>{dict.auth_otp_sent_suffix}</span>
           </p>
         </div>
 
@@ -211,7 +211,7 @@ export function OtpVerificationForm({
           onClick={onBack}
           className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1 shrink-0 pt-1 cursor-pointer"
         >
-          <span>{dict.auth_otp_change_phone || 'ویرایش شماره'}</span>
+          <span>{dict.auth_otp_change_phone}</span>
           <ArrowRight className="w-3.5 h-3.5 rotate-180" />
         </button>
       </div>
@@ -230,7 +230,7 @@ export function OtpVerificationForm({
       {/* 6-Digit Segmented Input */}
       <div className="space-y-2">
         <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-          {dict.auth_otp_code_label || 'کد تأیید ۶ رقمی پیامک‌شده'}
+          {dict.auth_otp_code_label}
         </label>
         <div className="flex items-center justify-between gap-2 dir-ltr" onPaste={handlePaste}>
           {digits.map((digit, index) => (
@@ -260,7 +260,7 @@ export function OtpVerificationForm({
         <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#8A532B]/5 dark:bg-[#C58B43]/10 border border-[#8A532B]/20 dark:border-[#C58B43]/25 text-xs text-zinc-700 dark:text-zinc-300">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-            <span>{dict.auth_otp_mock_server_label || 'کد آزمایشی سرور: '}</span>
+            <span>{dict.auth_otp_mock_server_label}</span>
             <span className="font-num font-bold text-zinc-900 dark:text-zinc-50">{toLocale(mockCode)}</span>
           </div>
           <button
@@ -268,7 +268,7 @@ export function OtpVerificationForm({
             onClick={fillMockCode}
             className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline cursor-pointer"
           >
-            {dict.auth_otp_fill_mock_btn || 'درج خودکار کد'}
+            {dict.auth_otp_fill_mock_btn}
           </button>
         </div>
       )}
@@ -277,7 +277,7 @@ export function OtpVerificationForm({
       <div className="flex items-center justify-between text-xs pt-1">
         {countdown > 0 ? (
           <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400">
-            <span>{dict.auth_otp_resend_prefix || 'امکان ارسال مجدد تا: '}</span>
+            <span>{dict.auth_otp_resend_prefix}</span>
             <span className="font-num font-bold text-[#8A532B] dark:text-[#C58B43] dir-ltr inline-block">
               {formatTimer(countdown)}
             </span>
@@ -292,19 +292,19 @@ export function OtpVerificationForm({
             {isResending ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>{dict.auth_otp_sending || 'در حال ارسال کد تأیید...'}</span>
+                <span>{dict.auth_otp_sending}</span>
               </>
             ) : (
               <>
                 <RotateCw className="w-3.5 h-3.5" />
-                <span>{dict.auth_otp_resend_code || 'ارسال مجدد کد تأیید'}</span>
+                <span>{dict.auth_otp_resend_code}</span>
               </>
             )}
           </button>
         )}
 
         <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-          {fullName ? `${dict.auth_otp_student_prefix || 'دانش‌پژوه: '}${fullName}` : (dict.auth_otp_sms_validation_tag || 'اعتبارسنجی پیامکی')}
+          {fullName ? `${dict.auth_otp_student_prefix}${fullName}` : (dict.auth_otp_sms_validation_tag)}
         </span>
       </div>
 
@@ -317,10 +317,10 @@ export function OtpVerificationForm({
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>{dict.auth_otp_verifying || 'در حال اعتبارسنجی کد...'}</span>
+            <span>{dict.auth_otp_verifying}</span>
           </>
         ) : (
-          <span>{dict.auth_otp_verify_btn || 'تأیید کد ۶ رقمی و ادامه'}</span>
+          <span>{dict.auth_otp_verify_btn}</span>
         )}
       </button>
     </form>

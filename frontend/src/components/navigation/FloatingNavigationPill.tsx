@@ -118,21 +118,21 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
   return (
     <header
       ref={headerRef}
-      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1rem)] sm:w-[calc(100%-1.5rem)] max-w-7xl transition-all duration-300 relative"
+      className="sticky top-3 sm:top-5 z-40 mx-auto w-[calc(100%-1rem)] sm:w-[calc(100%-1.5rem)] max-w-7xl transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 relative"
     >
       <div className="rounded-full bg-[#FAF8F5]/90 dark:bg-[#121316]/90 backdrop-blur-xl border border-[#E6E1D8] dark:border-[#22242A] shadow-lg shadow-black/5 px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5 xl:gap-3 2xl:gap-5 flex-nowrap shrink-0 overflow-visible">
         {/* Brand Identity / Scholar */}
         <Link
           href={localizeHref('/')}
           className="flex items-center gap-2.5 sm:gap-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A532B] rounded-full pe-1 whitespace-nowrap"
-          title={dict.nav_home || 'صفحه نخست'}
+          title={dict.nav_home}
         >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#8A532B] text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform duration-200 shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#8A532B] text-white flex items-center justify-center shadow-xs transition-transform duration-200 shrink-0">
             <BookOpen className="w-4 h-4 text-[#FAF8F5] shrink-0" />
           </div>
           <div className="flex flex-col text-start leading-tight min-w-0 shrink-0 whitespace-nowrap">
-            <span className="text-[10px] sm:text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] tracking-normal font-sans whitespace-nowrap block">
-              {dict.brand_sub || 'پایگاه یادگیری حکمت'}
+            <span className="text-[11px] sm:text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] tracking-normal font-sans whitespace-nowrap block">
+              {dict.brand_sub}
             </span>
             <span className="text-xs sm:text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] whitespace-nowrap block">
               {dict.scholar_name || SCHOLAR_NAME}
@@ -150,7 +150,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             href={localizeHref('/')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
-            {dict.nav_home || 'صفحه نخست'}
+            {dict.nav_home}
           </Link>
 
           {/* 2. Courses with Mega-Menu Trigger */}
@@ -167,7 +167,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                   : 'hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43]'
               }`}
             >
-              <span className="whitespace-nowrap">{dict.nav_courses || 'دوره‌ها'}</span>
+              <span className="whitespace-nowrap">{dict.nav_courses}</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                   isMegaMenuOpen ? 'rotate-180 text-[#8A532B] dark:text-[#C58B43]' : ''
@@ -182,7 +182,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors gap-1.5 whitespace-nowrap shrink-0"
           >
             <Compass className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-            <span className="whitespace-nowrap">{dict.nav_roadmap || 'سیر مطالعاتی'}</span>
+            <span className="whitespace-nowrap">{dict.nav_roadmap}</span>
           </Link>
 
           {/* 4. Books and Publications */}
@@ -190,7 +190,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             href={localizeHref('/books')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
-            <span className="whitespace-nowrap">{dict.nav_books || 'کتب و تالیفات'}</span>
+            <span className="whitespace-nowrap">{dict.nav_books}</span>
           </Link>
 
           {/* 5. Scholarly Articles */}
@@ -198,7 +198,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             href={localizeHref('/articles')}
             className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
           >
-            <span className="whitespace-nowrap">{dict.nav_articles || 'مقالات علمی'}</span>
+            <span className="whitespace-nowrap">{dict.nav_articles}</span>
           </Link>
         </nav>
 
@@ -209,8 +209,8 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             type="button"
             onClick={handleOpenSearch}
             className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center cursor-pointer shrink-0"
-            aria-label={dict.nav_search_aria || 'جستجو'}
-            title={dict.nav_search_aria || 'جستجو'}
+            aria-label={dict.nav_search_aria}
+            title={dict.nav_search_aria}
           >
             <Search className="w-4 h-4 shrink-0" />
           </button>
@@ -220,8 +220,8 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             type="button"
             onClick={toggleTheme}
             className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
-            aria-label={dict.pill_nav_theme_aria || 'تغییر پوسته'}
-            title={dict.pill_nav_theme_aria || 'تغییر پوسته'}
+            aria-label={dict.pill_nav_theme_aria}
+            title={dict.pill_nav_theme_aria}
           >
             {theme === 'dark' ? (
               <Sun className="w-4 h-4 text-[#C58B43] shrink-0" />
@@ -235,13 +235,13 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-zinc-700 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] hover:border-[#8A532B]/30 transition-all duration-200 cursor-pointer shrink-0"
-                aria-label={dict.nav_language || 'تغییر زبان'}
-                title={dict.nav_language || 'تغییر زبان'}
+                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-zinc-700 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] hover:border-[#8A532B]/30 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 cursor-pointer shrink-0"
+                aria-label={dict.nav_language}
+                title={dict.nav_language}
               >
                 <Globe className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
-                <span className="text-[11px] font-bold tracking-wide">
-                  {currentLang === 'fa' ? 'فارسی' : currentLang === 'ar' ? 'العربية' : 'English'}
+                <span className="text-[11px] font-bold">
+                  {dict.ui_english}
                 </span>
                 <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0 opacity-70" />
               </button>
@@ -260,7 +260,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 }`}
               >
                 <span>فارسی</span>
-                <span className="text-[10px] font-mono opacity-60">FA</span>
+                <span className="text-[11px] font-mono opacity-60">FA</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setLanguage('ar')}
@@ -271,7 +271,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 }`}
               >
                 <span>العربية</span>
-                <span className="text-[10px] font-mono opacity-60">AR</span>
+                <span className="text-[11px] font-mono opacity-60">AR</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setLanguage('en')}
@@ -282,7 +282,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 }`}
               >
                 <span>English</span>
-                <span className="text-[10px] font-mono opacity-60">EN</span>
+                <span className="text-[11px] font-mono opacity-60">EN</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -292,12 +292,12 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             type="button"
             onClick={handleCartClick}
             className="relative p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
-            aria-label={dict.nav_bag || 'سبد خرید'}
-            title={dict.nav_bag || 'سبد خرید'}
+            aria-label={dict.nav_bag}
+            title={dict.nav_bag}
           >
             <ShoppingBag className="w-4 h-4 shrink-0" />
             {totalCartCount > 0 && (
-              <span className="absolute top-0.5 end-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#8A532B] text-white text-[10px] font-bold flex items-center justify-center leading-none font-num">
+              <span className="absolute top-0.5 end-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#8A532B] text-white text-[11px] font-bold flex items-center justify-center leading-none font-num">
                 {toLocale(totalCartCount)}
               </span>
             )}
@@ -312,29 +312,29 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 <Link
                   href={localizeHref('/admin')}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8A532B]/10 hover:bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 text-xs font-bold transition-colors whitespace-nowrap shrink-0"
-                  title={dict.nav_admin || 'مدیریت'}
+                  title={dict.nav_admin}
                 >
                   <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
-                  <span className="whitespace-nowrap">{dict.nav_admin || 'مدیریت'}</span>
+                  <span className="whitespace-nowrap">{dict.nav_admin}</span>
                 </Link>
               )}
               <Link
                 href={localizeHref('/dashboard')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8A532B]/10 hover:bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 text-xs font-bold transition-colors whitespace-nowrap shrink-0"
-                title={dict.nav_dashboard || 'پورتال دانشجو'}
+                title={dict.nav_dashboard}
               >
                 <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-                <span className="whitespace-nowrap">{dict.nav_dashboard || 'پورتال دانشجو'}</span>
+                <span className="whitespace-nowrap">{dict.nav_dashboard}</span>
               </Link>
             </div>
           ) : (
             <Link
               href={localizeHref('/login')}
               className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold shadow-xs transition-colors whitespace-nowrap shrink-0"
-              title={dict.pill_nav_portal || dict.nav_login || 'ورود به سامانه'}
+              title={dict.pill_nav_portal || dict.nav_login}
             >
               <LogIn className="w-3.5 h-3.5 shrink-0" />
-              <span className="whitespace-nowrap">{dict.pill_nav_portal || dict.nav_login || 'ورود به سامانه'}</span>
+              <span className="whitespace-nowrap">{dict.pill_nav_portal || dict.nav_login}</span>
             </Link>
           )}
 
@@ -342,8 +342,8 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="xl:hidden p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer shrink-0 active:scale-90"
-            aria-label={dict.pill_nav_menu_toggle || 'منو'}
+            className="xl:hidden p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 cursor-pointer shrink-0 active:scale-90"
+            aria-label={dict.pill_nav_menu_toggle}
             aria-expanded={isMobileOpen}
             aria-controls="mobile-nav-drawer"
           >
@@ -402,7 +402,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
           >
             <span className="flex items-center gap-2">
               <Search className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_search_aria || 'جستجوی دروس، کتب و مقالات...'}</span>
+              <span>{dict.nav_search_aria}</span>
             </span>
           </button>
 
@@ -413,7 +413,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <BookOpen className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_home || 'صفحه نخست'}</span>
+              <span>{dict.nav_home}</span>
             </Link>
             <Link
               href={localizeHref('/courses')}
@@ -421,7 +421,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <Headphones className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_courses || 'دوره‌ها'}</span>
+              <span>{dict.nav_courses}</span>
             </Link>
             <Link
               href={localizeHref('/roadmap')}
@@ -429,7 +429,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <Compass className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_roadmap || 'سیر مطالعاتی'}</span>
+              <span>{dict.nav_roadmap}</span>
             </Link>
             <Link
               href={localizeHref('/books')}
@@ -437,7 +437,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <Scroll className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_books || 'کتب و تالیفات'}</span>
+              <span>{dict.nav_books}</span>
             </Link>
             <Link
               href={localizeHref('/articles')}
@@ -445,7 +445,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               className="col-span-2 p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <BookOpen className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_articles || 'مقالات علمی'}</span>
+              <span>{dict.nav_articles}</span>
             </Link>
           </div>
 
@@ -461,7 +461,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                     className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center gap-2 font-bold text-xs"
                   >
                     <ShieldAlert className="w-4 h-4 shrink-0" />
-                    <span>{dict.nav_admin || 'پنل مدیریت'}</span>
+                    <span>{dict.nav_admin}</span>
                   </Link>
                 )}
                 <Link
@@ -470,7 +470,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                   className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center gap-2 font-bold text-xs"
                 >
                   <GraduationCap className="w-4 h-4 shrink-0" />
-                  <span>{dict.nav_dashboard || 'پورتال دانشجو'}</span>
+                  <span>{dict.nav_dashboard}</span>
                 </Link>
               </>
             ) : (
@@ -480,7 +480,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
                 className="w-full py-2.5 px-4 rounded-2xl bg-[#8A532B] text-white flex items-center justify-center gap-2 font-bold text-xs shadow-xs"
               >
                 <LogIn className="w-4 h-4 shrink-0" />
-                <span>{dict.pill_nav_portal || dict.nav_login || 'ورود به سامانه'}</span>
+                <span>{dict.pill_nav_portal || dict.nav_login}</span>
               </Link>
             )}
           </div>

@@ -62,7 +62,7 @@ export function AdminDrmTab() {
                 <tr key={session.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition">
                   <td className="py-3 px-4">
                     <span className="font-mono text-zinc-800 dark:text-zinc-200 block">{session.phone}</span>
-                    <span className="font-mono text-[10px] text-zinc-400 block">{session.id}</span>
+                    <span className="font-mono text-[11px] text-zinc-400 block">{session.id}</span>
                   </td>
                   <td className="py-3 px-4 font-medium text-zinc-800 dark:text-zinc-200">
                     {session.courseTitle}
@@ -72,7 +72,7 @@ export function AdminDrmTab() {
                   </td>
                   <td className="py-3 px-4 font-mono text-zinc-500">
                     <div>{session.ip}</div>
-                    <div className="text-[10px] text-zinc-400">{session.device}</div>
+                    <div className="text-[11px] text-zinc-400">{session.device}</div>
                   </td>
                   <td className="py-3 px-4 font-mono text-[11px] text-[#8A532B]">
                     {session.watermarkUid}

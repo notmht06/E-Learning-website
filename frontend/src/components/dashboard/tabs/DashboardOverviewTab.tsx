@@ -29,7 +29,7 @@ function isCourseEnrolled(courseId: string, enrolledIds: string[]): boolean {
 export function DashboardOverviewTab() {
   const { user } = useAuth();
   const { courses, orders } = useData();
-  const { currentLang, toLocale, t, localizeHref } = useLanguage();
+  const { dict, currentLang, toLocale, t, localizeHref } = useLanguage();
   const langKey = (currentLang === 'ar' || currentLang === 'en') ? currentLang : 'fa';
   const text = overviewText[langKey];
 
@@ -95,7 +95,7 @@ export function DashboardOverviewTab() {
     const progress = Math.round((completed / chaptersCount) * 100);
 
     const title = currentLang === 'en' && c.title_en ? c.title_en : (currentLang === 'ar' && c.title_ar ? c.title_ar : c.title_fa);
-    const subject = currentLang === 'en' ? 'Rational Sciences' : currentLang === 'ar' ? 'العلوم العقلية' : 'علوم عقلی';
+    const subject = dict.ui_rational_sciences;
     const chapterObj = c.chapters?.[completed - 1];
     const currentChapter: string =
       (currentLang === 'en' ? chapterObj?.title_en : currentLang === 'ar' ? chapterObj?.title_ar : chapterObj?.title_fa) ||

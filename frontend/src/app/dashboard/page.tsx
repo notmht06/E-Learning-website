@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import {
   Compass,
   Headphones,
@@ -110,8 +111,9 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
 };
 
 export default function UserDashboardPage() {
-  const { user, login, logout } = useAuth();
-  const { currentLang, t, dict } = useLanguage();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const { currentLang, t, dict, localizeHref } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [selectedBookId, setSelectedBookId] = useState<string>('book1');
@@ -125,7 +127,7 @@ export default function UserDashboardPage() {
     return (
       <ShellAuthGate
         portalType="student"
-        onDemoLogin={() => login('09123456789', 'STUDENT')}
+        onLogin={() => router.push(localizeHref('/login'))}
       />
     );
   }
@@ -142,18 +144,10 @@ export default function UserDashboardPage() {
   ];
 
   const portalBadge =
-    currentLang === 'en'
-      ? 'STUDENT PORTAL'
-      : currentLang === 'ar'
-      ? 'بوابة الباحث'
-      : 'پرتال دانش‌پژوه';
+    dict.ui_student_portal;
 
   const portalTitle =
-    currentLang === 'en'
-      ? 'Student Scholarly Console'
-      : currentLang === 'ar'
-      ? 'مكتب الدراسات العلمية'
-      : 'میز کار علمی دانش‌پژوه';
+    dict.ui_student_scholarly_console;
 
   const firstEnrolledCourse = user.enrolledCourseIds?.[0] || 'course-student-enrolled';
 
@@ -175,7 +169,7 @@ export default function UserDashboardPage() {
         {activeTab === 'ai' && (
           <CourseScopedAITutor
             courseId={firstEnrolledCourse}
-            courseTitle={dict.ai_tutor_enrolled_courses_title || 'دوره‌های ثبت‌نام‌شده دانش‌پژوه'}
+            courseTitle={dict.ai_tutor_enrolled_courses_title}
             subject="همه"
           />
         )}

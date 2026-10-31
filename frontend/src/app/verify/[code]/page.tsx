@@ -47,7 +47,7 @@ export default function CertificateVerifyPage({
     safeCertCode = (resolvedParams.code || '').trim();
   }
 
-  const { currentLang, localizeHref } = useLanguage();
+  const { dict, currentLang, localizeHref } = useLanguage();
 
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -144,14 +144,10 @@ export default function CertificateVerifyPage({
               <Award className="w-7 h-7" />
             </div>
             <h1 className="text-lg sm:text-xl font-bold tracking-tight">
-              {currentLang === 'en'
-                ? 'Academic Certificate Authentication'
-                : currentLang === 'ar'
-                ? 'التحقق من صحة الشهادة الأكاديمية'
-                : 'سامانه استعلام اصالت گواهینامه علمی'}
+              {dict.ui_academic_certificate_authentication}
             </h1>
             <p className="text-xs text-zinc-500 font-mono flex items-center justify-center gap-1.5" dir="rtl">
-              <span>{currentLang === 'en' ? 'Code:' : currentLang === 'ar' ? 'رمز الشهادة:' : 'کد استعلام:'}</span>
+              <span>{dict.ui_code}</span>
               <span className="font-bold text-[#8A532B] dark:text-[#C58B43] font-mono" dir="ltr">{safeCertCode}</span>
             </p>
           </div>

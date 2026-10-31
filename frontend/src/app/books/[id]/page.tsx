@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { booksDatabase } from '@/lib/data';
 import { BookDetailClient } from './BookDetailClient';
+import { serializeJsonLd } from '@/lib/jsonLd';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -84,11 +85,11 @@ export default async function BookDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(bookJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
       />
       <BookDetailClient bookId={id} />
     </>

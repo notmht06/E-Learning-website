@@ -13,7 +13,8 @@ const ScrollArea = React.forwardRef<
     className={cn('relative overflow-hidden', className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+    {/* Radix wraps content in `display: table`, which grows to the widest child and overflows narrow screens; force block so `truncate` and wrapping work. */}
+    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit] [&>div]:!block">
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />
@@ -32,7 +33,7 @@ const ScrollBar = React.forwardRef<
     className={cn(
       'flex touch-none select-none transition-colors',
       orientation === 'vertical' &&
-        'h-full w-2.5 border-l border-l-transparent p-[1px]',
+        'h-full w-2.5 border-s border-s-transparent p-[1px]',
       orientation === 'horizontal' &&
         'h-2.5 flex-col border-t border-t-transparent p-[1px]',
       className

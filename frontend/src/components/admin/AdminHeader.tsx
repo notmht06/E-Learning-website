@@ -18,7 +18,7 @@ export function AdminHeader({ activeTabTitle }: AdminHeaderProps) {
           {activeTabTitle}
         </h1>
         <span className="hidden sm:inline-block px-3 py-0.5 rounded-full text-[11px] font-mono bg-[#8A532B]/10 text-[#8A532B] border border-[#8A532B]/20">
-          {dict.admin_official_publisher_badge || 'پایگاه رسمی نشر آثار'}
+          {dict.admin_official_publisher_badge}
         </span>
       </div>
 
@@ -35,7 +35,7 @@ export function AdminHeader({ activeTabTitle }: AdminHeaderProps) {
             <User className="w-4 h-4" />
           </div>
           <span className="text-zinc-700 dark:text-zinc-300 font-medium hidden sm:inline">
-            {dict.admin_role_super_admin || 'مدیر ارشد'}
+            {dict.admin_role_super_admin}
           </span>
         </div>
       </div>

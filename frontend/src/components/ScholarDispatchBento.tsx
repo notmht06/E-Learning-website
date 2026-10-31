@@ -45,17 +45,17 @@ export function ScholarDispatchBento() {
       <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
         <div className="space-y-2">
           <h2 className="text-lg sm:text-xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-            {dict.dispatch_title || 'اطلاع‌رسانی درس‌گفتارها و جلسات جدید'}
+            {dict.dispatch_title}
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-            {dict.dispatch_desc || 'شماره همراه یا ایمیل خود را برای دریافت زمان‌بندی دروس ثبت کنید.'}
+            {dict.dispatch_desc}
           </p>
         </div>
 
         {isSubmitted ? (
           <div className="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#8A532B]/30 text-xs font-medium flex items-center justify-center gap-2 text-[#8A532B] dark:text-[#C58B43] max-w-sm mx-auto">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{dict.dispatch_success || 'اطلاعات شما با موفقیت ثبت شد.'}</span>
+            <span>{dict.dispatch_success}</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto pt-2">
@@ -64,7 +64,7 @@ export function ScholarDispatchBento() {
               required
               value={contactInput}
               onChange={(e) => setContactInput(e.target.value)}
-              placeholder={dict.dispatch_placeholder || 'شماره همراه یا ایمیل...'}
+              placeholder={dict.dispatch_placeholder}
               className="flex-1 px-4 py-3 rounded-full bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs text-[#0C0D0E] dark:text-[#FAF8F5] placeholder-zinc-400 focus:outline-none focus:border-[#8A532B] transition"
             />
             <button
@@ -76,7 +76,7 @@ export function ScholarDispatchBento() {
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <>
-                  <span>{dict.dispatch_btn || 'ثبت'}</span>
+                  <span>{dict.dispatch_btn}</span>
                   <Send className="w-3.5 h-3.5 rtl:rotate-180" />
                 </>
               )}

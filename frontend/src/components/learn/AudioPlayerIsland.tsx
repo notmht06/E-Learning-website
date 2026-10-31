@@ -152,7 +152,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
               <ListMusic className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
               <span className="truncate">
-                {dict.player_playlist || 'فهرست جلسات'}: {courseTitle}
+                {dict.player_playlist}: {courseTitle}
               </span>
             </div>
             <button
@@ -212,7 +212,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
               <h5 className="text-xs sm:text-sm font-bold truncate text-stone-900 dark:text-stone-100">
                 {chapterTitle}
               </h5>
-              <span className="text-[10px] sm:text-[11px] text-stone-400 truncate block">
+              <span className="text-[11px] sm:text-[11px] text-stone-400 truncate block">
                 {courseTitle}
               </span>
             </div>
@@ -225,12 +225,11 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
               onClick={() => skip(-10)}
               className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1E2024] text-stone-500 hover:text-stone-900 dark:hover:text-[#FAF8F5] transition items-center justify-center cursor-pointer group active:scale-95"
               title={
-                dict.player_skip_10s ||
-                (currentLang === 'en' ? '10s Rewind' : currentLang === 'ar' ? '١٠ ثوانٍ للخلف' : '۱۰ ثانیه به عقب')
+                dict.player_skip_10s
               }
             >
               <RotateCcw className="w-4 h-4" />
-              <span className="absolute -bottom-0.5 text-[8px] font-bold font-num opacity-70 group-hover:opacity-100">
+              <span className="absolute -bottom-0.5 text-[11px] font-bold font-num opacity-70 group-hover:opacity-100">
                 {toLocale(10)}
               </span>
             </button>
@@ -239,7 +238,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={togglePlay}
               className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-stone-900 hover:bg-stone-800 dark:bg-[#1E2024] border border-transparent dark:border-[#C58B43]/30 text-white dark:text-[#FAF8F5] hover:border-[#C58B43] dark:hover:bg-[#25282E] flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer"
-              title={isPlaying ? (dict.player_pause || 'توقف') : (dict.player_play || 'پخش')}
+              title={isPlaying ? (dict.player_pause) : (dict.player_play)}
             >
               {isPlaying ? (
                 <Pause className="w-4 h-4 fill-current" />
@@ -253,12 +252,11 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
               onClick={() => skip(30)}
               className="hidden sm:flex relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1E2024] text-stone-500 hover:text-stone-900 dark:hover:text-[#FAF8F5] transition items-center justify-center cursor-pointer group active:scale-95"
               title={
-                dict.player_skip_30s ||
-                (currentLang === 'en' ? '30s Forward' : currentLang === 'ar' ? '٣٠ ثانية للأمام' : '۳۰ ثانیه به جلو')
+                dict.player_skip_30s
               }
             >
               <RotateCw className="w-4 h-4" />
-              <span className="absolute -bottom-0.5 text-[8px] font-bold font-num opacity-70 group-hover:opacity-100">
+              <span className="absolute -bottom-0.5 text-[11px] font-bold font-num opacity-70 group-hover:opacity-100">
                 {toLocale(30)}
               </span>
             </button>
@@ -269,7 +267,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={cycleSpeed}
               className="hidden sm:block px-2 py-1 rounded-md bg-stone-100 dark:bg-[#1E2024] border border-transparent dark:border-[#C58B43]/20 hover:bg-stone-200 dark:hover:bg-[#25282E] text-stone-700 dark:text-[#FAF8F5] font-bold text-xs transition cursor-pointer font-num"
-              title={dict.player_speed || 'سرعت پخش'}
+              title={dict.player_speed}
             >
               {playbackRate.toFixed(2).replace(/\.00$/, '')}x
             </button>
@@ -281,7 +279,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
                   ? 'bg-stone-900 text-white dark:bg-[#1E2024] dark:border dark:border-[#C58B43]/30 dark:text-[#FAF8F5]'
                   : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-[#1E2024]'
               }`}
-              title={dict.player_playlist || 'فهرست جلسات'}
+              title={dict.player_playlist}
             >
               <ListMusic className="w-4 h-4" />
             </button>
@@ -289,7 +287,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={toggleMute}
               className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-[#FAF8F5] hover:bg-stone-100 dark:hover:bg-[#1E2024] transition hidden sm:block cursor-pointer"
-              title={dict.player_volume || 'صدا'}
+              title={dict.player_volume}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -297,7 +295,7 @@ export const AudioPlayerIsland: React.FC<AudioPlayerIslandProps> = ({ currentLan
             <button
               onClick={() => setIsDismissed(true)}
               className="p-2 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-[#FAF8F5] hover:bg-stone-100 dark:hover:bg-[#1E2024] transition cursor-pointer"
-              title={dict.player_close || 'بستن پخش‌کننده'}
+              title={dict.player_close}
             >
               <X className="w-4 h-4" />
             </button>

@@ -11,32 +11,16 @@ export default function NotFoundPage() {
   const { currentLang, dict, localizeHref } = useLanguage();
 
   const title =
-    currentLang === 'en'
-      ? 'Page or Treatise Not Found'
-      : currentLang === 'ar'
-      ? 'لم يتم العثور على الصفحة المطلوبة'
-      : 'صفحه یا اثر مورد نظر یافت نشد';
+    dict.ui_page_or_treatise_not_found;
 
   const subtitle =
-    currentLang === 'en'
-      ? 'The requested address does not exist in the Hayat archive, or its link has been updated.'
-      : currentLang === 'ar'
-      ? 'العنوان الذي تبحث عنه غير موجود في أرشيف حياة أو تم نقل الرابط.'
-      : 'نشانی واردشده در آرشیو پایگاه حیات موجود نیست و یا مسیر آن تغییر یافته است.';
+    dict.ui_the_requested_address_does_not_exist_i;
 
   const homeBtn =
-    currentLang === 'en'
-      ? 'Return to Homepage'
-      : currentLang === 'ar'
-      ? 'العودة إلى الصفحة الرئيسية'
-      : 'بازگشت به صفحه نخست';
+    dict.ui_return_to_homepage;
 
   const coursesBtn =
-    currentLang === 'en'
-      ? 'Browse Course Archive'
-      : currentLang === 'ar'
-      ? 'تصفح أرشيف الدورات'
-      : 'مشاهده آرشیو دوره‌ها';
+    dict.ui_browse_course_archive;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors">
@@ -49,7 +33,7 @@ export default function NotFoundPage() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] tracking-wider uppercase block">
+            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
               [ HTTP 404 • ARCHIVE ENTRY NOT FOUND ]
             </span>
             <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">

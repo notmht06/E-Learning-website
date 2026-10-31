@@ -10,7 +10,7 @@ export interface ShellAuthGateProps {
   title?: string;
   description?: string;
   demoActionLabel?: string;
-  onDemoLogin: () => void;
+  onLogin: () => void;
   returnHomeLabel?: string;
 }
 
@@ -19,7 +19,7 @@ export function ShellAuthGate({
   title,
   description,
   demoActionLabel,
-  onDemoLogin,
+  onLogin,
   returnHomeLabel,
 }: ShellAuthGateProps) {
   const { isRtl, dict, localizeHref } = useLanguage();
@@ -75,7 +75,7 @@ export function ShellAuthGate({
         <div className="space-y-3 pt-1">
           <button
             type="button"
-            onClick={onDemoLogin}
+            onClick={onLogin}
             className="w-full py-3 px-4 rounded-xl bg-[#8A532B] hover:bg-[#724320] active:scale-[0.99] text-white text-xs font-medium transition cursor-pointer shadow-xs text-center"
           >
             {demoActionLabel || defaultDemoBtn}

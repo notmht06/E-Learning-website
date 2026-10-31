@@ -92,13 +92,13 @@ export function AuthModal({
         onClick={() => !isSubmitting && onClose()}
       />
 
-      <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl relative text-start transition-all">
+      <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl relative text-start transition-[color,background-color,border-color,opacity,transform,box-shadow]">
         {/* Close button */}
         <button
           type="button"
           onClick={onClose}
           disabled={isSubmitting}
-          aria-label={dict.auth_close_modal || 'بستن پنجره'}
+          aria-label={dict.auth_close_modal}
           className="absolute top-4 left-4 sm:top-5 sm:left-5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50"
         >
           <X className="w-5 h-5" />
@@ -114,10 +114,10 @@ export function AuthModal({
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'
-              ? dict.auth_step_otp_verify_desc || 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
+              ? dict.auth_step_otp_verify_desc
               : activeTab === 'login'
-              ? dict.auth_step_login_desc || 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
-              : dict.auth_step_register_desc || 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
+              ? dict.auth_step_login_desc
+              : dict.auth_step_register_desc}
           </p>
         </div>
 
@@ -140,8 +140,8 @@ export function AuthModal({
             <AuthTabs
               activeTab={activeTab}
               onTabChange={switchTab}
-              loginLabel={dict.auth_tab_login || 'ورود به سامانه'}
-              registerLabel={dict.auth_tab_register || 'ثبت‌نام دانش‌پژوه'}
+              loginLabel={dict.auth_tab_login}
+              registerLabel={dict.auth_tab_register}
             />
 
             {/* Forms */}

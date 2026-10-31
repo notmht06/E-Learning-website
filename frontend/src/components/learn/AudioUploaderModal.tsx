@@ -8,10 +8,10 @@ import {
   CheckCircle2,
   Lock,
   Clock,
-  Sparkles,
   X,
   Play,
   RotateCw,
+  Gift,
 } from 'lucide-react';
 import { toLocaleDigits } from '@/lib/data';
 
@@ -174,7 +174,7 @@ export const AudioUploaderModal: React.FC<AudioUploaderModalProps> = ({
                       : 'border-book-border text-book-subtext'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Gift className="w-3.5 h-3.5" />
                   <span>نمونه رایگان</span>
                 </button>
               </div>

@@ -29,17 +29,17 @@ export function LessonWorkspaceTabs({
   const tabs: Array<{ key: WorkspaceTabKey; label: string; icon: React.ComponentType<{ className?: string }> }> = [
     {
       key: 'notes',
-      label: dict.learn_tab_transcripts || 'تقریرات و یادداشت‌ها',
+      label: dict.learn_tab_transcripts,
       icon: FileText,
     },
     {
       key: 'attachments',
-      label: dict.learn_tab_attachments || 'فایل‌های پیوست و دانلود',
+      label: dict.learn_tab_attachments,
       icon: Download,
     },
     {
       key: 'ai',
-      label: dict.learn_tab_ai_discourse || 'حکمت‌یار این دوره (AI)',
+      label: dict.learn_tab_ai_discourse,
       icon: Sparkles,
     },
   ];

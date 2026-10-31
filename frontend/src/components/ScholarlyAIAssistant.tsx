@@ -262,7 +262,7 @@ export function ScholarlyAIAssistant() {
       }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = currentLang === 'en' ? 'en-US' : currentLang === 'ar' ? 'ar-SA' : 'fa-IR';
+      utterance.lang = dict.ui_en_us;
       utterance.rate = 0.95;
       window.speechSynthesis.speak(utterance);
     }
@@ -288,7 +288,7 @@ export function ScholarlyAIAssistant() {
       id: `user-${Date.now()}`,
       role: 'user',
       content: query,
-      timestamp: currentLang === 'en' ? 'Just now' : currentLang === 'ar' ? 'الآن' : 'هم‌اکنون',
+      timestamp: dict.ui_just_now,
     };
 
     const assistantMsgId = `assistant-${Date.now() + 1}`;
@@ -296,7 +296,7 @@ export function ScholarlyAIAssistant() {
       id: assistantMsgId,
       role: 'assistant',
       content: '',
-      timestamp: currentLang === 'en' ? 'Just now' : currentLang === 'ar' ? 'الآن' : 'هم‌اکنون',
+      timestamp: dict.ui_just_now,
     };
 
     setMessages((prev) => [...prev, userMsg, placeholderAssistantMsg]);
@@ -352,11 +352,7 @@ export function ScholarlyAIAssistant() {
         return;
       }
       const connectionErrorReply =
-        currentLang === 'en'
-          ? 'Failed to connect to the scholarly assistant. Please check your network connection and try again.'
-          : currentLang === 'ar'
-          ? 'تعذر الاتصال بالمساعد الذكي للدروس. يرجى التحقق من اتصال الشبكة والمحاولة مجدداً.'
-          : 'خطا در برقراری ارتباط با دستیار هوشمند دروس حکمی. لطفاً اتصال اینترنت خود را بررسی کرده و مجدداً تلاش فرمایید.';
+        dict.ui_failed_to_connect_to_the_scholarly_ass;
 
       setMessages((prev) =>
         prev.map((m) =>
@@ -407,7 +403,7 @@ export function ScholarlyAIAssistant() {
       >
         <Sparkles className="w-5 h-5 text-[#E6CA85] group-hover:rotate-12 transition duration-200" />
         <span className="text-xs font-bold hidden sm:inline-block">
-          {currentLang === 'en' ? 'AI Assistant' : currentLang === 'ar' ? 'المساعد الذكي' : 'حکمت‌یار هوشمند'}
+          {dict.ui_ai_assistant}
         </span>
       </button>
 
@@ -431,19 +427,11 @@ export function ScholarlyAIAssistant() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
-                        {currentLang === 'en'
-                          ? 'Scholarly AI Assistant'
-                          : currentLang === 'ar'
-                          ? 'المساعد الفلسفي الذكي'
-                          : 'حکمت‌یار هوشمند حیات'}
+                        {dict.ui_scholarly_ai_assistant}
                       </h3>
                     </div>
                     <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                      {currentLang === 'en'
-                        ? 'Based on the seminars of Hojjat al-Islam Dr. Zanjirzan Hosseini'
-                        : currentLang === 'ar'
-                        ? 'مستند إلى أبحاث سماحة حجت الاسلام دکتر زنجیر زن حسینی'
-                        : 'مستند به کرسی تدریس حجت الاسلام دکتر زنجیر زن حسینی'}
+                      {dict.ui_based_on_the_seminars_of_hojjat_al_isl}
                     </p>
                   </div>
                 </div>
@@ -452,14 +440,14 @@ export function ScholarlyAIAssistant() {
                   <button
                     onClick={handleResetChat}
                     className="p-2 rounded-xl text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-neutral-800 transition"
-                    title={currentLang === 'en' ? 'New Conversation' : currentLang === 'ar' ? 'محادثة جديدة' : 'گفت‌وگوی تازه'}
+                    title={dict.ui_new_conversation}
                   >
                     <RotateCcw className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setIsOpen(false)}
                     className="p-2 rounded-xl text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-neutral-800 transition"
-                    title={currentLang === 'en' ? 'Close' : currentLang === 'ar' ? 'إغلاق' : 'بستن پنجره'}
+                    title={dict.ui_close}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -503,11 +491,7 @@ export function ScholarlyAIAssistant() {
                         <div className="flex items-center gap-2 text-stone-500 py-1">
                           <Sparkles className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] animate-spin shrink-0" />
                           <span className="text-xs">
-                            {currentLang === 'en'
-                              ? 'Retrieving arguments and streaming analysis...'
-                              : currentLang === 'ar'
-                              ? 'جارٍ استخراج الأدلة وبث التحليل البرهاني...'
-                              : 'در حال استخراج براهین و استریم زنده تحلیل...'}
+                            {dict.ui_retrieving_arguments_and_streaming_ana}
                           </span>
                         </div>
                       ) : (
@@ -517,14 +501,10 @@ export function ScholarlyAIAssistant() {
                       {/* Citations Card */}
                       {msg.citations && msg.citations.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-stone-100 dark:border-neutral-800/80 space-y-2">
-                          <span className="text-[10px] font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
                             <BookOpen className="w-3.5 h-3.5" />
                             <span>
-                              {currentLang === 'en'
-                                ? 'Scholarly Citations & References:'
-                                : currentLang === 'ar'
-                                ? 'المستندات والمراجع البرهانية:'
-                                : 'مستندات و ارجاعات برهانی:'}
+                              {dict.ui_scholarly_citations_references}
                             </span>
                           </span>
                           {msg.citations.map((cite, cIdx) => (
@@ -537,7 +517,7 @@ export function ScholarlyAIAssistant() {
                                   {cite.source}
                                 </div>
                                 {cite.media_type && cite.media_type !== 'text' && (
-                                  <span className="shrink-0 px-2 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] text-[10px] font-medium flex items-center gap-1">
+                                  <span className="shrink-0 px-2 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] text-[11px] font-medium flex items-center gap-1">
                                     {cite.media_type === 'video' ? (
                                       <Video className="w-3 h-3" />
                                     ) : (
@@ -549,7 +529,7 @@ export function ScholarlyAIAssistant() {
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 text-[10px] text-stone-500">
+                              <div className="flex items-center gap-2 text-[11px] text-stone-500">
                                 <span className="font-num">{cite.page_or_session}</span>
                                 {cite.timestamp_label && (
                                   <>
@@ -561,7 +541,7 @@ export function ScholarlyAIAssistant() {
                                   </>
                                 )}
                               </div>
-                              <p className="text-[11px] text-stone-600 dark:text-stone-400 italic leading-relaxed">
+                              <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed">
                                 «{cite.snippet}»
                               </p>
                             </div>
@@ -572,19 +552,19 @@ export function ScholarlyAIAssistant() {
                       {/* Assistant Action Buttons */}
                       {msg.role === 'assistant' && (
                         <div className="mt-2.5 pt-2 border-t border-stone-100 dark:border-neutral-800/60 flex items-center justify-between text-[11px] text-stone-400">
-                          <span className="text-[10px] font-num">{msg.timestamp}</span>
+                          <span className="text-[11px] font-num">{msg.timestamp}</span>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleSpeak(msg.content)}
                               className="p-1 hover:text-[#8A532B] transition"
-                              title={currentLang === 'en' ? 'Voice Readout' : currentLang === 'ar' ? 'قراءة صوتية' : 'قرائت صوتی پاسخ'}
+                              title={dict.ui_voice_readout}
                             >
                               <Volume2 className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => handleCopy(msg.id, msg.content)}
                               className="p-1 hover:text-[#8A532B] transition"
-                              title={currentLang === 'en' ? 'Copy Text' : currentLang === 'ar' ? 'نسخ النص' : 'رونوشت از متن'}
+                              title={dict.ui_copy_text}
                             >
                               {copiedId === msg.id ? (
                                 <Check className="w-3.5 h-3.5 text-[#8A532B]" />
@@ -604,7 +584,7 @@ export function ScholarlyAIAssistant() {
                           <button
                             key={qIdx}
                             onClick={() => handleSendMessage(q)}
-                            className="px-3 py-1 rounded-lg bg-stone-100 dark:bg-neutral-800/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] border border-stone-200/60 dark:border-neutral-800 text-[10px] text-stone-600 dark:text-stone-300 transition text-start active:scale-95"
+                            className="px-3 py-1 rounded-lg bg-stone-100 dark:bg-neutral-800/80 hover:bg-[#8A532B]/10 hover:text-[#8A532B] border border-stone-200/60 dark:border-neutral-800 text-[11px] text-stone-600 dark:text-stone-300 transition text-start active:scale-95"
                           >
                             {q}
                           </button>
@@ -619,11 +599,7 @@ export function ScholarlyAIAssistant() {
                     <div className="rounded-2xl p-3 bg-white dark:bg-[#18191D] border border-stone-200 dark:border-neutral-800 text-xs text-stone-500 flex items-center gap-2">
                       <Sparkles className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43] animate-spin shrink-0" />
                       <span>
-                        {currentLang === 'en'
-                          ? 'Retrieving and analyzing arguments from lecture archive...'
-                          : currentLang === 'ar'
-                          ? 'جارٍ استخراج وتحليل البراهين من أرشيف الدروس...'
-                          : 'در حال استخراج و تحلیل براهین از آرشیو دروس...'}
+                        {dict.ui_retrieving_and_analyzing_arguments_fro}
                       </span>
                     </div>
                   </div>
@@ -638,14 +614,14 @@ export function ScholarlyAIAssistant() {
                   <div className="flex items-center gap-2 truncate">
                     <FileText className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">
-                      {currentLang === 'en' ? 'Attached document: ' : currentLang === 'ar' ? 'المستند المرفق: ' : 'سند ضمیمه: '}
+                      {dict.ui_attached_document}
                       {uploadedFile.name}
                     </span>
                   </div>
                   <button
                     onClick={() => setUploadedFile(null)}
                     className="p-1 hover:text-[#8A532B] transition"
-                    title={currentLang === 'en' ? 'Remove file' : currentLang === 'ar' ? 'حذف الملف' : 'حذف فایل'}
+                    title={dict.ui_remove_file}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -673,7 +649,7 @@ export function ScholarlyAIAssistant() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="p-3 rounded-xl bg-stone-100 dark:bg-neutral-800 text-stone-600 dark:text-stone-300 hover:text-[#8A532B] transition"
-                    title={currentLang === 'en' ? 'Upload treatise or document' : currentLang === 'ar' ? 'رفع رسالة أو مستند' : 'بارگذاری رساله یا سند متنی'}
+                    title={dict.ui_upload_treatise_or_document}
                   >
                     <Paperclip className="w-4 h-4" />
                   </button>
@@ -697,16 +673,8 @@ export function ScholarlyAIAssistant() {
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder={
                       isRecording
-                        ? currentLang === 'en'
-                          ? 'Listening... please speak...'
-                          : currentLang === 'ar'
-                          ? 'جارٍ الاستماع... تفضل بالحديث...'
-                          : 'در حال گوش دادن... لطفاً سخن بگویید...'
-                        : currentLang === 'en'
-                        ? 'Ask a philosophical question or state your thesis...'
-                        : currentLang === 'ar'
-                        ? 'اطرح سؤالك الفلسفي أو مسألتك العلمية...'
-                        : 'پرسش فلسفی یا مدعای خود را بنویسید...'
+                        ? dict.ui_listening_please_speak
+                        : dict.ui_ask_a_philosophical_question_or_state_
                     }
                     className="flex-1 px-3.5 py-3 rounded-xl bg-stone-100 dark:bg-neutral-800/90 border border-stone-200 dark:border-neutral-700 text-xs sm:text-sm outline-none focus:border-[#8A532B] dark:focus:border-[#C58B43] text-stone-900 dark:text-stone-100 transition"
                   />
@@ -715,7 +683,7 @@ export function ScholarlyAIAssistant() {
                     type="submit"
                     disabled={!inputText.trim() || isLoading}
                     className="p-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white disabled:opacity-40 transition active:scale-95"
-                    title={currentLang === 'en' ? 'Send message' : currentLang === 'ar' ? 'إرسال الرسالة' : 'ارسال پیام'}
+                    title={dict.ui_send_message}
                   >
                     <Send className="w-4 h-4 rtl:rotate-180" />
                   </button>

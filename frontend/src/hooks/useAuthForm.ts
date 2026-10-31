@@ -32,7 +32,7 @@ export function useAuthForm() {
   const [step, setStep] = useState<AuthStep>('form');
 
   const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('09123456789');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [mockCode, setMockCode] = useState<string | undefined>(undefined);
@@ -253,26 +253,6 @@ export function useAuthForm() {
     return res?.mock_code;
   };
 
-  const handleQuickRole = async (targetPhone: string, targetPass: string, role: 'student' | 'admin') => {
-    setPhone(targetPhone);
-    setPassword(targetPass);
-    if (!targetPass) {
-      setErrors({});
-      return;
-    }
-    setIsSubmitting(true);
-    setErrors({});
-    try {
-      const user = await login(targetPhone, targetPass);
-      const defaultTarget = (role === 'admin' || user.role === 'ADMIN') ? '/admin' : '/dashboard';
-      router.push(localizeHref(safeRedirect || defaultTarget));
-    } catch (err: any) {
-      setErrors({ general: err?.message || 'ورود سریع با خطا مواجه شد.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const switchTab = (tab: AuthTab) => {
     setActiveTab(tab);
     setStep('form');
@@ -306,7 +286,6 @@ export function useAuthForm() {
     handleSendOtpForRegister,
     handleVerifyOtpCode,
     handleResendOtp,
-    handleQuickRole,
   };
 }
 

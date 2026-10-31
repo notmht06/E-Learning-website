@@ -145,12 +145,7 @@ export function CourseScopedAITutor({
             ? {
                 ...m,
                 content:
-                  dict.ai_tutor_error_msg ||
-                  (currentLang === 'en'
-                    ? 'Connection to the AI tutor encountered an error. Please try again.'
-                    : currentLang === 'ar'
-                    ? 'تعذر الاتصال بالمساعد الذكي للدورة. يرجى إعادة المحاولة.'
-                    : 'ارتباط با سرور دستیار هوشمند برقرار نشد. لطفاً مجدداً تلاش فرمایید.'),
+                  dict.ai_tutor_error_msg,
               }
             : m
         )
@@ -170,7 +165,7 @@ export function CourseScopedAITutor({
           </div>
           <div>
             <h3 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-              {dict.ai_tutor_title || 'حکمت‌یار اختصاصی این دوره (موتور استدلالی LangGraph RAG)'}
+              {dict.ai_tutor_title}
             </h3>
             <p className="text-xs text-zinc-500 font-dana">
               {courseTitle} • {dict.scholar_name || SCHOLAR_NAME}
@@ -193,7 +188,7 @@ export function CourseScopedAITutor({
           className="px-3 py-1.5 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-600 dark:text-zinc-300 hover:border-[#8A532B] flex items-center gap-1.5 cursor-pointer transition"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>{dict.ai_tutor_reset || 'گفتگوی جدید'}</span>
+          <span>{dict.ai_tutor_reset}</span>
         </button>
       </div>
 
@@ -220,7 +215,7 @@ export function CourseScopedAITutor({
                   <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
                     <BookOpen className="w-3.5 h-3.5" />
                     <span>
-                      {dict.ai_tutor_citations_title || 'مستندات استخراج‌شده از صوت و متن این دوره:'}
+                      {dict.ai_tutor_citations_title}
                     </span>
                   </span>
                   {msg.citations.map((cite, idx) => (
@@ -248,7 +243,7 @@ export function CourseScopedAITutor({
                         )}
                       </div>
                       <p className="text-[11px] text-zinc-500">{cite.page_or_session}</p>
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 italic font-dana">
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 font-dana">
                         «{cite.snippet}»
                       </p>
                     </div>
@@ -287,7 +282,7 @@ export function CourseScopedAITutor({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={dict.ai_tutor_input_placeholder || 'پرسش علمی خود درباره مباحث این دوره را بنویسید...'}
+          placeholder={dict.ai_tutor_input_placeholder}
           className="flex-1 px-4 py-3 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs sm:text-sm outline-none focus:border-[#8A532B] font-dana"
         />
         <button
@@ -295,7 +290,7 @@ export function CourseScopedAITutor({
           disabled={!input.trim() || isLoading}
           className="px-5 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] disabled:opacity-50 text-[#FAF8F5] text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0"
         >
-          <span>{dict.ai_tutor_submit_btn || 'ارسال پرسش'}</span>
+          <span>{dict.ai_tutor_submit_btn}</span>
           <Send className="w-3.5 h-3.5 rtl:rotate-180" />
         </button>
       </form>

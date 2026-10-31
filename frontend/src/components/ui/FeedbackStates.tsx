@@ -109,9 +109,9 @@ export interface InlineAlertProps {
 }
 
 export function InlineAlert({ variant = 'error', message, onRetry }: InlineAlertProps) {
-  const { currentLang } = useLanguage();
+  const { dict, currentLang } = useLanguage();
   const retryText =
-    currentLang === 'en' ? 'Retry' : currentLang === 'ar' ? 'إعادة المحاولة' : 'تلاش مجدد';
+    dict.ui_retry;
 
   const styles =
     variant === 'success'

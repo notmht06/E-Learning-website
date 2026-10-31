@@ -196,7 +196,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
   return (
     <section
       id="discourse"
-      aria-label={dict.discourse_title || 'گفتار صوتی و استودیو'}
+      aria-label={dict.discourse_title}
       className="relative z-10 w-full py-12 sm:py-16 bg-[#FAF8F5] dark:bg-[#0C0D0E] transition-colors duration-300"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
@@ -205,14 +205,13 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20">
               <Headphones className="w-3.5 h-3.5" />
-              <span>{dict.discourse_badge || 'استودیو درس‌گفتار و نشر صوتی'}</span>
+              <span>{dict.discourse_badge}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.discourse_title || `گفتار صوتی و تبیین برهانی ${dict.scholar_name || getScholarName(currentLang)}`}
+              {dict.discourse_title}
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-              {dict.discourse_subtitle ||
-                'استماع صوت استودیویی با تفکیک موضوعی فصول، فرکانس صوتی ۴۸kHz و حفاظت دیجیتال استریم'}
+              {dict.discourse_subtitle}
             </p>
           </div>
 
@@ -241,7 +240,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
         {/* Main Editorial Discourse Studio Container */}
         <div className="rounded-3xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x lg:rtl:divide-x-reverse divide-[#E6E1D8] dark:divide-[#22242A]">
           {/* Left Column: Player, Waveform & Playback Controls (7 cols) */}
-          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+          <div className="min-w-0 lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6">
             {/* Top Chapter Meta & DRM Badge */}
             <div className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -256,11 +255,11 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                   <ShieldCheck className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
                   <span>
                     {drmVerified
-                      ? dict.discourse_token_verified || 'توکن امنیتی معتبر'
-                      : dict.discourse_drm_label || 'رمزنگاری DRM اختصاصی'}
+                      ? dict.discourse_token_verified
+                      : dict.discourse_drm_label}
                   </span>
                   {drmWatermark && (
-                    <span className="opacity-60 text-[10px]">
+                    <span className="opacity-60 text-[11px]">
                       • {drmWatermark}
                     </span>
                   )}
@@ -277,7 +276,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                     : featuredCourse.title_fa}
                 </h3>
                 <p className="text-xs sm:text-sm font-medium text-[#8A532B] dark:text-[#C58B43]">
-                  {getLocalizedChapterTitle(activeChapter, currentLang) || dict.discourse_chapter_fallback || 'جلسه درس'} • {dict.scholar_name || getScholarName(currentLang)}
+                  {getLocalizedChapterTitle(activeChapter, currentLang) || dict.discourse_chapter_fallback} • {dict.scholar_name || getScholarName(currentLang)}
                 </p>
               </div>
             </div>
@@ -296,7 +295,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                 }}
                 onKeyDown={handleWaveKeyDown}
                 role="slider"
-                aria-label={dict.discourse_progress_aria || 'کنترل پیشرفت پخش صوت'}
+                aria-label={dict.discourse_progress_aria}
                 aria-valuemin={0}
                 aria-valuemax={displayDuration}
                 aria-valuenow={displayTime}
@@ -308,7 +307,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                     <div
                       key={idx}
                       style={{ height: `${heightPercent}%` }}
-                      className={`w-full rounded-full transition-all duration-100 ${
+                      className={`w-full rounded-full transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-100 ${
                         isPassed
                           ? 'bg-[#8A532B] dark:bg-[#C58B43]'
                           : 'bg-zinc-200 dark:bg-zinc-800 hover:bg-[#8A532B]/40'
@@ -322,7 +321,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
               <div className="flex items-center justify-between text-xs font-num text-zinc-500 dark:text-zinc-400 px-1">
                 <span>{formatTime(displayTime)}</span>
                 <span className="text-[11px] opacity-70">
-                  {dict.discourse_waveform_hint || 'جهش زمانی با کلیک روی موج'}
+                  {dict.discourse_waveform_hint}
                 </span>
                 <span>{formatTime(displayDuration)}</span>
               </div>
@@ -336,8 +335,8 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                   type="button"
                   onClick={() => skip(-10)}
                   className="p-2.5 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title={dict.discourse_btn_skip_backward || '۱۰ ثانیه عقب'}
-                  aria-label={dict.discourse_btn_skip_backward || '۱۰ ثانیه عقب'}
+                  title={dict.discourse_btn_skip_backward}
+                  aria-label={dict.discourse_btn_skip_backward}
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
@@ -349,8 +348,8 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                   className="w-12 h-12 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white flex items-center justify-center shadow-md shadow-black/10 transition-transform active:scale-95 cursor-pointer"
                   aria-label={
                     isPlayingActive
-                      ? dict.discourse_btn_pause || 'توقف'
-                      : dict.discourse_btn_play || 'پخش'
+                      ? dict.discourse_btn_pause
+                      : dict.discourse_btn_play
                   }
                 >
                   {isPlayingActive ? (
@@ -365,8 +364,8 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                   type="button"
                   onClick={() => skip(30)}
                   className="p-2.5 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title={dict.discourse_btn_skip_forward || '۳۰ ثانیه جلو'}
-                  aria-label={dict.discourse_btn_skip_forward || '۳۰ ثانیه جلو'}
+                  title={dict.discourse_btn_skip_forward}
+                  aria-label={dict.discourse_btn_skip_forward}
                 >
                   <RotateCw className="w-4 h-4" />
                 </button>
@@ -378,7 +377,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                   type="button"
                   onClick={cycleSpeed}
                   className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-[#FAF8F5] dark:bg-[#18191D] border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B]/40 transition-colors cursor-pointer"
-                  title={dict.discourse_speed_label || 'سرعت پخش'}
+                  title={dict.discourse_speed_label}
                 >
                   {toLocale(playbackRate)}x
                 </button>
@@ -400,15 +399,15 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
           </div>
 
           {/* Right Column: Chapter Bookmarks & Syllabus Timeline (5 cols) */}
-          <div className="lg:col-span-5 p-6 sm:p-7 bg-[#FAF8F5]/60 dark:bg-[#101114]/60 flex flex-col justify-between space-y-4">
+          <div className="min-w-0 lg:col-span-5 p-6 sm:p-7 bg-[#FAF8F5]/60 dark:bg-[#101114]/60 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-2.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-zinc-900 dark:text-zinc-100">
                   <Bookmark className="w-3.5 h-3.5 text-[#8A532B]" />
-                  <span>{dict.discourse_chapters_heading || 'فصول و نشانه‌های درس‌گفتار'}</span>
+                  <span>{dict.discourse_chapters_heading}</span>
                 </div>
                 <span className="text-[11px] font-mono text-zinc-400">
-                  {toLocale(featuredCourse.chapters.length)} {dict.stations_metrics_sessions || 'جلسه'}
+                  {toLocale(featuredCourse.chapters.length)} {dict.stations_metrics_sessions}
                 </span>
               </div>
 
@@ -424,7 +423,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                         key={ch.id}
                         type="button"
                         onClick={() => handleChapterClick(idx)}
-                        className={`w-full text-start p-2.5 rounded-xl text-xs transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                        className={`w-full text-start p-2.5 rounded-xl text-xs transition-[color,background-color,border-color,opacity,transform,box-shadow] flex items-center justify-between gap-3 cursor-pointer ${
                           isActive
                             ? 'bg-[#8A532B] text-white shadow-xs font-bold'
                             : 'bg-white dark:bg-[#141518] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800'
@@ -432,7 +431,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 ${
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-mono shrink-0 ${
                               isActive
                                 ? 'bg-white text-[#8A532B] font-bold'
                                 : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
@@ -447,13 +446,13 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                           {ch.isFreePreview && (
                             <Badge
                               variant="secondary"
-                              className={`text-[10px] px-2 py-0.2 font-medium ${
+                              className={`text-[11px] px-2 py-0.2 font-medium ${
                                 isActive
                                   ? 'bg-white/20 text-white border-transparent'
                                   : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-transparent'
                               }`}
                             >
-                              {dict.discourse_chapter_preview || 'پیش‌نمایش'}
+                              {dict.discourse_chapter_preview}
                             </Badge>
                           )}
                           <span className="font-num text-[11px] opacity-80">
@@ -473,7 +472,7 @@ export const DiscoursePlayerSection: React.FC<DiscoursePlayerSectionProps> = ({
                 href={localizeHref(`/courses/${featuredCourse.id}`)}
                 className="w-full py-2.5 px-4 rounded-2xl bg-zinc-900 hover:bg-black text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs"
               >
-                <span>{dict.discourse_view_course_full || 'مشاهده کامل دوره و ثبت‌نام'}</span>
+                <span>{dict.discourse_view_course_full}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </Link>
             </div>

@@ -42,14 +42,14 @@ export function MasterpieceBookCard({
   const getFormatBadge = () => {
     switch (book.id) {
       case 'book1':
-        return dict.book_format_hardcover || (currentLang === 'en' ? 'Hardcover' : currentLang === 'ar' ? 'غلاف مجلد' : 'جلد سخت (گالینگور)');
+        return dict.book_format_hardcover;
       case 'book2':
-        return dict.book_format_leather || (currentLang === 'en' ? 'Leather Bound' : currentLang === 'ar' ? 'غلاف جلد' : 'جلد چرم');
+        return dict.book_format_leather;
       case 'book3':
-        return dict.book_format_paperback || (currentLang === 'en' ? 'Paperback' : currentLang === 'ar' ? 'غلاف ورقي' : 'شومیز');
+        return dict.book_format_paperback;
       case 'book4':
       default:
-        return dict.book_format_vaziri || (currentLang === 'en' ? 'Gilded Hardcover' : currentLang === 'ar' ? 'طبعة مذهبة' : 'گالینگور طلاکوب');
+        return dict.book_format_vaziri;
     }
   };
 
@@ -61,7 +61,7 @@ export function MasterpieceBookCard({
   };
 
   return (
-    <Card className="flex flex-col justify-between hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 transition-all duration-200">
+    <Card className="flex flex-col justify-between hover:border-[#8A532B]/50 dark:hover:border-[#C58B43]/50 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200">
       <CardHeader className="space-y-2 pb-3">
         <div className="flex items-center justify-between gap-2">
           <Badge variant="accent" className="text-[11px]">
@@ -71,7 +71,7 @@ export function MasterpieceBookCard({
             variant="ghost"
             size="icon"
             onClick={handleBookmarkClick}
-            aria-label={dict.action_bookmark || 'نشان‌کردن'}
+            aria-label={dict.action_bookmark}
             className="h-7 w-7 text-zinc-400 hover:text-[#8A532B] dark:hover:text-[#C58B43]"
           >
             <Bookmark className={`h-4 w-4 ${bookmarked ? 'fill-[#8A532B] text-[#8A532B] dark:fill-[#C58B43] dark:text-[#C58B43]' : ''}`} />
@@ -88,14 +88,16 @@ export function MasterpieceBookCard({
 
       <CardContent className="space-y-2 pb-4 text-xs font-mono text-zinc-500 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800/60 pt-3">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300">
+          <span className="text-[11px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300">
             {getFormatBadge()}
           </span>
           <span className="font-bold text-zinc-900 dark:text-zinc-100">{price}</span>
         </div>
-        <div className="flex items-center justify-between text-[11px]">
-          <span>{dict.catalog_pages_count || '۳۸۵ صفحه • کاغذ شاموا'}</span>
-        </div>
+        {book.pages_count ? (
+          <div className="flex items-center justify-between text-[11px]">
+            <span>{dict.catalog_pages_count.replace('{count}', toLocale(book.pages_count))}</span>
+          </div>
+        ) : null}
       </CardContent>
 
       <CardFooter className="flex items-center gap-2 pt-0">
@@ -106,7 +108,7 @@ export function MasterpieceBookCard({
           onClick={() => onOpenBookReader?.(book.id)}
         >
           <FileText className="h-3.5 w-3.5" />
-          <span>{dict.catalog_read_sample || 'نمونه کتاب'}</span>
+          <span>{dict.catalog_read_sample}</span>
         </Button>
         <Button
           variant="default"
@@ -115,7 +117,7 @@ export function MasterpieceBookCard({
           onClick={() => onAddToCart?.(book)}
         >
           <BookOpen className="h-3.5 w-3.5" />
-          <span>{dict.catalog_buy_now || 'تهیه اثر'}</span>
+          <span>{dict.catalog_buy_now}</span>
         </Button>
       </CardFooter>
     </Card>

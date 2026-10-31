@@ -91,17 +91,13 @@ export function CourseCard({
   const isOnline = course.course_type === 'online';
   const totalSessions = course.chapters?.length || course.episodes_count || 12;
   const duration = loc?.duration || course.duration_fa;
-  const price = loc?.price || course.price_fa || (currentLang === 'en' ? 'Free (Endowment)' : currentLang === 'ar' ? 'وقف علمي مجاني' : 'رایگان (وقف عام)');
+  const price = loc?.price || course.price_fa || (dict.ui_free_endowment);
   const level = loc?.level || course.level_fa || (currentLang === 'en' ? 'Advanced Seminary Level' : 'سطح عالی و خارج');
 
   const descText =
     loc?.desc ||
     course.desc_fa ||
-    (currentLang === 'en'
-      ? 'Rigorous philosophical discourse and analytical investigations under classical rational sciences.'
-      : currentLang === 'ar'
-      ? 'دروس استدلالية رصينة ومباحث معمقة في العلوم العقلية وحكمة أهل البيت عليهم السلام.'
-      : 'تدریس برهانی و متن‌محور متون اصیل فلسفه و حکمت اسلامی همراه با پاسخ به شبهات معاصر.');
+    (dict.ui_rigorous_philosophical_discourse_and_a);
 
   const isThisCoursePlaying =
     externalIsPlaying !== undefined
@@ -131,25 +127,25 @@ export function CourseCard({
 
   const sessionsSuffix =
     currentLang === 'en'
-      ? (dict.catalog_sessions_suffix || 'Sessions')
+      ? (dict.catalog_sessions_suffix)
       : currentLang === 'ar'
-      ? (dict.catalog_sessions_suffix || 'جلسة')
-      : (dict.catalog_sessions_suffix || 'جلسه');
+      ? (dict.catalog_sessions_suffix)
+      : (dict.catalog_sessions_suffix);
 
   const modeLabel = isOnline
-    ? dict.skyroom_badge || (currentLang === 'en' ? 'Online Course' : currentLang === 'ar' ? 'دورة مباشرة' : 'دوره آنلاین')
-    : dict.courses_offline_badge || (currentLang === 'en' ? 'Recorded Course' : currentLang === 'ar' ? 'دورة مسجلة' : 'دوره استودیویی');
+    ? dict.skyroom_badge
+    : dict.courses_offline_badge;
 
   const bookmarkLabel = bookmarked
-    ? dict.catalog_bookmark_remove || 'حذف نشانک'
-    : dict.catalog_bookmark_add || 'افزودن نشانک';
+    ? dict.catalog_bookmark_remove
+    : dict.catalog_bookmark_add;
 
   const enterButtonText =
     currentLang === 'en'
       ? 'Enter Course'
       : currentLang === 'ar'
       ? 'الدخول إلى قاعة الدرس'
-      : (dict.catalog_enter_course || 'ورود به دوره');
+      : (dict.catalog_enter_course);
 
   const handleAuditionToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -173,7 +169,7 @@ export function CourseCard({
 
   return (
     <article
-      className={`group h-full flex flex-col justify-between rounded-2xl border border-zinc-200/90 bg-white dark:border-zinc-800/80 dark:bg-[#141518] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 cursor-pointer ${
+      className={`group h-full flex flex-col justify-between rounded-2xl border border-zinc-200/90 bg-white dark:border-zinc-800/80 dark:bg-[#141518] overflow-hidden transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 cursor-pointer ${
         isThisCoursePlaying
           ? 'border-[#8A532B] dark:border-[#C58B43] ring-1 ring-[#8A532B]/30 dark:ring-[#C58B43]/30 shadow-md'
           : ''
@@ -186,22 +182,22 @@ export function CourseCard({
           <img
             src={course.thumbnail}
             alt={title}
-            className="h-full w-full object-cover transition-all duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105 motion-safe:[@media(hover:hover)]:group-hover:brightness-105"
+            className="h-full w-full object-cover transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:brightness-105"
           />
         ) : (
           <div
-            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105`}
+            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out`}
           >
             {/* Classical Manuscript Filigree Borders */}
             <div className="absolute inset-1.5 rounded-lg border border-white/10 pointer-events-none" />
             <div className="absolute inset-2 rounded-md border border-dashed border-white/5 pointer-events-none" />
 
             {/* Header: Imprint & Discipline Badge */}
-            <div className="relative z-1 flex items-center justify-between text-[10px] tracking-wider font-mono text-white/70 h-5">
-              <span className="font-bold uppercase tracking-widest text-amber-200/80 text-[9px]">
+            <div className="relative z-1 flex items-center justify-between text-[11px] font-mono text-white/70 h-5">
+              <span className="font-bold text-amber-200/80 text-[11px]">
                 DAR AL-HIKMAH
               </span>
-              <span className="px-1.5 py-0.5 rounded border border-white/15 bg-black/40 backdrop-blur-xs text-stone-200 text-[9px] font-medium font-sans truncate max-w-[130px]">
+              <span className="px-1.5 py-0.5 rounded border border-white/15 bg-black/40 backdrop-blur-xs text-stone-200 text-[11px] font-medium font-sans truncate max-w-[130px]">
                 {discipline.label}
               </span>
             </div>
@@ -211,10 +207,10 @@ export function CourseCard({
               <span className="block text-xs sm:text-[13px] font-bold text-white/95 line-clamp-2 leading-relaxed font-sans">
                 {title}
               </span>
-              <div className="flex items-center justify-center gap-1.5 text-[9px] text-amber-200/70 font-mono">
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-amber-200/70 font-mono">
                 <span>•</span>
                 <span className="tracking-widest">
-                  {currentLang === 'en' ? 'Official Lecture' : currentLang === 'ar' ? 'درس استدلالي رسمي' : 'درس‌گفتار رسمی خارج'}
+                  {dict.ui_official_lecture}
                 </span>
                 <span>•</span>
               </div>
@@ -227,7 +223,7 @@ export function CourseCard({
 
         {/* Top-Start: Course Status Capsule */}
         <div className="absolute top-2.5 start-2.5 z-10">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 backdrop-blur-md text-stone-100 border border-white/15 shadow-xs">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-black/60 backdrop-blur-md text-stone-100 border border-white/15 shadow-xs">
             <Radio className={`w-2.5 h-2.5 ${isOnline ? 'text-amber-400' : 'text-stone-300'}`} />
             <span>{modeLabel}</span>
           </span>
@@ -252,19 +248,19 @@ export function CourseCard({
         {/* Bottom-Start: Discount / Pricing Pill */}
         <div className="absolute bottom-2.5 start-2.5 z-10">
           {isFree ? (
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-num bg-[#8A532B]/90 text-[#FAF8F5] border border-[#8A532B] shadow-xs backdrop-blur-xs">
-              {currentLang === 'en' ? '100% OFF • Free' : currentLang === 'ar' ? '١٠٠٪ خصم • مجاني' : '۱۰۰٪ تخفیف • رایگان'}
+            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-num bg-[#8A532B]/90 text-[#FAF8F5] border border-[#8A532B] shadow-xs backdrop-blur-xs">
+              {dict.ui_100_off_free}
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-num bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 shadow-xs backdrop-blur-xs">
-              {currentLang === 'en' ? '20% OFF' : currentLang === 'ar' ? '٢٠٪ خصم' : '۲۰٪ تخفیف'}
+            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-num bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 shadow-xs backdrop-blur-xs">
+              {dict.ui_20_off}
             </span>
           )}
         </div>
 
         {/* Bottom-End: Serial Code Pill */}
         <div className="absolute bottom-2.5 end-2.5 z-10">
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
+          <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
             [{serialCode}]
           </span>
         </div>
@@ -273,10 +269,10 @@ export function CourseCard({
         <button
           type="button"
           onClick={handleAuditionToggle}
-          className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 opacity-0 transition-all duration-300 ease-out focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 opacity-0 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-out focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
           aria-label={isThisCoursePlaying ? 'توقف پخش نمونه' : 'پخش نمونه صوت'}
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 active:scale-95 shadow-xl hover:scale-105">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 active:scale-95 shadow-xl">
             {isThisCoursePlaying ? (
               <Pause className="h-5 w-5 fill-current" />
             ) : (
@@ -320,11 +316,11 @@ export function CourseCard({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/ostad_zanjirzan.jpg"
-              alt={dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+              alt={dict.scholar_full_title}
               className="h-5 w-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
             />
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">
-              {dict.scholar_full_title || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+              {dict.scholar_full_title}
             </span>
           </div>
 
@@ -349,7 +345,7 @@ export function CourseCard({
           <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
             <Users className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">
-              {studentsCount} {currentLang === 'en' ? 'Scholars' : currentLang === 'ar' ? 'باحث' : 'پژوهشگر'}
+              {studentsCount} {dict.ui_scholars}
             </span>
           </div>
         </div>
@@ -360,7 +356,7 @@ export function CourseCard({
         <div className="min-w-0">
           {isFree ? (
             <div>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
                 {currentLang === 'en'
                   ? '$45.00'
                   : currentLang === 'ar'
@@ -368,12 +364,12 @@ export function CourseCard({
                   : `${toLocale('۴۵۰,۰۰۰')} تومان`}
               </span>
               <span className="text-sm font-bold text-[#8A532B] dark:text-[#C58B43] block">
-                {currentLang === 'en' ? 'Free (Endowment)' : currentLang === 'ar' ? 'وقف علمي مجاني' : 'رایگان (وقف عام)'}
+                {dict.ui_free_endowment}
               </span>
             </div>
           ) : (
             <div>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
                 {currentLang === 'en' ? '$65.00' : `${toLocale('۶۵۰,۰۰۰')}`}
               </span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-num block">
@@ -389,7 +385,7 @@ export function CourseCard({
             asChild
             variant="outline"
             size="sm"
-            className="text-xs font-bold hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-[#0C0D0E] transition-all group/btn"
+            className="text-xs font-bold hover:bg-[#8A532B] hover:text-white dark:hover:bg-[#C58B43] dark:hover:text-[#0C0D0E] transition-[color,background-color,border-color,opacity,transform,box-shadow] group/btn"
           >
             <Link href={localizeHref(`/courses/${course.id}`)}>
               <span>{enterButtonText}</span>

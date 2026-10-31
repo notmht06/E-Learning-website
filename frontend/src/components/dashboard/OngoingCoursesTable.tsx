@@ -31,17 +31,9 @@ export function OngoingCoursesTable({
 }: OngoingCoursesTableProps) {
   const { toLocale, dict, currentLang, localizeHref } = useLanguage();
 
-  const emptyText = currentLang === 'en'
-    ? 'No enrolled courses found in your workspace'
-    : currentLang === 'ar'
-    ? 'لا توجد دروس مسجلة حالياً في حسابك'
-    : 'در حال حاضر هیچ دوره‌ای در فهرست ثبت‌نام شما ثبت نشده است.';
+  const emptyText = dict.ui_no_enrolled_courses_found_in_your_work;
 
-  const browseText = currentLang === 'en'
-    ? 'Explore Course Catalog'
-    : currentLang === 'ar'
-    ? 'تصفح قائمة الدروس'
-    : 'مشاهده کاتالوگ درس‌گفتارها';
+  const browseText = dict.ui_explore_course_catalog;
 
   return (
     <div className={`space-y-3 text-start ${className}`}>
@@ -102,7 +94,7 @@ export function OngoingCoursesTable({
                         <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
                           {course.title}
                         </span>
-                        <div className="flex flex-wrap items-center gap-2 text-[10px]">
+                        <div className="flex flex-wrap items-center gap-2 text-[11px]">
                           <span className="px-2 py-0.5 rounded-md font-medium bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43]">
                             {course.subject}
                           </span>
@@ -120,7 +112,7 @@ export function OngoingCoursesTable({
                           {course.currentChapterTitle}
                         </span>
                       </div>
-                      <span className="text-[10px] text-zinc-400 font-num block mt-0.5">
+                      <span className="text-[11px] text-zinc-400 font-num block mt-0.5">
                         {toLocale(course.completedChapters)} {dict.ongoing_session_of} {toLocale(course.totalChapters)} {dict.ongoing_session_unit}
                       </span>
                     </td>

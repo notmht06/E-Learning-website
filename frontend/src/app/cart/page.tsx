@@ -87,7 +87,7 @@ export default function DedicatedCartPage() {
         const couponObj = { code: cleanCode, percent, discountAmount: discountVal };
         setAppliedCoupon(couponObj);
         setCouponStatus('success');
-        setCouponMessage(dict.cart_coupon_success || 'کد تخفیف با موفقیت اعمال گردید');
+        setCouponMessage(dict.cart_coupon_success);
         if (typeof window !== 'undefined') {
           localStorage.setItem('zan_applied_coupon', JSON.stringify(couponObj));
         }
@@ -108,13 +108,13 @@ export default function DedicatedCartPage() {
       const couponObj = { code: cleanCode, percent, discountAmount: discountVal };
       setAppliedCoupon(couponObj);
       setCouponStatus('success');
-      setCouponMessage(dict.cart_coupon_success || 'کد تخفیف با موفقیت اعمال گردید');
+      setCouponMessage(dict.cart_coupon_success);
       if (typeof window !== 'undefined') {
         localStorage.setItem('zan_applied_coupon', JSON.stringify(couponObj));
       }
     } else {
       setCouponStatus('error');
-      setCouponMessage(dict.cart_coupon_invalid || 'کد تخفیف واردشده معتبر نیست یا منقضی شده است');
+      setCouponMessage(dict.cart_coupon_invalid);
     }
   };
 
@@ -152,23 +152,23 @@ export default function DedicatedCartPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
               <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
-                {dict.cart_breadcrumb_home || 'صفحه نخست'}
+                {dict.cart_breadcrumb_home}
               </Link>
               <span>/</span>
               <span className="text-[#8A532B] dark:text-[#C58B43]">
-                {dict.cart_breadcrumb_cart || 'سبد سفارشات'}
+                {dict.cart_breadcrumb_cart}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] flex items-center gap-2.5">
               <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43]" />
-              <span>{dict.cart_title || 'سبد سفارشات و ثبت‌نام'}</span>
+              <span>{dict.cart_title}</span>
             </h1>
           </div>
 
           {items.length > 0 && (
             <div className="flex items-center gap-3">
               <span className="text-xs text-zinc-500 font-num">
-                {toLocale(items.length)} {dict.cart_items_count_badge || 'مورد در سبد سفارشات شما'}
+                {toLocale(items.length)} {dict.cart_items_count_badge}
               </span>
               <button
                 type="button"
@@ -179,7 +179,7 @@ export default function DedicatedCartPage() {
                 className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-950/60 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition flex items-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>{dict.cart_clear_all || 'پاک کردن کل سبد'}</span>
+                <span>{dict.cart_clear_all}</span>
               </button>
             </div>
           )}
@@ -193,11 +193,10 @@ export default function DedicatedCartPage() {
             </div>
             <div className="space-y-1.5">
               <h2 className="text-lg font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-                {dict.cart_empty_title || 'سبد سفارشات شما خالی است'}
+                {dict.cart_empty_title}
               </h2>
               <p className="text-xs sm:text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">
-                {dict.cart_empty_desc ||
-                  'هیچ دوره یا کتابی هنوز به سبد خرید افزوده نشده است. برای مشاهده درس‌گفتارها و آثار چاپی، به کاتالوگ مراجعه فرمایید.'}
+                {dict.cart_empty_desc}
               </p>
             </div>
 
@@ -206,7 +205,7 @@ export default function DedicatedCartPage() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition shadow-xs cursor-pointer"
             >
               <BookOpen className="w-4 h-4" />
-              <span>{dict.cart_browse_courses_btn || 'مشاهده دوره‌ها و کتب تخصصی'}</span>
+              <span>{dict.cart_browse_courses_btn}</span>
             </Link>
           </div>
         ) : (
@@ -243,18 +242,10 @@ export default function DedicatedCartPage() {
                       {/* Details */}
                       <div className="space-y-1.5 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-md bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-[10px] font-mono font-bold text-[#8A532B] dark:text-[#C58B43]">
+                          <span className="px-2 py-0.5 rounded-md bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-[11px] font-mono font-bold text-[#8A532B] dark:text-[#C58B43]">
                             {isBook
-                              ? currentLang === 'en'
-                                ? 'Printed Treatise'
-                                : currentLang === 'ar'
-                                ? 'أثر مطبوع'
-                                : 'اثر چاپی'
-                              : currentLang === 'en'
-                              ? 'Curriculum Course'
-                              : currentLang === 'ar'
-                              ? 'درس‌گفتار حوزوی'
-                              : 'درس‌گفتار تخصصی'}
+                              ? dict.ui_printed_treatise
+                              : dict.ui_curriculum_course}
                           </span>
                         </div>
 
@@ -263,8 +254,8 @@ export default function DedicatedCartPage() {
                         </h3>
 
                         <p className="text-xs text-zinc-500">
-                          {currentLang === 'en' ? 'Instructor:' : currentLang === 'ar' ? 'المدرس:' : 'مدرس:'}{' '}
-                          {dict.scholar_name || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                          {dict.ui_instructor}{' '}
+                          {dict.scholar_name}
                         </p>
                       </div>
                     </div>
@@ -272,13 +263,13 @@ export default function DedicatedCartPage() {
                     {/* Price and Delete Action */}
                     <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#E6E1D8] dark:border-[#22242A]">
                       <div className="text-start sm:text-end">
-                        <span className="text-[10px] text-zinc-400 block sm:hidden">
-                          {dict.course_tuition_label || 'شهریه'}
+                        <span className="text-[11px] text-zinc-400 block sm:hidden">
+                          {dict.course_tuition_label}
                         </span>
                         <span className="text-sm sm:text-base font-bold text-[#8A532B] dark:text-[#C58B43] font-num">
                           {numericPrice === 0
-                            ? dict.course_free_badge || 'رایگان'
-                            : `${toLocale(numericPrice.toLocaleString('fa-IR'))} ${dict.course_currency_toman || 'تومان'}`}
+                            ? dict.course_free_badge
+                            : `${toLocale(numericPrice.toLocaleString('fa-IR'))} ${dict.course_currency_toman}`}
                         </span>
                       </div>
 
@@ -286,7 +277,7 @@ export default function DedicatedCartPage() {
                         type="button"
                         onClick={() => handleRemoveItem(item.id)}
                         className="p-2 rounded-xl text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
-                        title={dict.cart_remove_btn || 'حذف از سبد'}
+                        title={dict.cart_remove_btn}
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -303,16 +294,16 @@ export default function DedicatedCartPage() {
                 {/* Header */}
                 <header className="border-b border-[#E6E1D8] dark:border-[#22242A] pb-3">
                   <h2 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-                    {dict.cart_invoice_title || 'خلاصه پیش‌فاکتور سفارش'}
+                    {dict.cart_invoice_title}
                   </h2>
                 </header>
 
                 {/* Calculation Rows */}
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between items-center text-zinc-600 dark:text-zinc-400">
-                    <span>{dict.cart_subtotal_label || 'مجموع شهریه اقلام:'}</span>
+                    <span>{dict.cart_subtotal_label}</span>
                     <span className="font-bold font-num text-zinc-900 dark:text-zinc-100">
-                      {toLocale(rawTotal.toLocaleString('fa-IR'))} {dict.course_currency_toman || 'تومان'}
+                      {toLocale(rawTotal.toLocaleString('fa-IR'))} {dict.course_currency_toman}
                     </span>
                   </div>
 
@@ -321,28 +312,28 @@ export default function DedicatedCartPage() {
                       <span className="flex items-center gap-1.5">
                         <Tag className="w-3.5 h-3.5" />
                         <span>
-                          {dict.cart_discount_label || 'تخفیف کوپن:'} ({toLocale(appliedCoupon.percent)}%)
+                          {dict.cart_discount_label} ({toLocale(appliedCoupon.percent)}%)
                         </span>
                       </span>
                       <span className="font-bold font-num">
-                        -{toLocale(discountAmount.toLocaleString('fa-IR'))} {dict.course_currency_toman || 'تومان'}
+                        -{toLocale(discountAmount.toLocaleString('fa-IR'))} {dict.course_currency_toman}
                       </span>
                     </div>
                   )}
 
                   <div className="flex justify-between items-center text-zinc-500">
-                    <span>{dict.cart_endowment_subsidy || 'بورسیه و وقف آموزشی:'}</span>
+                    <span>{dict.cart_endowment_subsidy}</span>
                     <span className="font-mono font-num text-emerald-600 dark:text-emerald-400">
-                      {toLocale(0)} {dict.course_currency_toman || 'تومان'}
+                      {toLocale(0)} {dict.course_currency_toman}
                     </span>
                   </div>
 
                   <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex justify-between items-center text-sm">
                     <span className="font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-                      {dict.cart_final_payable || 'مبلغ نهایی قابل پرداخت:'}
+                      {dict.cart_final_payable}
                     </span>
                     <span className="text-base font-bold text-[#8A532B] dark:text-[#C58B43] font-num">
-                      {toLocale(finalPayable.toLocaleString('fa-IR'))} {dict.course_currency_toman || 'تومان'}
+                      {toLocale(finalPayable.toLocaleString('fa-IR'))} {dict.course_currency_toman}
                     </span>
                   </div>
                 </div>
@@ -354,9 +345,9 @@ export default function DedicatedCartPage() {
                       type="text"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder={dict.cart_coupon_placeholder || 'کد تخفیف (مثال: NOOR20)...'}
+                      placeholder={dict.cart_coupon_placeholder}
                       disabled={couponStatus === 'loading' || !!appliedCoupon}
-                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs uppercase font-mono tracking-wider focus:outline-none focus:border-[#8A532B] transition placeholder:text-zinc-400 disabled:opacity-50"
+                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs font-mono focus:outline-none focus:border-[#8A532B] transition placeholder:text-zinc-400 disabled:opacity-50"
                     />
 
                     {appliedCoupon ? (
@@ -365,7 +356,7 @@ export default function DedicatedCartPage() {
                         onClick={handleRemoveCoupon}
                         className="px-3 py-2.5 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 text-xs font-bold transition cursor-pointer"
                       >
-                        {dict.cart_remove_btn || 'حذف'}
+                        {dict.cart_remove_btn}
                       </button>
                     ) : (
                       <button
@@ -374,7 +365,7 @@ export default function DedicatedCartPage() {
                         className="px-4 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
                       >
                         <Tag className="w-3.5 h-3.5" />
-                        <span>{dict.cart_coupon_apply_btn || 'اعمال کد'}</span>
+                        <span>{dict.cart_coupon_apply_btn}</span>
                       </button>
                     )}
                   </form>
@@ -405,7 +396,7 @@ export default function DedicatedCartPage() {
                   className="w-full py-3.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#E6CA85]" />
-                  <span>{dict.cart_checkout_btn || 'تکمیل سفارش و پرداخت امن بانکی'}</span>
+                  <span>{dict.cart_checkout_btn}</span>
                 </button>
 
                 {/* Continue Shopping Link */}
@@ -414,17 +405,16 @@ export default function DedicatedCartPage() {
                     href={localizeHref('/courses')}
                     className="text-xs text-zinc-500 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition inline-flex items-center gap-1.5 cursor-pointer"
                   >
-                    <span>{dict.cart_continue_shopping || 'ادامه انتخاب درس‌گفتارها'}</span>
+                    <span>{dict.cart_continue_shopping}</span>
                     <ArrowLeft className="w-3 h-3 rtl:rotate-0 ltr:rotate-180" />
                   </Link>
                 </div>
 
                 {/* Security Trust Badge */}
-                <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center gap-2 text-[10px] text-zinc-400 leading-tight">
+                <div className="pt-3 border-t border-[#E6E1D8] dark:border-[#22242A] flex items-center gap-2 text-[11px] text-zinc-400 leading-tight">
                   <ShieldCheck className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
                   <span>
-                    {dict.cart_security_guarantee ||
-                      'پرداخت امن تحت شبکه شاپرک با تضمین دسترسی آنی و بدون انقضا'}
+                    {dict.cart_security_guarantee}
                   </span>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { scholarlyArticlesDatabase } from '@/lib/data';
 import { ArticleDetailClient } from './ArticleDetailClient';
+import { serializeJsonLd } from '@/lib/jsonLd';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -127,11 +128,11 @@ export default async function ArticleDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(scholarlyArticleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(scholarlyArticleJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <ArticleDetailClient slug={slug} />
     </>

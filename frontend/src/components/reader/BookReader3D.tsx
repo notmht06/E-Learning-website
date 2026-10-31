@@ -14,7 +14,6 @@ import {
   VolumeX,
   Maximize2,
   Minimize2,
-  Sparkles,
   MessageSquare,
   Check,
   RotateCcw,
@@ -24,6 +23,7 @@ import {
   Coffee,
   Sliders,
   ArrowRight,
+  Info,
 } from 'lucide-react';
 import { booksDatabase, toLocaleDigits, SupportedLang, i18nDict } from '@/lib/data';
 import { SCHOLAR_NAME } from '@/lib/constants';
@@ -264,10 +264,10 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <button
               onClick={onClose}
               className="p-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white transition flex items-center gap-2 cursor-pointer text-xs sm:text-sm font-bold"
-              title={dict.reader_exit_title || 'خروج از کتابخوان'}
+              title={dict.reader_exit_title}
             >
               <ArrowRight className="w-4 h-4" />
-              <span className="hidden sm:inline">{dict.reader_exit || 'بازگشت'}</span>
+              <span className="hidden sm:inline">{dict.reader_exit}</span>
             </button>
 
             <div className="h-4 w-px bg-stone-700 hidden sm:block" />
@@ -290,10 +290,10 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               className={`p-2 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer ${
                 isTocOpen ? 'bg-[#8A532B] text-white shadow-xs' : 'bg-stone-800 hover:bg-stone-750 text-stone-300 hover:text-white'
               }`}
-              title={dict.reader_toc_title || 'فهرست ابواب'}
+              title={dict.reader_toc_title}
             >
               <List className="w-4 h-4" />
-              <span className="hidden md:inline">{dict.reader_toc || 'فهرست'}</span>
+              <span className="hidden md:inline">{dict.reader_toc}</span>
             </button>
 
             {/* Reading Typography Settings Toggle */}
@@ -302,10 +302,10 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               className={`p-2 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer ${
                 isSettingsOpen ? 'bg-[#8A532B] text-white shadow-xs' : 'bg-stone-800 hover:bg-stone-750 text-stone-300 hover:text-white'
               }`}
-              title={dict.reader_type_title || 'تنظیمات متن'}
+              title={dict.reader_type_title}
             >
               <Type className="w-4 h-4" />
-              <span className="hidden md:inline">{dict.reader_type || 'تنظیمات متن'}</span>
+              <span className="hidden md:inline">{dict.reader_type}</span>
             </button>
 
             {/* Bookmark Page */}
@@ -316,7 +316,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                   ? 'bg-[#8A532B] text-white shadow-md'
                   : 'bg-stone-800 hover:bg-stone-750 text-stone-400 hover:text-white'
               }`}
-              title={dict.reader_bookmark_title || 'نشانک‌گذاری'}
+              title={dict.reader_bookmark_title}
             >
               <Bookmark className={`w-4 h-4 ${isCurrentBookmarked ? 'fill-current' : ''}`} />
             </button>
@@ -325,7 +325,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <button
               onClick={() => setIsNoteModalOpen(true)}
               className="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 text-stone-400 hover:text-white transition cursor-pointer relative"
-              title={dict.reader_notes_title || 'یادداشت‌نویسی'}
+              title={dict.reader_notes_title}
             >
               <MessageSquare className="w-4 h-4" />
               {userMarginNotes[currentPage] && (
@@ -337,7 +337,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <button
               onClick={() => setIsSoundEnabled(!isSoundEnabled)}
               className="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 text-stone-400 hover:text-white transition cursor-pointer hidden sm:block"
-              title={isSoundEnabled ? (dict.reader_sound_on || 'روشن') : (dict.reader_sound_off || 'خاموش')}
+              title={isSoundEnabled ? (dict.reader_sound_on) : (dict.reader_sound_off)}
             >
               {isSoundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-[#8A532B]" />}
             </button>
@@ -346,7 +346,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 text-stone-400 hover:text-white transition cursor-pointer"
-              title={dict.reader_fullscreen || 'تمام‌صفحه'}
+              title={dict.reader_fullscreen}
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
@@ -359,7 +359,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <div className="flex items-center justify-between border-b border-stone-800 pb-2">
               <span className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                 <Sliders className="w-3.5 h-3.5 text-[#8A532B]" />
-                {dict.reader_settings_modal_title || 'تنظیمات مطالعه'}
+                {dict.reader_settings_modal_title}
               </span>
               <button onClick={() => setIsSettingsOpen(false)} className="text-stone-400 hover:text-white">
                 <X className="w-4 h-4" />
@@ -368,12 +368,12 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
             {/* Font Family Selector */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-stone-400 block">{dict.reader_font_family || 'قلم کتاب:'}</span>
+              <span className="text-xs font-bold text-stone-400 block">{dict.reader_font_family}</span>
               <div className="flex gap-2">
                 {[
-                  { id: 'sans', label: dict.reader_font_sans || 'دانا استاندارد' },
-                  { id: 'serif', label: dict.reader_font_serif || 'دانا کشیده' },
-                  { id: 'mono', label: dict.reader_font_mono || 'دانا درشت' },
+                  { id: 'sans', label: dict.reader_font_sans },
+                  { id: 'serif', label: dict.reader_font_serif },
+                  { id: 'mono', label: dict.reader_font_mono },
                 ].map(f => (
                   <button
                     key={f.id}
@@ -393,7 +393,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             {/* Font Size Slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold text-stone-400">
-                <span>{dict.reader_font_size_label || 'اندازه متن:'}</span>
+                <span>{dict.reader_font_size_label}</span>
                 <span className="font-num text-[#8A532B] dark:text-[#C58B43]">{toLocaleDigits(fontSize.toString(), currentLang)} px</span>
               </div>
               <div className="flex items-center gap-3">
@@ -412,7 +412,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
             {/* Line Height Control */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-stone-400 block">{dict.reader_line_height_label || 'فاصله خطوط:'}</span>
+              <span className="text-xs font-bold text-stone-400 block">{dict.reader_line_height_label}</span>
               <div className="flex gap-2">
                 {[
                   { val: 1.8, label: '1.8' },
@@ -436,13 +436,13 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
             {/* Paper Theme Colors */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-stone-400 block">{dict.reader_paper_theme_label || 'تم رنگی صفحه:'}</span>
+              <span className="text-xs font-bold text-stone-400 block">{dict.reader_paper_theme_label}</span>
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { id: 'sepia', label: dict.reader_theme_sepia || 'سپیا', bg: '#F4ECD8', text: '#2C2416' },
-                  { id: 'cream', label: dict.reader_theme_cream || 'کرم', bg: '#FBF8F0', text: '#241F1A' },
-                  { id: 'white', label: dict.reader_theme_white || 'سفید', bg: '#FFFFFF', text: '#1E1E1E' },
-                  { id: 'dark', label: dict.reader_theme_dark || 'تاریک', bg: '#14161A', text: '#E4E6EA' },
+                  { id: 'sepia', label: dict.reader_theme_sepia, bg: '#F4ECD8', text: '#2C2416' },
+                  { id: 'cream', label: dict.reader_theme_cream, bg: '#FBF8F0', text: '#241F1A' },
+                  { id: 'white', label: dict.reader_theme_white, bg: '#FFFFFF', text: '#1E1E1E' },
+                  { id: 'dark', label: dict.reader_theme_dark, bg: '#14161A', text: '#E4E6EA' },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -466,7 +466,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <div className="flex items-center justify-between border-b border-stone-800 pb-3">
               <span className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                 <List className="w-4 h-4 text-[#8A532B]" />
-                {dict.reader_toc_title || 'فهرست ابواب و فصول'}
+                {dict.reader_toc_title}
               </span>
               <button onClick={() => setIsTocOpen(false)} className="text-stone-400 hover:text-white">
                 <X className="w-4 h-4" />
@@ -504,7 +504,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
 
         {/* SAMPLE NOTICE FLOATING PILL */}
         <div className="px-4 py-2 bg-[#8A532B]/10 border-b border-[#8A532B]/20 text-center flex items-center justify-center gap-2 text-xs text-[#E6CA85] shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-[#E6CA85] shrink-0" />
+          <Info className="w-3.5 h-3.5 text-[#E6CA85] shrink-0" />
           <span>
             {currentLang === 'en'
               ? 'Previewing free sample pages • To receive the complete 385-page luxury hardcover volume, please place an order.'
@@ -517,7 +517,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               onClick={() => onAddToBag(title, price)}
               className="ms-2 px-3 py-1 rounded-full bg-[#8A532B] hover:bg-[#724424] text-white font-bold text-xs shadow-xs transition cursor-pointer"
             >
-              {dict.btn_order_book || 'سفارش کتاب'} ({price})
+              {dict.btn_order_book} ({price})
             </button>
           )}
         </div>
@@ -572,7 +572,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                 </div>
 
                 <div className="space-y-2 z-10">
-                  <span className={`text-[10px] font-mono uppercase tracking-widest block font-bold ${foilColor}`}>
+                  <span className={`text-[11px] font-mono block font-bold ${foilColor}`}>
                     DAR AL-HIKMAH
                   </span>
                   <div className="w-12 h-0.5 bg-[#C58B43]/50 mx-auto" />
@@ -649,15 +649,15 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               onClick={handleNextPage}
               disabled={currentPage >= maxSamplePages}
               className="p-3 rounded-xl bg-stone-800 hover:bg-stone-750 disabled:opacity-30 text-stone-300 hover:text-white transition flex items-center gap-2 cursor-pointer text-xs sm:text-sm font-bold"
-              title={dict.reader_btn_next || 'صفحه بعد'}
+              title={dict.reader_btn_next}
             >
               <ChevronRight className="w-4 h-4" />
-              <span className="hidden sm:inline">{dict.reader_btn_next || 'صفحه بعد'}</span>
+              <span className="hidden sm:inline">{dict.reader_btn_next}</span>
             </button>
 
             <div className="text-center text-xs sm:text-sm font-bold text-stone-300">
               <span className="text-white block font-num">
-                {dict.reader_page || 'صفحه'} {curPageDisplay} {dict.reader_of || 'از'} {totalPagesDisplay}
+                {dict.reader_page} {curPageDisplay} {dict.reader_of} {totalPagesDisplay}
               </span>
             </div>
 
@@ -665,9 +665,9 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               onClick={handlePrevPage}
               disabled={currentPage <= 0}
               className="p-3 rounded-xl bg-stone-800 hover:bg-stone-750 disabled:opacity-30 text-stone-300 hover:text-white transition flex items-center gap-2 cursor-pointer text-xs sm:text-sm font-bold"
-              title={dict.reader_btn_prev || 'صفحه قبل'}
+              title={dict.reader_btn_prev}
             >
-              <span className="hidden sm:inline">{dict.reader_btn_prev || 'صفحه قبل'}</span>
+              <span className="hidden sm:inline">{dict.reader_btn_prev}</span>
               <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
@@ -690,7 +690,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                   currentPage === p ? 'bg-[#8A532B] text-white shadow-xs' : 'bg-stone-800 text-stone-400 hover:text-white'
                 }`}
               >
-                {dict.reader_page || 'ص'} {toLocaleDigits((p * 16).toString(), currentLang)}
+                {dict.reader_page} {toLocaleDigits((p * 16).toString(), currentLang)}
               </button>
             ))}
           </div>
@@ -704,7 +704,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
             <div className="flex items-center justify-between border-b border-stone-800 pb-3">
               <span className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-[#8A532B]" />
-                {dict.reader_note_modal_title || 'ثبت یادداشت و حاشیه علمی'}
+                {dict.reader_note_modal_title}
               </span>
               <button onClick={() => setIsNoteModalOpen(false)} className="text-stone-400 hover:text-white">
                 <X className="w-4 h-4" />
@@ -715,7 +715,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
               rows={4}
               value={noteInput}
               onChange={e => setNoteInput(e.target.value)}
-              placeholder={dict.reader_note_placeholder || 'نکات تحلیلی و حواشی انتقادی خود را بنویسید...'}
+              placeholder={dict.reader_note_placeholder}
               className="w-full p-4 rounded-2xl bg-stone-900 border border-stone-800 text-xs sm:text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-[#8A532B] resize-none leading-relaxed"
             />
 
@@ -730,7 +730,7 @@ export const BookReader3D: React.FC<BookReader3DProps> = ({
                 onClick={handleSaveMarginNote}
                 className="px-5 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer"
               >
-                {dict.reader_note_save_btn || 'ذخیره یادداشت'}
+                {dict.reader_note_save_btn}
               </button>
             </div>
           </div>

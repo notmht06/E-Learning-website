@@ -9,7 +9,6 @@ import { AuthTabs } from '@/components/auth/AuthTabs';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { OtpVerificationForm } from '@/components/auth/OtpVerificationForm';
-import { QuickRoleSelector } from '@/components/auth/QuickRoleSelector';
 
 function LoginContent() {
   const { localizeHref, dict } = useLanguage();
@@ -37,7 +36,6 @@ function LoginContent() {
     handleDirectPasswordRegister,
     handleVerifyOtpCode,
     handleResendOtp,
-    handleQuickRole,
   } = useAuthForm();
 
   return (
@@ -58,10 +56,10 @@ function LoginContent() {
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'
-              ? dict.auth_step_otp_verify_desc || 'کد تأیید ۶ رقمی ارسال‌شده به تلفن همراه را وارد فرمایید'
+              ? dict.auth_step_otp_verify_desc
               : activeTab === 'login'
-              ? dict.auth_step_login_desc || 'ورود به سامانه جامع آموزش و پژوهش حکمت اسلامی'
-              : dict.auth_step_register_desc || 'ثبت‌نام و عضویت در سامانه تخصصی حیات علوم عقلی'}
+              ? dict.auth_step_login_desc
+              : dict.auth_step_register_desc}
           </p>
         </div>
 
@@ -84,8 +82,8 @@ function LoginContent() {
             <AuthTabs
               activeTab={activeTab}
               onTabChange={switchTab}
-              loginLabel={dict.auth_tab_login || 'ورود به سامانه'}
-              registerLabel={dict.auth_tab_register || 'ثبت‌نام دانش‌پژوه'}
+              loginLabel={dict.auth_tab_login}
+              registerLabel={dict.auth_tab_register}
             />
 
             {/* Dynamic Form View */}
@@ -117,12 +115,6 @@ function LoginContent() {
                 onDirectPasswordSubmit={handleDirectPasswordRegister}
               />
             )}
-
-            {/* Quick Role Evaluation Selector */}
-            <QuickRoleSelector
-              onSelectRole={handleQuickRole}
-              disabled={isSubmitting}
-            />
           </>
         )}
 
@@ -132,7 +124,7 @@ function LoginContent() {
             href={localizeHref('/')}
             className="text-xs sm:text-sm font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline inline-flex items-center gap-1"
           >
-            <span>{dict.auth_back_to_home || 'بازگشت به صفحه اصلی'}</span>
+            <span>{dict.auth_back_to_home}</span>
           </Link>
         </div>
 

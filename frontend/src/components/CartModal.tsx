@@ -67,21 +67,21 @@ export const CartModal: React.FC<CartModalProps> = ({
         <DialogHeader className="flex flex-row items-center gap-2 space-y-0 pb-2 border-b border-[#E6E1D8] dark:border-[#22242A] pe-10">
           <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
           <DialogTitle className="text-base font-bold truncate">
-            {dict.cart_title || 'سبد خرید'}
+            {dict.cart_title}
           </DialogTitle>
         </DialogHeader>
 
         {items.length === 0 ? (
           <div className="py-8 text-center text-xs sm:text-sm text-zinc-500 space-y-2">
             <ShoppingBag className="w-8 h-8 mx-auto opacity-30 text-zinc-400" />
-            <p>{dict.cart_empty || 'سبد خرید شما خالی است.'}</p>
+            <p>{dict.cart_empty}</p>
           </div>
         ) : (
           <div className="space-y-2.5 max-h-64 overflow-y-auto pe-1">
             {items.map((item, idx) => (
               <div
                 key={`${item.id}-${idx}`}
-                className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-[#E6E1D8] dark:border-[#24262D] hover:border-[#8A532B]/40 hover:shadow-xs flex items-center justify-between gap-3 transition-all duration-200"
+                className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-[#E6E1D8] dark:border-[#24262D] hover:border-[#8A532B]/40 hover:shadow-xs flex items-center justify-between gap-3 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200"
               >
                 <div className="min-w-0">
                   <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
@@ -97,7 +97,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                   onClick={() => onRemoveItem(item.id)}
                   className="text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-7 px-2"
                 >
-                  {dict.cart_remove_btn || 'حذف'}
+                  {dict.cart_remove_btn}
                 </Button>
               </div>
             ))}
@@ -108,7 +108,7 @@ export const CartModal: React.FC<CartModalProps> = ({
           <div className="space-y-3 pt-2 border-t border-[#E6E1D8] dark:border-[#22242A]">
             <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="font-bold text-zinc-600 dark:text-zinc-400">
-                {dict.cart_total || 'مجموع سفارش:'}
+                {dict.cart_total}
               </span>
               <span className="font-bold text-sm sm:text-base text-[#8A532B] dark:text-[#C58B43] font-num">
                 {formattedTotal}
@@ -117,7 +117,7 @@ export const CartModal: React.FC<CartModalProps> = ({
 
             <div className="flex items-center gap-2 text-xs text-zinc-500">
               <ShieldCheck className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-              <span>{dict.cart_security_note || 'تراکنش امن در درگاه رسمی شاپرک'}</span>
+              <span>{dict.cart_security_note}</span>
             </div>
 
             <Button
@@ -126,7 +126,7 @@ export const CartModal: React.FC<CartModalProps> = ({
               className="w-full font-bold text-xs sm:text-sm gap-2"
             >
               <CheckCircle className="w-4 h-4" />
-              <span>{isProcessing ? 'در حال انتقال...' : dict.cart_checkout_btn || 'تکمیل سفارش و پرداخت'}</span>
+              <span>{isProcessing ? 'در حال انتقال...' : dict.cart_checkout_btn}</span>
             </Button>
           </div>
         )}

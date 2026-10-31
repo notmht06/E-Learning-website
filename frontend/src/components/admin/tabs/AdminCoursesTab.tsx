@@ -387,7 +387,7 @@ export function AdminCoursesTab() {
                       <span className="font-mono text-zinc-400">[{toLocale(idx + 1)}]</span>
                       <span className="font-medium text-zinc-900 dark:text-zinc-100">{ch.title_fa}</span>
                       {ch.isFreePreview && (
-                        <span className="px-2 py-0.5 rounded bg-[#8A532B]/10 text-[#8A532B] text-[10px] font-mono">
+                        <span className="px-2 py-0.5 rounded bg-[#8A532B]/10 text-[#8A532B] text-[11px] font-mono">
                           FREE
                         </span>
                       )}

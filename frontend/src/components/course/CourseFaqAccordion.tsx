@@ -18,27 +18,27 @@ export function CourseFaqAccordion({ className = '' }: CourseFaqAccordionProps) 
   const { currentLang, dict } = useLanguage();
 
   const t = {
-    heading: dict.course_faq_heading || 'پرسش‌های متداول این دوره',
+    heading: dict.course_faq_heading,
     faqs: [
       {
         id: 'faq-1',
-        q: dict.course_faq_q1 || 'پیش‌نیازهای لازم برای بهره‌مندی از این درس‌گفتار چیست؟',
-        a: dict.course_faq_a1 || 'مباحث این درس از تعاریف پایه‌ای آغاز می‌شود؛ با این حال آشنایی مقدماتی با اصطلاحات علوم عقلی به درک عمیق‌تر کمک می‌کند.',
+        q: dict.course_faq_q1,
+        a: dict.course_faq_a1,
       },
       {
         id: 'faq-2',
-        q: dict.course_faq_q2 || 'آیا پس از اتمام درس گواهی‌نامه رسمی صادر می‌شود؟',
-        a: dict.course_faq_a2 || 'بله، پس از استماع تمام جلسات و تایید پژوهشی، گواهی‌نامه رسمی دارای کد صحت‌سنجی یکتا صادر می‌شود.',
+        q: dict.course_faq_q2,
+        a: dict.course_faq_a2,
       },
       {
         id: 'faq-3',
-        q: dict.course_faq_q3 || 'دسترسی به فایل‌های صوتی و متن تقریرات چگونه است؟',
-        a: dict.course_faq_a3 || 'صوت دروس از طریق پلیر پیشرفته استریم شده و جزوات مکتوب در قالب PDF در بخش پیوست‌های هر جلسه قرار دارد.',
+        q: dict.course_faq_q3,
+        a: dict.course_faq_a3,
       },
       {
         id: 'faq-4',
-        q: dict.course_faq_q4 || 'آیا امکان طرح اشکال علمی و مباحثه وجود دارد؟',
-        a: dict.course_faq_a4 || 'بله، پژوهشگران می‌توانند اشکالات خود را در بخش مباحثه مطرح کرده یا از دستیار حکمت‌یار هوشمند برای تحلیل براهین استفاده کنند.',
+        q: dict.course_faq_q4,
+        a: dict.course_faq_a4,
       },
     ],
   };

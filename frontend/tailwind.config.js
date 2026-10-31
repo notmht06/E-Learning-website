@@ -38,6 +38,16 @@ module.exports = {
         quote: ['Dana', 'serif'],
         enTitle: ['Dana', 'serif'],
       },
+      keyframes: {
+        // Live-playback indicator: scales a fixed-height bar (transform only, no layout work)
+        equalizer: {
+          '0%, 100%': { transform: 'scaleY(0.35)' },
+          '50%': { transform: 'scaleY(1)' },
+        },
+      },
+      animation: {
+        equalizer: 'equalizer 900ms cubic-bezier(0.22, 1, 0.36, 1) infinite',
+      },
       boxShadow: {
         'book-3d': '-10px 14px 30px -4px rgba(28, 27, 26, 0.25), -2px 4px 10px -2px rgba(28, 27, 26, 0.12)',
         'book-hover': '-16px 22px 42px -4px rgba(28, 27, 26, 0.35), -4px 6px 14px -2px rgba(28, 27, 26, 0.18)',

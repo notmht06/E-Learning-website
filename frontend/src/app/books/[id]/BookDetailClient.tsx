@@ -39,11 +39,7 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
   const badge = locBook?.badge || book.badge_fa;
 
   const authorCredentials =
-    currentLang === 'en'
-      ? 'Author & Commentator • Advanced Seminary Studies'
-      : currentLang === 'ar'
-      ? 'مؤلف وشارح • أستاذ السطوح العليا'
-      : 'مؤلف و شارح • مدرس سطوح عالی حوزه';
+    dict.ui_author_commentator_advanced_seminary_s;
 
   const handleAddToBag = () => {
     addItem({
@@ -64,9 +60,9 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full text-start">
         <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-zinc-400">
-          <Link href={localizeHref('/')} className="hover:text-[#8A532B]">{dict.nav_home || 'صفحه اصلی'}</Link>
+          <Link href={localizeHref('/')} className="hover:text-[#8A532B]">{dict.nav_home}</Link>
           <span>/</span>
-          <Link href={localizeHref('/books')} className="hover:text-[#8A532B]">{dict.nav_books || 'کتب'}</Link>
+          <Link href={localizeHref('/books')} className="hover:text-[#8A532B]">{dict.nav_books}</Link>
           <span>/</span>
           <span className="text-zinc-900 dark:text-zinc-100 line-clamp-1">{title}</span>
         </div>
@@ -74,8 +70,8 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Book Stage Column */}
           <div className="lg:col-span-5 bg-white dark:bg-[#141518] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px] shadow-xs">
-            <div className="w-56 h-80 rounded-xl bg-gradient-to-br from-[#8A532B]/20 to-[#C58B43]/10 border border-[#8A532B]/30 flex flex-col justify-between p-6 shadow-lg text-center relative overflow-hidden">
-              <span className="text-[10px] font-mono text-[#8A532B] dark:text-[#C58B43] tracking-wider uppercase block">
+            <div className="w-56 h-80 rounded-xl bg-[#8A532B]/10 border border-[#8A532B]/30 flex flex-col justify-between p-6 shadow-lg text-center relative overflow-hidden">
+              <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
                 [ {book.isbn || '978-600-00-0000-0'} ]
               </span>
               <div className="space-y-2">
@@ -143,7 +139,7 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
                 className="px-5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white font-bold text-xs sm:text-sm shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
                 <BookOpen className="w-4 h-4" />
-                <span>{dict.book_3d_turn || 'ورق‌زن ۳ بعدی'}</span>
+                <span>{dict.book_3d_turn}</span>
               </button>
 
               <button
@@ -152,7 +148,7 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
                 className="px-5 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold text-xs sm:text-sm border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-2 cursor-pointer"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>{dict.btn_order_book || 'سفارش کتاب'} ({price})</span>
+                <span>{dict.btn_order_book} ({price})</span>
               </button>
             </div>
           </div>

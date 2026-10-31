@@ -43,20 +43,16 @@ export function StickyEnrollmentBar({
 
   const t = {
     scholar_name:
-      currentLang === 'en'
-        ? 'Hojjat al-Islam Dr. Zanjirzan Hosseini'
-        : currentLang === 'ar'
-        ? 'حجة الإسلام الدكتور زنجير زن حسيني'
-        : 'حجت الاسلام دکتر زنجیر زن حسینی',
-    enroll_btn: dict.course_sticky_enroll_btn || 'ثبت‌نام در این کرسی درس',
-    enter_btn: dict.course_sticky_enter_btn || 'ورود به تئاتر یادگیری',
-    loading: dict.catalog_loading_more || 'در حال ثبت...',
+      dict.ui_hojjat_al_islam_dr_zanjirzan_hosseini,
+    enroll_btn: dict.course_sticky_enroll_btn,
+    enter_btn: dict.course_sticky_enter_btn,
+    loading: dict.catalog_loading_more,
   };
 
   return (
     <aside
       aria-label="نوار ثبت‌نام دوره"
-      className={`fixed bottom-0 inset-x-0 z-40 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`fixed bottom-0 inset-x-0 z-40 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isVisible
           ? 'translate-y-0 opacity-100 pointer-events-auto'
           : 'translate-y-full opacity-0 pointer-events-none'

@@ -46,19 +46,11 @@ export function ShellSidebar({
   isMobileOpen = false,
   onCloseMobile,
 }: ShellSidebarProps) {
-  const { currentLang, isRtl, toLocale, localizeHref } = useLanguage();
+  const { dict, currentLang, isRtl, toLocale, localizeHref } = useLanguage();
 
-  const homeLabel = currentLang === 'en'
-    ? 'Main Website'
-    : currentLang === 'ar'
-    ? 'الموقع الرئيسي'
-    : 'صفحه اصلی سایت';
+  const homeLabel = dict.ui_main_website;
 
-  const logoutLabel = currentLang === 'en'
-    ? 'Sign Out'
-    : currentLang === 'ar'
-    ? 'تسجيل الخروج'
-    : 'خروج از حساب';
+  const logoutLabel = dict.ui_sign_out;
 
   const collapseTooltip = isCollapsed
     ? (currentLang === 'en' ? 'Expand Sidebar' : 'گسترش منو')
@@ -71,7 +63,7 @@ export function ShellSidebar({
         <div className="h-16 flex items-center justify-between px-3 border-b border-zinc-200 dark:border-zinc-800">
           {!isCollapsed ? (
             <div className="ps-2 min-w-0">
-              <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block uppercase tracking-wider">
+              <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
                 {portalBadge}
               </span>
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate block">
@@ -145,7 +137,7 @@ export function ShellSidebar({
 
                 {!isCollapsed && item.badge !== undefined && (
                   <span
-                    className={`px-2 py-0.5 text-[10px] font-mono rounded-md font-num tabular-nums shrink-0 ${
+                    className={`px-2 py-0.5 text-[11px] font-mono rounded-md font-num tabular-nums shrink-0 ${
                       isActive
                         ? 'bg-white/20 text-white'
                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'

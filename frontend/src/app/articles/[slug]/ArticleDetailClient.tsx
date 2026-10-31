@@ -190,14 +190,14 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
         >
           <div className="flex items-center gap-2 font-mono text-zinc-500">
             <Link href={localizeHref('/')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition">
-              {dict.nav_home || 'صفحه نخست'}
+              {dict.nav_home}
             </Link>
             <span>/</span>
             <Link
               href={localizeHref('/articles')}
               className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
             >
-              {dict.nav_articles || 'مقالات علمی'}
+              {dict.nav_articles}
             </Link>
             <span>/</span>
             <span className="text-[#8A532B] dark:text-[#C58B43] font-bold">{category}</span>
@@ -208,11 +208,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition"
           >
             <span>
-              {currentLang === 'en'
-                ? 'Back to Articles Archive'
-                : currentLang === 'ar'
-                ? 'العودة إلى أرشيف المقالات'
-                : 'بازگشت به آرشیو مقالات'}
+              {dict.ui_back_to_articles_archive}
             </span>
             <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
           </Link>
@@ -260,7 +256,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                     {authorName}
                   </span>
                   <span className="text-[11px] text-zinc-500 block">
-                    {dict.bio_status || 'مدرس سطوح عالی و خارج حوزه علمیه'}
+                    {dict.bio_status}
                   </span>
                 </div>
               </div>
@@ -275,11 +271,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                 >
                   <Printer className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
                   <span>
-                    {currentLang === 'en'
-                      ? 'Print / PDF'
-                      : currentLang === 'ar'
-                      ? 'طباعة / PDF'
-                      : 'چاپ / دریافت PDF'}
+                    {dict.ui_print_pdf}
                   </span>
                 </Button>
 
@@ -291,16 +283,8 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                   className="h-8 w-8"
                   title={
                     copiedShare
-                      ? currentLang === 'en'
-                        ? 'Link Copied!'
-                        : currentLang === 'ar'
-                        ? 'تم نسخ الرابط!'
-                        : 'پیوند کپی شد!'
-                      : currentLang === 'en'
-                      ? 'Share article link'
-                      : currentLang === 'ar'
-                      ? 'مشاركة رابط البحث'
-                      : 'اشتراک‌گذاری پیوند مقاله'
+                      ? dict.ui_link_copied
+                      : dict.ui_share_article_link
                   }
                 >
                   {copiedShare ? (
@@ -317,7 +301,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-[#8A532B] dark:text-[#C58B43]">
               <Quote className="w-4 h-4" />
-              <span>{dict.articles_modal_abstract || 'چکیده و مسئله‌شناسی مقاله:'}</span>
+              <span>{dict.articles_modal_abstract}</span>
             </div>
             <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
               {abstractText}
@@ -343,11 +327,7 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
           <footer className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                {currentLang === 'en'
-                  ? 'Standard Academic Citation:'
-                  : currentLang === 'ar'
-                  ? 'التوثيق العلمي للمقال:'
-                  : 'نحوه ارجاع استاندارد علمی به این مقاله:'}
+                {dict.ui_standard_academic_citation}
               </span>
               <Button
                 type="button"
@@ -360,18 +340,14 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                   <>
                     <Check className="w-3.5 h-3.5" />
                     <span>
-                      {currentLang === 'en' ? 'Copied' : currentLang === 'ar' ? 'تم النسخ' : 'کپی شد'}
+                      {dict.ui_copied}
                     </span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5" />
                     <span>
-                      {currentLang === 'en'
-                        ? 'Copy Citation'
-                        : currentLang === 'ar'
-                        ? 'نسخ التوثيق'
-                        : 'کپی ارجاع'}
+                      {dict.ui_copy_citation}
                     </span>
                   </>
                 )}
@@ -389,18 +365,14 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
             <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               <Headphones className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
               <span>
-                {currentLang === 'en'
-                  ? 'Related Audio & Video Lecture Series'
-                  : currentLang === 'ar'
-                  ? 'الدورات والمحاضرات المرتبطة بهذا البحث'
-                  : 'درس‌گفتارها و دوره‌های مرتبط با این جستار'}
+                {dict.ui_related_audio_video_lecture_series}
               </span>
             </h2>
             <Link
               href={localizeHref('/courses')}
               className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43] hover:underline flex items-center gap-1"
             >
-              <span>{dict.courses_view_all || 'مشاهده همه دوره‌ها'}</span>
+              <span>{dict.courses_view_all}</span>
               <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
             </Link>
           </div>
@@ -425,11 +397,11 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
                     </div>
                     <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 font-num">
                       <span>
-                        {toLocale(rc.episodes_count)} {dict.course_unit_sessions || 'جلسه'} •{' '}
+                        {toLocale(rc.episodes_count)} {dict.course_unit_sessions} •{' '}
                         {locRc?.duration || rc.duration_fa}
                       </span>
                       <span className="font-bold text-[#8A532B] dark:text-[#C58B43] flex items-center gap-1">
-                        <span>{dict.catalog_featured_action || 'مشاهده دوره'}</span>
+                        <span>{dict.catalog_featured_action}</span>
                         <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
                       </span>
                     </div>

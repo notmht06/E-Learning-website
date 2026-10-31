@@ -119,7 +119,7 @@ export default function CourseLearnTheaterPage({
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
               <Link href={localizeHref('/courses')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
-                {dict.learn_breadcrumb_courses || dict.nav_lectures || 'درس‌گفتارها'}
+                {dict.learn_breadcrumb_courses || dict.nav_lectures}
               </Link>
               <span>/</span>
               <span className="text-[#8A532B] dark:text-[#C58B43]">
@@ -130,7 +130,7 @@ export default function CourseLearnTheaterPage({
               {courseTitle}
             </h1>
             <p className="text-xs text-zinc-500">
-              {dict.learn_instructor_prefix || dict.course_instructor_label || 'مدرس:'}{' '}
+              {dict.learn_instructor_prefix || dict.course_instructor_label}{' '}
               {dict.scholar_name || getScholarName(currentLang)}
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function CourseLearnTheaterPage({
             className="px-4 py-2 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] transition flex items-center gap-2 self-start sm:self-auto"
           >
             <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-            <span>{dict.learn_view_course_intro || 'مشاهده صفحه معرفی دوره'}</span>
+            <span>{dict.learn_view_course_intro}</span>
           </Link>
         </div>
 
@@ -155,11 +155,7 @@ export default function CourseLearnTheaterPage({
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#8A532B]" />
                       <span className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43]">
-                        {currentLang === 'en'
-                          ? 'Live Online Session Gateway'
-                          : currentLang === 'ar'
-                          ? 'بوابة الدرس المباشر (أونلاين)'
-                          : 'درگاه ورود به جلسه آنلاین زنده'}
+                        {dict.ui_live_online_session_gateway}
                       </span>
                     </div>
                     <p className="text-xs text-zinc-600 dark:text-zinc-300">
@@ -178,11 +174,7 @@ export default function CourseLearnTheaterPage({
                     >
                       <Radio className="w-4 h-4 text-[#E6CA85]" />
                       <span>
-                        {currentLang === 'en'
-                          ? 'Join Live Skyroom Class'
-                          : currentLang === 'ar'
-                          ? 'دخول غرفة البث المباشر'
-                          : 'ورود به کلاس آنلاین در اسکایروم'}
+                        {dict.ui_join_live_skyroom_class}
                       </span>
                     </a>
                   ) : null}
@@ -242,12 +234,11 @@ export default function CourseLearnTheaterPage({
               <div className="flex items-center gap-2 text-[#8A532B] dark:text-[#C58B43]">
                 <ShieldCheck className="w-4 h-4" />
                 <span className="font-bold">
-                  {dict.learn_drm_title || 'استفاده قانونی با رعایت حقوق مؤلف'}
+                  {dict.learn_drm_title}
                 </span>
               </div>
               <p className="text-zinc-500 leading-relaxed text-[11px]">
-                {dict.learn_drm_desc ||
-                  'تمامی فایل‌های صوتی منحصراً برای استفاده شخصی دانش‌پژوه ثبت‌نام‌شده است. هرگونه تکثیر یا اشتراک‌گذاری بدون اجازه مؤلف فاقد رضایت شرعی است.'}
+                {dict.learn_drm_desc}
               </p>
             </div>
           </div>

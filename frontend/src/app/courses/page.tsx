@@ -68,109 +68,106 @@ function CoursesContent() {
   const t = useMemo(() => {
     if (currentLang === 'en') {
       return {
-        breadcrumb_home: dict.nav_home || 'Home',
-        breadcrumb_current: dict.nav_courses || 'Academic Discourses',
-        page_title: dict.catalog_courses_page_title || 'Archive of Specialized Courses & Discourses',
+        breadcrumb_home: dict.nav_home,
+        breadcrumb_current: dict.nav_courses,
+        page_title: dict.catalog_courses_page_title,
         page_subtitle:
-          dict.catalog_courses_page_subtitle ||
-          'Collection of academic discourses by Hojjat al-Islam Dr. Zanjirzan Hosseini across 8 branches of rational and transmitted disciplines.',
-        type_all: dict.catalog_type_all || 'All Courses',
-        type_offline: dict.catalog_type_offline || 'Offline',
-        type_online: dict.catalog_type_online || 'Online',
-        search_ph: dict.catalog_search_courses_ph || 'Search in course titles...',
+          dict.catalog_courses_page_subtitle,
+        type_all: dict.catalog_type_all,
+        type_offline: dict.catalog_type_offline,
+        type_online: dict.catalog_type_online,
+        search_ph: dict.catalog_search_courses_ph,
         all_subjects: 'All Subjects',
         empty_title: 'No courses found matching your criteria',
         empty_desc: 'Try adjusting your search terms or clearing your filters.',
-        mobile_filter_btn: dict.catalog_filter_mobile_btn || 'Filters',
-        sort_label: dict.catalog_sort_label || 'Sort by:',
-        sort_default: dict.catalog_sort_default || 'Default',
-        sort_newest: dict.catalog_sort_newest || 'Newest',
-        sort_popular: dict.catalog_sort_popular || 'Most Popular',
-        sort_price_asc: dict.catalog_sort_price_asc || 'Lowest Tuition',
-        sort_price_desc: dict.catalog_sort_price_desc || 'Highest Tuition',
-        load_more_btn: dict.catalog_load_more_btn || 'Load More Discourses',
-        all_loaded: dict.catalog_all_loaded || 'All discourses in this section are displayed',
-        view_grid: dict.catalog_view_grid || 'Grid View',
-        view_list: dict.catalog_view_list || 'List View',
-        total_courses_count: dict.catalog_total_courses_count || 'Specialized Academic Discourses',
-        clear_all: dict.catalog_filter_clear_all || 'Clear Filters',
+        mobile_filter_btn: dict.catalog_filter_mobile_btn,
+        sort_label: dict.catalog_sort_label,
+        sort_default: dict.catalog_sort_default,
+        sort_newest: dict.catalog_sort_newest,
+        sort_popular: dict.catalog_sort_popular,
+        sort_price_asc: dict.catalog_sort_price_asc,
+        sort_price_desc: dict.catalog_sort_price_desc,
+        load_more_btn: dict.catalog_load_more_btn,
+        all_loaded: dict.catalog_all_loaded,
+        view_grid: dict.catalog_view_grid,
+        view_list: dict.catalog_view_list,
+        total_courses_count: dict.catalog_total_courses_count,
+        clear_all: dict.catalog_filter_clear_all,
         free_badge: 'Free',
-        active_filters_label: dict.catalog_active_filters_label || 'Active Filters:',
-        discipline_prefix: dict.catalog_filter_discipline_prefix || 'Discipline:',
-        type_prefix: dict.catalog_filter_type_prefix || 'Format:',
-        remaining_label: dict.catalog_filter_remaining || 'remaining',
-        loading_more: dict.catalog_loading_more || 'Loading...',
+        active_filters_label: dict.catalog_active_filters_label,
+        discipline_prefix: dict.catalog_filter_discipline_prefix,
+        type_prefix: dict.catalog_filter_type_prefix,
+        remaining_label: dict.catalog_filter_remaining,
+        loading_more: dict.catalog_loading_more,
       };
     }
     if (currentLang === 'ar') {
       return {
-        breadcrumb_home: dict.nav_home || 'الرئيسية',
-        breadcrumb_current: dict.nav_courses || 'الدروس العلمية والتربوية',
-        page_title: dict.catalog_courses_page_title || 'أرشيف الدروس والمحاضرات التخصصية',
+        breadcrumb_home: dict.nav_home,
+        breadcrumb_current: dict.nav_courses,
+        page_title: dict.catalog_courses_page_title,
         page_subtitle:
-          dict.catalog_courses_page_subtitle ||
-          'مجموعة الدروس والمحاضرات العلمية لحجة الإسلام الدكتور زنجیر زن حسيني في ۸ فروع من العلوم العقلية والنقلية.',
-        type_all: dict.catalog_type_all || 'جميع الدورات',
-        type_offline: dict.catalog_type_offline || 'مسجلة',
-        type_online: dict.catalog_type_online || 'مباشرة',
-        search_ph: dict.catalog_search_courses_ph || 'البحث في عناوين الدروس...',
+          dict.catalog_courses_page_subtitle,
+        type_all: dict.catalog_type_all,
+        type_offline: dict.catalog_type_offline,
+        type_online: dict.catalog_type_online,
+        search_ph: dict.catalog_search_courses_ph,
         all_subjects: 'جميع الفروع',
         empty_title: 'لم يتم العثور على دروس مطابقة',
         empty_desc: 'يرجى تجربة كلمات بحث أو فلاتر أخرى.',
-        mobile_filter_btn: dict.catalog_filter_mobile_btn || 'الفلاتر',
-        sort_label: dict.catalog_sort_label || 'الترتيب:',
-        sort_default: dict.catalog_sort_default || 'الكل',
-        sort_newest: dict.catalog_sort_newest || 'الأحدث',
-        sort_popular: dict.catalog_sort_popular || 'الأكثر طلباً',
-        sort_price_asc: dict.catalog_sort_price_asc || 'الأقل سعراً',
-        sort_price_desc: dict.catalog_sort_price_desc || 'الأعلى سعراً',
-        load_more_btn: dict.catalog_load_more_btn || 'عرض المزيد من الدروس',
-        all_loaded: dict.catalog_all_loaded || 'تم عرض جميع الدروس في هذا القسم',
-        view_grid: dict.catalog_view_grid || 'عرض شبكي',
-        view_list: dict.catalog_view_list || 'عرض طولي',
-        total_courses_count: dict.catalog_total_courses_count || 'درساً تخصصياً',
-        clear_all: dict.catalog_filter_clear_all || 'إعادة ضبط الفلاتر',
+        mobile_filter_btn: dict.catalog_filter_mobile_btn,
+        sort_label: dict.catalog_sort_label,
+        sort_default: dict.catalog_sort_default,
+        sort_newest: dict.catalog_sort_newest,
+        sort_popular: dict.catalog_sort_popular,
+        sort_price_asc: dict.catalog_sort_price_asc,
+        sort_price_desc: dict.catalog_sort_price_desc,
+        load_more_btn: dict.catalog_load_more_btn,
+        all_loaded: dict.catalog_all_loaded,
+        view_grid: dict.catalog_view_grid,
+        view_list: dict.catalog_view_list,
+        total_courses_count: dict.catalog_total_courses_count,
+        clear_all: dict.catalog_filter_clear_all,
         free_badge: 'مجاني',
-        active_filters_label: dict.catalog_active_filters_label || 'الفلاتر النشطة:',
-        discipline_prefix: dict.catalog_filter_discipline_prefix || 'الفرع:',
-        type_prefix: dict.catalog_filter_type_prefix || 'النوع:',
-        remaining_label: dict.catalog_filter_remaining || 'متبقي',
-        loading_more: dict.catalog_loading_more || 'جاري التحميل...',
+        active_filters_label: dict.catalog_active_filters_label,
+        discipline_prefix: dict.catalog_filter_discipline_prefix,
+        type_prefix: dict.catalog_filter_type_prefix,
+        remaining_label: dict.catalog_filter_remaining,
+        loading_more: dict.catalog_loading_more,
       };
     }
     return {
-      breadcrumb_home: dict.nav_home || 'صفحه اصلی',
-      breadcrumb_current: dict.nav_courses || 'درس‌گفتارهای علمی و تربیتی',
-      page_title: dict.catalog_courses_page_title || 'آرشیو دوره‌ها و درس‌گفتارهای تخصصی',
+      breadcrumb_home: dict.nav_home,
+      breadcrumb_current: dict.nav_courses,
+      page_title: dict.catalog_courses_page_title,
       page_subtitle:
-        dict.catalog_courses_page_subtitle ||
-        'مجموعه درس‌گفتارها و سلسله جلسات علمی حجت الاسلام دکتر زنجیر زن حسینی در ۸ شاخه علوم عقلی و نقلی.',
-      type_all: dict.catalog_type_all || 'همه دوره‌ها',
-      type_offline: dict.catalog_type_offline || 'آفلاین',
-      type_online: dict.catalog_type_online || 'آنلاین',
-      search_ph: dict.catalog_search_courses_ph || 'جستجو در عناوین دروس...',
+        dict.catalog_courses_page_subtitle,
+      type_all: dict.catalog_type_all,
+      type_offline: dict.catalog_type_offline,
+      type_online: dict.catalog_type_online,
+      search_ph: dict.catalog_search_courses_ph,
       all_subjects: 'همه شاخه‌ها',
       empty_title: 'دوره‌ای با این مشخصات یافت نشد',
       empty_desc: 'لطفاً عبارات جستجو یا فیلترهای دیگر را امتحان کنید.',
-      mobile_filter_btn: dict.catalog_filter_mobile_btn || 'فیلترها',
-      sort_label: dict.catalog_sort_label || 'مرتب‌سازی:',
-      sort_default: dict.catalog_sort_default || 'همه',
-      sort_newest: dict.catalog_sort_newest || 'جدیدترین',
-      sort_popular: dict.catalog_sort_popular || 'محبوب‌ترین',
-      sort_price_asc: dict.catalog_sort_price_asc || 'کمترین شهریه',
-      sort_price_desc: dict.catalog_sort_price_desc || 'بیشترین شهریه',
-      load_more_btn: dict.catalog_load_more_btn || 'مشاهده درس‌گفتارهای بیشتر',
-      all_loaded: dict.catalog_all_loaded || 'تمام درس‌گفتارهای این بخش نمایش داده شد',
-      view_grid: dict.catalog_view_grid || 'نمای شبکه‌ای',
-      view_list: dict.catalog_view_list || 'نمای سطری',
-      total_courses_count: dict.catalog_total_courses_count || 'عنوان درس‌گفتار تخصصی',
-      clear_all: dict.catalog_filter_clear_all || 'پاک‌سازی فیلترها',
+      mobile_filter_btn: dict.catalog_filter_mobile_btn,
+      sort_label: dict.catalog_sort_label,
+      sort_default: dict.catalog_sort_default,
+      sort_newest: dict.catalog_sort_newest,
+      sort_popular: dict.catalog_sort_popular,
+      sort_price_asc: dict.catalog_sort_price_asc,
+      sort_price_desc: dict.catalog_sort_price_desc,
+      load_more_btn: dict.catalog_load_more_btn,
+      all_loaded: dict.catalog_all_loaded,
+      view_grid: dict.catalog_view_grid,
+      view_list: dict.catalog_view_list,
+      total_courses_count: dict.catalog_total_courses_count,
+      clear_all: dict.catalog_filter_clear_all,
       free_badge: 'رایگان',
-      active_filters_label: dict.catalog_active_filters_label || 'فیلترهای فعال:',
-      discipline_prefix: dict.catalog_filter_discipline_prefix || 'شاخه:',
-      type_prefix: dict.catalog_filter_type_prefix || 'نوع:',
-      remaining_label: dict.catalog_filter_remaining || 'باقی‌مانده',
-      loading_more: dict.catalog_loading_more || 'در حال دریافت...',
+      active_filters_label: dict.catalog_active_filters_label,
+      discipline_prefix: dict.catalog_filter_discipline_prefix,
+      type_prefix: dict.catalog_filter_type_prefix,
+      remaining_label: dict.catalog_filter_remaining,
+      loading_more: dict.catalog_loading_more,
     };
   }, [currentLang, dict]);
 
@@ -299,7 +296,7 @@ function CoursesContent() {
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
                 {t.page_title}
               </h1>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed mt-1">
@@ -353,7 +350,7 @@ function CoursesContent() {
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
               <span>{t.mobile_filter_btn}</span>
               {activeFiltersCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-[#8A532B] dark:bg-[#C58B43] text-white text-[10px] font-mono flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-[#8A532B] dark:bg-[#C58B43] text-white text-[11px] font-mono flex items-center justify-center">
                   {toLocaleDigits(activeFiltersCount, currentLang)}
                 </span>
               )}
@@ -373,7 +370,7 @@ function CoursesContent() {
                     triggerTactileHaptic('tick');
                     setSortBy(opt.id);
                   }}
-                  className={`px-2.5 py-1 rounded-lg transition-all duration-200 ease-out font-medium cursor-pointer active:scale-95 ${
+                  className={`px-2.5 py-1 rounded-lg transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out font-medium cursor-pointer active:scale-95 ${
                     sortBy === opt.id
                       ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -508,7 +505,7 @@ function CoursesContent() {
                         <>
                           <ArrowDown className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
                           <span>{t.load_more_btn}</span>
-                          <span className="text-[10px] font-mono text-zinc-400">
+                          <span className="text-[11px] font-mono text-zinc-400">
                             ({toLocaleDigits(sortedCourses.length - visibleCount, currentLang)} {t.remaining_label})
                           </span>
                         </>

@@ -28,7 +28,7 @@ interface ActiveDeviceItem {
 export function DashboardSecurityTab() {
   const { drmSessions } = useData();
   const { user, logout } = useAuth();
-  const { toLocale, currentLang, localizeHref } = useLanguage();
+  const { dict, toLocale, currentLang, localizeHref } = useLanguage();
 
   const [devices, setDevices] = useState<ActiveDeviceItem[]>([]);
   const [maxDevices, setMaxDevices] = useState<number>(3);
@@ -40,7 +40,7 @@ export function DashboardSecurityTab() {
     const parsed = Date.parse(dateStr);
     if (!isNaN(parsed)) {
       return new Date(parsed).toLocaleDateString(
-        currentLang === 'en' ? 'en-US' : currentLang === 'ar' ? 'ar-SA' : 'fa-IR',
+        dict.ui_en_us,
         {
           year: 'numeric',
           month: 'short',
@@ -107,18 +107,10 @@ export function DashboardSecurityTab() {
           </div>
           <div>
             <h2 className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-              {currentLang === 'en'
-                ? 'Security & Active Device Sessions'
-                : currentLang === 'ar'
-                ? 'الأمان وإدارة الأجهزة المتصلة'
-                : 'امنیت حساب و مدیریت دستگاه‌های متصل'}
+              {dict.ui_security_active_device_sessions}
             </h2>
             <p className="text-xs text-zinc-500">
-              {currentLang === 'en'
-                ? 'Authorized playback devices (Max 3 concurrent devices)'
-                : currentLang === 'ar'
-                ? 'الأجهزة المصرح بها للبث (بحد أقصى ٣ أجهزة متزامنة)'
-                : 'نشست‌های مجاز پخش صوت و تصویر (حداکثر ۳ دستگاه همزمان)'}
+              {dict.ui_authorized_playback_devices_max_3_conc}
             </p>
           </div>
         </div>
@@ -135,19 +127,11 @@ export function DashboardSecurityTab() {
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <KeyRound className="w-4 h-4 text-[#8A532B]" />
             <span>
-              {currentLang === 'en'
-                ? 'Two-Factor Auth'
-                : currentLang === 'ar'
-                ? 'المصادقة الثنائية'
-                : 'ورود دو مرحله‌ای پیامکی'}
+              {dict.ui_two_factor_auth}
             </span>
           </div>
           <p className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
-            {currentLang === 'en'
-              ? 'Active via Mobile OTP'
-              : currentLang === 'ar'
-              ? 'مفعلة عبر الرسائل القصيرة'
-              : 'فعال با رمز یکبارمصرف (OTP)'}
+            {dict.ui_active_via_mobile_otp}
           </p>
         </div>
 
@@ -155,11 +139,7 @@ export function DashboardSecurityTab() {
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <Smartphone className="w-4 h-4 text-[#8A532B]" />
             <span>
-              {currentLang === 'en'
-                ? 'Active Devices'
-                : currentLang === 'ar'
-                ? 'الأجهزة المتصلة'
-                : 'دستگاه‌های همزمان فعال'}
+              {dict.ui_active_devices}
             </span>
           </div>
           <p className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] font-num">
@@ -176,11 +156,7 @@ export function DashboardSecurityTab() {
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <AlertCircle className="w-4 h-4 text-[#8A532B]" />
             <span>
-              {currentLang === 'en'
-                ? 'Forensic Watermark'
-                : currentLang === 'ar'
-                ? 'العلامة المائية الرقمية'
-                : 'شناسه واترمارک دانش‌پژوه'}
+              {dict.ui_forensic_watermark}
             </span>
           </div>
           <p className="text-sm font-bold text-[#0C0D0E] dark:text-[#FAF8F5] font-mono">
@@ -192,22 +168,14 @@ export function DashboardSecurityTab() {
       {/* Active Sessions Table */}
       <div className="bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] rounded-2xl p-5 shadow-xs space-y-4">
         <h3 className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-          {currentLang === 'en'
-            ? 'Active Authenticated Sessions'
-            : currentLang === 'ar'
-            ? 'جلسات الأجهزة النشطة'
-            : 'نشست‌ها و دستگاه‌های متصل به حساب شما'}
+          {dict.ui_active_authenticated_sessions}
         </h3>
 
         {isLoading ? (
           <div className="py-6 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-[#8A532B]" />
             <span>
-              {currentLang === 'en'
-                ? 'Checking active sessions...'
-                : currentLang === 'ar'
-                ? 'جاري فحص الجلسات النشطة...'
-                : 'در حال بررسی نشست‌های فعال...'}
+              {dict.ui_checking_active_sessions}
             </span>
           </div>
         ) : (
@@ -236,12 +204,12 @@ export function DashboardSecurityTab() {
 
                 <div className="flex items-center gap-2 shrink-0">
                   {d.is_current ? (
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25">
-                      {currentLang === 'en' ? 'This Device' : currentLang === 'ar' ? 'هذا الجهاز' : 'این دستگاه'}
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25">
+                      {dict.ui_this_device}
                     </span>
                   ) : (
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/25">
-                      {currentLang === 'en' ? 'Active' : currentLang === 'ar' ? 'نشط' : 'فعال'}
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/25">
+                      {dict.ui_active}
                     </span>
                   )}
                   <button
@@ -250,16 +218,12 @@ export function DashboardSecurityTab() {
                     onClick={() => handleRevokeDevice(d.id)}
                     className="px-2.5 py-1.5 rounded-lg border border-[#E6E1D8] dark:border-[#22242A] text-zinc-500 hover:text-rose-700 hover:border-rose-700/40 transition cursor-pointer flex items-center gap-1 text-[11px]"
                     title={
-                      currentLang === 'en'
-                        ? 'Revoke this session'
-                        : currentLang === 'ar'
-                        ? 'إنهاء هذه الجلسة'
-                        : 'خاتمه دادن به این نشست'
+                      dict.ui_revoke_this_session
                     }
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">
-                      {currentLang === 'en' ? 'Revoke' : currentLang === 'ar' ? 'إنهاء' : 'قطع نشست'}
+                      {dict.ui_revoke}
                     </span>
                   </button>
                 </div>

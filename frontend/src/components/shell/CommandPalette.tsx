@@ -167,7 +167,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           id: `cat-${cat.id}`,
           type: 'course',
           title: locCat?.name || cat.name,
-          subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${locCat?.description || cat.description}`,
+          subtitle: `${dict.cmd_subject_label} ${locCat?.description || cat.description}`,
           url: localizeHref(`/courses?subject=${encodeURIComponent(cat.name)}`),
           icon: Compass,
         });
@@ -181,7 +181,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         id: `course-${c.id}`,
         type: 'course',
         title: loc?.title || c.title_fa,
-        subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${loc?.subject || c.subject} • ${loc?.duration || c.duration_fa}`,
+        subtitle: `${dict.cmd_subject_label} ${loc?.subject || c.subject} • ${loc?.duration || c.duration_fa}`,
         url: localizeHref(`/courses/${c.id}`),
         icon: Headphones,
       });
@@ -193,7 +193,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         id: `book-${b.id}`,
         type: 'book',
         title: loc?.title || b.title_fa,
-        subtitle: `${dict.cmd_author_label || 'مؤلف:'} ${dict.scholar_name}`,
+        subtitle: `${dict.cmd_author_label} ${dict.scholar_name}`,
         url: localizeHref(`/books/${b.id}`),
         icon: BookOpen,
       });
@@ -205,7 +205,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         id: `art-${a.id}`,
         type: 'article',
         title: loc?.title || a.title,
-        subtitle: `${dict.cmd_subject_label || 'شاخه:'} ${loc?.category || a.category} • ${loc?.readTime || a.readTime}`,
+        subtitle: `${dict.cmd_subject_label} ${loc?.category || a.category} • ${loc?.readTime || a.readTime}`,
         url: localizeHref(`/articles/${a.slug}`),
         icon: FileText,
       });
@@ -260,7 +260,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       onClick={handleClose}
     >
       <div
-        className={`w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] transition-all duration-240 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`w-full max-w-2xl bg-white dark:bg-[#121316] border border-stone-200 dark:border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-start flex flex-col max-h-[80vh] transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-240 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-3'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -276,7 +276,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder={dict.cmd_search_placeholder || 'جستجوی عنوان دوره، سرفصل، کتاب یا موضوع...'}
+            placeholder={dict.cmd_search_placeholder}
             className="flex-1 bg-transparent text-sm font-semibold text-stone-900 dark:text-stone-100 placeholder-stone-400 outline-none"
           />
           {query && (
@@ -290,7 +290,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-semibold bg-stone-200 dark:bg-neutral-800 text-stone-600 dark:text-stone-400 rounded-md">
+          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono font-semibold bg-stone-200 dark:bg-neutral-800 text-stone-600 dark:text-stone-400 rounded-md">
             ESC
           </kbd>
         </div>
@@ -300,8 +300,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {q === '' ? (
             /* Quick Suggestions */
             <div className="space-y-3 p-2">
-              <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">
-                {dict.cmd_quick_categories || 'دسترسی سریع به ۸ شاخه تخصصی:'}
+              <span className="text-[11px] font-bold text-stone-400 block">
+                {dict.cmd_quick_categories}
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {categories.map((cat, idx) => {
@@ -329,10 +329,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
               <div className="pt-2 border-t border-stone-100 dark:border-neutral-800 text-xs text-stone-500 space-y-1">
                 <span className="font-semibold block text-stone-700 dark:text-stone-300">
-                  {dict.cmd_search_guide_title || 'راهنمای جستجو:'}
+                  {dict.cmd_search_guide_title}
                 </span>
                 <p className="leading-relaxed">
-                  {dict.cmd_search_guide_text || 'می‌توانید نام کتاب مرجع (مانند «کفایه»، «اشراق»)، نام موضوع («اصول»، «منطق») یا مفاهیم فلسفی را جستجو کنید.'}
+                  {dict.cmd_search_guide_text}
                 </p>
               </div>
             </div>
@@ -340,10 +340,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             <div className="text-center py-8 space-y-2">
               <Search className="w-8 h-8 text-stone-300 dark:text-neutral-700 mx-auto" />
               <p className="text-sm font-semibold text-stone-600 dark:text-stone-400">
-                {dict.cmd_no_results || 'هیچ موردی یافت نشد.'}
+                {dict.cmd_no_results}
               </p>
               <span className="text-xs text-stone-400">
-                {dict.cmd_no_results_sub || 'لطفاً املای کلمه را بررسی کرده یا موضوع کلی‌تری را جستجو کنید.'}
+                {dict.cmd_no_results_sub}
               </span>
             </div>
           ) : (
@@ -352,7 +352,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               {matchedCourses.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] px-2 block">
-                    {dict.cmd_courses_section || 'دوره‌های آموزشی'} ({toLocale(matchedCourses.length)})
+                    {dict.cmd_courses_section} ({toLocale(matchedCourses.length)})
                   </span>
                   {matchedCourses.slice(0, 5).map((c) => {
                     const loc = getLocalizedCourse(c, currentLang);
@@ -388,13 +388,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                               {loc?.title || c.title_fa}
                             </h4>
                             <span className="text-[11px] text-stone-400 font-num">
-                              {dict.cmd_subject_label || 'شاخه:'} {loc?.subject || c.subject} • {loc?.duration || c.duration_fa}
+                              {dict.cmd_subject_label} {loc?.subject || c.subject} • {loc?.duration || c.duration_fa}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {isSelected && (
-                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
+                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
                               <span>Enter</span>
                               <CornerDownLeft className="w-2.5 h-2.5" />
                             </kbd>
@@ -411,7 +411,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               {matchedBooks.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold text-stone-500 px-2 block">
-                    {dict.cmd_books_section || 'کتاب‌ها و آثار چاپی'} ({toLocale(matchedBooks.length)})
+                    {dict.cmd_books_section} ({toLocale(matchedBooks.length)})
                   </span>
                   {matchedBooks.map((b) => {
                     const loc = getLocalizedBook(b, currentLang);
@@ -447,13 +447,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                               {loc?.title || b.title_fa}
                             </h4>
                             <span className="text-[11px] text-stone-400">
-                              {dict.cmd_author_label || 'مؤلف:'} {dict.scholar_name}
+                              {dict.cmd_author_label} {dict.scholar_name}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {isSelected && (
-                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
+                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
                               <span>Enter</span>
                               <CornerDownLeft className="w-2.5 h-2.5" />
                             </kbd>
@@ -470,7 +470,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               {matchedArticles.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold text-stone-500 px-2 block">
-                    {dict.cmd_articles_section || 'مقالات و تقریرات علمی'} ({toLocale(matchedArticles.length)})
+                    {dict.cmd_articles_section} ({toLocale(matchedArticles.length)})
                   </span>
                   {matchedArticles.map((a) => {
                     const loc = getLocalizedArticle(a, currentLang);
@@ -506,13 +506,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                               {loc?.title || a.title}
                             </h4>
                             <span className="text-[11px] text-stone-400 font-num">
-                              {dict.cmd_subject_label || 'شاخه:'} {loc?.category || a.category} • {loc?.readTime || a.readTime}
+                              {dict.cmd_subject_label} {loc?.category || a.category} • {loc?.readTime || a.readTime}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {isSelected && (
-                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
+                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
                               <span>Enter</span>
                               <CornerDownLeft className="w-2.5 h-2.5" />
                             </kbd>
@@ -532,20 +532,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="px-4 py-3 bg-stone-50 dark:bg-neutral-900 border-t border-stone-200 dark:border-neutral-800 flex items-center justify-between text-[11px] text-stone-400 font-medium">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[10px] text-stone-600 dark:text-stone-300">↑↓</kbd>
-              <span>{dict.cmd_key_nav || 'پیمایش'}</span>
+              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[11px] text-stone-600 dark:text-stone-300">↑↓</kbd>
+              <span>{dict.cmd_key_nav}</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[10px] text-stone-600 dark:text-stone-300">↵</kbd>
-              <span>{dict.cmd_key_enter || 'انتخاب'}</span>
+              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[11px] text-stone-600 dark:text-stone-300">↵</kbd>
+              <span>{dict.cmd_key_enter}</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[10px] text-stone-600 dark:text-stone-300">ESC</kbd>
-              <span>{dict.cmd_key_esc || 'خروج'}</span>
+              <kbd className="px-2 py-0.5 rounded bg-stone-200 dark:bg-neutral-800 font-mono text-[11px] text-stone-600 dark:text-stone-300">ESC</kbd>
+              <span>{dict.cmd_key_esc}</span>
             </span>
           </div>
           <span className="font-num">
-            {toLocale(totalCoursesCount)} {dict.courses_count_suffix || 'دوره'} • {toLocale(totalChaptersCount)}+ {dict.learn_session_label || 'جلسه'}
+            {toLocale(totalCoursesCount)} {dict.courses_count_suffix} • {toLocale(totalChaptersCount)}+ {dict.learn_session_label}
           </span>
         </div>
       </div>

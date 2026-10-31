@@ -29,13 +29,13 @@ export function CoursePlaylistSidebar({
 
   return (
     <section
-      aria-label={dict.learn_playlist_title || 'سرفصل جلسات'}
+      aria-label={dict.learn_playlist_title}
       className="rounded-2xl border border-zinc-200 bg-white p-4 text-start dark:border-zinc-800 dark:bg-[#141518]"
     >
       <header className="mb-4 flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-zinc-100">
           <Headphones className="h-4 w-4 text-[#8A532B] dark:text-[#C58B43]" />
-          <span>{dict.learn_playlist_title || 'سرفصل جلسات درس‌گفتار'}</span>
+          <span>{dict.learn_playlist_title}</span>
         </h3>
         <span className="font-num text-xs text-zinc-500 dark:text-zinc-400">
           {toLocale(doneCount)}/{toLocale(chapters.length)}
@@ -111,16 +111,12 @@ export function CoursePlaylistSidebar({
                   <span className="mt-1 flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
                     <span className="font-num">{toLocale(ch.duration)}</span>
                     {isLocked ? (
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                        {currentLang === 'en'
-                          ? 'Enrollment Required'
-                          : currentLang === 'ar'
-                          ? 'يتطلب التسجيل'
-                          : 'نیازمند ثبت‌نام در دوره'}
+                      <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
+                        {dict.ui_enrollment_required}
                       </span>
                     ) : isPreview ? (
                       <span className="rounded bg-[#8A532B]/10 px-2 py-0.5 font-bold text-[#8A532B] dark:text-[#C58B43]">
-                        {dict.learn_free_preview || 'نمونه رایگان'}
+                        {dict.learn_free_preview}
                       </span>
                     ) : null}
                   </span>

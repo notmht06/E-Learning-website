@@ -12,7 +12,7 @@ import {
 import { Navbar } from '@/components/Navbar';
 import { CurriculumRoadmap } from '@/components/CurriculumRoadmap';
 import { ConceptGraphVisualizer } from '@/components/concept-graph';
-import { useLanguage } from '@/context/LanguageContext';
+import { useLanguage, lookupDictionary } from '@/context/LanguageContext';
 
 export default function RoadmapPage() {
   const { dict, toLocale, localizeHref } = useLanguage();
@@ -22,8 +22,8 @@ export default function RoadmapPage() {
   const faqIndices = [1, 2, 3, 4];
   const dynamicFaqs = faqIndices
     .map((i) => ({
-      q: dict[`roadmap_faq_${i}_q`],
-      a: dict[`roadmap_faq_${i}_a`],
+      q: lookupDictionary(dict, `roadmap_faq_${i}_q`),
+      a: lookupDictionary(dict, `roadmap_faq_${i}_a`),
     }))
     .filter((item) => Boolean(item.q && item.a));
 
@@ -57,19 +57,19 @@ export default function RoadmapPage() {
         <div className="space-y-4 text-start border-b border-zinc-200 dark:border-zinc-800 pb-5">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
-              {dict.nav_home || 'صفحه اصلی'}
+              {dict.nav_home}
             </Link>
             <span>/</span>
-            <span className="text-[#8A532B]">{dict.nav_roadmap || 'سیر مطالعاتی و نقشه راه'}</span>
+            <span className="text-[#8A532B]">{dict.nav_roadmap}</span>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-                {dict.roadmap_stage_title || 'سیر مطالعاتی گام‌به‌گام علوم عقلی و نقلی'}
+                {dict.roadmap_stage_title}
               </h1>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed mt-1">
-                {dict.roadmap_stage_subtitle || 'نقشه راه استاندارد و تفکیک‌شده تدریس حجت الاسلام دکتر زنجیر زن حسینی، از مرحله سنجش فکر و منطق، تا حکمت پایه، اصول اجتهاد، اسفار اربعه و عرفان نظری.'}
+                {dict.roadmap_stage_subtitle}
               </p>
             </div>
 
@@ -77,23 +77,23 @@ export default function RoadmapPage() {
             <div className="flex items-center gap-1 p-1 bg-black/[0.04] dark:bg-white/[0.06] rounded-2xl border border-black/5 dark:border-white/5 shrink-0 self-start sm:self-center">
               <button
                 onClick={() => setViewMode('timeline')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ease-out cursor-pointer active:scale-95 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer active:scale-95 ${
                   viewMode === 'timeline'
                     ? 'bg-[#8A532B] text-white shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
-                {dict.roadmap_tab_timeline || 'سیر مطالعاتی ترتیبی'}
+                {dict.roadmap_tab_timeline}
               </button>
               <button
                 onClick={() => setViewMode('graph')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ease-out cursor-pointer active:scale-95 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer active:scale-95 ${
                   viewMode === 'graph'
                     ? 'bg-[#8A532B] text-white shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
-                {dict.roadmap_tab_graph || 'شبکه ارتباطی مفاهیم عقلی'}
+                {dict.roadmap_tab_graph}
               </button>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function RoadmapPage() {
               {dict.roadmap_faq_subtitle ? `[ ${dict.roadmap_faq_subtitle} ]` : '[ پرسش‌های متداول سیر علمی ]'}
             </span>
             <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-              {dict.roadmap_faq_title || 'اصول سیر علمی، تقدم و تاخر خوانش دروس'}
+              {dict.roadmap_faq_title}
             </h3>
           </div>
 

@@ -8,8 +8,8 @@ import {
   Check,
   Radio,
   BookOpen,
-  Sparkles,
   ArrowUpDown,
+  Gift,
 } from 'lucide-react';
 import {
   Dialog,
@@ -61,25 +61,25 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
   const { currentLang, dict } = useLanguage();
 
   const t = {
-    mobile_title: dict.catalog_filter_mobile_title || 'فیلترهای پیشرفته کاتالوگ',
-    disciplines_title: dict.catalog_filter_disciplines_title || 'شاخه‌های علمی',
-    delivery_title: dict.catalog_filter_delivery_type_title || 'نوع برگزاری',
-    access_title: dict.catalog_filter_access_title || 'دسترسی و شهریه',
-    free_only: dict.catalog_filter_free_only || 'فقط دوره‌های رایگان',
-    clear_all: dict.catalog_filter_clear_all || 'پاک‌سازی فیلترها',
-    apply: dict.catalog_filter_mobile_apply || 'اعمال فیلترها',
-    show: dict.catalog_filter_show_courses || 'مشاهده',
-    all_disciplines: dict.catalog_type_all || 'همه شاخه‌ها',
-    type_all: dict.catalog_type_all || 'همه دوره‌ها',
-    type_offline: dict.catalog_type_offline || 'آفلاین',
-    type_online: dict.catalog_type_online || 'آنلاین',
-    sort_title: dict.catalog_sort_label || 'مرتب‌سازی:',
-    sort_default: dict.catalog_sort_default || 'همه',
-    sort_newest: dict.catalog_sort_newest || 'جدیدترین',
-    sort_popular: dict.catalog_sort_popular || 'محبوب‌ترین',
-    sort_price_asc: dict.catalog_sort_price_asc || 'کمترین شهریه',
-    sort_price_desc: dict.catalog_sort_price_desc || 'بیشترین شهریه',
-    courses_suffix: dict.catalog_total_courses_count || 'عنوان درس‌گفتار تخصصی',
+    mobile_title: dict.catalog_filter_mobile_title,
+    disciplines_title: dict.catalog_filter_disciplines_title,
+    delivery_title: dict.catalog_filter_delivery_type_title,
+    access_title: dict.catalog_filter_access_title,
+    free_only: dict.catalog_filter_free_only,
+    clear_all: dict.catalog_filter_clear_all,
+    apply: dict.catalog_filter_mobile_apply,
+    show: dict.catalog_filter_show_courses,
+    all_disciplines: dict.catalog_type_all,
+    type_all: dict.catalog_type_all,
+    type_offline: dict.catalog_type_offline,
+    type_online: dict.catalog_type_online,
+    sort_title: dict.catalog_sort_label,
+    sort_default: dict.catalog_sort_default,
+    sort_newest: dict.catalog_sort_newest,
+    sort_popular: dict.catalog_sort_popular,
+    sort_price_asc: dict.catalog_sort_price_asc,
+    sort_price_desc: dict.catalog_sort_price_desc,
+    courses_suffix: dict.catalog_total_courses_count,
   };
 
   const getCategoryCount = (catName: string) => {
@@ -142,7 +142,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                     triggerTactileHaptic('tick');
                     onSelectSortBy(opt.id);
                   }}
-                  className={`py-2 px-3 rounded-xl text-xs text-start transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer flex items-center justify-between ${
+                  className={`py-2 px-3 rounded-xl text-xs text-start transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out active:scale-[0.98] cursor-pointer flex items-center justify-between ${
                     sortBy === opt.id
                       ? 'bg-[#8A532B] text-white font-bold dark:bg-[#C58B43]'
                       : 'bg-white dark:bg-[#1C1E22] text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800'
@@ -166,7 +166,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('all');
                 }}
-                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'all'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'
@@ -179,7 +179,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('offline');
                 }}
-                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'offline'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'
@@ -193,7 +193,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                   triggerTactileHaptic('tick');
                   onSelectType('online');
                 }}
-                className={`py-2 rounded-lg transition-all duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
+                className={`py-2 rounded-lg transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out active:scale-[0.97] font-medium cursor-pointer ${
                   selectedType === 'online'
                     ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400'
@@ -209,7 +209,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
           <div className="pt-2 border-t border-[#E6E1D8] dark:border-[#24262D]">
             <label className="flex items-center justify-between cursor-pointer group py-2">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+                <Gift className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
                 <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
                   {t.free_only}
                 </span>
@@ -258,7 +258,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                 }`}
               >
                 <span>{t.all_disciplines}</span>
-                <span className="text-[10px] font-mono opacity-60">
+                <span className="text-[11px] font-mono opacity-60">
                   ({toLocaleDigits(courses.length, currentLang)})
                 </span>
               </button>
@@ -285,7 +285,7 @@ export const CourseCatalogMobileFilterDrawer: React.FC<
                     }`}
                   >
                     <span>{label}</span>
-                    <span className="text-[10px] font-mono opacity-60">
+                    <span className="text-[11px] font-mono opacity-60">
                       ({toLocaleDigits(count, currentLang)})
                     </span>
                   </button>

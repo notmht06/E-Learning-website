@@ -20,7 +20,7 @@ interface CertItem {
 }
 
 export function DashboardCertificatesTab() {
-  const { currentLang, localizeHref } = useLanguage();
+  const { dict, currentLang, localizeHref } = useLanguage();
   const { courses } = useData();
   const [certs, setCerts] = useState<CertItem[]>([]);
 
@@ -94,23 +94,11 @@ export function DashboardCertificatesTab() {
     };
   }, [currentLang, courses]);
 
-  const bannerTitle = currentLang === 'en'
-    ? 'Official Scholarly Completion Certificates'
-    : currentLang === 'ar'
-    ? 'الشهادات الرسمية لاجتياز الدورات العلمية'
-    : 'گواهی‌نامه‌های رسمی پایان دوره علمی';
+  const bannerTitle = dict.ui_official_scholarly_completion_certific;
 
-  const bannerSub = currentLang === 'en'
-    ? 'Verified academic completion credentials with immutable verification code and QR authentication'
-    : currentLang === 'ar'
-    ? 'وثائق معتمدة لاجتياز الحلقات الدراسية مع رمز استعلام موثق ورمز استجابة سريعة (QR)'
-    : 'مدارک تایید اتمام درس‌گفتارها و آزمون‌های ارزیابی با کد استعلام یکتا و بارکد پاسخ‌سریع (QR)';
+  const bannerSub = dict.ui_verified_academic_completion_credentia;
 
-  const emptyTitle = currentLang === 'en'
-    ? 'No Certificates Issued Yet'
-    : currentLang === 'ar'
-    ? 'لم تصدر أي شهادة بعد'
-    : 'هنوز گواهی‌نامه‌ای برای شما صادر نشده است';
+  const emptyTitle = dict.ui_no_certificates_issued_yet;
 
   const emptyDesc = currentLang === 'en'
     ? `Upon completing rational sciences lectures and successfully passing the scholarly examination, your official credential signed by ${getScholarName('en')} will appear here.`
@@ -118,18 +106,14 @@ export function DashboardCertificatesTab() {
     ? `بعد إتمام المحاضرات واجتياز التقييم العلمي، ستصدر الشهادة الرسمية بتوقيع ${getScholarName('ar')} في هذا القسم.`
     : `پس از اتمام کامل درس‌گفتارهای آموزشی و قبولی در آزمون ارزیابی، گواهی رسمی ممهور به امضای ${getScholarName('fa')} در این بخش صادر خواهد شد.`;
 
-  const verifiedLabel = currentLang === 'en'
-    ? 'Verified & Authenticated'
-    : currentLang === 'ar'
-    ? 'معتمد وموثق رسمياً'
-    : 'معتبر و تاییدشده';
+  const verifiedLabel = dict.ui_verified_authenticated;
 
-  const instructorPrefix = currentLang === 'en' ? 'Instructor: ' : currentLang === 'ar' ? 'المدرس: ' : 'مدرس: ';
-  const durationLabel = currentLang === 'en' ? 'Curriculum Duration:' : currentLang === 'ar' ? 'مدة الدورة:' : 'مدت دوره:';
-  const scoreLabel = currentLang === 'en' ? 'Evaluation Score:' : currentLang === 'ar' ? 'التقييم النهائي:' : 'ارزیابی نهایی:';
-  const issueDatePrefix = currentLang === 'en' ? 'Issued: ' : currentLang === 'ar' ? 'تاريخ الإصدار: ' : 'صدور: ';
-  const verifyBtn = currentLang === 'en' ? 'Verify Credential (QR)' : currentLang === 'ar' ? 'التحقق من الأصالة (QR)' : 'استعلام اصالت (QR)';
-  const printBtn = currentLang === 'en' ? 'Print' : currentLang === 'ar' ? 'طباعة' : 'چاپ';
+  const instructorPrefix = dict.ui_instructor_2;
+  const durationLabel = dict.ui_curriculum_duration;
+  const scoreLabel = dict.ui_evaluation_score;
+  const issueDatePrefix = dict.ui_issued;
+  const verifyBtn = dict.ui_verify_credential_qr;
+  const printBtn = dict.ui_print;
 
   return (
     <div className="space-y-6 text-start font-sans">

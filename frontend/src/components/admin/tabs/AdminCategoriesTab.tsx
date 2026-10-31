@@ -52,10 +52,10 @@ export function AdminCategoriesTab() {
       <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between">
         <div>
           <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-            {dict.admin_categories_title || 'دسته‌بندی‌ها و شاخه‌های هشت‌گانه علوم عقلی و نقلی'}
+            {dict.admin_categories_title}
           </h2>
           <p className="text-xs text-zinc-500">
-            {dict.admin_categories_desc || 'ساماندهی منظومه آموزشی و مباحثات تخصصی حیات'}
+            {dict.admin_categories_desc}
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function AdminCategoriesTab() {
           className="px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>{dict.admin_categories_btn_add || 'افزودن شاخه علمی'}</span>
+          <span>{dict.admin_categories_btn_add}</span>
         </button>
       </div>
 
@@ -95,13 +95,13 @@ export function AdminCategoriesTab() {
                 {cat.name_fa}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                {cat.description_fa || dict.admin_categories_default_desc || 'مبانی و متون بنیادین این شاخه علمی'}
+                {cat.description_fa || dict.admin_categories_default_desc}
               </p>
             </div>
 
             <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-400">
               <span>SLUG: {cat.slug}</span>
-              <span className="text-[#8A532B]">{dict.admin_categories_badge_active || 'فعال'}</span>
+              <span className="text-[#8A532B]">{dict.admin_categories_badge_active}</span>
             </div>
           </div>
         ))}
@@ -113,7 +113,7 @@ export function AdminCategoriesTab() {
           <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                {dict.admin_categories_modal_title || 'تعریف شاخه علمی جدید'}
+                {dict.admin_categories_modal_title}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -126,7 +126,7 @@ export function AdminCategoriesTab() {
             <form onSubmit={handleCreate} className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_categories_field_name || 'نام شاخه (فارسی)'}
+                  {dict.admin_categories_field_name}
                 </label>
                 <input
                   type="text"
@@ -140,7 +140,7 @@ export function AdminCategoriesTab() {
 
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_categories_field_slug || 'شناسه یکتا (Slug انگلیسی)'}
+                  {dict.admin_categories_field_slug}
                 </label>
                 <input
                   type="text"
@@ -154,7 +154,7 @@ export function AdminCategoriesTab() {
 
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_categories_field_desc || 'توضیح کوتاه و متون مرجع'}
+                  {dict.admin_categories_field_desc}
                 </label>
                 <textarea
                   rows={3}
@@ -171,13 +171,13 @@ export function AdminCategoriesTab() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
                 >
-                  {dict.admin_categories_btn_cancel || 'انصراف'}
+                  {dict.admin_categories_btn_cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium"
                 >
-                  {dict.admin_categories_btn_submit || 'ثبت شاخه'}
+                  {dict.admin_categories_btn_submit}
                 </button>
               </div>
             </form>

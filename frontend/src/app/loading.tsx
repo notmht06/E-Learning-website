@@ -9,7 +9,7 @@ export default function GlobalLoading() {
           <BookOpen className="w-5 h-5 animate-pulse" />
         </div>
         <div className="space-y-1.5">
-          <span className="text-[10px] font-mono text-[#8A532B] dark:text-[#C58B43] tracking-wider uppercase block">
+          <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
             [ HAYAT ARCHIVE ]
           </span>
           <p className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">

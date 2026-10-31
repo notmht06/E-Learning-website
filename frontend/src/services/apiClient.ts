@@ -46,7 +46,9 @@ class ApiClient {
         } else if (typeof errorMessage === 'object' && errorMessage !== null) {
           errorMessage = errorMessage.msg || errorMessage.message || JSON.stringify(errorMessage);
         }
-        throw new Error(errorMessage || `Request failed with status ${response.status}`);
+        const errObj = new Error(errorMessage || `Request failed with status ${response.status}`);
+        (errObj as any).status = response.status;
+        throw errObj;
       }
       return await response.json();
     } catch (error: any) {

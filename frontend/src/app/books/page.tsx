@@ -31,13 +31,12 @@ export default function BooksPage() {
   const t = useMemo(() => {
     if (currentLang === 'en') {
       return {
-        breadcrumb_home: dict.nav_home || 'Home',
-        breadcrumb_current: dict.nav_books || 'Publications & Printed Books',
-        page_title: dict.catalog_books_page_title || 'Monographs, Treatises & Philosophical Works',
+        breadcrumb_home: dict.nav_home,
+        breadcrumb_current: dict.nav_books,
+        page_title: dict.catalog_books_page_title,
         page_subtitle:
-          dict.catalog_books_page_subtitle ||
-          'Collection of scholarly treatises, research volumes, and manuscripts authored by Hojjat al-Islam Dr. Zanjirzan Hosseini.',
-        search_ph: dict.catalog_search_books_ph || 'Search in book titles and treatises...',
+          dict.catalog_books_page_subtitle,
+        search_ph: dict.catalog_search_books_ph,
         all_categories: 'All Categories',
         books_count_suffix: 'Titles',
         empty_title: 'No books found',
@@ -47,13 +46,12 @@ export default function BooksPage() {
     }
     if (currentLang === 'ar') {
       return {
-        breadcrumb_home: dict.nav_home || 'الرئيسية',
-        breadcrumb_current: dict.nav_books || 'المنشورات والكتب المطبوعة',
-        page_title: dict.catalog_books_page_title || 'الرسائل والمونوغرافات والمصنفات الفلسفية',
+        breadcrumb_home: dict.nav_home,
+        breadcrumb_current: dict.nav_books,
+        page_title: dict.catalog_books_page_title,
         page_subtitle:
-          dict.catalog_books_page_subtitle ||
-          'مجموعة الرسائل والكتب والمصنفات البحثية من تأليف حجة الإسلام الدكتور زنجير زن حسيني.',
-        search_ph: dict.catalog_search_books_ph || 'البحث في عناوين الكتب والرسائل...',
+          dict.catalog_books_page_subtitle,
+        search_ph: dict.catalog_search_books_ph,
         all_categories: 'جميع الأبواب',
         books_count_suffix: 'عنوان كتاب',
         empty_title: 'لم يتم العثور على مصنفات',
@@ -62,13 +60,12 @@ export default function BooksPage() {
       };
     }
     return {
-      breadcrumb_home: dict.nav_home || 'صفحه اصلی',
-      breadcrumb_current: dict.nav_books || 'کتاب‌ها و آثار چاپی',
-      page_title: dict.catalog_books_page_title || 'کتاب‌ها و آثار چاپی',
+      breadcrumb_home: dict.nav_home,
+      breadcrumb_current: dict.nav_books,
+      page_title: dict.catalog_books_page_title,
       page_subtitle:
-        dict.catalog_books_page_subtitle ||
-        'مجموعه کتاب‌ها و آثار پژوهشی به قلم حجت الاسلام دکتر زنجیر زن حسینی.',
-      search_ph: dict.catalog_search_books_ph || 'جستجو در عناوین کتب و رسائل...',
+        dict.catalog_books_page_subtitle,
+      search_ph: dict.catalog_search_books_ph,
       all_categories: 'همه موضوعات',
       books_count_suffix: 'عنوان کتاب',
       empty_title: 'کتابی یافت نشد',

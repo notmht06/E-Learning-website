@@ -100,31 +100,17 @@ export function MethodologyGuarantees() {
       {/* Section Header */}
       <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#8A532B]/30 bg-[#8A532B]/5 text-[#8A532B] dark:text-[#C58B43] text-xs font-mono font-bold">
-          <span>✦</span>
           <span>
-            {currentLang === 'en'
-              ? 'METHODOLOGICAL GUARANTEES'
-              : currentLang === 'ar'
-              ? 'أصول ومنهجية التدريس'
-              : 'اصول روش‌شناسی و مزایای آموزش'}
+            {dict.ui_methodological_guarantees}
           </span>
-          <span>✦</span>
         </div>
 
-        <h2 className="text-xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-          {currentLang === 'en'
-            ? 'Six Core Pillars of Instruction'
-            : currentLang === 'ar'
-            ? 'ستة أركان أساسية في منهجية الدرس والبحث'
-            : 'شش اصل بنیادین در روش‌شناسی تدریس استاد'}
+        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+          {dict.ui_six_core_pillars_of_instruction}
         </h2>
 
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          {currentLang === 'en'
-            ? 'Every course is formulated upon systematic pedagogical integrity, unyielding rational demonstration, and comprehensive student support.'
-            : currentLang === 'ar'
-            ? 'صيغت كافة المناهج التعليمية وفق أعلى معايير الاستدلال البرهاني والضبط المنهجي والدعم المستمر للباحثين.'
-            : 'چرا پایگاه دروس حجت الاسلام دکتر زنجیر زن حسینی؛ استانداردهای برهانی و تمایزهای آموزشی در مقایسه با روش‌های سنتی.'}
+          {dict.ui_every_course_is_formulated_upon_system}
         </p>
       </div>
 
@@ -148,15 +134,15 @@ export function MethodologyGuarantees() {
           return (
             <div
               key={item.num}
-              className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#141518] p-5 sm:p-6 flex flex-col justify-between hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group"
+              className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#141518] p-5 sm:p-6 flex flex-col justify-between hover:border-[#8A532B]/60 dark:hover:border-[#C58B43]/60 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group"
             >
               {/* Top Row: Icon & Serial Number */}
               <div className="flex items-center justify-between gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-[#8A532B]/10 dark:bg-[#C58B43]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center border border-[#8A532B]/20 dark:border-[#C58B43]/20 group-hover:scale-105 group-hover:bg-[#8A532B] group-hover:text-white dark:group-hover:bg-[#C58B43] dark:group-hover:text-[#0C0D0E] transition-all duration-300 shadow-xs">
+                <div className="w-12 h-12 rounded-xl bg-[#8A532B]/10 dark:bg-[#C58B43]/10 text-[#8A532B] dark:text-[#C58B43] flex items-center justify-center border border-[#8A532B]/20 dark:border-[#C58B43]/20 group-hover:bg-[#8A532B] group-hover:text-white dark:group-hover:bg-[#C58B43] dark:group-hover:text-[#0C0D0E] transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 shadow-xs">
                   <Icon className="w-6 h-6 transition-transform duration-300 group-hover:rotate-6" />
                 </div>
 
-                <span className="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                <span className="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500">
                   [{toLocale(item.num)}]
                 </span>
               </div>
@@ -173,8 +159,8 @@ export function MethodologyGuarantees() {
 
               {/* Bottom Subtle Accent Line */}
               <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center gap-2">
-                <span className="w-2 h-0.5 rounded-full bg-[#8A532B] dark:bg-[#C58B43] group-hover:w-6 transition-all duration-300" />
-                <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                <span className="w-2 h-0.5 rounded-full bg-[#8A532B] dark:bg-[#C58B43] group-hover:w-6 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300" />
+                <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500">
                   DAR AL-HIKMAH VERIFIED
                 </span>
               </div>

@@ -64,7 +64,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] text-xs font-bold text-book-subtext hover:text-book-text"
         >
           <Search className="w-4 h-4 text-[#8A532B]" />
-          <span>{dict.nav_search_aria || 'جستجوی مباحث و دوره‌ها...'}</span>
+          <span>{dict.nav_search_aria}</span>
         </button>
         {isAuthenticated ? (
           <Link
@@ -104,7 +104,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           >
             <span className="flex items-center gap-2">
               <Headphones className="w-4 h-4 text-book-accent" />
-              <span>{dict.nav_mobile_courses_topics || 'دوره‌ها و موضوعات'}</span>
+              <span>{dict.nav_mobile_courses_topics}</span>
             </span>
             <ChevronDown
               className={`w-4 h-4 transition-transform ${
@@ -120,10 +120,10 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
                 onClick={onClose}
                 className="block text-xs font-bold text-book-accent py-1"
               >
-                {dict.nav_mobile_all_courses || '• مشاهده تمام دوره‌ها'}
+                {dict.nav_mobile_all_courses}
               </Link>
               <span className="text-[11px] font-bold text-book-subtext block pt-1">
-                {dict.nav_mobile_specialized_topics || 'موضوعات تخصصی:'}
+                {dict.nav_mobile_specialized_topics}
               </span>
               <div className="grid grid-cols-2 gap-2">
                 {categories.map((c) => {
@@ -150,7 +150,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >
           <Compass className="w-4 h-4 text-book-accent" />
-          <span>{dict.nav_mobile_roadmap || 'سیر مطالعاتی (نقشه راه)'}</span>
+          <span>{dict.nav_mobile_roadmap}</span>
         </Link>
 
         <Link
@@ -158,7 +158,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           onClick={onClose}
           className="block px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >
-          {dict.nav_mobile_articles || 'مقالات و تقریرات علمی'}
+          {dict.nav_mobile_articles}
         </Link>
 
         <Link
@@ -166,9 +166,9 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           onClick={onClose}
           className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
         >
-          <span>{dict.nav_mobile_books || 'کتب و تالیفات'}</span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43]">
-            {dict.badge_soon || 'به‌زودی'}
+          <span>{dict.nav_mobile_books}</span>
+          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43]">
+            {dict.badge_soon}
           </span>
         </Link>
 
@@ -213,7 +213,7 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
 
         <div className="pt-2 border-t border-book-border dark:border-stone-800 space-y-2">
           <span className="text-xs font-bold text-book-subtext block px-3">
-            {dict.nav_mobile_support || 'پل ارتباطی و پشتیبانی:'}
+            {dict.nav_mobile_support}
           </span>
           <div className="flex items-center gap-2 px-3">
             <a

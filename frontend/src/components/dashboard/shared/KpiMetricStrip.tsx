@@ -42,7 +42,7 @@ export function KpiMetricStrip({ metrics, className = '' }: KpiMetricStripProps)
             className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center justify-between gap-3 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700"
           >
             <div className="space-y-1 min-w-0">
-              <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500 block font-num tracking-wide">
+              <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500 block font-num">
                 {item.serial} {item.title}
               </span>
               <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-num tabular-nums tracking-tight block">
@@ -55,7 +55,7 @@ export function KpiMetricStrip({ metrics, className = '' }: KpiMetricStripProps)
               )}
               {item.trend && (
                 <span
-                  className={`inline-flex items-center text-[10px] font-mono font-medium rounded-md px-2 py-0.5 mt-1 ${
+                  className={`inline-flex items-center text-[11px] font-mono font-medium rounded-md px-2 py-0.5 mt-1 ${
                     item.trend.isPositive
                       ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/30 dark:text-[#C58B43]'
                       : 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/30 dark:text-[#C58B43]'

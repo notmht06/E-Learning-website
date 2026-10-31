@@ -151,7 +151,7 @@ export function AdminCouponsTab() {
                   placeholder="HEKMATE1403"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B] uppercase"
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B]"
                   required
                 />
               </div>

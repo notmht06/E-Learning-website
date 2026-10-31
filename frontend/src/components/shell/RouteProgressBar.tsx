@@ -105,7 +105,7 @@ function RouteProgressBarContent() {
           className="fixed top-0 inset-x-0 z-[100] h-[3px] pointer-events-none bg-black/5 dark:bg-white/5"
         >
           <motion.div
-            className="h-full bg-[#8A532B] dark:bg-[#C58B43] shadow-[0_1px_6px_rgba(138,83,43,0.35)]"
+            className="h-full bg-[#8A532B] dark:bg-[#C58B43]"
             initial={{ width: '0%' }}
             animate={{ width: `${progress}%` }}
             transition={{

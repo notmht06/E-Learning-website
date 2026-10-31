@@ -90,22 +90,22 @@ export default function HomePage() {
               {dict.scholar_full_title || getScholarName(currentLang)}
             </h4>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {siteConfig?.footer_copyright_fa || dict.footer_tagline || 'حیات • پایگاه رسمی نشر آثار، دروس و تقریرات علوم عقلی و نقلی'}
+              {siteConfig?.footer_copyright_fa || dict.footer_tagline}
             </p>
           </div>
 
           <div className="flex items-center gap-6 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
             <Link href={localizeHref('/courses')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
-              {dict.nav_courses || 'دوره‌ها'}
+              {dict.nav_courses}
             </Link>
             <Link href={localizeHref('/books')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
-              {dict.nav_books || 'کتب'}
+              {dict.nav_books}
             </Link>
             <Link href={localizeHref('/articles')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
-              {dict.nav_articles || 'مقالات علمی'}
+              {dict.nav_articles}
             </Link>
             <Link href={localizeHref('/roadmap')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
-              {dict.nav_roadmap || 'سیر مطالعاتی'}
+              {dict.nav_roadmap}
             </Link>
           </div>
         </div>

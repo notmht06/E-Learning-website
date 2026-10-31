@@ -8,9 +8,9 @@ import {
   Pause,
   Lock,
   Clock,
-  Sparkles,
   ArrowRight,
   ArrowLeft,
+  Eye,
 } from 'lucide-react';
 import { AudioCourse, toLocaleDigits } from '@/lib/data';
 import { usePlayer } from '@/context/PlayerContext';
@@ -36,11 +36,11 @@ export function CourseSyllabusAccordion({
   const { playTrack, currentCourse, currentChapterIndex, isPlaying, togglePlay } = usePlayer();
 
   const t = {
-    title: dict.dash_courses_sessions_ready || 'سرفصل‌ها و جلسات دوره',
-    session_unit: dict.course_unit_sessions || 'جلسه',
-    free_preview: dict.course_session_free || 'نمونه رایگان',
-    locked: dict.course_session_locked || 'جلسه قفل است (نیازمند ثبت‌نام)',
-    enter_theater: dict.course_sticky_enter_btn || 'ورود به تئاتر یادگیری',
+    title: dict.dash_courses_sessions_ready,
+    session_unit: dict.course_unit_sessions,
+    free_preview: dict.course_session_free,
+    locked: dict.course_session_locked,
+    enter_theater: dict.course_sticky_enter_btn,
   };
 
   return (
@@ -123,14 +123,14 @@ export function CourseSyllabusAccordion({
                     </span>
 
                     {isSample && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 dark:border-[#C58B43]/30 text-[10px] font-bold">
-                        <Sparkles className="w-2.5 h-2.5" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 dark:border-[#C58B43]/30 text-[11px] font-bold">
+                        <Eye className="w-2.5 h-2.5" />
                         <span>{t.free_preview}</span>
                       </span>
                     )}
 
                     {!canPlay && (
-                      <span className="text-[10px] font-mono text-zinc-400 hidden sm:inline">
+                      <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
                         • {t.locked}
                       </span>
                     )}
@@ -146,9 +146,9 @@ export function CourseSyllabusAccordion({
               <div className="flex items-center gap-3 shrink-0">
                 {isCurrent && (
                   <div className="hidden sm:flex items-center gap-0.5 h-3">
-                    <span className="w-0.5 h-3 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-0.5 h-2 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-0.5 h-3.5 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-bounce" />
+                    <span className="w-0.5 h-3 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.3s]" />
+                    <span className="w-0.5 h-2 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.15s]" />
+                    <span className="w-0.5 h-3.5 bg-[#8A532B] dark:bg-[#C58B43] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none" />
                   </div>
                 )}
 

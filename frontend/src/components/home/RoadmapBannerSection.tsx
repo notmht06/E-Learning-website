@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Route } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui';
 
@@ -61,30 +61,18 @@ export function RoadmapBannerSection() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8A532B]/10 dark:bg-[#C58B43]/10 text-[#8A532B] dark:text-[#C58B43] text-xs font-mono font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Route className="w-3.5 h-3.5" />
               <span>
-                {currentLang === 'en'
-                  ? 'COMPREHENSIVE LEARNING ROADMAP'
-                  : currentLang === 'ar'
-                  ? 'خارطة طريق العلوم العقلية'
-                  : 'نقشه راه جامع فراگیری حکمت'}
+                {dict.ui_comprehensive_learning_roadmap}
               </span>
             </div>
 
-            <h2 className="text-xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
-              {currentLang === 'en'
-                ? 'From Foundations of Logic to the Heights of Asfar'
-                : currentLang === 'ar'
-                ? 'من ألفباء المنطق إلى ذروة الحكمة المتعالية والأسفار الأربعة'
-                : 'از الفبای منطق صوری تا اوج حکمت متعالیه و اسفار اربعه'}
+            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+              {dict.ui_from_foundations_of_logic_to_the_heigh}
             </h2>
 
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {currentLang === 'en'
-                ? 'A disciplined pedagogical curriculum formulated to prevent cognitive confusion and guarantee foundational mastery under Hojjat al-Islam Dr. Zanjirzan Hosseini.'
-                : currentLang === 'ar'
-                ? 'منهج دراسي مهندس بدقة يمنع التشتت الذهني ويضمن الرسوخ العلمي في المعقولات بتوجيه سماحة حجة الإسلام الدكتور زنجيرزن الحسيني.'
-                : 'سیری مهندسی‌شده و گام‌به‌گام برای نجات پژوهشگران از پریشانی ذهنی؛ طراحی و تدریس‌شده بر اساس سنت اصیل کرسی درس خارج حجت الاسلام دکتر زنجیر زن حسینی.'}
+              {dict.ui_a_disciplined_pedagogical_curriculum_f}
             </p>
           </div>
 
@@ -95,11 +83,7 @@ export function RoadmapBannerSection() {
           >
             <Link href={localizeHref('/roadmap')}>
               <span>
-                {currentLang === 'en'
-                  ? 'Explore Full Interactive Roadmap'
-                  : currentLang === 'ar'
-                  ? 'مشاهدة خارطة الطريق التفاعلية'
-                  : 'مشاهده نقشه راه تعاملی مطالعات'}
+                {dict.ui_explore_full_interactive_roadmap}
               </span>
               <ArrowLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 rtl:group-hover/btn:-translate-x-1 ltr:group-hover/btn:translate-x-1 transition-transform" />
             </Link>
@@ -148,7 +132,7 @@ export function RoadmapBannerSection() {
                 {/* Connecting arrow indicator for stages */}
                 {idx < 3 && (
                   <div className="hidden lg:block absolute -end-2.5 top-1/2 -translate-y-1/2 z-10">
-                    <span className="w-5 h-5 rounded-full bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 text-[10px]">
+                    <span className="w-5 h-5 rounded-full bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 text-[11px]">
                       ←
                     </span>
                   </div>

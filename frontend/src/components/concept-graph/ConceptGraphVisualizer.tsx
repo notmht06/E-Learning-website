@@ -75,13 +75,13 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
   const getDisciplineName = (d: DisciplineType) => {
     switch (d) {
       case 'mantiq':
-        return currentLang === 'en' ? 'Logic' : currentLang === 'ar' ? 'المنطق' : 'منطق';
+        return dict.ui_logic;
       case 'falsafe':
-        return currentLang === 'en' ? 'Philosophy' : currentLang === 'ar' ? 'الفلسفة' : 'فلسفه و هستی‌شناسی';
+        return dict.ui_philosophy_2;
       case 'erfan':
-        return currentLang === 'en' ? 'Irfan (Mysticism)' : currentLang === 'ar' ? 'العرفان' : 'عرفان نظری';
+        return dict.ui_irfan_mysticism;
       case 'osul':
-        return currentLang === 'en' ? 'Legal Theory' : currentLang === 'ar' ? 'الأصول' : 'اصول فقه';
+        return dict.ui_legal_theory;
     }
   };
 
@@ -126,12 +126,12 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 rounded-full bg-[#8A532B]" />
-            <span className="text-[11px] font-bold tracking-wider uppercase text-[#8A532B] dark:text-[#C58B43]">
-              {dict.concept_graph_badge || 'شبکه هستی‌شناسی و علوم عقلی'}
+            <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43]">
+              {dict.concept_graph_badge}
             </span>
           </div>
           <h3 className="text-lg sm:text-xl font-bold text-book-text dark:text-stone-100 font-bookTitle">
-            {dict.concept_graph_title || 'گراف ارتباطی و شجره‌نامه مفاهیم'}
+            {dict.concept_graph_title}
           </h3>
         </div>
 
@@ -145,7 +145,7 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
                 : 'bg-black/[0.04] dark:bg-white/[0.06] text-book-subtext hover:text-book-text dark:hover:text-white'
             }`}
           >
-            {dict.filter_all || 'همه محورها'}
+            {dict.filter_all}
           </button>
           {(['falsafe', 'mantiq', 'erfan', 'osul'] as DisciplineType[]).map((disc) => (
             <button
@@ -238,7 +238,7 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
                   : edge.label_fa;
 
               return (
-                <g key={edge.id} className="transition-all duration-300">
+                <g key={edge.id} className="transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300">
                   <path
                     d={pathData}
                     fill="none"
@@ -366,10 +366,10 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
           <div className="flex items-center justify-between text-[11px] text-book-subtext pt-2 border-t border-[#EAE6DF] dark:border-[#27282D]">
             <span className="flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-[#8A532B]" />
-              <span>{dict.concept_graph_hint || 'برای بررسی ارتباط و ارجاعات، روی هر مفهوم کلیک کنید.'}</span>
+              <span>{dict.concept_graph_hint}</span>
             </span>
-            <span className="text-[10px] bg-black/[0.04] dark:bg-white/[0.06] px-2 py-0.5 rounded-full font-num">
-              {conceptNodesData.length} {dict.concept_graph_node_count || 'گره استدلالی'}
+            <span className="text-[11px] bg-black/[0.04] dark:bg-white/[0.06] px-2 py-0.5 rounded-full font-num">
+              {conceptNodesData.length} {dict.concept_graph_node_count}
             </span>
           </div>
         </div>
@@ -390,7 +390,7 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
                 <span className="px-2.5 py-1 rounded-lg bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] text-xs font-bold">
                   {getDisciplineName(activeNode.discipline)}
                 </span>
-                <span className="text-[10px] text-book-subtext font-num">
+                <span className="text-[11px] text-book-subtext font-num">
                   {getNodeTier(activeNode.tier)}
                 </span>
               </div>
@@ -413,13 +413,13 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
               {/* Key Scholars */}
               <div className="pt-2 border-t border-[#EAE6DF] dark:border-[#27282D]">
                 <span className="text-[11px] font-bold text-book-subtext block mb-1.5">
-                  {dict.concept_graph_scholars || 'حکما و شارحان بنیادین:'}
+                  {dict.concept_graph_scholars}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {activeNode.keyScholars.map((sch) => (
                     <span
                       key={sch}
-                      className="text-[10px] px-2 py-0.5 rounded-md bg-black/[0.03] dark:bg-white/[0.05] text-stone-700 dark:text-stone-300 font-medium"
+                      className="text-[11px] px-2 py-0.5 rounded-md bg-black/[0.03] dark:bg-white/[0.05] text-stone-700 dark:text-stone-300 font-medium"
                     >
                       {sch}
                     </span>
@@ -431,7 +431,7 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
               {connectedNeighborIds.length > 0 && (
                 <div className="pt-2 border-t border-[#EAE6DF] dark:border-[#27282D]">
                   <span className="text-[11px] font-bold text-book-subtext block mb-1.5">
-                    {dict.concept_graph_connected || 'مفاهیم متصل در زنجیره استدلال:'}
+                    {dict.concept_graph_connected}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {connectedNeighborIds.map((nid) => {
@@ -441,9 +441,10 @@ export const ConceptGraphVisualizer: React.FC<ConceptGraphVisualizerProps> = ({ 
                         <button
                           key={nid}
                           onClick={() => setActiveNodeId(nid)}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43] font-bold transition cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] dark:text-[#C58B43] font-bold transition cursor-pointer"
                         >
-                          {getNodeTitle(neighbor)} ➔
+                          <span>{getNodeTitle(neighbor)}</span>
+                          <ArrowLeft className="w-3 h-3 shrink-0 ltr:rotate-180" aria-hidden="true" />
                         </button>
                       );
                     })}

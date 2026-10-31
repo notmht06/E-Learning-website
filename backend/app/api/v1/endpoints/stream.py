@@ -145,7 +145,8 @@ async def verify_heartbeat(req: DRMHeartbeatRequest):
             pos_sec=req.playback_position_sec
         )
     except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+        logger.warning("Heartbeat verification rejected: %s", e)
+        raise HTTPException(status_code=403, detail="نشست پخش DRM منقضی شده یا نامعتبر است.")
 
 
 @router.get("/hls/{course_id}/{chapter_id}/master.m3u8", summary="HLS master playlist descriptor")
