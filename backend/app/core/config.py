@@ -5,7 +5,7 @@ Complies with BACKEND_SYSTEM_DESIGN.md (backend-skill quality standards).
 """
 import os
 import secrets
-from typing import List, Any
+from typing import List, Any, Optional
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
@@ -54,6 +54,14 @@ class Settings(BaseModel):
 
     # Media Upload Settings
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "50"))
+
+    # Cloud Object Storage (S3 / MinIO / ArvanCloud S3)
+    S3_ENDPOINT_URL: Optional[str] = os.getenv("S3_ENDPOINT_URL")
+    S3_ACCESS_KEY: Optional[str] = os.getenv("S3_ACCESS_KEY")
+    S3_SECRET_KEY: Optional[str] = os.getenv("S3_SECRET_KEY")
+    S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "zanjirzan-media")
+    S3_REGION_NAME: str = os.getenv("S3_REGION_NAME", "us-east-1")
+    S3_PUBLIC_URL: Optional[str] = os.getenv("S3_PUBLIC_URL")
 
     # CORS Origins
     ALLOWED_ORIGINS: List[str] = [

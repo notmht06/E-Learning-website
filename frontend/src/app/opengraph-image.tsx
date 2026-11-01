@@ -44,7 +44,7 @@ export default async function Image() {
               letterSpacing: '0.1em',
             }}
           >
-            <span>[ HAYAT ARCHIVE ]</span>
+            <span>پایگاه حکمت و معرفت اسلامی</span>
           </div>
           <div
             style={{

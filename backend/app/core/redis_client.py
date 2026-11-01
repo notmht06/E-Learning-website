@@ -100,6 +100,21 @@ class ResilientRedisService:
                 self._is_connected = False
         return self._fallback.delete(key)
 
+    async def get_json(self, key: str) -> Optional[Any]:
+        import json
+        val = await self.get(key)
+        if val:
+            try:
+                return json.loads(val)
+            except Exception:
+                pass
+        return None
+
+    async def set_json(self, key: str, value: Any, expire_seconds: Optional[int] = None) -> bool:
+        import json
+        val = json.dumps(value, ensure_ascii=False)
+        return await self.set(key, val, ex=expire_seconds)
+
     async def is_connected(self) -> bool:
         await self._ensure_connection()
         return self._is_connected
@@ -107,3 +122,4 @@ class ResilientRedisService:
 
 # Global Singleton
 redis_service = ResilientRedisService()
+redis_client = redis_service

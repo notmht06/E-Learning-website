@@ -17,6 +17,15 @@ engine_kwargs = {"echo": False, "future": True, "connect_args": connect_args}
 if "sqlite" in settings.DATABASE_URL:
     from sqlalchemy.pool import NullPool
     engine_kwargs["poolclass"] = NullPool
+else:
+    # High-concurrency connection pool for 1,000+ simultaneous students (PostgreSQL / MySQL)
+    from sqlalchemy.pool import QueuePool
+    engine_kwargs["poolclass"] = QueuePool
+    engine_kwargs["pool_size"] = int(os.getenv("DB_POOL_SIZE", "25"))
+    engine_kwargs["max_overflow"] = int(os.getenv("DB_MAX_OVERFLOW", "50"))
+    engine_kwargs["pool_timeout"] = int(os.getenv("DB_POOL_TIMEOUT", "30"))
+    engine_kwargs["pool_recycle"] = int(os.getenv("DB_POOL_RECYCLE", "1800"))
+    engine_kwargs["pool_pre_ping"] = True
 
 engine = create_async_engine(
     settings.DATABASE_URL,

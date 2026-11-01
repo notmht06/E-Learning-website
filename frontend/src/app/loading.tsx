@@ -9,8 +9,8 @@ export default function GlobalLoading() {
           <BookOpen className="w-5 h-5 animate-pulse" />
         </div>
         <div className="space-y-1.5">
-          <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
-            [ HAYAT ARCHIVE ]
+          <span className="text-xs font-medium tracking-wide text-[#8A532B] dark:text-[#C58B43] block">
+            پایگاه دروس و معارف حکمی
           </span>
           <p className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
             در حال فراخوانی متون و درسگفتارها...

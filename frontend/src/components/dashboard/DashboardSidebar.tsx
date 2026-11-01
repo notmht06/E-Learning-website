@@ -35,7 +35,7 @@ export function DashboardSidebar({
   setIsCollapsed,
   onLogout,
 }: DashboardSidebarProps) {
-  const { localizeHref } = useLanguage();
+  const { dict, localizeHref } = useLanguage();
   const navItems: { id: DashboardTab; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'داشبورد', icon: Compass },
     { id: 'courses', label: 'دوره‌های من', icon: Headphones },
@@ -57,8 +57,8 @@ export function DashboardSidebar({
         <div className="h-16 flex items-center justify-between px-3 border-b border-zinc-200 dark:border-zinc-800">
           {!isCollapsed && (
             <div className="ps-2">
-              <span className="text-xs font-mono text-[#8A532B] dark:text-[#C58B43] block">
-                [ STUDENT PORTAL ]
+              <span className="text-[11px] font-medium tracking-wider text-[#8A532B] dark:text-[#C58B43] block">
+                {dict.auth_tag_student}
               </span>
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate block">
                 پورتال دانش‌پژوهان

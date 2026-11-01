@@ -61,8 +61,8 @@ export function AdminSidebar({
         <div className="h-16 flex items-center justify-between px-3 border-b border-zinc-200 dark:border-zinc-800">
           {!isCollapsed && (
             <div className="ps-2">
-              <span className="text-xs font-mono text-[#8A532B] dark:text-[#C58B43] block">
-                [ ADMIN CONSOLE ]
+              <span className="text-[11px] font-medium tracking-wider text-[#8A532B] dark:text-[#C58B43] block">
+                {dict.auth_tag_admin}
               </span>
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate block">
                 {dict.admin_brand_name}

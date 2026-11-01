@@ -124,8 +124,8 @@ export function CourseFolderPreview({ course, className = '' }: CourseFolderPrev
                   <FolderArchive className="h-3.5 w-3.5" />
                 </span>
                 <div>
-                  <span className="block text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43]">
-                    [ ARCHIVE & HANDOUTS ]
+                  <span className="block text-[11px] font-medium text-[#8A532B] dark:text-[#C58B43]">
+                    {dict.course_folder_title}
                   </span>
                   <h4 className="text-xs font-bold text-[#0C0D0E] dark:text-[#FAF8F5]">
                     {folderTitle}

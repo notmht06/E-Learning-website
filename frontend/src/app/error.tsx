@@ -25,8 +25,8 @@ export default function GlobalErrorPage({
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
-            [ SYSTEM RECOVERY GUARD ]
+          <span className="text-xs font-medium tracking-wide text-[#8A532B] dark:text-[#C58B43] block">
+            سامانه بازیابی و پایش پایداری
           </span>
           <h1 className="text-lg sm:text-xl font-bold">
             اختلال موقت در نمایش این بخش

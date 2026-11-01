@@ -255,8 +255,8 @@ export function CourseCard({
 
         {/* Bottom-End: Serial Code Pill */}
         <div className="absolute bottom-2.5 end-2.5 z-10">
-          <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs">
-            [{serialCode}]
+          <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs tabular-nums">
+            {serialCode}
           </span>
         </div>
 
@@ -326,7 +326,7 @@ export function CourseCard({
         </div>
 
         {/* 3-Column Metrics Bar (Fixed height container) */}
-        <div className="h-9 grid grid-cols-3 gap-1 py-1 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60 items-center">
+        <div className="h-9 grid grid-cols-3 gap-1 py-1 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60 items-center tabular-nums">
           <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
             <Clock className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
             <span className="truncate">{duration}</span>
@@ -351,7 +351,7 @@ export function CourseCard({
         <div className="min-w-0">
           {isFree ? (
             <div>
-              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight tabular-nums">
                 {currentLang === 'en'
                   ? '$45.00'
                   : currentLang === 'ar'
@@ -364,10 +364,10 @@ export function CourseCard({
             </div>
           ) : (
             <div>
-              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight">
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 line-through block font-mono leading-tight tabular-nums">
                 {currentLang === 'en' ? '$65.00' : `${toLocale('۶۵۰,۰۰۰')}`}
               </span>
-              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-num block">
+              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-num block tabular-nums">
                 {price}
               </span>
             </div>

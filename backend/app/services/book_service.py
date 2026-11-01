@@ -2,7 +2,7 @@
 Book and E-Reader Service.
 Provides book catalog and Fidibo/Taaghche inspired sample reader spreads.
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from backend.app.core.exceptions import EntityNotFoundException
 
 
@@ -124,12 +124,52 @@ class BookService:
         """Returns all books."""
         return self.books
 
+    async def get_all_books_async(self, db: Optional[Any] = None) -> List[Dict[str, Any]]:
+        """Returns all books from database if db is available, falling back to memory."""
+        if db is not None:
+            from sqlalchemy import select
+            from backend.app.models.models import BookModel
+            try:
+                res = await db.execute(select(BookModel).order_by(BookModel.created_at.asc()))
+                models = res.scalars().all()
+                if models:
+                    db_books = [m.to_dict() for m in models]
+                    mem_map = {b["id"]: b for b in self.books}
+                    for b in db_books:
+                        if b["id"] in mem_map:
+                            b["table_of_contents"] = mem_map[b["id"]].get("table_of_contents", [])
+                            b["sample_reading"] = mem_map[b["id"]].get("sample_reading", [])
+                    return db_books
+            except Exception:
+                pass
+        return self.books
+
     def get_book_by_id(self, book_id: str) -> Dict[str, Any]:
         """Retrieves book details by ID."""
         for b in self.books:
             if b["id"] == book_id:
                 return b
         raise EntityNotFoundException(entity="Book", identifier=book_id)
+
+    async def get_book_by_id_async(self, book_id: str, db: Optional[Any] = None) -> Dict[str, Any]:
+        """Retrieves book details by ID from database if db is available, falling back to memory."""
+        if db is not None:
+            from sqlalchemy import select
+            from backend.app.models.models import BookModel
+            try:
+                res = await db.execute(select(BookModel).where(BookModel.id == book_id))
+                m = res.scalar_one_or_none()
+                if m:
+                    b_dict = m.to_dict()
+                    for b in self.books:
+                        if b["id"] == book_id:
+                            b_dict["table_of_contents"] = b.get("table_of_contents", [])
+                            b_dict["sample_reading"] = b.get("sample_reading", [])
+                            break
+                    return b_dict
+            except Exception:
+                pass
+        return self.get_book_by_id(book_id)
 
     def get_book_sample(self, book_id: str) -> Dict[str, Any]:
         """Returns sample reader content formatted for Taaghche/Fidibo reader components."""
@@ -142,6 +182,17 @@ class BookService:
             "table_of_contents": book["table_of_contents"]
         }
 
+    async def get_book_sample_async(self, book_id: str, db: Optional[Any] = None) -> Dict[str, Any]:
+        """Returns sample reader content formatted for reader components with database fallback."""
+        book = await self.get_book_by_id_async(book_id, db=db)
+        return {
+            "book_id": book["id"],
+            "title": book["title"],
+            "total_pages": book["pages_count"],
+            "sample_pages": book.get("sample_reading", []),
+            "table_of_contents": book.get("table_of_contents", [])
+        }
+
     def update_book(self, book_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Updates book fields dynamically."""
         book = self.get_book_by_id(book_id)
@@ -149,6 +200,33 @@ class BookService:
             if v is not None:
                 book[k] = v
         return book
+
+    async def update_book_async(self, book_id: str, updates: Dict[str, Any], db: Optional[Any] = None) -> Dict[str, Any]:
+        """Updates book fields in database and memory."""
+        mem_book = None
+        for b in self.books:
+            if b.get("id") == book_id:
+                for k, v in updates.items():
+                    if v is not None:
+                        b[k] = v
+                mem_book = b
+                break
+
+        if db is not None:
+            from sqlalchemy import select
+            from backend.app.models.models import BookModel
+            res = await db.execute(select(BookModel).where(BookModel.id == book_id))
+            db_book = res.scalar_one_or_none()
+            if db_book:
+                for col in ["title", "subtitle", "author", "publisher", "print_edition", "pages_count", "isbn", "price", "physical_price", "stock", "cover_image", "synopsis", "is_coming_soon"]:
+                    if col in updates and updates[col] is not None:
+                        setattr(db_book, col, updates[col])
+                await db.flush()
+                return db_book.to_dict()
+
+        if not mem_book:
+            raise EntityNotFoundException(entity="Book", identifier=book_id)
+        return mem_book
 
     def create_book(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Creates and appends a new book to catalog."""
@@ -177,6 +255,34 @@ class BookService:
         self.books.append(new_book)
         return new_book
 
+    async def create_book_async(self, data: Dict[str, Any], db: Optional[Any] = None) -> Dict[str, Any]:
+        """Creates and persists a book in database and memory."""
+        new_book = self.create_book(data)
+        if db is not None:
+            from sqlalchemy import select
+            from backend.app.models.models import BookModel
+            res = await db.execute(select(BookModel).where(BookModel.id == new_book["id"]))
+            if not res.scalar_one_or_none():
+                db_b = BookModel(
+                    id=new_book["id"],
+                    title=new_book["title"],
+                    subtitle=new_book.get("subtitle"),
+                    author=new_book.get("author", "حجت الاسلام دکتر زنجیر زن حسینی"),
+                    publisher=new_book.get("publisher", "انتشارات حیات"),
+                    print_edition=new_book.get("print_edition", "چاپ اول"),
+                    pages_count=int(new_book.get("pages_count", 350)),
+                    isbn=new_book.get("isbn", "978-600-1234-56-7"),
+                    price=str(new_book.get("price", "۳۵۰,۰۰۰")),
+                    physical_price=str(new_book.get("physical_price", "۳۹۰,۰۰۰")),
+                    stock=int(new_book.get("stock", 50)),
+                    cover_image=new_book.get("cover_image", "/images/book_cover_real.jpg"),
+                    synopsis=new_book.get("synopsis", ""),
+                    is_coming_soon=bool(new_book.get("is_coming_soon", False)),
+                )
+                db.add(db_b)
+                await db.flush()
+        return new_book
+
     def delete_book(self, book_id: str) -> bool:
         """Deletes book by ID."""
         for i, b in enumerate(self.books):
@@ -184,6 +290,29 @@ class BookService:
                 self.books.pop(i)
                 return True
         raise EntityNotFoundException(entity="Book", identifier=book_id)
+
+    async def delete_book_async(self, book_id: str, db: Optional[Any] = None) -> bool:
+        """Deletes book by ID in database and memory."""
+        deleted = False
+        for i, b in enumerate(self.books):
+            if b["id"] == book_id:
+                self.books.pop(i)
+                deleted = True
+                break
+
+        if db is not None:
+            from sqlalchemy import select
+            from backend.app.models.models import BookModel
+            res = await db.execute(select(BookModel).where(BookModel.id == book_id))
+            m = res.scalar_one_or_none()
+            if m:
+                await db.delete(m)
+                await db.flush()
+                return True
+
+        if not deleted:
+            raise EntityNotFoundException(entity="Book", identifier=book_id)
+        return True
 
 
 book_service = BookService()

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zanjirzan-platform
+  labels:
+    app.kubernetes.io/name: zanjirzan-platform
+    environment: production
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zanjirzan-config
+  namespace: zanjirzan-platform
+data:
+  ENVIRONMENT: "production"
+  DATABASE_URL: "postgresql+asyncpg://hikmat_user:hikmat_strong_pass_2026@postgres-service:5432/hayat_db"
+  SYNC_DATABASE_URL: "postgresql://hikmat_user:hikmat_strong_pass_2026@postgres-service:5432/hayat_db"
+  REDIS_URL: "redis://redis-service:6379/0"
+  S3_ENDPOINT_URL: "http://minio-service:9000"
+  S3_BUCKET_NAME: "zanjirzan-media"
+  S3_PUBLIC_URL: "https://zanjirzan.ir/media"
+  DB_POOL_SIZE: "25"
+  DB_MAX_OVERFLOW: "50"
+  DB_POOL_TIMEOUT: "30"
+  DB_POOL_RECYCLE: "1800"
+  ALLOWED_ORIGINS: "https://zanjirzan.ir,https://www.zanjirzan.ir"
+  MAX_UPLOAD_SIZE_MB: "50"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zanjirzan-secrets
+  namespace: zanjirzan-platform
+type: Opaque
+stringData:
+  POSTGRES_USER: "hikmat_user"
+  POSTGRES_PASSWORD: "hikmat_strong_pass_2026"
+  POSTGRES_DB: "hayat_db"
+  S3_ACCESS_KEY: "minio_admin_user"
+  S3_SECRET_KEY: "minio_secure_pass_2026"
+  SECRET_KEY: "hikmat_zanjirzan_jwt_production_secret_key_32bytes_minimum_length_safe"
+  ADMIN_INITIAL_PASSWORD: "Admin_Secure_Scholar_Pass_1403!"

@@ -28,6 +28,7 @@ from backend.app.services.admin_service import admin_service
 from backend.app.services.book_service import book_service
 from backend.app.services.coupon_service import coupon_service
 from backend.app.services.course_service import course_service
+from backend.app.core.storage import storage_service
 from backend.app.models.models import (
     SiteConfig,
     ArticleModel,
@@ -179,11 +180,14 @@ async def admin_root(admin: dict = Depends(get_current_admin)):
 
 
 @admin_router.get("/analytics", response_model=AdminAnalyticsResponse, summary="Get dashboard KPI analytics")
-async def get_analytics(admin: dict = Depends(get_current_admin)):
+async def get_analytics(
+    admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
     """
     Returns real-time platform metrics: revenue, student enrollments, and audio streams.
     """
-    return admin_service.get_analytics()
+    return await admin_service.get_analytics(db=db)
 
 
 @admin_router.put("/site-config", summary="Update site configuration")
@@ -680,6 +684,15 @@ async def upload_media(
                     )
                 buffer.write(chunk)
         upload_success = True
+
+        # Upload to Cloud Object Storage (S3 / MinIO) or preserve in local uploads
+        content_type = file.content_type or "application/octet-stream"
+        with open(dest_path, "rb") as saved_f:
+            file_url = storage_service.upload_file_obj(
+                file_obj=saved_f,
+                filename=safe_name,
+                content_type=content_type,
+            )
     except AppException:
         raise
     except Exception as exc:
@@ -697,7 +710,7 @@ async def upload_media(
 
     return {
         "success": True,
-        "file_url": f"/static/uploads/{safe_name}",
+        "file_url": file_url,
         "filename": safe_name,
         "original_filename": file.filename,
     }

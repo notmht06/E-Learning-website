@@ -61,8 +61,8 @@ export function CourseCatalogBento({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
-              [ ARCHIVE OF RATIONAL SCIENCES ]
+            <span className="text-xs font-medium tracking-wide text-[#8A532B] dark:text-[#C58B43] block">
+              {dict.courses_section_badge || 'آرشیو دروس و علوم عقلی'}
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
               {dict.courses_section_title || dict.courses_section_badge}

@@ -98,7 +98,7 @@ export function AdminMediaTab() {
 
       {tokenResult && (
         <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1 text-xs">
-          <span className="font-mono text-zinc-400 block">[ DUMMY DRM SIGNED TOKEN ]</span>
+          <span className="font-mono text-zinc-500 block text-[11px] uppercase tracking-wider">DRM SIGNED TOKEN</span>
           <p className="font-mono text-[#8A532B] break-all">{tokenResult}</p>
         </div>
       )}

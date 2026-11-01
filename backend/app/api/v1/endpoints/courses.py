@@ -22,11 +22,12 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[CourseDetailSchema], summary="List all audio courses")
-async def list_courses():
+async def list_courses(db: AsyncSession = Depends(get_db)):
     """
     Retrieves all available philosophical and seminary lecture series with their syllabus.
+    Directly backed by database SSOT with Redis caching.
     """
-    return course_service.get_all_courses()
+    return await course_service.get_all_courses_async(db=db)
 
 
 @router.get("/site-config", summary="Get public dynamic site configuration")
@@ -89,9 +90,10 @@ async def toggle_course_favorite(
 async def get_course(course_id: str, db: AsyncSession = Depends(get_db)):
     """
     Retrieves in-depth course information, syllabus lessons, and streaming endpoints.
+    Directly backed by database SSOT with Redis caching.
     """
     try:
-        return course_service.get_course_by_id(course_id)
+        return await course_service.get_course_by_id_async(course_id=course_id, db=db)
     except Exception:
         db_c = await course_service.get_course_from_db_tx(db, course_id)
         if db_c:

@@ -130,7 +130,7 @@ export function BentoHero({}: BentoHeroProps) {
           {/* Pillar 1 */}
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
-              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] tabular-nums ${numFont}`}>
                 {siteConfig?.stat_sessions ? `${toLocale(siteConfig.stat_sessions)}+` : dict.hero_stat_1_num}
               </span>
               <Layers className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
@@ -146,7 +146,7 @@ export function BentoHero({}: BentoHeroProps) {
           {/* Pillar 2 */}
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
-              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] tabular-nums ${numFont}`}>
                 {siteConfig?.stat_books ? toLocale(siteConfig.stat_books) : dict.hero_stat_2_num}
               </span>
               <Compass className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />
@@ -162,7 +162,7 @@ export function BentoHero({}: BentoHeroProps) {
           {/* Pillar 3 */}
           <div className="p-3.5 sm:p-4 rounded-2xl bg-white/70 dark:bg-[#141518]/70 border border-[#E6E1D8] dark:border-[#27282D] space-y-1">
             <div className="flex items-center gap-2">
-              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] ${numFont}`}>
+              <span className={`text-lg sm:text-xl font-bold text-[#8A532B] dark:text-[#C58B43] tabular-nums ${numFont}`}>
                 {siteConfig?.stat_students ? `${toLocale(siteConfig.stat_students)}+` : dict.hero_stat_3_num}
               </span>
               <CheckCircle2 className="w-4 h-4 text-[#8A532B]/60 dark:text-[#C58B43]/60" />

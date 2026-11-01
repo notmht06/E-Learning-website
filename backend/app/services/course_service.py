@@ -17,6 +17,56 @@ from backend.app.schemas.admin import to_chapter_dict
 logger = logging.getLogger("platform.course_service")
 
 
+def _db_course_to_dict(c: Any) -> Dict[str, Any]:
+    syllabus = []
+    if hasattr(c, "lessons") and c.lessons:
+        sorted_lessons = sorted(c.lessons, key=lambda l: l.session_number)
+        for l in sorted_lessons:
+            mins = l.duration_seconds // 60
+            secs = l.duration_seconds % 60
+            dur_str = f"{mins:02d}:{secs:02d}"
+            syllabus.append({
+                "id": l.session_number,
+                "title": l.title_fa,
+                "duration": dur_str,
+                "duration_sec": l.duration_seconds,
+                "is_preview": bool(l.is_free_sample),
+                "audio_stream_url": l.audio_url or "/audio/sample_lecture.wav",
+                "media_type": "hybrid",
+            })
+
+    if not syllabus and hasattr(c, "id"):
+        for mem_c in course_service.courses:
+            if mem_c.get("id") == c.id or course_service.COURSE_ID_ALIASES.get(c.id) == mem_c.get("id"):
+                syllabus = mem_c.get("syllabus", [])
+                break
+
+    return {
+        "id": c.id,
+        "title": c.title_fa,
+        "slug": c.slug,
+        "instructor": c.author_name or "حجت الاسلام دکتر زنجیر زن حسینی",
+        "level": c.level or "متوسط",
+        "hours": f"{c.total_duration_hours} ساعت",
+        "sessions_count": len(syllabus),
+        "rating": 5.0,
+        "students_count": c.enrolled_count or 0,
+        "original_price": "۰",
+        "price": "رایگان",
+        "discount_percent": 0,
+        "badge": "دوره رسمی",
+        "thumbnail": c.cover_image or "/images/ostad_zanjirzan.jpg",
+        "media_type": "hybrid",
+        "description": c.desc_fa or "",
+        "tags": ["حکمت", "فلسفه اسلامی"],
+        "syllabus": syllabus,
+        "course_type": c.course_type or "offline",
+        "skyroom_url": c.skyroom_url,
+        "schedule": c.schedule,
+        "capacity": c.capacity or 30,
+    }
+
+
 class CourseService:
     def __init__(self):
         self.courses: List[Dict[str, Any]] = [
@@ -202,6 +252,29 @@ class CourseService:
         """Returns all available courses."""
         return self.courses
 
+    async def get_all_courses_async(self, db: Optional[AsyncSession] = None) -> List[Dict[str, Any]]:
+        """
+        Retrieves all courses from database (SSOT) with Redis caching.
+        Falls back to in-memory catalog if database contains no courses or is not supplied.
+        """
+        from backend.app.core.redis_client import redis_client
+        cached = await redis_client.get_json("catalog:courses:all")
+        if cached and isinstance(cached, list) and len(cached) > 0:
+            return cached
+
+        if db is not None:
+            stmt = select(Course).options(selectinload(Course.lessons)).order_by(Course.created_at.desc())
+            res = await db.execute(stmt)
+            db_courses = res.scalars().all()
+            if db_courses:
+                result = [_db_course_to_dict(c) for c in db_courses]
+                await redis_client.set_json("catalog:courses:all", result, expire_seconds=300)
+                return result
+
+        result = self.get_all_courses()
+        await redis_client.set_json("catalog:courses:all", result, expire_seconds=300)
+        return result
+
     def get_course_by_id(self, course_id: str) -> Dict[str, Any]:
         """Retrieves a single course by its unique ID or canonical alias."""
         for c in self.courses:
@@ -213,6 +286,47 @@ class CourseService:
                 if c["id"] == aliased_id:
                     return {**c, "id": course_id}
         raise EntityNotFoundException(entity="Course", identifier=course_id)
+
+    async def get_course_by_id_async(self, course_id: str, db: Optional[AsyncSession] = None) -> Dict[str, Any]:
+        """
+        Retrieves course from database (SSOT) or memory with fallback and caching.
+        """
+        from backend.app.core.redis_client import redis_client
+        cache_key = f"catalog:course:{course_id}"
+        cached = await redis_client.get_json(cache_key)
+        if cached and isinstance(cached, dict):
+            return cached
+
+        if db is not None:
+            stmt = select(Course).options(selectinload(Course.lessons)).where(Course.id == course_id)
+            res = await db.execute(stmt)
+            c = res.scalar_one_or_none()
+            if not c:
+                aliased_id = self.COURSE_ID_ALIASES.get(course_id)
+                if aliased_id:
+                    stmt = select(Course).options(selectinload(Course.lessons)).where(Course.id == aliased_id)
+                    res = await db.execute(stmt)
+                    c = res.scalar_one_or_none()
+            if not c:
+                stmt = select(Course).options(selectinload(Course.lessons)).where(Course.slug == course_id)
+                res = await db.execute(stmt)
+                c = res.scalar_one_or_none()
+
+            if c:
+                data = _db_course_to_dict(c)
+                await redis_client.set_json(cache_key, data, expire_seconds=300)
+                return data
+
+        res = self.get_course_by_id(course_id)
+        await redis_client.set_json(cache_key, res, expire_seconds=300)
+        return res
+
+    async def invalidate_courses_cache(self, course_id: Optional[str] = None) -> None:
+        """Invalidates Redis cache for catalog and specific courses."""
+        from backend.app.core.redis_client import redis_client
+        await redis_client.delete("catalog:courses:all")
+        if course_id:
+            await redis_client.delete(f"catalog:course:{course_id}")
 
     def sync_progress(
         self,

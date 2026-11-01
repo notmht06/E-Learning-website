@@ -34,6 +34,27 @@ services:
     networks:
       - hikmat_net
 
+  minio:
+    image: minio/minio:RELEASE.2024-05-10T01-41-38Z
+    container_name: hayat-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minio_admin_user}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minio_secure_pass_2026}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hikmat_net
+
   backend:
     build:
       context: .
@@ -48,6 +69,11 @@ services:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
       SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
       REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://minio:9000}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin_user}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_pass_2026}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-zanjirzan-media}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL:-http://localhost:9000/zanjirzan-media}
     volumes:
       - uploads_data:/app/backend/app/static/uploads
     depends_on:
@@ -74,6 +100,11 @@ services:
       ENVIRONMENT: production
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-hikmat_user}:${POSTGRES_PASSWORD:-hikmat_strong_pass_2026}@postgres:5432/${POSTGRES_DB:-hayat_db}
       REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://minio:9000}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin_user}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_pass_2026}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-zanjirzan-media}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL:-http://localhost:9000/zanjirzan-media}
     volumes:
       - uploads_data:/app/backend/app/static/uploads
     depends_on:
@@ -123,6 +154,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  minio_data:
   uploads_data:
   caddy_data:
   caddy_config:
