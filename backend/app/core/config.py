@@ -53,7 +53,7 @@ class Settings(BaseModel):
     AI_MIN_SIMILARITY_THRESHOLD: float = float(os.getenv("AI_MIN_SIMILARITY_THRESHOLD", "0.10"))
 
     # Media Upload Settings
-    MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "50"))
+    MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "500"))
 
     # Cloud Object Storage (S3 / MinIO / ArvanCloud S3)
     S3_ENDPOINT_URL: Optional[str] = os.getenv("S3_ENDPOINT_URL")

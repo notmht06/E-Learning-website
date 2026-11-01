@@ -641,7 +641,7 @@ async def update_order_status(
 
 # --- Media File Upload ---
 
-ALLOWED_MEDIA_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".jpg", ".jpeg", ".png", ".webp", ".pdf"}
+ALLOWED_MEDIA_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".webm", ".mkv", ".mov", ".jpg", ".jpeg", ".png", ".webp", ".pdf"}
 
 
 @admin_router.post("/upload", summary="Upload media file (audio/cover image/PDF)")

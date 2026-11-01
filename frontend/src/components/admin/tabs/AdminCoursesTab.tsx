@@ -1,23 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
-  Headphones,
   Plus,
   Search,
   Trash2,
   Edit,
-  Radio,
-  Clock,
-  ExternalLink,
-  CheckCircle2,
   X,
   Upload,
+  Image as ImageIcon,
+  FileVideo,
+  FileAudio,
+  CheckCircle2,
+  RotateCw,
 } from 'lucide-react';
 import { useData, AudioChapter } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { AudioCourse, coursesDatabase } from '@/lib/data';
 import { AudioUploaderModal } from '@/components/AudioUploaderModal';
+import { apiClient } from '@/services/apiClient';
 
 export function AdminCoursesTab() {
   const {
@@ -26,7 +27,6 @@ export function AdminCoursesTab() {
     updateCourse,
     deleteCourse,
     addEpisode,
-    updateEpisode,
     deleteEpisode,
     categories,
   } = useData();
@@ -34,50 +34,26 @@ export function AdminCoursesTab() {
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isAddCourseModalOpen, setIsAddCourseModalOpen] = useState(false);
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
   const [selectedCourseForStudio, setSelectedCourseForStudio] = useState<string | null>(null);
-  const [isAudioUploaderOpen, setIsAudioUploaderOpen] = useState(false);
+  const [isMediaUploaderOpen, setIsMediaUploaderOpen] = useState(false);
 
-  // Async submission & loading states
   const [isSubmittingCourse, setIsSubmittingCourse] = useState(false);
-  const [isSubmittingEpisode, setIsSubmittingEpisode] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
   const [deletingEpisodeId, setDeletingEpisodeId] = useState<number | null>(null);
 
-  // New Course State
-  const [newTitle, setNewTitle] = useState('');
-  const [newCategory, setNewCategory] = useState('حکمت متعالیه');
-  const [newLevel, setNewLevel] = useState('سطح خارج و تخصصی');
-  const [newPrice, setNewPrice] = useState('رایگان پژوهشی');
-  const [newType, setNewType] = useState<'offline' | 'online'>('offline');
-  const [newDesc, setNewDesc] = useState('');
-
-  // Edit Course State
-  const [editingCourse, setEditingCourse] = useState<AudioCourse | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editCategory, setEditCategory] = useState('حکمت متعالیه');
-  const [editLevel, setEditLevel] = useState('سطح خارج و تخصصی');
-  const [editPrice, setEditPrice] = useState('رایگان پژوهشی');
-  const [editType, setEditType] = useState<'offline' | 'online'>('offline');
-  const [editCapacity, setEditCapacity] = useState(30);
-  const [editSchedule, setEditSchedule] = useState('');
-  const [editSkyroomUrl, setEditSkyroomUrl] = useState('');
-  const [editTelegramUrl, setEditTelegramUrl] = useState('');
-  const [editThumbnail, setEditThumbnail] = useState('');
-  const [editDesc, setEditDesc] = useState('');
-
-  // New Chapter State inside Studio
-  const [newEpTitle, setNewEpTitle] = useState('');
-  const [newEpDuration, setNewEpDuration] = useState('۴۵:۰۰');
-  const [newEpAudioUrl, setNewEpAudioUrl] = useState('');
-  const [newEpIsFree, setNewEpIsFree] = useState(false);
-
-  // Edit Chapter State inside Studio
-  const [editingEpisode, setEditingEpisode] = useState<AudioChapter | null>(null);
-  const [editEpTitle, setEditEpTitle] = useState('');
-  const [editEpDuration, setEditEpDuration] = useState('۴۵:۰۰');
-  const [editEpAudioUrl, setEditEpAudioUrl] = useState('');
-  const [editEpIsFree, setEditEpIsFree] = useState(false);
+  // Course Form State (Create & Edit)
+  const [formTitle, setFormTitle] = useState('');
+  const [formCategory, setFormCategory] = useState('فلسفه');
+  const [formLevel, setFormLevel] = useState('سطوح عالی و خارج');
+  const [formPrice, setFormPrice] = useState('رایگان');
+  const [formType, setFormType] = useState<'offline' | 'online'>('offline');
+  const [formMediaType, setFormMediaType] = useState<'video' | 'audio' | 'hybrid'>('hybrid');
+  const [formThumbnail, setFormThumbnail] = useState('/images/ostad_zanjirzan.jpg');
+  const [formDesc, setFormDesc] = useState('');
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const coursesList = Object.values(courses).filter((c) => {
     const matchesSearch = !search || c.title_fa.includes(search);
@@ -85,153 +61,110 @@ export function AdminCoursesTab() {
     return matchesSearch && matchesCat;
   });
 
-  const handleCreateCourse = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim() || isSubmittingCourse) return;
+  const openCreateCourseModal = () => {
+    setEditingCourseId(null);
+    setFormTitle('');
+    setFormCategory('فلسفه');
+    setFormLevel('سطوح عالی و خارج');
+    setFormPrice('رایگان');
+    setFormType('offline');
+    setFormMediaType('hybrid');
+    setFormThumbnail('/images/ostad_zanjirzan.jpg');
+    setFormDesc('');
+    setIsCourseModalOpen(true);
+  };
 
+  const openEditCourseModal = (course: AudioCourse) => {
+    setEditingCourseId(course.id);
+    setFormTitle(course.title_fa);
+    setFormCategory(course.subject || 'فلسفه');
+    setFormLevel(course.level_fa || 'سطوح عالی و خارج');
+    setFormPrice(course.price_fa || 'رایگان');
+    setFormType(course.course_type || 'offline');
+    setFormMediaType(course.media_type || 'hybrid');
+    setFormThumbnail(course.thumbnail || '/images/ostad_zanjirzan.jpg');
+    setFormDesc(course.desc_fa || '');
+    setIsCourseModalOpen(true);
+  };
+
+  const handleCoverFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingCover(true);
+    try {
+      const res = await apiClient.admin.uploadMedia(file);
+      setFormThumbnail(res.file_url);
+    } catch (err) {
+      console.error('Cover upload error:', err);
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
+  const handleSaveCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formTitle.trim() || isSubmittingCourse) return;
     setIsSubmittingCourse(true);
-    const id = `course-${Date.now()}`;
-    const baseCourse = coursesDatabase['course1'] || Object.values(coursesDatabase)[0];
-    const newCourse: AudioCourse = {
-      ...baseCourse,
-      id,
-      title_fa: newTitle,
-      title_ar: newTitle,
-      title_en: newTitle,
-      instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
-      instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
-      instructor_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
-      subject: newCategory,
-      level_fa: newLevel,
-      level_ar: 'تخصصي',
-      level_en: 'Advanced',
-      price_fa: newPrice,
-      price_ar: newPrice,
-      price_en: 'Free',
-      course_type: newType,
-      desc_fa: newDesc || `درس‌گفتار استودیویی تدریس‌شده توسط حجت الاسلام دکتر زنجیر زن حسینی در شاخه ${newCategory}.`,
-      duration_fa: '۴۵ ساعت',
-      duration_ar: '٤٥ ساعة',
-      duration_en: '45 Hours',
-      episodes_count: 1,
-      thumbnail: '/images/ostad_zanjirzan.jpg',
-      chapters: [
-        {
-          id: 1,
-          title_fa: 'مدخل و مقدمات اجتهادی',
-          duration: '۴۵:۰۰',
-          isFreePreview: true,
-        },
-      ],
-    };
 
     try {
-      await addCourse(newCourse);
-      setIsAddCourseModalOpen(false);
-      setNewTitle('');
-      setNewDesc('');
+      if (editingCourseId && courses[editingCourseId]) {
+        await updateCourse(editingCourseId, {
+          title_fa: formTitle.trim(),
+          title_ar: formTitle.trim(),
+          title_en: formTitle.trim(),
+          subject: formCategory,
+          level_fa: formLevel,
+          price_fa: formPrice,
+          course_type: formType,
+          media_type: formMediaType,
+          thumbnail: formThumbnail,
+          desc_fa: formDesc,
+        });
+      } else {
+        const id = `course-${Date.now()}`;
+        const baseCourse = Object.values(coursesDatabase)[0];
+        const newCourse: AudioCourse = {
+          ...baseCourse,
+          id,
+          title_fa: formTitle.trim(),
+          title_ar: formTitle.trim(),
+          title_en: formTitle.trim(),
+          instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
+          instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
+          instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
+          subject: formCategory,
+          level_fa: formLevel,
+          level_ar: formLevel,
+          level_en: 'Advanced',
+          price_fa: formPrice,
+          price_ar: formPrice,
+          price_en: 'Free',
+          course_type: formType,
+          media_type: formMediaType,
+          thumbnail: formThumbnail,
+          desc_fa: formDesc || `درسگفتار تخصصی در شاخه ${formCategory}.`,
+          duration_fa: '۲۰ ساعت',
+          duration_ar: '٢٠ ساعة',
+          duration_en: '20 Hours',
+          episodes_count: 1,
+          chapters: [
+            {
+              id: 1,
+              title_fa: 'جلسه اول: مدخل و آشنایی با مباحث دوره',
+              duration: '۴۵:۰۰',
+              isFreePreview: true,
+              audioUrl: '/audio/sample_lecture.wav',
+              media_type: formMediaType,
+            },
+          ],
+        };
+        await addCourse(newCourse);
+      }
+      setIsCourseModalOpen(false);
     } catch (err) {
-      console.warn('Failed to add course in AdminCoursesTab:', err);
+      console.warn('Course save error:', err);
     } finally {
       setIsSubmittingCourse(false);
-    }
-  };
-
-  const handleAddEpisode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedCourseForStudio || !newEpTitle.trim() || isSubmittingEpisode) return;
-
-    setIsSubmittingEpisode(true);
-    const course = courses[selectedCourseForStudio];
-    const newId = (course?.chapters?.length || 0) + 1;
-    const ch: AudioChapter = {
-      id: newId,
-      title_fa: newEpTitle,
-      duration: newEpDuration,
-      audioUrl: newEpAudioUrl || undefined,
-      isFreePreview: newEpIsFree,
-    };
-
-    try {
-      await addEpisode(selectedCourseForStudio, ch);
-      setNewEpTitle('');
-      setNewEpAudioUrl('');
-    } catch (err) {
-      console.warn('Failed to add episode in AdminCoursesTab:', err);
-    } finally {
-      setIsSubmittingEpisode(false);
-    }
-  };
-
-  const handleOpenEditCourse = (c: AudioCourse) => {
-    setEditingCourse(c);
-    setEditTitle(c.title_fa || '');
-    setEditCategory(c.subject || 'حکمت متعالیه');
-    setEditLevel(c.level_fa || 'سطح خارج و تخصصی');
-    setEditPrice(c.price_fa || 'رایگان پژوهشی');
-    setEditType((c.course_type as any) || 'offline');
-    setEditCapacity((c as any).capacity || 30);
-    setEditSchedule((c as any).schedule || '');
-    setEditSkyroomUrl((c as any).skyroom_url || '');
-    setEditTelegramUrl((c as any).telegram_url || '');
-    setEditThumbnail(c.thumbnail || '/images/ostad_zanjirzan.jpg');
-    setEditDesc(c.desc_fa || '');
-  };
-
-  const handleSaveEditCourse = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingCourse || !editTitle.trim() || isSubmittingCourse) return;
-
-    try {
-      setIsSubmittingCourse(true);
-      await updateCourse(editingCourse.id, {
-        title_fa: editTitle,
-        title_ar: editTitle,
-        title_en: editTitle,
-        subject: editCategory,
-        level_fa: editLevel,
-        price_fa: editPrice,
-        course_type: editType,
-        capacity: Number(editCapacity) || 30,
-        schedule: editSchedule,
-        skyroom_url: editSkyroomUrl,
-        telegram_url: editTelegramUrl,
-        thumbnail: editThumbnail,
-        desc_fa: editDesc,
-      } as any);
-      setEditingCourse(null);
-    } catch (err) {
-      console.warn('Failed to update course in AdminCoursesTab:', err);
-    } finally {
-      setIsSubmittingCourse(false);
-    }
-  };
-
-  const handleOpenEditEpisode = (ch: AudioChapter) => {
-    setEditingEpisode(ch);
-    setEditEpTitle(ch.title_fa || '');
-    setEditEpDuration(ch.duration || '۴۵:۰۰');
-    setEditEpAudioUrl(ch.audioUrl || '');
-    setEditEpIsFree(Boolean(ch.isFreePreview));
-  };
-
-  const handleSaveEditEpisode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedCourseForStudio || !editingEpisode || !editEpTitle.trim() || isSubmittingEpisode) return;
-
-    try {
-      setIsSubmittingEpisode(true);
-      await updateEpisode(selectedCourseForStudio, editingEpisode.id, {
-        title_fa: editEpTitle,
-        duration: editEpDuration,
-        audioUrl: editEpAudioUrl,
-        isFreePreview: editEpIsFree,
-      });
-      setEditingEpisode(null);
-    } catch (err) {
-      console.warn('Failed to update episode in AdminCoursesTab:', err);
-    } finally {
-      setIsSubmittingEpisode(false);
     }
   };
 
@@ -268,8 +201,9 @@ export function AdminCoursesTab() {
         </div>
 
         <button
-          onClick={() => setIsAddCourseModalOpen(true)}
-          className="w-full sm:w-auto px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+          type="button"
+          onClick={openCreateCourseModal}
+          className="w-full sm:w-auto px-4 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{dict.admin_courses_btn_add}</span>
@@ -294,15 +228,24 @@ export function AdminCoursesTab() {
               {coursesList.map((course) => (
                 <tr key={course.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition">
                   <td className="py-3 px-4 font-bold text-zinc-900 dark:text-zinc-100">
-                    {course.title_fa}
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={course.thumbnail || '/images/ostad_zanjirzan.jpg'}
+                        alt={course.title_fa}
+                        className="w-10 h-10 rounded-lg object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
+                      />
+                      <span className="line-clamp-1">{course.title_fa}</span>
+                    </div>
                   </td>
                   <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400 font-medium">
                     <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                      {course.subject || 'حکمت'}
+                      {course.subject || 'فلسفه'}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400">
-                    {course.course_type === 'online' ? dict.admin_courses_type_online : dict.admin_courses_type_offline}
+                    {course.course_type === 'online'
+                      ? dict.admin_courses_type_online
+                      : dict.admin_courses_type_offline}
                   </td>
                   <td className="py-3 px-4 font-num text-zinc-600 dark:text-zinc-400">
                     {toLocale(course.chapters?.length || 0)} {dict.admin_courses_unit_session}
@@ -313,33 +256,34 @@ export function AdminCoursesTab() {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
                         onClick={() => setSelectedCourseForStudio(course.id)}
-                        className="px-3 py-1 rounded-lg bg-[#8A532B]/10 hover:bg-[#8A532B]/20 text-[#8A532B] text-[11px] font-medium transition cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-[#8A532B] text-white text-[11px] font-bold transition cursor-pointer"
                       >
-                        {dict.admin_courses_btn_studio}
+                        {dict.admin_courses_btn_studio} (ویدیو/صوت)
                       </button>
                       <button
-                        onClick={() => handleOpenEditCourse(course)}
-                        className="p-1 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                        title={dict.admin_courses_btn_edit}
+                        type="button"
+                        onClick={() => openEditCourseModal(course)}
+                        className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-[#8A532B] transition cursor-pointer"
+                        title="ویرایش دوره و کاور"
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
+                        type="button"
                         disabled={deletingCourseId === course.id}
                         onClick={async () => {
                           if (confirm(dict.admin_courses_confirm_delete)) {
                             setDeletingCourseId(course.id);
                             try {
                               await deleteCourse(course.id);
-                            } catch (err) {
-                              console.warn('Failed to delete course in AdminCoursesTab:', err);
                             } finally {
                               setDeletingCourseId(null);
                             }
                           }
                         }}
-                        className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 disabled:opacity-50 transition cursor-pointer"
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 disabled:opacity-50 transition cursor-pointer"
                         title={dict.admin_courses_btn_delete_tooltip}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -353,20 +297,21 @@ export function AdminCoursesTab() {
         </div>
       </div>
 
-      {/* Episode Studio Modal / Drawer */}
+      {/* Episode Studio Modal (Manage & Upload Video/Audio Sessions) */}
       {activeStudioCourse && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 text-start shadow-xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 text-start shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
               <div>
                 <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                   {dict.admin_courses_studio_title} {activeStudioCourse.title_fa}
                 </h3>
-                <p className="text-xs text-zinc-500">
-                  {dict.admin_courses_studio_desc}
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  آپلود و مدیریت جلسات ویدیویی (MP4) و صوتی (MP3/WAV) دوره
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedCourseForStudio(null)}
                 className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
               >
@@ -374,130 +319,138 @@ export function AdminCoursesTab() {
               </button>
             </div>
 
-            {/* Existing Chapters List */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-mono text-zinc-400">{dict.admin_courses_studio_episodes_list}</h4>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {activeStudioCourse.chapters?.map((ch, idx) => (
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                {dict.admin_courses_studio_episodes_list} ({toLocale(activeStudioCourse.chapters?.length || 0)})
+              </h4>
+              <button
+                type="button"
+                onClick={() => setIsMediaUploaderOpen(true)}
+                className="px-4 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>+ آپلود جلسه جدید (ویدیو یا صوت)</span>
+              </button>
+            </div>
+
+            <div className="space-y-2.5 max-h-80 overflow-y-auto pe-1">
+              {activeStudioCourse.chapters?.map((ch, idx) => {
+                const hasVideo = Boolean(ch.videoUrl || ch.media_type === 'video');
+                return (
                   <div
                     key={ch.id}
-                    className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs"
+                    className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <span className="font-mono text-zinc-400">[{toLocale(idx + 1)}]</span>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{ch.title_fa}</span>
+                      {hasVideo ? (
+                        <FileVideo className="w-4 h-4 text-[#8A532B] shrink-0" />
+                      ) : (
+                        <FileAudio className="w-4 h-4 text-[#8A532B] shrink-0" />
+                      )}
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                        {ch.title_fa}
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-zinc-200/70 dark:bg-zinc-800 text-[10px] font-bold">
+                        {hasVideo ? 'ویدیو' : 'صوت'}
+                      </span>
                       {ch.isFreePreview && (
-                        <span className="px-2 py-0.5 rounded bg-[#8A532B]/10 text-[#8A532B] text-[11px] font-mono">
-                          FREE
+                        <span className="px-2 py-0.5 rounded bg-[#8A532B]/15 text-[#8A532B] text-[10px] font-bold">
+                          رایگان
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 shrink-0">
                       <span className="font-num text-zinc-500">{ch.duration}</span>
                       <button
-                        onClick={() => handleOpenEditEpisode(ch)}
-                        className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer"
-                        title={dict.admin_courses_studio_edit_ep_tooltip}
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                      </button>
-                      <button
+                        type="button"
                         disabled={deletingEpisodeId === ch.id}
                         onClick={async () => {
                           setDeletingEpisodeId(ch.id);
                           try {
                             await deleteEpisode(activeStudioCourse.id, ch.id);
-                          } catch (err) {
-                            console.warn('Failed to delete episode in AdminCoursesTab:', err);
                           } finally {
                             setDeletingEpisodeId(null);
                           }
                         }}
-                        className="text-[#8A532B] hover:text-[#8A532B] disabled:opacity-50 cursor-pointer"
+                        className="text-rose-600 hover:text-rose-700 disabled:opacity-50 cursor-pointer"
                         title={dict.admin_courses_studio_delete_ep_tooltip}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
-
-            {/* Add New Episode Form */}
-            <form onSubmit={handleAddEpisode} className="space-y-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-              <h4 className="text-xs font-mono text-zinc-400">{dict.admin_courses_studio_add_ep_title}</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder={dict.admin_courses_studio_ep_title_placeholder}
-                  value={newEpTitle}
-                  onChange={(e) => setNewEpTitle(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder={dict.admin_courses_studio_ep_duration_placeholder}
-                  value={newEpDuration}
-                  onChange={(e) => setNewEpDuration(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="freePreview"
-                  checked={newEpIsFree}
-                  onChange={(e) => setNewEpIsFree(e.target.checked)}
-                  className="rounded border-zinc-300 text-[#8A532B] focus:ring-[#8A532B]"
-                />
-                <label htmlFor="freePreview" className="text-xs text-zinc-600 dark:text-zinc-400">
-                  {dict.admin_courses_studio_free_preview_label}
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAudioUploaderOpen(true)}
-                  className="px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-2 cursor-pointer"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{dict.admin_courses_studio_btn_upload_audio}</span>
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={isSubmittingEpisode}
-                  className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium transition cursor-pointer"
-                >
-                  {isSubmittingEpisode ? dict.admin_courses_submitting : dict.admin_courses_studio_btn_submit_ep}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
 
-      {/* Add Course Modal */}
-      {isAddCourseModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 text-start shadow-xl">
+      {/* Create / Edit Course Modal (With Real Cover Image Upload!) */}
+      {isCourseModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 space-y-4 text-start shadow-2xl max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                {dict.admin_courses_modal_title}
+                {editingCourseId ? 'ویرایش مشخصات و کاور دوره' : dict.admin_courses_modal_title}
               </h3>
               <button
-                onClick={() => setIsAddCourseModalOpen(false)}
-                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
+                type="button"
+                onClick={() => setIsCourseModalOpen(false)}
+                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 flex items-center justify-center cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCourse} className="space-y-3">
+            <form onSubmit={handleSaveCourse} className="space-y-4">
+              {/* Course Cover Image Uploader */}
+              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-[#8A532B]" />
+                    <span>تصویر کاور دوره:</span>
+                  </label>
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    disabled={isUploadingCover}
+                    className="px-3 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {isUploadingCover ? (
+                      <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5" />
+                    )}
+                    <span>{isUploadingCover ? 'در حال آپلود...' : 'آپلود عکس کاور از کامپیوتر'}</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <img
+                    src={formThumbnail}
+                    alt="Course Cover Preview"
+                    className="w-24 h-16 rounded-xl object-cover border border-zinc-300 dark:border-zinc-700 shrink-0"
+                  />
+                  <input
+                    type="text"
+                    dir="ltr"
+                    value={formThumbnail}
+                    onChange={(e) => setFormThumbnail(e.target.value)}
+                    placeholder="/images/ostad_zanjirzan.jpg"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs font-mono"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
                   {dict.admin_courses_modal_field_title}
@@ -505,21 +458,21 @@ export function AdminCoursesTab() {
                 <input
                   type="text"
                   placeholder={dict.admin_courses_modal_title_placeholder}
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold outline-none focus:border-[#8A532B]"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
                     {dict.admin_courses_modal_field_subject}
                   </label>
                   <select
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
                   >
                     {categories.map((c) => (
@@ -535,12 +488,29 @@ export function AdminCoursesTab() {
                     {dict.admin_courses_modal_field_type}
                   </label>
                   <select
-                    value={newType}
-                    onChange={(e) => setNewType(e.target.value as any)}
+                    value={formType}
+                    onChange={(e) => setFormType(e.target.value as 'offline' | 'online')}
                     className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
                   >
                     <option value="offline">{dict.admin_courses_type_offline}</option>
                     <option value="online">{dict.admin_courses_type_online}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                    فرمت رسانه دوره
+                  </label>
+                  <select
+                    value={formMediaType}
+                    onChange={(e) =>
+                      setFormMediaType(e.target.value as 'video' | 'audio' | 'hybrid')
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
+                  >
+                    <option value="hybrid">ویدیو + صوت (ترکیبی)</option>
+                    <option value="video">دوره ویدیویی</option>
+                    <option value="audio">دوره صوتی</option>
                   </select>
                 </div>
               </div>
@@ -552,9 +522,9 @@ export function AdminCoursesTab() {
                 <input
                   type="text"
                   placeholder={dict.admin_courses_modal_price_placeholder}
-                  value={newPrice}
-                  onChange={(e) => setNewPrice(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  value={formPrice}
+                  onChange={(e) => setFormPrice(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
                 />
               </div>
 
@@ -565,26 +535,30 @@ export function AdminCoursesTab() {
                 <textarea
                   rows={3}
                   placeholder={dict.admin_courses_modal_desc_placeholder}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsAddCourseModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
+                  onClick={() => setIsCourseModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer"
                 >
                   {dict.admin_courses_modal_btn_cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingCourse}
-                  className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium"
+                  className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-bold cursor-pointer"
                 >
-                  {isSubmittingCourse ? dict.admin_courses_submitting : dict.admin_courses_modal_btn_submit}
+                  {isSubmittingCourse
+                    ? dict.admin_courses_submitting
+                    : editingCourseId
+                    ? 'ذخیره تغییرات دوره'
+                    : dict.admin_courses_modal_btn_submit}
                 </button>
               </div>
             </form>
@@ -592,282 +566,25 @@ export function AdminCoursesTab() {
         </div>
       )}
 
-      {/* Edit Course Modal */}
-      {editingCourse && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 text-start shadow-xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                {dict.admin_courses_modal_edit_title}
-              </h3>
-              <button
-                onClick={() => setEditingCourse(null)}
-                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEditCourse} className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_modal_field_title}
-                </label>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                    {dict.admin_courses_modal_field_subject}
-                  </label>
-                  <select
-                    value={editCategory}
-                    onChange={(e) => setEditCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.name_fa}>
-                        {c.name_fa}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                    {dict.admin_courses_modal_field_type}
-                  </label>
-                  <select
-                    value={editType}
-                    onChange={(e) => setEditType(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
-                  >
-                    <option value="offline">{dict.admin_courses_type_offline}</option>
-                    <option value="online">{dict.admin_courses_type_online}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                    {dict.admin_courses_modal_field_price}
-                  </label>
-                  <input
-                    type="text"
-                    value={editPrice}
-                    onChange={(e) => setEditPrice(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                    {dict.admin_courses_field_capacity}
-                  </label>
-                  <input
-                    type="number"
-                    value={editCapacity}
-                    onChange={(e) => setEditCapacity(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                  />
-                </div>
-              </div>
-
-              {editType === 'online' && (
-                <div className="space-y-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                  <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                      {dict.admin_courses_field_schedule}
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="مثلاً: دوشنبه‌ها ساعت ۱۶:۰۰"
-                      value={editSchedule}
-                      onChange={(e) => setEditSchedule(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                      {dict.admin_courses_field_skyroom}
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://www.skyroom.online/ch/zanjirzan/live"
-                      value={editSkyroomUrl}
-                      onChange={(e) => setEditSkyroomUrl(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono text-left"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_field_telegram}
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://t.me/zanjirzan_philosophy"
-                  value={editTelegramUrl}
-                  onChange={(e) => setEditTelegramUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono text-left"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_field_cover}
-                </label>
-                <input
-                  type="text"
-                  placeholder="/images/ostad_zanjirzan.jpg"
-                  value={editThumbnail}
-                  onChange={(e) => setEditThumbnail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_modal_field_desc}
-                </label>
-                <textarea
-                  rows={3}
-                  value={editDesc}
-                  onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingCourse(null)}
-                  className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
-                >
-                  {dict.admin_courses_modal_btn_cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingCourse}
-                  className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium"
-                >
-                  {isSubmittingCourse ? dict.admin_courses_submitting : dict.admin_courses_modal_btn_edit_submit}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Episode Modal */}
-      {editingEpisode && (
-        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 text-start shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                {dict.admin_courses_studio_edit_ep_title}
-              </h3>
-              <button
-                onClick={() => setEditingEpisode(null)}
-                className="w-7 h-7 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEditEpisode} className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_studio_ep_title_placeholder}
-                </label>
-                <input
-                  type="text"
-                  value={editEpTitle}
-                  onChange={(e) => setEditEpTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_studio_ep_duration_placeholder}
-                </label>
-                <input
-                  type="text"
-                  value={editEpDuration}
-                  onChange={(e) => setEditEpDuration(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_studio_field_audio_url}
-                </label>
-                <input
-                  type="text"
-                  value={editEpAudioUrl}
-                  onChange={(e) => setEditEpAudioUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono text-left"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="editFreePreview"
-                  checked={editEpIsFree}
-                  onChange={(e) => setEditEpIsFree(e.target.checked)}
-                  className="rounded border-zinc-300 text-[#8A532B] focus:ring-[#8A532B]"
-                />
-                <label htmlFor="editFreePreview" className="text-xs text-zinc-600 dark:text-zinc-400">
-                  {dict.admin_courses_studio_free_preview_label}
-                </label>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingEpisode(null)}
-                  className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400"
-                >
-                  {dict.admin_courses_modal_btn_cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingEpisode}
-                  className="px-4 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] disabled:opacity-50 text-white text-xs font-medium"
-                >
-                  {isSubmittingEpisode ? dict.admin_courses_submitting : dict.admin_courses_studio_btn_save_ep}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Audio Uploader Modal */}
-      {isAudioUploaderOpen && (
+      {/* Real Video + Audio Uploader Modal */}
+      {isMediaUploaderOpen && activeStudioCourse && (
         <AudioUploaderModal
-          isOpen={isAudioUploaderOpen}
-          courseTitle={selectedCourseForStudio ? courses[selectedCourseForStudio]?.title_fa || dict.admin_courses_studio_default_title : dict.admin_courses_studio_default_title}
-          onClose={() => setIsAudioUploaderOpen(false)}
-          onUploadSuccess={(data) => {
-            setNewEpTitle(data.title_fa);
-            setNewEpDuration(data.duration);
-            setNewEpAudioUrl(data.audioUrl);
-            setNewEpIsFree(data.isFreePreview);
-            setIsAudioUploaderOpen(false);
+          isOpen={isMediaUploaderOpen}
+          courseTitle={activeStudioCourse.title_fa}
+          onClose={() => setIsMediaUploaderOpen(false)}
+          onUploadSuccess={async (data) => {
+            const nextId = (activeStudioCourse.chapters?.length || 0) + 1;
+            const ch: AudioChapter = {
+              id: nextId,
+              title_fa: data.title_fa,
+              duration: data.duration,
+              isFreePreview: data.isFreePreview,
+              audioUrl: data.audioUrl,
+              videoUrl: data.videoUrl,
+              media_type: data.media_type || (data.videoUrl ? 'video' : 'audio'),
+            };
+            await addEpisode(activeStudioCourse.id, ch);
+            setIsMediaUploaderOpen(false);
           }}
         />
       )}

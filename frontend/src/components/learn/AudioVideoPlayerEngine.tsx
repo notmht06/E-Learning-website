@@ -96,7 +96,10 @@ export function AudioVideoPlayerEngine({
 
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [mediaMode, setMediaMode] = useState<'audio' | 'video'>('audio');
+  const [mediaMode, setMediaMode] = useState<'audio' | 'video'>(videoUrl ? 'video' : 'audio');
+  useEffect(() => {
+    if (videoUrl) setMediaMode('video');
+  }, [videoUrl]);
   const [drmToken, setDrmToken] = useState<string | null>(null);
   const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
   const [serverWatermark, setServerWatermark] = useState<string | null>(null);

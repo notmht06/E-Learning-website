@@ -62,6 +62,16 @@ const withPWA = require('@ducanh2912/next-pwa').default({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    const backendOrigin = process.env.BACKEND_INTERNAL_URL || 'http://127.0.0.1:8000';
+    return [
+      {
+        source: '/static/:path*',
+        destination: `${backendOrigin}/static/:path*`,
+      },
+    ];
+  },
+
   output: 'standalone',
   reactStrictMode: true,
   images: {
