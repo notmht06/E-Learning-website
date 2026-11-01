@@ -112,7 +112,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
 
 export default function UserDashboardPage() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const { currentLang, t, dict, localizeHref } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
@@ -122,6 +122,14 @@ export default function UserDashboardPage() {
   const langKey = currentLang === 'ar' || currentLang === 'en' ? currentLang : 'fa';
   const titles = tabLocalization[langKey];
   const labels = navLabels[langKey];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0C0D0E] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#8A532B] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (

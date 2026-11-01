@@ -133,7 +133,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, isLoading, logout } = useAuth();
   const { dict, currentLang, t, localizeHref } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
@@ -142,10 +142,18 @@ export default function AdminPage() {
   const labels = navLabels[langKey];
 
   React.useEffect(() => {
-    if (!user || !isAdmin) {
+    if (!isLoading && (!user || !isAdmin)) {
       router.push(localizeHref('/login'));
     }
-  }, [user, isAdmin, router, localizeHref]);
+  }, [user, isAdmin, isLoading, router, localizeHref]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0C0D0E] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#8A532B] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   // If user is not authenticated or not admin, show minimal access gate
   if (!user || !isAdmin) {
