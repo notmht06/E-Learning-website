@@ -38,16 +38,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="پایگاه علمی و معرفتی حجت الاسلام دکتر زنجیر زن حسینی",
+    title="Academic and Wisdom Platform of حجت الاسلام دکتر زنجیر زن حسینی",
     version=settings.VERSION,
     description="""
-## سامانه جامع مهندسی نشر آثار و دروس علمی حجت الاسلام دکتر زنجیر زن حسینی
+## Enterprise Scholarly Publishing and Audio Discourse Platform of حجت الاسلام دکتر زنجیر زن حسینی
 
-توسعه‌یافته بر اساس اصول مهندسی **backend-skill** و شامل ۴ موتور کیفیت:
-* **موتور امنیت (Security Guardian):** احراز هویت JWT، هشینگ کلمات عبور، و سپر استریم DRM با توکن‌های امضاشده.
-* **فرماندار سادگی (Simplicity Governor):** معماری ماژولار پایدار بر پایه SQLAlchemy و SQLite/PostgreSQL.
-* **موتور کارایی (Performance Engine):** ناهمگام (Async)، مدیریت چانک‌های صوتی با سرآیندهای Range و کشینگ بهینه.
-* **موتور پایداری (Reliability Engine):** مدیریت یکپارچه استثناها و پایش وضعیت سامانه.
+Architected adhering to core **backend-skill** engineering principles and 4 quality engines:
+* **Security Guardian:** JWT bearer authentication, argon2/bcrypt password hashing, and DRM-protected signed media stream tokens.
+* **Simplicity Governor:** Robust modular architecture powered by SQLAlchemy ORM with ACID transaction integrity.
+* **Performance Engine:** Pure async runtime, HTTP Range requests for seamless audio seeking, and low-latency caching.
+* **Reliability Engine:** Centralized AppException handling, structured observability, and system health telemetry.
     """,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
