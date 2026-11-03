@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Headphones,
-  BookOpen,
+  TrendingUp,
   BookMarked,
   Award,
   Play,
@@ -52,12 +52,12 @@ export function DashboardOverviewTab() {
       colorClass: 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/40 dark:text-[#C58B43]',
     },
     {
-      id: 'books_read',
+      id: 'study_progress',
       serial: '[ ۰۲ ]',
-      title: t('kpi_books_read', text.kpi_books_title),
-      value: `${toLocale(user?.purchasedBookIds?.length || 0)} ${currentLang === 'en' ? 'Book' : 'کتاب'}`,
-      sublabel: text.kpi_books_sub,
-      icon: BookOpen,
+      title: t('kpi_study_progress', text.kpi_progress_title),
+      value: `${toLocale(45)}٪`,
+      sublabel: text.kpi_progress_sub,
+      icon: TrendingUp,
       colorClass: 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/40 dark:text-[#C58B43]',
     },
     {
@@ -73,7 +73,7 @@ export function DashboardOverviewTab() {
       id: 'orders_count',
       serial: '[ ۰۴ ]',
       title: t('kpi_orders_count', text.kpi_orders_title),
-      value: `${toLocale(orders.length)} ${currentLang === 'en' ? 'Shipments' : 'مرسوله'}`,
+      value: `${toLocale(orders.length)} ${currentLang === 'en' ? 'Invoices' : 'فاکتور'}`,
       sublabel: text.kpi_orders_sub,
       icon: Award,
       colorClass: 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]',

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import {
-  ExternalLink,
+  FileText,
+  CheckCircle2,
 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -10,34 +11,25 @@ import { toLocaleDigits } from '@/lib/data';
 
 export function DashboardOrdersTab() {
   const { orders } = useData();
-  const { dict, currentLang } = useLanguage();
+  const { currentLang } = useLanguage();
 
-  const title = dict.ui_postal_orders_physical_books;
+  const title = currentLang === 'en'
+    ? 'Course Enrollment Invoices'
+    : currentLang === 'ar'
+    ? 'سجلات وفواتير التسجيل في الدورات'
+    : 'فاکتورها و سوابق ثبت‌نام دوره‌ها';
 
-  const subtitle = dict.ui_real_time_postal_tracking_via_national;
+  const subtitle = currentLang === 'en'
+    ? 'Official tuition payment receipts and course registrations history'
+    : currentLang === 'ar'
+    ? 'إيصالات السداد الرسمية وسجل الدورات المسجلة في الحساب'
+    : 'رسید پرداخت‌های رسمی و تاریخچه دوره‌های ثبت‌نام‌شده';
 
-  const colInvoice = dict.ui_invoice_id;
-  const colItem = dict.ui_item_title;
-  const colAmount = dict.ui_amount_paid;
-  const colStatus = dict.ui_delivery_status;
-  const colTracking = dict.ui_express_tracking_code;
-  const trackBtn = dict.ui_track;
-
-  const formatStatus = (status: string) => {
-    if (currentLang === 'en') {
-      if (status.includes('ارسال') || status.includes('پست')) return 'Dispatched to Postal Service';
-      if (status.includes('پردازش')) return 'Processing Order';
-      if (status.includes('تحویل')) return 'Delivered';
-      return status;
-    }
-    if (currentLang === 'ar') {
-      if (status.includes('ارسال') || status.includes('پست')) return 'تم التسليم للبريد السريع';
-      if (status.includes('پردازش')) return 'قيد التجهيز';
-      if (status.includes('تحویل')) return 'تم التسليم';
-      return status;
-    }
-    return status;
-  };
+  const colInvoice = currentLang === 'en' ? 'Invoice ID' : currentLang === 'ar' ? 'رقم الفاتورة' : 'شماره فاکتور';
+  const colItem = currentLang === 'en' ? 'Course Title' : currentLang === 'ar' ? 'عنوان الدورة' : 'عنوان دوره آموزشی';
+  const colAmount = currentLang === 'en' ? 'Amount Paid' : currentLang === 'ar' ? 'المبلغ المسدد' : 'مبلغ پرداختی';
+  const colStatus = currentLang === 'en' ? 'Status' : currentLang === 'ar' ? 'حالة التسجيل' : 'وضعیت ثبت‌نام';
+  const colDate = currentLang === 'en' ? 'Date' : currentLang === 'ar' ? 'التاريخ' : 'تاریخ ثبت';
 
   const formatTotal = (total: string) => {
     if (currentLang === 'en') {
@@ -54,14 +46,17 @@ export function DashboardOrdersTab() {
     return toLocaleDigits(total, 'fa');
   };
 
+  const courseOrders = orders.filter((o) => (o as any).itemType !== 'book');
+
   return (
     <div className="space-y-6 text-start">
       <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-            {title}
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
+            <span>{title}</span>
           </h2>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-500 mt-0.5">
             {subtitle}
           </p>
         </div>
@@ -76,36 +71,42 @@ export function DashboardOrdersTab() {
                 <th className="py-3 px-4 font-normal text-start">{colItem}</th>
                 <th className="py-3 px-4 font-normal text-start">{colAmount}</th>
                 <th className="py-3 px-4 font-normal text-start">{colStatus}</th>
-                <th className="py-3 px-4 font-normal text-start">{colTracking}</th>
+                <th className="py-3 px-4 font-normal text-start">{colDate}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-              {orders.map((ord) => (
-                <tr key={ord.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition">
-                  <td className="py-3 px-4 font-mono text-zinc-500">{toLocaleDigits(ord.id, currentLang)}</td>
-                  <td className="py-3 px-4 font-medium text-zinc-900 dark:text-zinc-100">{ord.item}</td>
-                  <td className="py-3 px-4 font-bold text-[#8A532B]">{formatTotal(ord.total)}</td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded text-[11px] bg-[#8A532B]/10 text-[#8A532B] font-medium">
-                      {formatStatus(ord.status)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-mono text-zinc-500">
-                    <div className="flex items-center gap-2">
-                      <span>{toLocaleDigits(ord.trackingCode, currentLang)}</span>
-                      <a
-                        href={`https://tracking.post.ir/?id=${ord.trackingCode}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#8A532B] hover:underline flex items-center gap-0.5 text-[11px]"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        <span>{trackBtn}</span>
-                      </a>
-                    </div>
+              {courseOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-zinc-400">
+                    {currentLang === 'en'
+                      ? 'No enrollment invoices found yet.'
+                      : currentLang === 'ar'
+                      ? 'لا توجد فواتير تسجيل حتى الآن.'
+                      : 'هنوز فاکتور ثبت‌نامی در سامانه ثبت نشده است.'}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                courseOrders.map((ord) => (
+                  <tr key={ord.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition">
+                    <td className="py-3 px-4 font-mono text-zinc-500">{toLocaleDigits(ord.id, currentLang)}</td>
+                    <td className="py-3 px-4 font-medium text-zinc-900 dark:text-zinc-100">{ord.item}</td>
+                    <td className="py-3 px-4 font-bold text-[#8A532B] dark:text-[#C58B43]">{formatTotal(ord.total)}</td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-medium">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>
+                          {currentLang === 'en'
+                            ? 'Enrollment Completed'
+                            : currentLang === 'ar'
+                            ? 'تم التسجيل بنجاح'
+                            : 'ثبت‌نام تکمیل شده'}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-zinc-500">{toLocaleDigits(ord.date || '۱۴۰۳', currentLang)}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

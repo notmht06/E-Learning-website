@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import {
   Compass,
   Headphones,
-  BookOpen,
   BookMarked,
   Package,
   Award,
@@ -21,7 +19,6 @@ import { ShellNavItem } from '@/components/shell/ShellSidebar';
 import {
   DashboardOverviewTab,
   DashboardCoursesTab,
-  DashboardBooksTab,
   DashboardNotesTab,
   DashboardOrdersTab,
   DashboardCertificatesTab,
@@ -29,16 +26,10 @@ import {
 } from '@/components/dashboard/tabs';
 import { CourseScopedAITutor } from '@/components/learn/CourseScopedAITutor';
 
-const BookReader3D = dynamic(
-  () => import('@/components/BookReader3D').then((mod) => mod.BookReader3D),
-  { ssr: false }
-);
-
 export type DashboardTab =
   | 'overview'
   | 'courses'
   | 'ai'
-  | 'books'
   | 'notes'
   | 'orders'
   | 'certificates'
@@ -49,9 +40,8 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     overview: 'پیشخوان پژوهشی دانش‌پژوه',
     courses: 'درس‌گفتارهای ثبت‌نام‌شده من',
     ai: 'حکمت‌یار دوره‌های دانش‌پژوه (AI)',
-    books: 'کتابخانه و رسالات فلسفی',
     notes: 'دفتر یادداشت و حاشیه‌نگاری دروس',
-    orders: 'سفارشات پستی و رهگیری مرسولات',
+    orders: 'فاکتورها و سوابق ثبت‌نام دوره‌ها',
     certificates: 'گواهی‌نامه‌های رسمی پایان دوره',
     security: 'امنیت حساب و دستگاه‌های متصل (DRM)',
   },
@@ -59,9 +49,8 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     overview: 'لوحة الباحث العلمي',
     courses: 'دوراتي ومحاضراتي المسجلة',
     ai: 'المساعد العلمي للدورات (AI)',
-    books: 'المكتبة والرسائل الفلسفية',
     notes: 'دفتر الملاحظات والحواشي الدراسية',
-    orders: 'الطلبات البريدية وتتبع الشحنات',
+    orders: 'فواتير وسجلات التسجيل في الدورات',
     certificates: 'شهادات إتمام الدورات الرسمية',
     security: 'الأمان وإدارة الأجهزة المتصلة',
   },
@@ -69,9 +58,8 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     overview: 'Student Scholarly Dashboard',
     courses: 'My Registered Lectures',
     ai: 'AI Scholarly Tutor',
-    books: 'Library & Philosophical Monographs',
     notes: 'Study Notes & Margin Commentary',
-    orders: 'Postal Orders & Tracking',
+    orders: 'Enrollment Records & Invoices',
     certificates: 'Official Academic Certificates',
     security: 'Account Security & Active Devices',
   },
@@ -82,9 +70,8 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     overview: 'پیشخوان پژوهشی',
     courses: 'دوره‌های من',
     ai: 'حکمت‌یار هوشمند (AI)',
-    books: 'کتابخانه و رسالات',
     notes: 'دفتر یادداشت',
-    orders: 'سفارشات پستی',
+    orders: 'فاکتورها و ثبت‌نام',
     certificates: 'گواهی‌نامه‌ها',
     security: 'امنیت و نشست‌ها',
   },
@@ -92,9 +79,8 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     overview: 'لوحة الباحث',
     courses: 'دوراتي',
     ai: 'المساعد الذكي (AI)',
-    books: 'المكتبة والرسائل',
     notes: 'دفتر الملاحظات',
-    orders: 'الطلبات البريدية',
+    orders: 'سجلات التسجيل',
     certificates: 'الشهادات',
     security: 'الأجهزة المتصلة',
   },
@@ -102,9 +88,8 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     overview: 'Research Workspace',
     courses: 'My Lectures',
     ai: 'AI Course Tutor',
-    books: 'Library & Books',
     notes: 'Notes & Margins',
-    orders: 'Postal Orders',
+    orders: 'Invoices',
     certificates: 'Certificates',
     security: 'Active Devices',
   },
@@ -116,8 +101,6 @@ export default function UserDashboardPage() {
   const { currentLang, t, dict, localizeHref } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
-  const [selectedBookId, setSelectedBookId] = useState<string>('book1');
-  const [isReaderOpen, setIsReaderOpen] = useState(false);
 
   const langKey = currentLang === 'ar' || currentLang === 'en' ? currentLang : 'fa';
   const titles = tabLocalization[langKey];
@@ -159,49 +142,30 @@ export default function UserDashboardPage() {
   const firstEnrolledCourse = user.enrolledCourseIds?.[0] || 'course-student-enrolled';
 
   return (
-    <>
-      <ShellLayout
-        portalType="student"
-        portalBadge={portalBadge}
-        portalTitle={portalTitle}
-        navItems={navItems}
-        activeTab={activeTab}
-        onTabChange={(tabId) => setActiveTab(tabId as DashboardTab)}
-        headerTitle={titles[activeTab]}
-        userName={user.name}
-        onLogout={logout}
-      >
-        {activeTab === 'overview' && <DashboardOverviewTab />}
-        {activeTab === 'courses' && <DashboardCoursesTab />}
-        {activeTab === 'ai' && (
-          <CourseScopedAITutor
-            courseId={firstEnrolledCourse}
-            courseTitle={dict.ai_tutor_enrolled_courses_title}
-            subject="همه"
-          />
-        )}
-        {activeTab === 'books' && (
-          <DashboardBooksTab
-            onOpenReader={(bookId) => {
-              setSelectedBookId(bookId);
-              setIsReaderOpen(true);
-            }}
-          />
-        )}
-        {activeTab === 'notes' && <DashboardNotesTab />}
-        {activeTab === 'orders' && <DashboardOrdersTab />}
-        {activeTab === 'certificates' && <DashboardCertificatesTab />}
-        {activeTab === 'security' && <DashboardSecurityTab />}
-      </ShellLayout>
-
-      {isReaderOpen && (
-        <BookReader3D
-          bookId={selectedBookId}
-          isOpen={isReaderOpen}
-          currentLang={currentLang}
-          onClose={() => setIsReaderOpen(false)}
+    <ShellLayout
+      portalType="student"
+      portalBadge={portalBadge}
+      portalTitle={portalTitle}
+      navItems={navItems}
+      activeTab={activeTab}
+      onTabChange={(tabId) => setActiveTab(tabId as DashboardTab)}
+      headerTitle={titles[activeTab]}
+      userName={user.name}
+      onLogout={logout}
+    >
+      {activeTab === 'overview' && <DashboardOverviewTab />}
+      {activeTab === 'courses' && <DashboardCoursesTab />}
+      {activeTab === 'ai' && (
+        <CourseScopedAITutor
+          courseId={firstEnrolledCourse}
+          courseTitle={dict.ai_tutor_enrolled_courses_title}
+          subject="همه"
         />
       )}
-    </>
+      {activeTab === 'notes' && <DashboardNotesTab />}
+      {activeTab === 'orders' && <DashboardOrdersTab />}
+      {activeTab === 'certificates' && <DashboardCertificatesTab />}
+      {activeTab === 'security' && <DashboardSecurityTab />}
+    </ShellLayout>
   );
 }

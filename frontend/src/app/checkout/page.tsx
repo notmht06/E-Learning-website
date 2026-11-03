@@ -345,12 +345,6 @@ export default function CheckoutPage() {
                         >
                           {dict.hero_btn_courses}
                         </Link>
-                        <Link
-                          href={localizeHref('/books')}
-                          className="inline-flex px-6 py-3 rounded-full border border-book-border dark:border-[#22242A] hover:bg-stone-100 dark:hover:bg-zinc-800 text-book-text dark:text-white text-xs sm:text-sm font-bold transition"
-                        >
-                          مشاهده کتب و آثار
-                        </Link>
                       </div>
                     </div>
                   ) : (

@@ -1,11 +1,14 @@
 import os
 import uuid
 import json
+import logging
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger("backend.admin")
 from backend.app.core.config import settings
 from backend.app.core.exceptions import AppException, EntityNotFoundException
 from backend.app.schemas.admin import (
@@ -277,8 +280,8 @@ async def add_chapter(
             media_url=new_chapter.get("audio_stream_url") or "",
             media_type=new_chapter.get("media_type", "hybrid"),
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Failed to queue auto media pipeline in add_chapter: %s", exc)
     return {"success": True, "chapter": new_chapter}
 
 
@@ -310,8 +313,8 @@ async def update_chapter(
             media_url=updated.get("audio_stream_url") or "",
             media_type=updated.get("media_type", "hybrid"),
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Failed to queue auto media pipeline in update_chapter: %s", exc)
     return {"success": True, "chapter": updated}
 
 
@@ -737,8 +740,8 @@ async def upload_media(
         if not upload_success and os.path.exists(dest_path):
             try:
                 os.remove(dest_path)
-            except OSError:
-                pass
+            except OSError as exc:
+                logger.debug("Failed to remove incomplete upload %s: %s", dest_path, exc)
 
     return {
         "success": True,

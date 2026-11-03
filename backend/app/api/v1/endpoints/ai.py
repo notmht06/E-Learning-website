@@ -27,12 +27,9 @@ router = APIRouter()
 
 def _resolve_allowed_courses_for_user(user: Optional[dict], requested_course_id: Optional[str] = None) -> Optional[list]:
     """
-    If a student is logged in and has enrolled courses, restricts AI RAG search
-    strictly to their enrolled courses (unless user is admin or in test environment).
+    If a student is logged in, restricts AI RAG search
+    strictly to their enrolled courses (unless user is admin).
     """
-    import os
-    if os.getenv("TESTING") == "1" or os.getenv("ENVIRONMENT") == "test":
-        return None
     if not user:
         return None
     if str(user.get("role", "")).lower() == "admin":

@@ -145,17 +145,6 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
       });
     });
 
-    matchedBooks.forEach((b) => {
-      const loc = getLocalizedBook(b, currentLang);
-      items.push({
-        type: 'book',
-        id: b.id,
-        title: loc?.title || b.title_fa,
-        url: `/books`,
-        meta: loc?.price || b.price_fa || '',
-      });
-    });
-
     matchedArticles.forEach((a) => {
       const loc = getLocalizedArticle(a, currentLang);
       items.push({
@@ -168,7 +157,7 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
     });
 
     return items;
-  }, [matchedCourses, matchedBooks, matchedArticles, currentLang, dict]);
+  }, [matchedCourses, matchedArticles, currentLang, dict]);
 
   const hasResults = flatItems.length > 0;
 
@@ -340,44 +329,6 @@ export function HeroInstantSearch({ onSelectCategory }: HeroInstantSearchProps) 
                           </div>
                           <span className="text-[11px] text-zinc-500 dark:text-zinc-400 shrink-0 font-medium">
                             {isFree ? (dict.course_free_badge) : (loc?.price || c.price_fa)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Books Group */}
-              {matchedBooks.length > 0 && (
-                <div>
-                  <div className="px-2.5 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
-                    <span>{dict.nav_books}</span>
-                  </div>
-                  <div className="mt-1 space-y-1">
-                    {matchedBooks.map((b) => {
-                      const loc = getLocalizedBook(b, currentLang);
-                      const itemIndex = flatItems.findIndex((it) => it.id === b.id);
-                      const isSelected = selectedIndex === itemIndex;
-
-                      return (
-                        <button
-                          key={b.id}
-                          type="button"
-                          onClick={() => handleSelect('/books')}
-                          className={`w-full text-start px-3 py-2.5 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] translate-x-1 rtl:-translate-x-1'
-                              : 'hover:bg-[#8A532B]/10 hover:text-[#8A532B] dark:hover:text-[#C58B43] text-zinc-800 dark:text-zinc-200 hover:translate-x-1 rtl:hover:-translate-x-1'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#8A532B] dark:bg-[#C58B43] shrink-0" />
-                            <span className="font-medium truncate">{loc?.title || b.title_fa}</span>
-                          </div>
-                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 shrink-0 font-medium">
-                            {loc?.price || b.price_fa}
                           </span>
                         </button>
                       );

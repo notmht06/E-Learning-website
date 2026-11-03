@@ -2,10 +2,13 @@
 Audio Courses and Academic Syllabus API Endpoints.
 Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine - Async Def).
 """
+import logging
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger("backend.courses")
 from backend.app.schemas.course import (
     CourseDetailSchema,
     CourseEnrollResponse,
@@ -251,7 +254,8 @@ async def get_chapter_ai_summary(course_id: str, chapter_id: int):
             if int(ch.get("id", 0)) == int(chapter_id):
                 ch_title = ch.get("title", ch_title)
                 break
-    except Exception:
+    except Exception as exc:
+        logger.debug("Failed resolving chapter title for summary fallback: %s", exc)
         c_title = course_id
         ch_title = f"جلسه {chapter_id}"
 

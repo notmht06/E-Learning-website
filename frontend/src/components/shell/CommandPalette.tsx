@@ -187,18 +187,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       });
     });
 
-    matchedBooks.slice(0, 4).forEach((b) => {
-      const loc = getLocalizedBook(b, currentLang);
-      list.push({
-        id: `book-${b.id}`,
-        type: 'book',
-        title: loc?.title || b.title_fa,
-        subtitle: `${dict.cmd_author_label} ${dict.scholar_name}`,
-        url: localizeHref(`/books/${b.id}`),
-        icon: BookOpen,
-      });
-    });
-
     matchedArticles.slice(0, 3).forEach((a) => {
       const loc = getLocalizedArticle(a, currentLang);
       list.push({
@@ -212,7 +200,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     });
 
     return list;
-  }, [q, categories, matchedCourses, matchedBooks, matchedArticles, currentLang, dict, localizeHref]);
+  }, [q, categories, matchedCourses, matchedArticles, currentLang, dict, localizeHref]);
 
   // Arrow key navigation & Enter trigger
   useEffect(() => {
@@ -389,65 +377,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                             </h4>
                             <span className="text-[11px] text-stone-400 font-num">
                               {dict.cmd_subject_label} {loc?.subject || c.subject} • {loc?.duration || c.duration_fa}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {isSelected && (
-                            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono font-medium rounded bg-stone-200 dark:bg-neutral-700 text-stone-600 dark:text-stone-300">
-                              <span>Enter</span>
-                              <CornerDownLeft className="w-2.5 h-2.5" />
-                            </kbd>
-                          )}
-                          <ArrowRight className="w-4 h-4 text-stone-400 rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1 transition rtl:rotate-180" />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Books Results */}
-              {matchedBooks.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-[11px] font-bold text-stone-500 px-2 block">
-                    {dict.cmd_books_section} ({toLocale(matchedBooks.length)})
-                  </span>
-                  {matchedBooks.map((b) => {
-                    const loc = getLocalizedBook(b, currentLang);
-                    const itemIndex = flatItems.findIndex((it) => it.id === `book-${b.id}`);
-                    const isSelected = itemIndex === selectedIndex;
-
-                    return (
-                      <div
-                        key={b.id}
-                        onClick={() => {
-                          router.push(localizeHref(`/books/${b.id}`));
-                          handleClose();
-                        }}
-                        onMouseEnter={() => setSelectedIndex(itemIndex)}
-                        className={`p-3 rounded-xl transition flex items-center justify-between gap-3 cursor-pointer group border ${
-                          isSelected
-                            ? 'bg-stone-100 dark:bg-neutral-800/90 border-[#8A532B]/40 dark:border-[#C58B43]/40'
-                            : 'border-transparent hover:bg-stone-50 dark:hover:bg-neutral-800/50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition ${
-                              isSelected
-                                ? 'bg-[#8A532B] text-white dark:bg-[#C58B43] dark:text-stone-900'
-                                : 'bg-stone-100 dark:bg-neutral-800 text-stone-700 dark:text-stone-200'
-                            }`}
-                          >
-                            <BookOpen className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 truncate group-hover:text-[#8A532B] dark:group-hover:text-[#C58B43] transition">
-                              {loc?.title || b.title_fa}
-                            </h4>
-                            <span className="text-[11px] text-stone-400">
-                              {dict.cmd_author_label} {dict.scholar_name}
                             </span>
                           </div>
                         </div>

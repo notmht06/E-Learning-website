@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { apiClient } from '@/services/apiClient';
 
 export function AdminOrdersTab() {
   const { orders } = useData();
@@ -27,19 +28,17 @@ export function AdminOrdersTab() {
 
   useEffect(() => {
     let mounted = true;
-    const token = typeof window !== 'undefined' ? localStorage.getItem('zanjirzan_token') : null;
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
 
-    fetch(`${apiBase}/admin/students-overview`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
+    apiClient.admin
+      .getStudentsOverview()
+      .then((data: any) => {
         if (!mounted || !data) return;
         if (Array.isArray(data.students)) setServerStudents(data.students);
         if (Array.isArray(data.orders)) setServerOrders(data.orders);
       })
-      .catch(() => {})
+      .catch((err: any) => {
+        console.warn('Failed to load students overview:', err);
+      })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });

@@ -4,13 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Search,
-  BookOpen,
+  FileText,
   Headphones,
   ArrowUpRight,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { CartModal } from '@/components/CartModal';
-import { booksDatabase, coursesDatabase } from '@/lib/data';
+import { coursesDatabase, scholarlyArticlesDatabase } from '@/lib/data';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
@@ -19,14 +19,14 @@ export default function SearchPage() {
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
   const [query, setQuery] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'all' | 'books' | 'courses'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'courses' | 'articles'>('all');
 
-  const matchedBooks = Object.values(booksDatabase).filter((b) => {
-    const title = (b as any)[`title_${currentLang}`] || b.title_fa;
-    const desc = (b as any)[`desc_${currentLang}`] || b.desc_fa;
+  const matchedArticles = Object.values(scholarlyArticlesDatabase).filter((a) => {
+    const title = (a as any)[`title_${currentLang}`] || a.title_fa || a.title;
+    const cat = (a as any)[`category_${currentLang}`] || a.category_fa || a.category || '';
     return (
       title.toLowerCase().includes(query.toLowerCase()) ||
-      desc.toLowerCase().includes(query.toLowerCase())
+      cat.toLowerCase().includes(query.toLowerCase())
     );
   });
 
@@ -81,18 +81,7 @@ export default function SearchPage() {
             }`}
           >
             {dict.ui_all_results} (
-            {toLocale(matchedBooks.length + matchedCourses.length)})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('books')}
-            className={`px-3.5 py-2 rounded-lg transition cursor-pointer ${
-              activeTab === 'books'
-                ? 'bg-[#8A532B] text-white shadow-xs'
-                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
-            }`}
-          >
-            {dict.nav_books} ({toLocale(matchedBooks.length)})
+            {toLocale(matchedArticles.length + matchedCourses.length)})
           </button>
           <button
             type="button"
@@ -105,38 +94,20 @@ export default function SearchPage() {
           >
             {dict.nav_courses} ({toLocale(matchedCourses.length)})
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('articles')}
+            className={`px-3.5 py-2 rounded-lg transition cursor-pointer ${
+              activeTab === 'articles'
+                ? 'bg-[#8A532B] text-white shadow-xs'
+                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+            }`}
+          >
+            {dict.nav_articles} ({toLocale(matchedArticles.length)})
+          </button>
         </div>
 
         <div className="space-y-3">
-          {(activeTab === 'all' || activeTab === 'books') &&
-            matchedBooks.map((b) => (
-              <div
-                key={b.id}
-                className="p-4 rounded-xl bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 shadow-xs"
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-lg bg-[#8A532B]/10 text-[#8A532B] flex items-center justify-center shrink-0">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                      {(b as any)[`title_${currentLang}`] || b.title_fa}
-                    </h3>
-                    <span className="text-xs text-zinc-500 block">
-                      {(b as any)[`badge_${currentLang}`] || b.badge_fa}
-                    </span>
-                  </div>
-                </div>
-                <Link
-                  href={localizeHref(`/books/${b.id}`)}
-                  className="px-3.5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition flex items-center gap-1 shrink-0 cursor-pointer"
-                >
-                  <span>{dict.books_colophon_btn}</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            ))}
-
           {(activeTab === 'all' || activeTab === 'courses') &&
             matchedCourses.map((c) => (
               <div
@@ -162,6 +133,36 @@ export default function SearchPage() {
                   className="px-3.5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <span>{dict.btn_enroll_course}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            ))}
+
+          {(activeTab === 'all' || activeTab === 'articles') &&
+            matchedArticles.map((a) => (
+              <div
+                key={a.id}
+                className="p-4 rounded-xl bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 shadow-xs"
+              >
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-10 h-10 rounded-lg bg-[#8A532B]/10 text-[#8A532B] flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                      {(a as any)[`title_${currentLang}`] || a.title_fa || a.title}
+                    </h3>
+                    <span className="text-xs text-zinc-500 block">
+                      {(a as any)[`category_${currentLang}`] || a.category_fa || a.category} •{' '}
+                      {(a as any)[`readTime_${currentLang}`] || a.readTime}
+                    </span>
+                  </div>
+                </div>
+                <Link
+                  href={localizeHref(`/articles/${a.slug}`)}
+                  className="px-3.5 py-2 rounded-lg bg-[#8A532B] hover:bg-[#724424] text-white text-xs sm:text-sm font-bold transition flex items-center gap-1 shrink-0 cursor-pointer"
+                >
+                  <span>{dict.nav_articles}</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

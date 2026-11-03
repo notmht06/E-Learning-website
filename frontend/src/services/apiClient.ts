@@ -156,6 +156,15 @@ class ApiClient {
         method: 'POST',
         body: JSON.stringify({ chapter_id: chapterId, progress_percent: progressPercent, last_position_sec: lastPosSec }),
       }),
+    getChapterAiSummary: (courseId: string, chapterId: number) =>
+      this.request<{
+        course_id: string;
+        chapter_id: number;
+        chapter_title: string;
+        summary_fa: string;
+        subtitles?: Array<{ id: number; start: number; end: number; text: Record<string, string> }>;
+        auto_indexed?: boolean;
+      }>(`/courses/${courseId}/chapters/${chapterId}/summary`),
   };
 
   // --- Books Module ---
@@ -391,6 +400,8 @@ class ApiClient {
       this.request<{ success: boolean; code: string }>(`/admin/coupons/${code}`, {
         method: 'DELETE',
       }),
+    getStudentsOverview: () =>
+      this.request<{ students: any[]; orders: any[] }>('/admin/students-overview'),
     getMetrics: () => this.request<any>('/observability/metrics'),
     uploadMedia: async (file: File): Promise<{ success: boolean; file_url: string; filename: string; original_filename: string }> => {
       const token = typeof window !== 'undefined' ? localStorage.getItem('zanjirzan_token') : null;
