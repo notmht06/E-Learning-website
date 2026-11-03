@@ -3,13 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Clock,
-  BookOpen,
   Bookmark,
   Play,
   Pause,
-  Users,
-  Star,
   Radio,
   ArrowLeft,
   ArrowRight,
@@ -20,10 +16,9 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { usePlayer } from '@/context/PlayerContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
-import { CourseFolderPreview } from '@/components/course/CourseFolderPreview';
-import { Badge, Button } from '@/components/ui';
+import { Button } from '@/components/ui';
 
-interface CourseCardProps {
+export interface CourseCardProps {
   course: AudioCourse;
   isPlaying?: boolean;
   onPlaySample?: () => void;
@@ -87,17 +82,8 @@ export function CourseCard({
   const bookmarked = isBookmarked(course.id);
   const loc = getLocalizedCourse(course, currentLang);
   const title = loc?.title || course.title_fa;
-  const subject = loc?.subject || course.subject;
   const isOnline = course.course_type === 'online';
-  const totalSessions = course.chapters?.length || course.episodes_count || 12;
-  const duration = loc?.duration || course.duration_fa;
-  const price = loc?.price || course.price_fa || (dict.ui_free_endowment);
-  const level = loc?.level || course.level_fa || (currentLang === 'en' ? 'Advanced Seminary Level' : 'سطح عالی و خارج');
-
-  const descText =
-    loc?.desc ||
-    course.desc_fa ||
-    (dict.ui_rigorous_philosophical_discourse_and_a);
+  const price = loc?.price || course.price_fa || dict.ui_free_endowment;
 
   const isThisCoursePlaying =
     externalIsPlaying !== undefined
@@ -110,22 +96,7 @@ export function CourseCard({
     price.toLowerCase().includes('مجاني') ||
     price.toLowerCase().includes('وقف');
 
-  // Stable scholar count computation
-  const rawScholars =
-    course.enrolledCount ||
-    (Math.abs(course.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 120)) % 150) + 85;
-
-  const studentsCount = currentLang === 'en' ? String(rawScholars) : toLocale(rawScholars);
-
-  const paddedIndex = String(index + 1).padStart(2, '0');
-  const serialCode =
-    currentLang === 'en'
-      ? `CRS-${paddedIndex}`
-      : `CRS-${toLocale(paddedIndex)}`;
-
   const discipline = getDisciplineBanner(course.subject, dict);
-
-  const sessionsSuffix = dict.catalog_sessions_suffix;
 
   const modeLabel = isOnline
     ? dict.skyroom_badge
@@ -140,7 +111,7 @@ export function CourseCard({
       ? 'Enter Course'
       : currentLang === 'ar'
       ? 'الدخول إلى قاعة الدرس'
-      : (dict.catalog_enter_course);
+      : dict.catalog_enter_course;
 
   const handleAuditionToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -170,7 +141,7 @@ export function CourseCard({
           : ''
       }`}
     >
-      {/* 16:9 Sabzlearn-Inspired Media Banner */}
+      {/* 16:9 Media Banner */}
       <div className="group/media relative aspect-video w-full overflow-hidden bg-[#0C0D0E] select-none shrink-0">
         {course.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -204,19 +175,16 @@ export function CourseCard({
               </span>
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-amber-200/70 font-mono">
                 <span>•</span>
-                <span>
-                  {dict.ui_official_lecture}
-                </span>
+                <span>{dict.ui_official_lecture}</span>
                 <span>•</span>
               </div>
             </div>
 
-            {/* Bottom spacer for clean aesthetic */}
             <div className="h-1" />
           </div>
         )}
 
-        {/* Top-Start: Course Status Capsule */}
+        {/* Top-Start: Course Status Capsule (Online / Offline) */}
         <div className="absolute top-2.5 start-2.5 z-10">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-black/60 backdrop-blur-md text-stone-100 border border-white/15 shadow-xs">
             <Radio className={`w-2.5 h-2.5 ${isOnline ? 'text-amber-400' : 'text-stone-300'}`} />
@@ -224,7 +192,7 @@ export function CourseCard({
           </span>
         </div>
 
-        {/* Top-End: Glassmorphic Bookmark Button */}
+        {/* Top-End: Bookmark Icon Button */}
         <button
           type="button"
           onClick={handleBookmarkClick}
@@ -239,26 +207,6 @@ export function CourseCard({
             }`}
           />
         </button>
-
-        {/* Bottom-Start: Discount / Pricing Pill */}
-        <div className="absolute bottom-2.5 start-2.5 z-10">
-          {isFree ? (
-            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-num bg-[#8A532B]/90 text-[#FAF8F5] border border-[#8A532B] shadow-xs backdrop-blur-xs">
-              {dict.ui_100_off_free}
-            </span>
-          ) : (
-            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-num bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 shadow-xs backdrop-blur-xs">
-              {dict.ui_20_off}
-            </span>
-          )}
-        </div>
-
-        {/* Bottom-End: Serial Code Pill */}
-        <div className="absolute bottom-2.5 end-2.5 z-10">
-          <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-[#0C0D0E]/80 text-stone-300 border border-white/10 backdrop-blur-xs tabular-nums">
-            {serialCode}
-          </span>
-        </div>
 
         {/* Center Audition Audio Button */}
         <button
@@ -277,20 +225,10 @@ export function CourseCard({
         </button>
       </div>
 
-      {/* Body Content Stack (Strict Equal Height Alignment) */}
-      <div className="flex flex-col flex-1 p-3.5 pt-3 justify-between space-y-2">
-        {/* Subject & Academic Level */}
-        <div className="flex items-center justify-between gap-2 text-xs h-6">
-          <Badge variant="accent" className="text-[11px] font-medium px-2 py-0.5 shrink-0">
-            {subject}
-          </Badge>
-          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[140px] text-end">
-            {level}
-          </span>
-        </div>
-
-        {/* Course Title (Exact fixed height container) */}
-        <div className="h-12 flex items-start overflow-hidden">
+      {/* Body Content Stack */}
+      <div className="flex flex-col flex-1 p-3.5 pt-3 justify-between space-y-3">
+        {/* Course Title */}
+        <div className="min-h-[44px] flex items-start overflow-hidden">
           <Link href={localizeHref(`/courses/${course.id}`)} className="group/title block w-full">
             <h3 className="line-clamp-2 text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover/title:text-[#8A532B] dark:group-hover/title:text-[#C58B43] transition-colors">
               {title}
@@ -298,56 +236,22 @@ export function CourseCard({
           </Link>
         </div>
 
-        {/* Brief Excerpt (Exact fixed height container) */}
-        <div className="h-9 flex items-start overflow-hidden">
-          <p className="line-clamp-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify">
-            {descText}
-          </p>
-        </div>
-
-        {/* Scholar Instructor & 5.0 Rating Row (Fixed height container) */}
-        <div className="h-7 flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
-          <div className="flex items-center gap-2 min-w-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/ostad_zanjirzan.jpg"
-              alt={dict.scholar_full_title}
-              className="h-5 w-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
-            />
-            <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">
-              {dict.scholar_full_title}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1 text-xs font-bold text-amber-500 font-num shrink-0">
-            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            <span>{currentLang === 'en' ? '5.0' : toLocale('5.0')}</span>
-          </div>
-        </div>
-
-        {/* 3-Column Metrics Bar (Fixed height container) */}
-        <div className="h-9 grid grid-cols-3 gap-1 py-1 text-center font-num text-xs border-t border-zinc-100 dark:border-zinc-800/60 items-center tabular-nums">
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
-            <Clock className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-            <span className="truncate">{duration}</span>
-          </div>
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
-            <BookOpen className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-            <span className="truncate">
-              {currentLang === 'en' ? totalSessions : toLocale(totalSessions)} {sessionsSuffix}
-            </span>
-          </div>
-          <div className="flex items-center justify-center gap-1 text-zinc-600 dark:text-zinc-400 min-w-0">
-            <Users className="h-3.5 w-3.5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-            <span className="truncate">
-              {studentsCount} {dict.ui_scholars}
-            </span>
-          </div>
+        {/* Scholar Instructor Row (without Star Rating) */}
+        <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/60 min-w-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/ostad_zanjirzan.jpg"
+            alt={dict.scholar_full_title}
+            className="h-5 w-5 rounded-full object-cover ring-1 ring-[#8A532B]/30 shrink-0"
+          />
+          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate">
+            {dict.scholar_full_title}
+          </span>
         </div>
       </div>
 
-      {/* Card Footer: Pricing & Entrance Button (Strict Equal Height) */}
-      <div className="h-14 border-t border-zinc-100 p-3.5 py-2.5 dark:border-zinc-800/80 flex items-center justify-between gap-2 shrink-0">
+      {/* Card Footer: Pricing & Entrance Button */}
+      <div className="border-t border-zinc-100 p-3.5 py-2.5 dark:border-zinc-800/80 flex items-center justify-between gap-2 shrink-0">
         <div className="min-w-0">
           {isFree ? (
             <div>
@@ -375,7 +279,6 @@ export function CourseCard({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <CourseFolderPreview course={course} />
           <Button
             asChild
             variant="outline"
@@ -396,3 +299,5 @@ export function CourseCard({
     </article>
   );
 }
+
+export default CourseCard;
