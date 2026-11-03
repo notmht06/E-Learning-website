@@ -85,6 +85,12 @@
       "skillPath": "skills/review-animations/SKILL.md",
       "computedHash": "8c2befeb28bb484bf2de7b2fc228774857e266d32a65d76895e78651a536d8cf"
     },
+    "unslop": {
+      "source": "heydamir/unslop",
+      "sourceType": "github",
+      "skillPath": "skills/unslop/SKILL.md",
+      "computedHash": "ed4f840658cb90308625b431c3b2d757df7cd34d795460825d4e9b07c047d5a6"
+    },
     "write-swift": {
       "source": "emilkowalski/skills",
       "sourceType": "github",

@@ -10,7 +10,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const course = coursesDatabase[id] || coursesDatabase['course1'];
+  const course = coursesDatabase[id] || coursesDatabase['course-mantiq-mabadi'] || Object.values(coursesDatabase)[0];
   const title = `${course.title_fa} | حجت الاسلام دکتر زنجیر زن حسینی`;
   const description = course.desc_fa || 'درس‌گفتارهای تحلیلی و تخصصی علوم عقلی و نقلی';
   const url = `https://zanjirzan.ir/courses/${id}`;
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CourseDetailPage({ params }: Props) {
   const { id } = await params;
-  const course = coursesDatabase[id] || coursesDatabase['course1'];
+  const course = coursesDatabase[id] || coursesDatabase['course-mantiq-mabadi'] || Object.values(coursesDatabase)[0];
 
   const courseJsonLd = {
     '@context': 'https://schema.org',

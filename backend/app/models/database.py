@@ -298,6 +298,16 @@ async def init_db():
             await conn.run_sync(check_and_migrate)
 
     await seed_default_courses()
+    # Heal any test-mutated course title in SQLite
+    async with async_session() as heal_sess:
+        from sqlalchemy import update
+        from backend.app.models.models import Course
+        await heal_sess.execute(
+            update(Course)
+            .where(Course.title_fa == "تغییر غیرمجاز عنوان دوره")
+            .values(title_fa="شرح و تحلیل جامع حکمة‌الاشراق سهروردی")
+        )
+        await heal_sess.commit()
     await seed_default_users()
     await seed_default_cms_data()
     _is_db_initialized = True

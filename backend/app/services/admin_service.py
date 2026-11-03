@@ -80,14 +80,17 @@ class AdminService:
                 db_course = Course(
                     id=course_id,
                     title_fa=new_course["title"],
-                    slug=new_course["slug"],
+                    slug=f"{course_id}-{new_course['slug'][:30]}",
                     course_type=data.get("course_type", "offline"),
                     desc_fa=new_course["description"],
                     author_name=new_course["instructor"],
                     level=new_course["level"],
                     cover_image=new_course["thumbnail"],
                     total_duration_hours=data.get("total_duration_hours", 20),
-                    capacity=data.get("capacity", 30),
+                    capacity=data.get("capacity", 50),
+                    enrolled_count=data.get("enrolled_count", 0),
+                    skyroom_url=data.get("skyroom_url"),
+                    schedule=data.get("schedule"),
                     is_published=True
                 )
                 db.add(db_course)
@@ -129,8 +132,10 @@ class AdminService:
                     db_course.skyroom_url = data["skyroom_url"]
                 if "schedule" in data and data["schedule"] is not None:
                     db_course.schedule = data["schedule"]
-                if "cover_image" in data and data["cover_image"] is not None:
-                    db_course.cover_image = data["cover_image"]
+                if ("cover_image" in data and data["cover_image"]) or ("thumbnail" in data and data["thumbnail"]):
+                    db_course.cover_image = data.get("cover_image") or data.get("thumbnail")
+                if "enrolled_count" in data and data["enrolled_count"] is not None:
+                    db_course.enrolled_count = int(data["enrolled_count"])
                 await db.flush()
 
         if not found:
@@ -175,7 +180,7 @@ class AdminService:
                     course_id=course_id,
                     session_number=ch_num,
                     title_fa=new_ch["title"],
-                    audio_url=new_ch["audio_stream_url"],
+                    audio_url=new_ch.get("video_stream_url") or new_ch["audio_stream_url"],
                     duration_seconds=new_ch["duration_sec"],
                     audio_size_mb="0",
                     is_free_sample=new_ch["is_free"],

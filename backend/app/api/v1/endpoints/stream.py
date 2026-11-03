@@ -288,7 +288,8 @@ async def stream_audio_range(
     course_id: str,
     chapter_id: int,
     token: str = Query(..., description="Cryptographically signed DRM token"),
-    range_header: Optional[str] = Header(None, alias="Range")
+    range_header: Optional[str] = Header(None, alias="Range"),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Performance Engine: Streams protected lecture audio supporting HTTP Range requests (RFC 7233).
@@ -308,11 +309,47 @@ async def stream_audio_range(
             detail="توکن استریم DRM نامعتبر یا منقضی شده است. دسترسی به رسانه صوتی رد شد."
         )
 
-    # 2. Locate or synthesize audio source
+    # 2. Locate actual uploaded chapter audio/video file from DB or memory catalog
     file_path = DEFAULT_AUDIO_PATH
+    media_url_candidate = None
+    try:
+        from backend.app.models.models import Lesson
+        from backend.app.services.course_service import course_service
+        res_l = await db.execute(
+            select(Lesson).where(Lesson.course_id == course_id, Lesson.session_number == chapter_id)
+        )
+        lesson_row = res_l.scalar_one_or_none()
+        if lesson_row and lesson_row.audio_url:
+            media_url_candidate = lesson_row.audio_url
+        if not media_url_candidate:
+            c_dict = course_service.get_course_by_id(course_id)
+            for ch in c_dict.get("syllabus", []):
+                if int(ch.get("id", 0)) == int(chapter_id):
+                    media_url_candidate = ch.get("audio_stream_url") or ch.get("video_stream_url")
+                    break
+    except Exception:
+        pass
+
+    if media_url_candidate and "/static/uploads/" in str(media_url_candidate):
+        fname = str(media_url_candidate).split("/static/uploads/")[-1].split("?")[0]
+        uploads_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../../static/uploads")
+        )
+        cand_path = os.path.join(uploads_dir, fname)
+        if os.path.exists(cand_path):
+            file_path = cand_path
+
     if os.path.exists(file_path):
         file_size = os.path.getsize(file_path)
-        media_type = "audio/wav"
+        ext = os.path.splitext(file_path)[1].lower()
+        media_type = (
+            "audio/mpeg" if ext == ".mp3"
+            else "audio/mp4" if ext == ".m4a"
+            else "audio/ogg" if ext == ".ogg"
+            else "video/mp4" if ext == ".mp4"
+            else "video/webm" if ext == ".webm"
+            else "audio/wav"
+        )
 
         # Handle Range Header
         if range_header:

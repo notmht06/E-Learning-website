@@ -56,17 +56,48 @@ class AdminAnalyticsResponse(BaseModel):
 
 
 class CourseCreateRequest(BaseModel):
-    title: str
-    instructor: str
-    level: str
-    hours: str
-    price: str
-    description: str
+    id: Optional[str] = None
+    title: str = "دوره جدید"
+    instructor: str = "حجت الاسلام دکتر زنجیر زن حسینی"
+    level: str = "سطح مقدماتی تا پیشرفته"
+    hours: str = "۲۰ ساعت"
+    price: str = "رایگان"
+    description: str = ""
+    subject: Optional[str] = "فلسفه"
+    thumbnail: Optional[str] = "/images/ostad_zanjirzan.jpg"
+    media_type: Optional[str] = "hybrid"
+    course_type: Optional[str] = "offline"
+    capacity: Optional[int] = 50
+    enrolled_count: Optional[int] = 0
+    schedule: Optional[str] = None
+    skyroom_url: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_create_course(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if not data.get("title") and data.get("title_fa"):
+                data["title"] = str(data["title_fa"]).strip()
+            if not data.get("instructor") and data.get("instructor_fa"):
+                data["instructor"] = str(data["instructor_fa"]).strip()
+            if not data.get("level") and data.get("level_fa"):
+                data["level"] = str(data["level_fa"]).strip()
+            if not data.get("hours") and data.get("duration_fa"):
+                data["hours"] = str(data["duration_fa"]).strip()
+            if not data.get("price") and data.get("price_fa"):
+                data["price"] = str(data["price_fa"]).strip()
+            if not data.get("description") and data.get("desc_fa"):
+                data["description"] = str(data["desc_fa"]).strip()
+            if not data.get("skyroom_url") and data.get("skyroomUrl"):
+                data["skyroom_url"] = str(data["skyroomUrl"]).strip()
+            if data.get("enrolled_count") is None and data.get("enrolledCount") is not None:
+                data["enrolled_count"] = int(data["enrolledCount"])
+        return data
 
 
 class OrderStatusUpdateRequest(BaseModel):
     order_id: Optional[str] = None
-    new_status: Optional[str] = None  # paid | processing | dispatched | delivered | shipped
+    new_status: Optional[str] = None
     status: Optional[str] = None
     postal_barcode: Optional[str] = None
     postal_barcode_24digit: Optional[str] = None
@@ -97,14 +128,39 @@ class CourseUpdateRequest(BaseModel):
     discount_percent: Optional[int] = None
     description: Optional[str] = None
     badge: Optional[str] = None
+    subject: Optional[str] = None
     thumbnail: Optional[str] = None
+    cover_image: Optional[str] = None
     media_type: Optional[str] = None
-    course_type: Optional[str] = None  # offline | online
+    course_type: Optional[str] = None
     capacity: Optional[int] = None
+    enrolled_count: Optional[int] = None
     schedule: Optional[str] = None
     skyroom_url: Optional[str] = None
     telegram_url: Optional[str] = None
     tags: Optional[List[str]] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_update_course(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if "title" not in data and "title_fa" in data:
+                data["title"] = str(data["title_fa"]).strip()
+            if "level" not in data and "level_fa" in data:
+                data["level"] = str(data["level_fa"]).strip()
+            if "hours" not in data and "duration_fa" in data:
+                data["hours"] = str(data["duration_fa"]).strip()
+            if "price" not in data and "price_fa" in data:
+                data["price"] = str(data["price_fa"]).strip()
+            if "description" not in data and "desc_fa" in data:
+                data["description"] = str(data["desc_fa"]).strip()
+            if "skyroom_url" not in data and "skyroomUrl" in data:
+                data["skyroom_url"] = str(data["skyroomUrl"]).strip()
+            if "enrolled_count" not in data and "enrolledCount" in data:
+                data["enrolled_count"] = int(data["enrolledCount"])
+            if "thumbnail" in data and "cover_image" not in data:
+                data["cover_image"] = data["thumbnail"]
+        return data
 
 
 def to_chapter_dict(data: Any, chapter_id: Optional[int] = None) -> Dict[str, Any]:

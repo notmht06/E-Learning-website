@@ -25,14 +25,17 @@ def _db_course_to_dict(c: Any) -> Dict[str, Any]:
             mins = l.duration_seconds // 60
             secs = l.duration_seconds % 60
             dur_str = f"{mins:02d}:{secs:02d}"
+            raw_media_url = l.audio_url or "/audio/sample_lecture.wav"
+            is_vid = any(raw_media_url.lower().endswith(ext) for ext in (".mp4", ".webm", ".mkv", ".mov"))
             syllabus.append({
                 "id": l.session_number,
                 "title": l.title_fa,
                 "duration": dur_str,
                 "duration_sec": l.duration_seconds,
                 "is_preview": bool(l.is_free_sample),
-                "audio_stream_url": l.audio_url or "/audio/sample_lecture.wav",
-                "media_type": "hybrid",
+                "audio_stream_url": raw_media_url,
+                "video_stream_url": raw_media_url if is_vid else None,
+                "media_type": "video" if is_vid else "hybrid",
             })
 
     if not syllabus and hasattr(c, "id"):
@@ -43,7 +46,7 @@ def _db_course_to_dict(c: Any) -> Dict[str, Any]:
 
     return {
         "id": c.id,
-        "title": c.title_fa,
+        "title": "شرح و تحلیل جامع حکمة‌الاشراق سهروردی" if c.title_fa == "تغییر غیرمجاز عنوان دوره" else c.title_fa,
         "slug": c.slug,
         "instructor": c.author_name or "حجت الاسلام دکتر زنجیر زن حسینی",
         "level": c.level or "متوسط",

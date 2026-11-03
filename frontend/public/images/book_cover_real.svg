@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="300" height="420">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1B2A24"/>
+      <stop offset="100%" stop-color="#0C1411"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E6CA85"/>
+      <stop offset="100%" stop-color="#8A532B"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="420" rx="14" fill="url(#bg)"/>
+  <rect x="18" y="18" width="264" height="384" rx="8" fill="none" stroke="url(#gold)" stroke-width="2" stroke-opacity="0.6"/>
+  <circle cx="150" cy="160" r="42" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-opacity="0.7"/>
+  <text x="150" y="255" text-anchor="middle" fill="#FAF8F5" font-family="Tahoma, sans-serif" font-size="18" font-weight="bold">دارالحکمه</text>
+  <text x="150" y="285" text-anchor="middle" fill="#E6CA85" font-family="Tahoma, sans-serif" font-size="12">مجموعه کتاب‌ها و آثار</text>
+</svg>
