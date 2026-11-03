@@ -152,24 +152,14 @@ export function CourseCard({
           />
         ) : (
           <div
-            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-between p-3 select-none transition-transform duration-500 ease-out`}
+            className={`relative h-full w-full ${discipline.gradient} flex flex-col justify-center items-center p-4 select-none transition-transform duration-500 ease-out`}
           >
             {/* Classical Manuscript Filigree Borders */}
             <div className="absolute inset-1.5 rounded-lg border border-white/10 pointer-events-none" />
             <div className="absolute inset-2 rounded-md border border-dashed border-white/5 pointer-events-none" />
 
-            {/* Header: Imprint & Discipline Badge */}
-            <div className="relative z-1 flex items-center justify-between text-[11px] font-mono text-white/70 h-5">
-              <span className="font-bold text-amber-200/80 text-[11px]">
-                DAR AL-HIKMAH
-              </span>
-              <span className="px-1.5 py-0.5 rounded border border-white/15 bg-black/40 backdrop-blur-xs text-stone-200 text-[11px] font-medium font-sans truncate max-w-[130px]">
-                {discipline.label}
-              </span>
-            </div>
-
             {/* Center Calligraphic Title */}
-            <div className="relative z-1 my-auto text-center px-2 space-y-1">
+            <div className="relative z-1 text-center px-4 space-y-1.5">
               <span className="block text-xs sm:text-[13px] font-bold text-white/95 line-clamp-2 leading-relaxed font-sans">
                 {title}
               </span>
@@ -179,8 +169,6 @@ export function CourseCard({
                 <span>•</span>
               </div>
             </div>
-
-            <div className="h-1" />
           </div>
         )}
 
