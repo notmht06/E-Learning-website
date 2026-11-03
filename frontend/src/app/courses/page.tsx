@@ -9,9 +9,8 @@ import {
   LayoutGrid,
   RotateCcw,
   X,
-  ArrowDown,
-  Loader2,
-  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { CartModal } from '@/components/CartModal';
@@ -37,8 +36,8 @@ function CoursesContent() {
   const [selectedSubject, setSelectedSubject] = useState<string>(initialSubject);
   const [onlyFree, setOnlyFree] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>('default');
-  const [visibleCount, setVisibleCount] = useState<number>(9);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const COURSES_PER_PAGE = 9;
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   const {
@@ -61,7 +60,7 @@ function CoursesContent() {
 
   // Reset pagination when filters change
   useEffect(() => {
-    setVisibleCount(9);
+    setCurrentPage(1);
   }, [searchQuery, selectedType, selectedSubject, onlyFree, sortBy]);
 
   // Multilingual Strings
@@ -232,10 +231,41 @@ function CoursesContent() {
     return list;
   }, [filteredCourses, sortBy]);
 
-  // Paginated visible list
+  const totalPages = Math.max(1, Math.ceil(sortedCourses.length / COURSES_PER_PAGE));
+
+  // Paginated visible list (9 courses per page)
   const displayedCourses = useMemo(() => {
-    return sortedCourses.slice(0, visibleCount);
-  }, [sortedCourses, visibleCount]);
+    const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
+    return sortedCourses.slice(startIndex, startIndex + COURSES_PER_PAGE);
+  }, [sortedCourses, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    triggerTactileHaptic('tick');
+    setCurrentPage(page);
+    const catalogEl = document.getElementById('courses-catalog-main');
+    if (catalogEl) {
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 250, behavior: 'smooth' });
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('ellipsis-start');
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push('ellipsis-end');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   const getCategoryDisplayName = (subjectName: string) => {
     const cat = categories.find(
@@ -268,14 +298,7 @@ function CoursesContent() {
     setSortBy('default');
   };
 
-  const handleLoadMore = () => {
-    triggerTactileHaptic('tick');
-    setIsLoadingMore(true);
-    setTimeout(() => {
-      setVisibleCount((prev) => prev + 6);
-      setIsLoadingMore(false);
-    }, 250);
-  };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors pb-12">
@@ -461,11 +484,11 @@ function CoursesContent() {
         {/* 2-Column Responsive Layout (Sidebar on lg+, Courses Grid on Main) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-2">
           {/* Main Catalog Courses Column (9 cols on xl, 8 on lg) */}
-          <div className="lg:col-span-8 xl:col-span-9 space-y-8">
+          <div id="courses-catalog-main" className="lg:col-span-8 xl:col-span-9 space-y-8 scroll-mt-24">
             {displayedCourses.length > 0 ? (
               <>
                 <div
-                  key={`courses-grid-${selectedSubject}-${selectedType}-${onlyFree}-${sortBy}-${searchQuery}-${visibleCount}`}
+                  key={`courses-grid-${selectedSubject}-${selectedType}-${onlyFree}-${sortBy}-${searchQuery}-${currentPage}`}
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch animate-tab-fade"
                 >
                   {displayedCourses.map((c, idx) => {
@@ -474,7 +497,7 @@ function CoursesContent() {
                       <CourseCard
                         key={c.id}
                         course={c}
-                        index={idx}
+                        index={idx + (currentPage - 1) * COURSES_PER_PAGE}
                         isPlaying={isCurrentPlaying}
                         onPlaySample={() => {
                           if (isCurrentPlaying) {
@@ -488,36 +511,84 @@ function CoursesContent() {
                   })}
                 </div>
 
-                {/* Incremental "Load More" Pagination Section */}
-                <div className="pt-6 flex flex-col items-center justify-center text-center space-y-3">
-                  {visibleCount < sortedCourses.length ? (
-                    <button
-                      onClick={handleLoadMore}
-                      disabled={isLoadingMore}
-                      className="px-6 py-3 rounded-full bg-white dark:bg-[#141518] hover:bg-zinc-50 dark:hover:bg-[#1C1E22] border border-[#8A532B]/30 dark:border-[#C58B43]/40 text-xs font-bold text-zinc-900 dark:text-zinc-100 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      {isLoadingMore ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin text-[#8A532B] dark:text-[#C58B43]" />
-                          <span>{t.loading_more}</span>
-                        </>
-                      ) : (
-                        <>
-                          <ArrowDown className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-                          <span>{t.load_more_btn}</span>
-                          <span className="text-[11px] font-mono text-zinc-400">
-                            ({toLocaleDigits(sortedCourses.length - visibleCount, currentLang)} {t.remaining_label})
-                          </span>
-                        </>
-                      )}
-                    </button>
-                  ) : (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-[#18191D] border border-zinc-200 dark:border-zinc-800 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                      <CheckCircle2 className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-                      <span>{t.all_loaded}</span>
+                {/* Multipage Numbered Pagination Section */}
+                {totalPages > 1 && (
+                  <nav
+                    role="navigation"
+                    aria-label="صفحات دوره‌ها"
+                    className="pt-8 flex flex-col items-center justify-center space-y-3"
+                  >
+                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                      {/* Previous Page Button */}
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-3.5 py-2 rounded-xl text-xs font-bold border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] dark:hover:border-[#C58B43] hover:text-[#8A532B] dark:hover:text-[#C58B43] disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-1 shadow-xs cursor-pointer select-none"
+                        aria-label={dict.reader_btn_prev || 'صفحه قبل'}
+                      >
+                        {currentLang === 'en' ? (
+                          <ChevronLeft className="w-4 h-4" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4" />
+                        )}
+                        <span>{dict.reader_btn_prev || 'صفحه قبل'}</span>
+                      </button>
+
+                      {/* Numbered Page Buttons */}
+                      {getPageNumbers().map((item, index) => {
+                        if (typeof item === 'string') {
+                          return (
+                            <span
+                              key={`ellipsis-${index}`}
+                              className="w-8 h-9 flex items-center justify-center text-zinc-400 font-mono text-sm select-none"
+                            >
+                              …
+                            </span>
+                          );
+                        }
+
+                        const isCurrent = item === currentPage;
+                        return (
+                          <button
+                            key={`page-${item}`}
+                            type="button"
+                            onClick={() => handlePageChange(item)}
+                            aria-current={isCurrent ? 'page' : undefined}
+                            className={`min-w-9 h-9 px-2.5 rounded-xl text-xs font-bold font-num tabular-nums transition flex items-center justify-center cursor-pointer select-none ${
+                              isCurrent
+                                ? 'bg-[#8A532B] text-white dark:bg-[#C58B43] dark:text-[#0C0D0E] shadow-sm ring-1 ring-[#8A532B]/30'
+                                : 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] dark:hover:border-[#C58B43] hover:text-[#8A532B] dark:hover:text-[#C58B43] shadow-xs'
+                            }`}
+                          >
+                            {toLocaleDigits(item, currentLang)}
+                          </button>
+                        );
+                      })}
+
+                      {/* Next Page Button */}
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-3.5 py-2 rounded-xl text-xs font-bold border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141518] text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] dark:hover:border-[#C58B43] hover:text-[#8A532B] dark:hover:text-[#C58B43] disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-1 shadow-xs cursor-pointer select-none"
+                        aria-label={dict.reader_btn_next || 'صفحه بعد'}
+                      >
+                        <span>{dict.reader_btn_next || 'صفحه بعد'}</span>
+                        {currentLang === 'en' ? (
+                          <ChevronRight className="w-4 h-4" />
+                        ) : (
+                          <ChevronLeft className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
-                  )}
-                </div>
+
+                    {/* Pagination summary info */}
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 font-num tabular-nums text-center">
+                      {dict.reader_page} {toLocaleDigits(currentPage, currentLang)} {dict.reader_of} {toLocaleDigits(totalPages, currentLang)}
+                    </p>
+                  </nav>
+                )}
               </>
             ) : (
               <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 text-center space-y-4">
