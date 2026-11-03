@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Bookmark,
   Play,
-  Pause,
   Radio,
   ArrowLeft,
   ArrowRight,
@@ -113,19 +112,6 @@ export function CourseCard({
       ? 'الدخول إلى قاعة الدرس'
       : dict.catalog_enter_course;
 
-  const handleAuditionToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    triggerTactileHaptic('thump');
-    if (onPlaySample) {
-      onPlaySample();
-    } else if (currentCourse?.id === course.id) {
-      togglePlay();
-    } else {
-      playTrack(course, 0);
-    }
-  };
-
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -196,24 +182,23 @@ export function CourseCard({
           />
         </button>
 
-        {/* Center Audition Audio Button */}
-        <button
-          type="button"
-          onClick={handleAuditionToggle}
-          className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 opacity-0 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-out focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
-          aria-label={isThisCoursePlaying ? 'توقف پخش نمونه' : 'پخش نمونه صوت'}
+        {/* Center Play Button: Direct Navigation to Classroom Theater */}
+        <Link
+          href={localizeHref(`/courses/${course.id}/learn`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            triggerTactileHaptic("thump");
+          }}
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 opacity-0 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300 ease-out focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100 cursor-pointer"
+          aria-label={enterButtonText || "ورود به قاعه الدرس"}
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 active:scale-95 shadow-xl">
-            {isThisCoursePlaying ? (
-              <Pause className="h-5 w-5 fill-current" />
-            ) : (
-              <Play className="h-5 w-5 fill-current ps-0.5" />
-            )}
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-[#8A532B] dark:bg-[#141518]/95 dark:text-[#C58B43] dark:border dark:border-[#C58B43]/50 transition-transform duration-200 hover:scale-110 active:scale-95 shadow-xl">
+            <Play className="h-5 w-5 fill-current translate-x-0.5" />
           </span>
-        </button>
+        </Link>
       </div>
 
-      {/* Body Content Stack */}
+        {/* Body Content Stack */}
       <div className="flex flex-col flex-1 p-3.5 pt-3 justify-between space-y-3">
         {/* Course Title */}
         <div className="min-h-[44px] flex items-start overflow-hidden">
@@ -222,7 +207,7 @@ export function CourseCard({
               {title}
             </h3>
           </Link>
-        </div>
+      </div>
 
         {/* Scholar Instructor Row (without Star Rating) */}
         <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/60 min-w-0">

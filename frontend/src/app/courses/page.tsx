@@ -499,13 +499,6 @@ function CoursesContent() {
                         course={c}
                         index={idx + (currentPage - 1) * COURSES_PER_PAGE}
                         isPlaying={isCurrentPlaying}
-                        onPlaySample={() => {
-                          if (isCurrentPlaying) {
-                            togglePlay();
-                          } else {
-                            playTrack(c, 0);
-                          }
-                        }}
                       />
                     );
                   })}

@@ -149,7 +149,7 @@ export function DashboardCoursesTab() {
                       href={localizeHref(`/courses/${course.id}/learn`)}
                       className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2"
                     >
-                      <Play className="w-3.5 h-3.5 fill-current ps-0.5" />
+                      <Play className="w-3.5 h-3.5 fill-current translate-x-0.5" />
                       <span>{playBtnLabel}</span>
                     </Link>
                   </div>

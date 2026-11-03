@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import {
   Play,
-  Pause,
   Clock,
   BookOpen,
   Headphones,
@@ -19,7 +18,6 @@ import {
 } from 'lucide-react';
 import { AudioCourse } from '@/lib/data';
 import { useLanguage } from '@/context/LanguageContext';
-import { usePlayer } from '@/context/PlayerContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
 interface CourseDetailHeroProps {
@@ -97,10 +95,8 @@ export function CourseDetailHero({
   currentLang,
   toLocale,
 }: CourseDetailHeroProps) {
-  const { playTrack, togglePlay, currentCourse, isPlaying } = usePlayer();
   const { localizeHref } = useLanguage();
   const disciplineBanner = getDisciplineBanner(course.subject, dict);
-  const isCurrentPlaying = isPlaying && currentCourse?.id === course.id;
 
   const scholarName = dict.scholar_name;
 
@@ -126,15 +122,6 @@ export function CourseDetailHero({
     tuition_label: dict.course_tuition_label,
     strikethrough_tuition: dict.course_strikethrough_tuition,
     satisfaction: dict.course_scholarly_satisfaction,
-  };
-
-  const handleTogglePlaySample = () => {
-    triggerTactileHaptic('tick');
-    if (isCurrentPlaying) {
-      togglePlay();
-    } else {
-      playTrack(course, 0);
-    }
   };
 
   const handleShare = () => {
@@ -301,34 +288,21 @@ export function CourseDetailHero({
               </span>
             </div>
 
-            {/* Center Play Button & Animated Waves */}
-            <div className="flex flex-col items-center justify-center my-auto z-10 text-center space-y-3">
-              <button
-                type="button"
-                onClick={handleTogglePlaySample}
-                className="w-16 h-16 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition shadow-2xl cursor-pointer group"
-                aria-label={isCurrentPlaying ? 'توقف صوت' : 'پخش صوت نمونه'}
+            {/* Center Play Button & Direct Learn Navigation (Centered in 16:9 Frame) */}
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+              <Link
+                href={localizeHref(`/courses/${course.id}/learn`)}
+                onClick={() => triggerTactileHaptic("thump")}
+                className="group relative flex flex-col items-center pointer-events-auto cursor-pointer"
+                aria-label={t.preview_btn}
               >
-                {isCurrentPlaying ? (
-                  <Pause className="w-7 h-7 fill-white" />
-                ) : (
-                  <Play className="w-7 h-7 fill-white translate-x-0.5 rtl:-translate-x-0.5 transition-transform" />
-                )}
-              </button>
-
-              <span className="text-xs font-medium text-white/90 drop-shadow-xs">
-                {isCurrentPlaying ? t.preview_playing : t.preview_btn}
-              </span>
-
-              {/* Waveform Bars Animation when playing */}
-              {isCurrentPlaying && (
-                <div className="flex items-center gap-1 h-3 pt-1">
-                  <span className="w-1 h-3 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.3s]" />
-                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.15s]" />
-                  <span className="w-1 h-3.5 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none" />
-                  <span className="w-1 h-2 bg-[#E0A96D] rounded-full animate-equalizer origin-bottom motion-reduce:animate-none [animation-delay:-0.2s]" />
+                <div className="w-16 h-16 rounded-full bg-white/20 group-hover:bg-white/30 active:scale-95 backdrop-blur-md border border-white/40 text-white flex items-center justify-center transition shadow-2xl">
+                  <Play className="w-7 h-7 fill-white translate-x-0.5 transition-transform group-hover:scale-110" />
                 </div>
-              )}
+                <span className="absolute top-full mt-2.5 whitespace-nowrap text-xs font-medium text-white/95 drop-shadow-md group-hover:text-amber-200 transition-colors">
+                  {t.preview_btn}
+                </span>
+              </Link>
             </div>
 
             {/* Bottom Scholar Subtle Motif */}

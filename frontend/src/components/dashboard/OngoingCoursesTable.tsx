@@ -143,7 +143,7 @@ export function OngoingCoursesTable({
                         onClick={() => onContinue?.(course.id)}
                         className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition cursor-pointer"
                       >
-                        <Play className="w-3 h-3 fill-current ps-0.5" />
+                        <Play className="w-3 h-3 fill-current translate-x-0.5" />
                         <span>{dict.btn_continue_audio}</span>
                       </Link>
                     </td>

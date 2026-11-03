@@ -62,7 +62,7 @@ export function CourseSyllabusList({
                   title={dict.btn_sample_lecture_play}
                   aria-label={dict.btn_sample_lecture_play}
                 >
-                  {isCurrent ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ps-0.5" />}
+                  {isCurrent ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current translate-x-0.5" />}
                 </button>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

@@ -517,7 +517,7 @@ export function AudioVideoPlayerEngine({
               ) : isPlaying ? (
                 <Pause className="w-7 h-7 fill-current" />
               ) : (
-                <Play className="w-7 h-7 fill-current ps-0.5" />
+                <Play className="w-7 h-7 fill-current translate-x-0.5" />
               )}
             </button>
 
@@ -594,7 +594,7 @@ export function AudioVideoPlayerEngine({
               {isPlaying ? (
                 <Pause className="w-4 h-4 fill-current" />
               ) : (
-                <Play className="w-4 h-4 fill-current ps-0.5" />
+                <Play className="w-4 h-4 fill-current translate-x-0.5" />
               )}
             </button>
 

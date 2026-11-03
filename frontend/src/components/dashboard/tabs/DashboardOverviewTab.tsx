@@ -145,7 +145,7 @@ export function DashboardOverviewTab() {
             href={localizeHref(`/courses/${firstCourse.id}/learn`)}
             className="px-5 py-3 rounded-full bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center gap-2 cursor-pointer shrink-0"
           >
-            <Play className="w-4 h-4 fill-current ps-0.5" />
+            <Play className="w-4 h-4 fill-current translate-x-0.5" />
             <span>{text.resume_btn}</span>
           </Link>
         </div>
