@@ -116,13 +116,7 @@ export function BentoHero({}: BentoHeroProps) {
             <Compass className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
             <span>{roadmapBtn}</span>
           </Link>
-          <Link
-            href={localizeHref('/books')}
-            className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-[#E6E1D8] dark:border-[#27282D] bg-white dark:bg-[#16171B] hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 flex items-center gap-2 cursor-pointer shadow-2xs active:scale-95"
-          >
-            <BookOpen className="w-4 h-4 text-[#8A532B] dark:text-[#C58B43]" />
-            <span>{booksBtn}</span>
-          </Link>
+
         </div>
 
         {/* 5. Three Architectural Value Pillars (۳ ستون ارزش محوری سبزلرن و دارالحکمه) */}

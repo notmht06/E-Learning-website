@@ -169,6 +169,7 @@ class AIScholarlyService:
         file_context: Optional[str] = None,
         file_name: Optional[str] = None,
         lang: str = "fa",
+        allowed_course_ids: Optional[List[str]] = None,
     ) -> AIChatResponse:
         """
         Generates deterministic, high-accuracy scholarly responses locally
@@ -177,6 +178,29 @@ class AIScholarlyService:
         scholar = self.get_scholar_name(lang)
 
         if not matched_chunks:
+            if allowed_course_ids is not None:
+                if lang == "en":
+                    reply_body = (
+                        f"The AI assistant is authorized to respond exclusively within the scope of your enrolled courses in the curriculum of {scholar}. "
+                        "Please frame your inquiry within your registered courses."
+                    )
+                elif lang == "ar":
+                    reply_body = (
+                        f"المساعد البرهاني مكلّف بالإجابة حصراً ضمن نطاق الدورات المسجل فيها في حسابكم لدى سماحة {scholar}. "
+                        "يرجى طرح الأسئلة المتعلقة بالدورات المسجلة لديكم."
+                    )
+                else:
+                    reply_body = (
+                        f"دستیار هوشمند منحصراً مجاز به پاسخگویی پیرامون مباحث دوره‌های ثبت‌نام‌شدهٔ شما در محضر {scholar} است. "
+                        "لطفاً پرسش خود را پیرامون سرفصل‌های دوره‌هایی که در آن‌ها ثبت‌نام نموده‌اید مطرح فرمایید."
+                    )
+                return AIChatResponse(
+                    reply=reply_body,
+                    citations=[],
+                    suggested_followups=["دوره‌های ثبت‌نام‌شده من کدامند؟", "سرفصل‌های دوره فعال را تبیین کن."],
+                    scholar_identity=scholar,
+                )
+
             if lang == "en":
                 if settings.AI_STRICT_CORPUS_ONLY:
                     reply_body = (
@@ -188,7 +212,7 @@ class AIScholarlyService:
                     reply_body = (
                         f"Your inquiry regarding «{user_msg}» was analyzed within Islamic rational philosophy. From the epistemological system of {scholar}:\n\n"
                         "In demonstrative philosophy, every rigorous inquiry requires exact delimitation of subject matter, ontological separation between mental concepts and extra-mental reality, and adherence to formal logical demonstration.\n\n"
-                        "You may explore this topic further through the comprehensive course catalog and treatises."
+                        "You may explore this topic further through the comprehensive course catalog."
                     )
                 citations = [
                     AICitation(
@@ -214,7 +238,7 @@ class AIScholarlyService:
                     reply_body = (
                         f"تمت دراسة استفساركم حول «{user_msg}» في ضوء الحكمة والعلوم العقلية الإسلامية، ومن منظور المنظومة المعرفية لسماحة {scholar}:\n\n"
                         "في الفلسفة البرهانية، يقتضي كل تحليل رصين تحديد الموضوع بدقة، والتمييز بين المفهوم الذهني والحقيقة الخارجية، ومراعاة الأصول المنطقية في الاستدلال.\n\n"
-                        "يمكنكم متابعة هذا المبحث عبر قائمة الدورات والكتب المحققة في المنصة."
+                        "يمكنكم متابعة هذا المبحث عبر قائمة الدورات في المنصة."
                     )
                 citations = [
                     AICitation(
@@ -241,7 +265,7 @@ class AIScholarlyService:
                         f"پرسش شما در حوزه حکمت و علوم عقلانی بررسی شد. از منظر منظومه معرفتی {scholar}:\n\n"
                         f"در پاسخ به پرسش «{user_msg}»، توجه به این نکته اساسی ضروری است که در دستگاه فلسفه برهانی اسلامی، "
                         "هرگونه تحلیل باید بر پایه تعریف دقیق موضوع، تفکیک مفهوم ذهنی از واقعیت بیرونی و رعایت اصول منطقی استدلال باشد.\n\n"
-                        "شما می‌توانید موضوع مورد نظر را از طریق کاتالوگ دوره‌های پایگاه و بخش کتاب‌ها پیگیری فرمایید."
+                        "شما می‌توانید موضوع مورد نظر را از طریق کاتالوگ دوره‌های پایگاه پیگیری فرمایید."
                     )
                 citations = [
                     AICitation(
@@ -440,7 +464,11 @@ class AIScholarlyService:
             scholar_identity=scholar,
         )
 
-    async def chat(self, req: AIChatRequest) -> AIChatResponse:
+    async def chat(
+        self,
+        req: AIChatRequest,
+        allowed_course_ids: Optional[List[str]] = None,
+    ) -> AIChatResponse:
         """
         Asynchronous chat synthesis.
         Performs hybrid vector retrieval on audio/video/text chunks, then routes to remote LLM or local engine.
@@ -458,6 +486,7 @@ class AIScholarlyService:
                 course_id=course_id,
                 subject_filter=req.subject_filter,
                 lang=lang,
+                allowed_course_ids=allowed_course_ids,
             )
             citations = [
                 AICitation(
@@ -483,6 +512,7 @@ class AIScholarlyService:
             subject_filter=req.subject_filter,
             top_k=4,
             min_score=settings.AI_MIN_SIMILARITY_THRESHOLD,
+            allowed_course_ids=allowed_course_ids,
         )
 
         # Strict closed-book check: if no grounded chunks found and strict mode enabled
@@ -493,6 +523,7 @@ class AIScholarlyService:
                 file_context=req.file_context,
                 file_name=req.file_name,
                 lang=lang,
+                allowed_course_ids=allowed_course_ids,
             )
 
         provider_info = self._resolve_provider_endpoint()
@@ -505,6 +536,7 @@ class AIScholarlyService:
                 file_context=req.file_context,
                 file_name=req.file_name,
                 lang=lang,
+                allowed_course_ids=allowed_course_ids,
             )
 
         # Call remote provider (DeepSeek, OpenRouter, Gemini, Groq)
@@ -602,9 +634,14 @@ class AIScholarlyService:
             file_context=req.file_context,
             file_name=req.file_name,
             lang=lang,
+            allowed_course_ids=allowed_course_ids,
         )
 
-    async def stream_chat(self, req: AIChatRequest) -> AsyncGenerator[str, None]:
+    async def stream_chat(
+        self,
+        req: AIChatRequest,
+        allowed_course_ids: Optional[List[str]] = None,
+    ) -> AsyncGenerator[str, None]:
         """
         Streams philosophical response token-by-token using SSE protocol (text/event-stream).
         Emits chunk events and finishes with terminal 'done: true' containing authoritative citations.
@@ -623,6 +660,7 @@ class AIScholarlyService:
                 course_id=course_id,
                 subject_filter=req.subject_filter,
                 lang=lang,
+                allowed_course_ids=allowed_course_ids,
             )
             full_text = tutor_res["final_reply"]
             tokens = re.findall(r"\S+\s*", full_text) or [full_text]
@@ -659,6 +697,7 @@ class AIScholarlyService:
             subject_filter=req.subject_filter,
             top_k=4,
             min_score=settings.AI_MIN_SIMILARITY_THRESHOLD,
+            allowed_course_ids=allowed_course_ids,
         )
 
         provider_info = self._resolve_provider_endpoint()
@@ -671,6 +710,7 @@ class AIScholarlyService:
                 file_context=req.file_context,
                 file_name=req.file_name,
                 lang=lang,
+                allowed_course_ids=allowed_course_ids,
             )
             full_text = local_res.reply
             tokens = re.findall(r"\S+\s*", full_text) or [full_text]

@@ -23,6 +23,7 @@ class ScholarTutorGraphState(TypedDict, total=False):
     raw_query: str
     rewritten_query: str
     course_id: Optional[str]
+    allowed_course_ids: Optional[List[str]]
     subject_filter: Optional[str]
     lang: Optional[str]
     retrieved_chunks: List[Dict[str, Any]]
@@ -80,14 +81,26 @@ def node_3_scoped_multimedia_retriever(state: ScholarTutorGraphState) -> Scholar
     if subject == "همه":
         subject = None
 
+    course_id = state.get("course_id")
+    allowed = state.get("allowed_course_ids")
+    if allowed is not None and course_id:
+        from backend.app.services.course_service import course_service
+        allowed_set = set(allowed)
+        for a in list(allowed_set):
+            if a in course_service.COURSE_ID_ALIASES:
+                allowed_set.add(course_service.COURSE_ID_ALIASES[a])
+        if course_id not in allowed_set and course_service.COURSE_ID_ALIASES.get(course_id) not in allowed_set:
+            state["retrieved_chunks"] = []
+            return state
+
     chunks = rag_engine.search(
         query=state["rewritten_query"],
         subject_filter=subject,
         top_k=4,
         min_score=settings.AI_MIN_SIMILARITY_THRESHOLD,
+        allowed_course_ids=state.get("allowed_course_ids"),
     )
 
-    course_id = state.get("course_id")
     if course_id and chunks:
         # Prioritize chunks that align with the student's current course
         def course_match_priority(c: Dict[str, Any]) -> int:
@@ -120,8 +133,31 @@ def node_5_sadrian_response_synthesizer(state: ScholarTutorGraphState) -> Schola
     lang = state.get("lang") or "fa"
     scholar = _get_scholar_identity(lang)
     state["scholar_identity"] = scholar
+    allowed = state.get("allowed_course_ids")
 
     if not state.get("is_grounded") or not chunks:
+        if allowed is not None:
+            if lang == "en":
+                state["final_reply"] = (
+                    f"As a registered student of {scholar}, the AI tutor is authorized to respond exclusively within the scope of your enrolled courses. "
+                    "Please ask your question regarding the courses in which you are officially registered."
+                )
+            elif lang == "ar":
+                state["final_reply"] = (
+                    f"بصفتكم طالباً في أكاديمية {scholar}، فإن المساعد البرهاني مكلّف بالإجابة حصراً ضمن نطاق الدورات المسجل فيها في حسابكم. "
+                    "يرجى طرح الأسئلة المتعلقة بالدورات المسجلة لديكم."
+                )
+            else:
+                state["final_reply"] = (
+                    f"به عنوان دانش‌پژوه گرامی در محضر {scholar}، دستیار هوشمند منحصراً مجاز به پاسخگویی پیرامون مباحث دوره‌های ثبت‌نام‌شدهٔ شما است. "
+                    "لطفاً پرسش خود را پیرامون سرفصل‌های دوره‌هایی که در آن‌ها ثبت‌نام نموده‌اید مطرح فرمایید."
+                )
+            state["suggested_followups"] = [
+                "دوره‌های ثبت‌نام‌شده من کدامند؟",
+                "سرفصل‌های دوره فعال را تبیین کن.",
+            ]
+            return state
+
         if lang == "en":
             state["final_reply"] = (
                 f"Your inquiry lies outside the scope of the topics presented in the courses and official treatises of {scholar}. "
@@ -301,12 +337,14 @@ def run_course_tutor(
     course_id: Optional[str] = None,
     subject_filter: Optional[str] = None,
     lang: str = "fa",
+    allowed_course_ids: Optional[List[str]] = None,
 ) -> ScholarTutorGraphState:
     """Executes the 5-node LangGraph pipeline for course-scoped inquiries."""
     initial_state: ScholarTutorGraphState = {
         "raw_query": raw_query,
         "rewritten_query": raw_query,
         "course_id": course_id,
+        "allowed_course_ids": allowed_course_ids,
         "subject_filter": subject_filter,
         "lang": lang,
         "retrieved_chunks": [],

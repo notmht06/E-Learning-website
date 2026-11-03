@@ -404,6 +404,7 @@ class RAGEngine:
 
                 self.chunks.append({
                     "id": chunk_id,
+                    "course_id": cid,
                     "title": title,
                     "source": f"دوره تخصصی: {title}",
                     "page_or_session": f"جلسه ۰۱: سرفصل و مبانی ({episodes} جلسه)",
@@ -452,6 +453,9 @@ class RAGEngine:
 
     def _save_persisted_transcripts(self, new_chunks: List[Dict[str, Any]]):
         """Saves custom ingested media chunks to json file without un-serializable sets."""
+        import os
+        if os.getenv("TESTING") == "1" or getattr(settings, "ENVIRONMENT", "") == "test":
+            return
         try:
             existing = []
             if self._persistence_file.exists():
@@ -499,6 +503,7 @@ class RAGEngine:
         media_type: str = "audio",
         session_name: str = "",
         chunk_duration_sec: int = 120,
+        course_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Ingests a lecture audio or video transcript, breaks it down into timestamped
@@ -525,6 +530,7 @@ class RAGEngine:
             chunk_id = f"media-{media_id}-chunk-{i+1:03d}"
             chunk_dict = {
                 "id": chunk_id,
+                "course_id": course_id or media_id,
                 "title": f"{title} (بخش {_to_persian_digits(str(i+1))})",
                 "source": source,
                 "page_or_session": session_name or f"قطعه صوتی/ویدیویی {_to_persian_digits(str(i+1))}",
@@ -554,6 +560,7 @@ class RAGEngine:
         subject_filter: Optional[str] = None,
         top_k: int = 4,
         min_score: float = 0.10,
+        allowed_course_ids: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Hybrid vector and lexical retrieval scoring.
@@ -574,7 +581,24 @@ class RAGEngine:
         q_norm = math.sqrt(sum(v * v for v in q_vec.values())) or 1.0
 
         scored = []
+        allowed_set = set(allowed_course_ids) if allowed_course_ids is not None else None
         for chunk in self.chunks:
+            if allowed_set is not None:
+                chunk_cid = chunk.get("course_id") or ""
+                chunk_id_str = chunk.get("id") or ""
+                # Check if chunk belongs to one of the student's enrolled courses
+                matched_allowed = False
+                for acid in allowed_set:
+                    slug_part = acid.replace("course-", "").split("-")[0]
+                    if (
+                        chunk_cid == acid
+                        or acid in chunk_id_str
+                        or (slug_part and len(slug_part) >= 4 and (slug_part in chunk_id_str or slug_part in str(chunk.get("source", ""))))
+                    ):
+                        matched_allowed = True
+                        break
+                if not matched_allowed:
+                    continue
             chunk_tokens = chunk.get("_tokens", set())
             overlap = [t for t in query_tokens if t in chunk_tokens]
             if not overlap:

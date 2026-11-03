@@ -24,6 +24,28 @@ export function AdminSettingsTab() {
   const [activeSection, setActiveSection] = useState<'hero' | 'bio' | 'links' | 'ai'>('hero');
   const [formData, setFormData] = useState<Record<string, any>>({ ...siteConfig });
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingAvatar(true);
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      const res = await apiClient.admin.uploadMedia(file);
+      if (res?.file_url) {
+        const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1').replace(/\/api\/v1\/?$/, '');
+        const fullUrl = res.file_url.startsWith('/static/') ? `${apiOrigin}${res.file_url}` : res.file_url;
+        setFormData((prev: any) => ({ ...prev, scholar_avatar: fullUrl }));
+        toast.success('تصویر جدید استاد با موفقیت بارگذاری شد.');
+      }
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      toast.error('خطا در بارگذاری تصویر');
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     if (siteConfig && Object.keys(siteConfig).length > 0) {
@@ -211,7 +233,33 @@ export function AdminSettingsTab() {
 
         {/* SECTION 2: BIO & SRE STATS */}
         {activeSection === 'bio' && (
-          <div className="space-y-4">
+          <div className="space-y-5">
+            {/* Academic Scholar Profile Card with Direct Photo Upload */}
+            <div className="flex flex-col sm:flex-row items-center gap-5 p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
+              <img
+                src={formData.scholar_avatar || '/images/ostad_zanjirzan.jpg'}
+                alt="حجت الاسلام دکتر زنجیر زن حسینی"
+                className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8A532B]/40 shadow-sm"
+              />
+              <div className="space-y-2 text-center sm:text-start flex-1">
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
+                  تصویر رسمی پروفایل استاد (حجت الاسلام دکتر زنجیر زن حسینی)
+                </h4>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  این تصویر در کارت‌های معرفی، هیرو و شناسنامه علمی استاد در سراسر سامانه به صورت زنده نمایش داده می‌شود.
+                </p>
+                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold cursor-pointer transition-all">
+                  <span>{isUploadingAvatar ? 'در حال بارگذاری تصویر...' : 'انتخاب و آپلود عکس استاد از کامپیوتر'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+
             <div>
               <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block mb-1">
                 شرح حال و زندگینامه علمی استاد (پاورقی و صفحه درباره استاد)

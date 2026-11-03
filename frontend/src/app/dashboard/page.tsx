@@ -144,7 +144,6 @@ export default function UserDashboardPage() {
     { id: 'overview', label: t('dash_tab_overview', labels.overview), icon: Compass },
     { id: 'courses', label: t('dash_tab_courses', labels.courses), icon: Headphones },
     { id: 'ai', label: t('dash_tab_ai', labels.ai), icon: Sparkles },
-    { id: 'books', label: t('dash_tab_books', labels.books), icon: BookOpen },
     { id: 'notes', label: t('dash_tab_notes', labels.notes), icon: BookMarked },
     { id: 'orders', label: t('dash_tab_orders', labels.orders), icon: Package },
     { id: 'certificates', label: t('dash_tab_certificates', labels.certificates), icon: Award },

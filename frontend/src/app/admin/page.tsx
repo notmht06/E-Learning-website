@@ -55,7 +55,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     books: 'انبارداری و انتشارات کتاب‌ها',
     articles: 'مدیریت مقالات علمی و جستارها',
     qa: 'پاسخگویی به پرسش‌های دانشجویان',
-    orders: 'سفارش‌ها و پیگیری سفارش‌های پستی',
+    orders: 'بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها',
     drm: 'مرکز نظارت بر استریم و امنیت DRM',
     coupons: 'کدهای تخفیف و جوایز دوره‌ها',
     media: 'صف استودیویی پالایش صوت ۴۸kHz',
@@ -170,13 +170,10 @@ export default function AdminPage() {
     { id: 'stats', label: t('admin_tab_stats', labels.stats), icon: TrendingUp },
     { id: 'courses', label: t('admin_tab_courses', labels.courses), icon: Headphones },
     { id: 'categories', label: t('admin_tab_categories', labels.categories), icon: Layers },
-    { id: 'books', label: t('admin_tab_books', labels.books), icon: BookOpen },
     { id: 'articles', label: t('admin_tab_articles', labels.articles), icon: FileText },
-    { id: 'qa', label: t('admin_tab_qa', labels.qa), icon: MessageSquare },
     { id: 'orders', label: t('admin_tab_orders', labels.orders), icon: ShoppingBag },
     { id: 'drm', label: t('admin_tab_drm', labels.drm), icon: ShieldAlert },
     { id: 'coupons', label: t('admin_tab_coupons', labels.coupons), icon: Tag },
-    { id: 'media', label: t('admin_tab_media', labels.media), icon: Radio },
     { id: 'settings', label: t('admin_settings_title', labels.settings), icon: Settings },
   ];
 

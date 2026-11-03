@@ -111,38 +111,6 @@ export function CourseCatalogBento({
           </Button>
         </div>
       </div>
-
-      {/* ۲. بخش کتاب‌ها و آثار چاپی */}
-      <div className="space-y-6 pt-8 border-t border-[#E6E1D8] dark:border-[#22242A]">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div className="space-y-1">
-            <span className="text-[11px] font-mono text-[#8A532B] dark:text-[#C58B43] block">
-              [ HARDCOVER MONOGRAPHS • ROYAL OCTAVO ]
-            </span>
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] tracking-tight">
-              {dict.books_section_title || dict.nav_books}
-            </h2>
-          </div>
-
-          <Button asChild variant="link" size="sm" className="font-bold text-xs p-0 gap-1 self-start sm:self-auto">
-            <Link href={localizeHref('/books')}>
-              <span>{dict.books_view_all}</span>
-              <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-            </Link>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {featuredBooks.map((book) => (
-            <MasterpieceBookCard
-              key={book.id}
-              book={book}
-              onOpenBookReader={onOpenBookReader}
-              onAddToCart={onAddToCart}
-            />
-          ))}
-        </div>
-      </div>
     </section>
   );
 }

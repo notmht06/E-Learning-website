@@ -17,6 +17,7 @@ export interface ShellNavItem {
   label: string;
   icon: React.ElementType;
   badge?: string | number;
+  hidden?: boolean;
 }
 
 export interface ShellSidebarProps {
@@ -106,7 +107,7 @@ export function ShellSidebar({
 
         {/* Navigation Items */}
         <nav className="p-2 space-y-1" role="tablist" aria-label="Portal Navigation">
-          {navItems.map((item) => {
+          {navItems.filter((item) => !item.hidden).map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (

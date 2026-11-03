@@ -185,13 +185,6 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             <span className="whitespace-nowrap">{dict.nav_roadmap}</span>
           </Link>
 
-          {/* 4. Books and Publications */}
-          <Link
-            href={localizeHref('/books')}
-            className="inline-flex items-center justify-center h-8 px-3 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#8A532B] dark:hover:text-[#C58B43] transition-colors whitespace-nowrap shrink-0"
-          >
-            <span className="whitespace-nowrap">{dict.nav_books}</span>
-          </Link>
 
           {/* 5. Scholarly Articles */}
           <Link
@@ -432,17 +425,9 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
               <span>{dict.nav_roadmap}</span>
             </Link>
             <Link
-              href={localizeHref('/books')}
-              onClick={() => setIsMobileOpen(false)}
-              className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
-            >
-              <Scroll className="w-4 h-4 text-[#8A532B] shrink-0" />
-              <span>{dict.nav_books}</span>
-            </Link>
-            <Link
               href={localizeHref('/articles')}
               onClick={() => setIsMobileOpen(false)}
-              className="col-span-2 p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
+              className="p-2.5 rounded-2xl bg-white dark:bg-[#18191D] border border-zinc-200/80 dark:border-zinc-800 flex items-center gap-2 hover:border-[#8A532B]/40 transition-colors"
             >
               <BookOpen className="w-4 h-4 text-[#8A532B] shrink-0" />
               <span>{dict.nav_articles}</span>

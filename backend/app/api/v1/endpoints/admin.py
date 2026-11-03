@@ -3,7 +3,7 @@ import uuid
 import json
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.core.config import settings
@@ -259,10 +259,26 @@ async def delete_course(
 async def add_chapter(
     course_id: str,
     req: ChapterCreateRequest,
+    background_tasks: BackgroundTasks,
     admin: dict = Depends(get_current_admin),
     db: AsyncSession = Depends(get_db),
 ):
     new_chapter = await admin_service.add_chapter(course_id=course_id, data=req.dict(), db=db)
+    try:
+        from backend.app.services.auto_media_pipeline import process_uploaded_chapter_in_background
+        from backend.app.services.course_service import course_service
+        c_obj = course_service.get_course_by_id(course_id)
+        background_tasks.add_task(
+            process_uploaded_chapter_in_background,
+            course_id=course_id,
+            course_title=c_obj.get("title", course_id),
+            chapter_id=new_chapter.get("id", 1),
+            chapter_title=new_chapter.get("title", "جلسه جدید"),
+            media_url=new_chapter.get("audio_stream_url") or "",
+            media_type=new_chapter.get("media_type", "hybrid"),
+        )
+    except Exception:
+        pass
     return {"success": True, "chapter": new_chapter}
 
 
@@ -271,6 +287,7 @@ async def update_chapter(
     course_id: str,
     chapter_id: int,
     req: ChapterUpdateRequest,
+    background_tasks: BackgroundTasks,
     admin: dict = Depends(get_current_admin),
     db: AsyncSession = Depends(get_db),
 ):
@@ -280,6 +297,21 @@ async def update_chapter(
         data=req.dict(exclude_unset=True),
         db=db,
     )
+    try:
+        from backend.app.services.auto_media_pipeline import process_uploaded_chapter_in_background
+        from backend.app.services.course_service import course_service
+        c_obj = course_service.get_course_by_id(course_id)
+        background_tasks.add_task(
+            process_uploaded_chapter_in_background,
+            course_id=course_id,
+            course_title=c_obj.get("title", course_id),
+            chapter_id=chapter_id,
+            chapter_title=updated.get("title", f"جلسه {chapter_id}"),
+            media_url=updated.get("audio_stream_url") or "",
+            media_type=updated.get("media_type", "hybrid"),
+        )
+    except Exception:
+        pass
     return {"success": True, "chapter": updated}
 
 
@@ -718,3 +750,89 @@ async def upload_media(
 
 # Include admin sub-router under main router
 router.include_router(admin_router)
+
+
+@router.get("/students-overview", summary="Get all students with enrolled courses, orders, and progress analytics")
+async def get_students_overview(
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(get_current_admin),
+):
+    from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
+    from backend.app.models.models import User, Enrollment, Order, LessonProgress
+    from backend.app.services.course_service import course_service
+
+    users_res = await db.execute(
+        select(User)
+        .options(selectinload(User.enrollments), selectinload(User.orders).selectinload(Order.items))
+        .order_by(User.created_at.desc())
+    )
+    users = users_res.scalars().all()
+
+    prog_res = await db.execute(select(LessonProgress))
+    all_progress = prog_res.scalars().all()
+    prog_by_user: dict = {}
+    for p in all_progress:
+        prog_by_user.setdefault(p.user_id, []).append(p.to_dict())
+
+    course_titles = {c["id"]: c["title"] for c in course_service.courses}
+
+    students_list = []
+    all_orders_list = []
+
+    for u in users:
+        active_enrolls = [e for e in (u.enrollments or []) if getattr(e, "status", "active") == "active"]
+        enrolled_details = []
+        user_progs = prog_by_user.get(u.id, [])
+
+        for e in active_enrolls:
+            cid = e.course_id
+            c_progs = [p["progress_percent"] for p in user_progs if p["course_id"] == cid]
+            avg_prog = int(sum(c_progs) / len(c_progs)) if c_progs else 0
+            enrolled_details.append({
+                "course_id": cid,
+                "course_title": course_titles.get(cid, cid),
+                "enrolled_at": e.enrolled_at.isoformat() if e.enrolled_at else None,
+                "progress_percent": avg_prog,
+            })
+
+        user_orders = []
+        total_spent = 0
+        for o in (u.orders or []):
+            o_dict = o.to_dict()
+            o_dict["customer_name"] = u.full_name or "دانش‌پژوه"
+            o_dict["customer_phone"] = u.mobile
+            user_orders.append(o_dict)
+            all_orders_list.append(o_dict)
+            if o.status in ("paid", "completed", "delivered", "shipped"):
+                total_spent += int(o.total_amount or 0)
+
+        students_list.append({
+            "id": u.id,
+            "full_name": u.full_name or "دانش‌پژوه حیات",
+            "phone": u.mobile,
+            "role": u.role,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+            "enrolled_courses_count": len(enrolled_details),
+            "enrolled_courses": enrolled_details,
+            "orders_count": len(user_orders),
+            "total_spent": total_spent,
+            "orders": user_orders,
+        })
+
+    # Also include guest orders if any
+    guest_orders_res = await db.execute(
+        select(Order).options(selectinload(Order.items)).where(Order.user_id.is_(None)).order_by(Order.created_at.desc())
+    )
+    for go in guest_orders_res.scalars().all():
+        go_dict = go.to_dict()
+        go_dict["customer_name"] = go.recipient_name or "کاربر مهمان"
+        go_dict["customer_phone"] = go.recipient_phone or "—"
+        all_orders_list.append(go_dict)
+
+    all_orders_list.sort(key=lambda x: x.get("created_at") or "", reverse=True)
+
+    return {
+        "students": students_list,
+        "orders": all_orders_list,
+    }

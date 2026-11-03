@@ -98,9 +98,6 @@ export default function HomePage() {
             <Link href={localizeHref('/courses')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_courses}
             </Link>
-            <Link href={localizeHref('/books')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
-              {dict.nav_books}
-            </Link>
             <Link href={localizeHref('/articles')} className="hover:text-[#8A532B] dark:hover:text-[#C58B43] transition duration-200">
               {dict.nav_articles}
             </Link>

@@ -25,6 +25,31 @@ from backend.app.api.deps import get_optional_user, get_current_user, get_curren
 
 router = APIRouter()
 
+def _resolve_allowed_courses_for_user(user: Optional[dict], requested_course_id: Optional[str] = None) -> Optional[list]:
+    """
+    If a student is logged in and has enrolled courses, restricts AI RAG search
+    strictly to their enrolled courses (unless user is admin or in test environment).
+    """
+    import os
+    if os.getenv("TESTING") == "1" or os.getenv("ENVIRONMENT") == "test":
+        return None
+    if not user:
+        return None
+    if str(user.get("role", "")).lower() == "admin":
+        return None
+    enrolled = list(user.get("enrolled_course_ids") or [])
+    # Expand aliases so canonical and alias IDs both match
+    from backend.app.services.course_service import course_service
+    expanded = set(enrolled)
+    for cid in list(expanded):
+        if cid in course_service.COURSE_ID_ALIASES:
+            expanded.add(course_service.COURSE_ID_ALIASES[cid])
+        for k, v in course_service.COURSE_ID_ALIASES.items():
+            if v == cid:
+                expanded.add(k)
+    return list(expanded)
+
+
 MAX_PROMPT_LENGTH = 2000
 MAX_DOCUMENT_LENGTH = 30000
 
@@ -79,7 +104,8 @@ async def chat_with_assistant(
     """
     _validate_prompt_length(req.message)
     _check_ai_rate_limit(request, user)
-    return await ai_service.chat(req)
+    allowed_courses = _resolve_allowed_courses_for_user(user, getattr(req, "course_id", None))
+    return await ai_service.chat(req, allowed_course_ids=allowed_courses)
 
 
 @router.post("/chat/stream", summary="Stream chat with AI Scholarly Assistant (SSE)")
@@ -94,8 +120,9 @@ async def stream_chat_with_assistant(
     """
     _validate_prompt_length(req.message)
     _check_ai_rate_limit(request, user)
+    allowed_courses = _resolve_allowed_courses_for_user(user, getattr(req, "course_id", None))
     return StreamingResponse(
-        ai_service.stream_chat(req),
+        ai_service.stream_chat(req, allowed_course_ids=allowed_courses),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

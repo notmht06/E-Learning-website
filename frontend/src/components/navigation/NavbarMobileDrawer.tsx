@@ -161,16 +161,6 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
           {dict.nav_mobile_articles}
         </Link>
 
-        <Link
-          href={toUrl('/books')}
-          onClick={onClose}
-          className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-bold text-book-text dark:text-white hover:bg-black/[0.03]"
-        >
-          <span>{dict.nav_mobile_books}</span>
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43]">
-            {dict.badge_soon}
-          </span>
-        </Link>
 
         {/* Mobile Language and Theme Controls */}
         <div className="pt-2 border-t border-book-border dark:border-stone-800 flex items-center justify-between px-3">

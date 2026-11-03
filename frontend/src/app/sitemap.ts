@@ -18,12 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/books`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.85,
-    },
-    {
       url: `${baseUrl}/articles`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
@@ -50,13 +44,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  const bookRoutes: MetadataRoute.Sitemap = Object.keys(booksDatabase).map((id) => ({
-    url: `${baseUrl}/books/${id}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
-
   const articleRoutes: MetadataRoute.Sitemap = scholarlyArticlesDatabase.map((article) => ({
     url: `${baseUrl}/articles/${article.slug}`,
     lastModified: new Date(),
@@ -64,5 +51,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...bookRoutes, ...articleRoutes];
+  return [...staticRoutes, ...courseRoutes, ...articleRoutes];
 }
