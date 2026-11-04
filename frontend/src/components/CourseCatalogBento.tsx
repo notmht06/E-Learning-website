@@ -91,8 +91,11 @@ export function CourseCatalogBento({
           </Tabs>
         </div>
 
-        {/* شبکه ۳ ستونی کارت‌های استاندارد shadcn */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+        {/* شبکه ۳ ستونی کارت‌های استاندارد با انیمیشن روان انتقال */}
+        <div
+          key={filterType}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch animate-in fade-in zoom-in-[0.99] duration-200 ease-out"
+        >
           {filteredCourses.map((course, idx) => (
             <MasterpieceCourseCard key={course.id} course={course} index={idx} />
           ))}

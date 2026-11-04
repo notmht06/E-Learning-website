@@ -90,7 +90,19 @@ export default async function RootLayout({
                   <CartProvider>
                     {children}
                     <GlobalOverlays />
-                    <Toaster position="top-center" richColors dir={initialDir} className="font-sans" />
+                    <Toaster
+                      position="top-center"
+                      richColors
+                      dir={initialDir}
+                      toastOptions={{
+                        className: '!font-sans !font-normal text-xs',
+                        classNames: {
+                          toast: '!font-sans text-xs',
+                          title: '!font-sans font-bold text-xs',
+                          description: '!font-sans text-xs',
+                        },
+                      }}
+                    />
                   </CartProvider>
                 </PlayerProvider>
               </DataProvider>
