@@ -4,3 +4,4 @@ export * from './HeroInstantSearch';
 export * from './CourseCategoryCarousel';
 export * from './MethodologyGuarantees';
 export * from './RoadmapBannerSection';
+export * from './LatestArticlesHomeSection';

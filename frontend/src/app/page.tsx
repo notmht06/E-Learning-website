@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { BentoHero } from '@/components/BentoHero';
 import {
-  WisdomStationsSheet,
-  DiscoursePlayerSection,
   CourseCategoryCarousel,
   MethodologyGuarantees,
   RoadmapBannerSection,
+  LatestArticlesHomeSection,
 } from '@/components/home';
 import { CourseCatalogBento } from '@/components/CourseCatalogBento';
 import { ScholarDispatchBento } from '@/components/ScholarDispatchBento';
@@ -72,13 +71,10 @@ export default function HomePage() {
         {/* SECTION 5: Comprehensive Learning Roadmap Banner */}
         <RoadmapBannerSection />
 
-        {/* SECTION 6: Rising Wisdom Stations Sheet */}
-        <WisdomStationsSheet />
+        {/* SECTION 6: Scholar Latest Research Articles & Treatises */}
+        <LatestArticlesHomeSection />
 
-        {/* SECTION 7: Multimedia Discourse Player Studio */}
-        <DiscoursePlayerSection />
-
-        {/* SECTION 8: Scholar Dispatch & Articles */}
+        {/* SECTION 7: Scholar Dispatch Newsletter Banner */}
         <ScholarDispatchBento />
       </main>
 
