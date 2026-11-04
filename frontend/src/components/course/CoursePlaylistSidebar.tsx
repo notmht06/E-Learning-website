@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { Check, Headphones, Lock } from 'lucide-react';
 import { AudioChapter } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -29,103 +28,81 @@ export function CoursePlaylistSidebar({
 
   return (
     <section
-      aria-label={dict.learn_playlist_title}
-      className="rounded-2xl border border-zinc-200 bg-white p-4 text-start dark:border-zinc-800 dark:bg-[#141518]"
+      aria-label={dict.learn_playlist_title || 'سرفصل جلسات'}
+      className="rounded-2xl border border-zinc-200/90 bg-white p-3 sm:p-4 text-start dark:border-zinc-800/80 dark:bg-[#141518] shadow-xs select-none"
     >
-      <header className="mb-4 flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-zinc-100">
+      <header className="mb-3 flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-zinc-800/60">
+        <h3 className="flex items-center gap-2 text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
           <Headphones className="h-4 w-4 text-[#8A532B] dark:text-[#C58B43]" />
-          <span>{dict.learn_playlist_title}</span>
+          <span>{dict.learn_playlist_title || 'سرفصل جلسات درس‌گفتار'}</span>
         </h3>
-        <span className="font-num text-xs text-zinc-500 dark:text-zinc-400">
-          {toLocale(doneCount)}/{toLocale(chapters.length)}
+        <span className="font-num text-xs font-bold text-zinc-500 dark:text-zinc-400 tabular-nums">
+          {toLocale(doneCount)} / {toLocale(chapters.length)}
         </span>
       </header>
 
-      <ol className="max-h-[560px] overflow-y-auto">
+      <ul className="space-y-1 max-h-[560px] overflow-y-auto pe-0.5">
         {chapters.map((ch, idx) => {
           const isActive = ch.id === activeChapterId;
           const isCompleted = completedChapterIds.includes(ch.id);
-          const isLast = idx === chapters.length - 1;
           const isPreview = !!ch.isFreePreview || idx === 0;
           const isLocked = !isEnrolled && !isPreview;
 
-          const title = getLocalizedChapterTitle(ch, currentLang);
+          const rawTitle = getLocalizedChapterTitle(ch, currentLang);
+          // Strip redundant "جلسه ۱: ", "جلسه نخست: " prefix if present in the data
+          const cleanTitle =
+            rawTitle.replace(/^جلسه\s+[\u0600-\u06FF\d]+\s*[:\-•]\s*/, '').trim() || rawTitle;
+
+          const displayNumber = toLocale(String(idx + 1).padStart(2, '0'));
 
           return (
-            <li key={ch.id} className="relative">
-              {!isLast && (
-                <span
-                  aria-hidden="true"
-                  className={`absolute start-[19px] top-7 bottom-[-4px] w-px ${
-                    isCompleted ? 'bg-[#8A532B]/50 dark:bg-[#C58B43]/50' : 'bg-zinc-200 dark:bg-zinc-800'
-                  }`}
-                />
-              )}
-
+            <li key={ch.id}>
               <button
                 type="button"
-                onClick={() => {
-                  onSelectChapter(idx);
-                }}
+                onClick={() => onSelectChapter(idx)}
                 aria-current={isActive ? 'step' : undefined}
-                className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl p-2 text-start transition-colors duration-150 ease-out active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A532B] ${
+                className={`group w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-start transition-colors duration-150 cursor-pointer ${
                   isActive
-                    ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/10'
+                    ? 'bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#E6CA85] font-bold border border-[#8A532B]/30 dark:border-[#C58B43]/40'
                     : isLocked
-                    ? 'opacity-70 [@media(hover:hover)]:hover:bg-zinc-50/50 dark:[@media(hover:hover)]:hover:bg-zinc-900/30'
-                    : '[@media(hover:hover)]:hover:bg-zinc-50 dark:[@media(hover:hover)]:hover:bg-zinc-900/60'
+                    ? 'opacity-60 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 text-zinc-400'
+                    : 'hover:bg-zinc-50 dark:hover:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300'
                 }`}
               >
-                <span className="relative z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
-                  {isLocked ? (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
-                      <Lock className="h-3 w-3" />
-                    </span>
-                  ) : isCompleted ? (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#8A532B] text-white">
-                      <Check className="h-3 w-3 stroke-[3]" />
-                    </span>
-                  ) : isActive ? (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#8A532B] bg-white dark:border-[#C58B43] dark:bg-[#141518]">
-                      <span className="h-2 w-2 rounded-full bg-[#8A532B] dark:bg-[#C58B43]" />
-                    </span>
-                  ) : (
-                    <span className="h-5 w-5 rounded-full border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-[#141518]" />
-                  )}
+                {/* 1. Episode Index Number */}
+                <span className="w-6 shrink-0 text-center font-num text-xs font-bold text-zinc-400 dark:text-zinc-500 tabular-nums group-hover:text-zinc-600 dark:group-hover:text-zinc-300">
+                  {displayNumber}
                 </span>
 
-                <span className="min-w-0 flex-1">
-                  <span
-                    className={`block truncate text-xs ${
-                      isActive || isCompleted
-                        ? 'font-bold text-zinc-900 dark:text-zinc-100'
-                        : isLocked
-                        ? 'text-zinc-400 dark:text-zinc-500'
-                        : 'text-zinc-600 dark:text-zinc-400'
-                    }`}
-                  >
-                    <span className="font-num text-zinc-400 dark:text-zinc-500">{toLocale(idx + 1)}. </span>
-                    {title}
-                  </span>
-                  <span className="mt-1 flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    <span className="font-num">{toLocale(ch.duration)}</span>
-                    {isLocked ? (
-                      <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-                        {dict.ui_enrollment_required}
-                      </span>
-                    ) : isPreview ? (
-                      <span className="rounded bg-[#8A532B]/10 px-2 py-0.5 font-bold text-[#8A532B] dark:text-[#C58B43]">
-                        {dict.learn_free_preview}
-                      </span>
-                    ) : null}
-                  </span>
+                {/* 2. Episode Title */}
+                <span className="min-w-0 flex-1 truncate text-xs leading-normal">
+                  {cleanTitle}
+                </span>
+
+                {/* 3. Duration */}
+                <span className="shrink-0 font-num text-[11px] text-zinc-400 dark:text-zinc-500 tabular-nums">
+                  {toLocale(ch.duration)}
+                </span>
+
+                {/* 4. Completion Checkmark (Visible if completed, empty if not seen yet) */}
+                <span className="w-5 h-5 shrink-0 flex items-center justify-center">
+                  {isCompleted ? (
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white dark:bg-emerald-500 shadow-xs">
+                      <Check className="h-2.5 w-2.5 stroke-[3]" />
+                    </span>
+                  ) : isLocked ? (
+                    <Lock className="h-3 w-3 text-zinc-400" />
+                  ) : (
+                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                  )}
                 </span>
               </button>
             </li>
           );
         })}
-      </ol>
+      </ul>
     </section>
   );
 }
+
+export default CoursePlaylistSidebar;

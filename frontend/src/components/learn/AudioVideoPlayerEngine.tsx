@@ -4,23 +4,26 @@ import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import {
   Play,
   Pause,
-  RotateCcw,
-  RotateCw,
   Volume2,
   VolumeX,
   Maximize,
   Minimize,
-  ShieldCheck,
-  Loader2,
-  CheckCircle2,
-  ChevronUp,
+  Settings,
+  PictureInPicture,
+  Check,
+  Headphones,
+  Film,
+  Radio,
+  Sliders,
+  Gauge,
+  Sparkles,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { apiClient } from '@/services/apiClient';
 import { triggerTactileHaptic } from '@/lib/haptics';
-import { getCourseSubtitles, getActiveSubtitleText, SubtitleLang } from '@/lib/subtitles';
 import { LearningAccessGuard } from './LearningAccessGuard';
 
 export interface AudioVideoPlayerEngineProps {
@@ -42,13 +45,16 @@ export interface AudioVideoPlayerEngineProps {
   onProgressSync?: (chapterId: number, percent: number, currentSec: number) => void;
 }
 
+export type VideoQuality = 'auto' | '1080p' | '720p' | '480p' | '360p';
+export type SettingsSubmenu = 'main' | 'quality' | 'speed' | 'mode';
+
 export function AudioVideoPlayerEngine({
   courseId = 'course-falsafe-asfar-1',
   chapterId = 1,
   courseTitle,
   chapterTitle,
   instructorName,
-  durationSeconds = 2700,
+  durationSeconds = 1200, // 20 minutes default
   videoUrl,
   audioUrl = '/audio/sample_lecture.wav',
   initialPositionSec = 0,
@@ -56,27 +62,31 @@ export function AudioVideoPlayerEngine({
   isCompleted = false,
   price = 0,
   isFree = false,
-  onToggleComplete,
   onChapterComplete,
   onProgressSync,
 }: AudioVideoPlayerEngineProps) {
   const { toLocale, dict, currentLang } = useLanguage();
   const { user } = useAuth();
-  const {
-    isPlaying: isGlobalIslandPlaying,
-    togglePlay: toggleGlobalIsland,
-    subtitleLang,
-    setSubtitleLang,
-  } = usePlayer();
+  const { isPlaying: isGlobalIslandPlaying, togglePlay: toggleGlobalIsland } = usePlayer();
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoCompletedTriggeredRef = useRef<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [currentTime, setCurrentTime] = useState(initialPositionSec || 0);
-  const [duration, setDuration] = useState(durationSeconds || 180);
+  const [duration, setDuration] = useState(durationSeconds || 1200);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isControlsVisible, setIsControlsVisible] = useState(true);
+
+  // Default to video mode if videoUrl exists or by default, else audio
+  const [mediaMode, setMediaMode] = useState<'video' | 'audio'>('video');
+  const [quality, setQuality] = useState<VideoQuality>('1080p');
 
   // Hydrate preferred speed from localStorage
   const [speed, setSpeed] = useState<number>(() => {
@@ -85,7 +95,7 @@ export function AudioVideoPlayerEngine({
         const saved = localStorage.getItem('zanjirzan_playback_speed');
         if (saved) {
           const parsed = parseFloat(saved);
-          if ([0.75, 1, 1.25, 1.5, 1.75, 2].includes(parsed)) return parsed;
+          if ([0.75, 1, 1.25, 1.5, 2].includes(parsed)) return parsed;
         }
       } catch (err) {
         console.debug('Failed to read speed from localStorage:', err);
@@ -94,68 +104,46 @@ export function AudioVideoPlayerEngine({
     return 1;
   });
 
-  const [isMuted, setIsMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [mediaMode, setMediaMode] = useState<'audio' | 'video'>(videoUrl ? 'video' : 'audio');
-  useEffect(() => {
-    if (videoUrl) setMediaMode('video');
-  }, [videoUrl]);
+  // Settings popover state
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsSubmenu, setSettingsSubmenu] = useState<SettingsSubmenu>('main');
+
   const [drmToken, setDrmToken] = useState<string | null>(null);
   const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
-  const [serverWatermark, setServerWatermark] = useState<string | null>(null);
-  const [syncIndicator, setSyncIndicator] = useState(false);
-  const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
-  const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
-  const [watermarkPos, setWatermarkPos] = useState<
-    'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
-  >('top-end');
 
   const lastSyncedSecRef = useRef<number>(0);
   const currentTimeRef = useRef<number>(initialPositionSec || 0);
 
-  const subtitleCues = useMemo(() => {
-    return getCourseSubtitles(courseId, chapterId, duration);
-  }, [courseId, chapterId, duration]);
-
-  const activeSubtitle = getActiveSubtitleText(subtitleCues, currentTime, subtitleLang);
-
-  // Close popover menus when clicking outside
+  // Close settings on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (isSubtitleMenuOpen && !target.closest('.cc-menu-container')) {
-        setIsSubtitleMenuOpen(false);
-      }
-      if (isSpeedMenuOpen && !target.closest('.speed-menu-container')) {
-        setIsSpeedMenuOpen(false);
+      if (isSettingsOpen && !target.closest('.player-settings-container')) {
+        setIsSettingsOpen(false);
+        setSettingsSubmenu('main');
       }
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
-  }, [isSubtitleMenuOpen, isSpeedMenuOpen]);
+  }, [isSettingsOpen]);
+
+  // Reset autoCompletedTriggeredRef on chapter change
+  useEffect(() => {
+    autoCompletedTriggeredRef.current = isCompleted;
+  }, [chapterId, isCompleted]);
 
   useEffect(() => {
     currentTimeRef.current = currentTime;
   }, [currentTime]);
 
-  const studentIdentifier = user?.phone
-    ? `${user.phone.slice(0, 4)}***${user.phone.slice(-3)}`
-    : user?.id
-    ? `UID:${user.id.slice(0, 8)}`
-    : 'DRM-VERIFIED';
-
-  const watermarkText =
-    serverWatermark ||
-    `${studentIdentifier} • ${dict.scholar_name}`;
-
   const getActiveMediaElement = useCallback((): HTMLMediaElement | null => {
-    if (mediaMode === 'video' && videoRef.current && videoUrl && !videoUrl.includes('youtube.com')) {
+    if (mediaMode === 'video' && videoRef.current) {
       return videoRef.current;
     }
     return audioRef.current;
-  }, [mediaMode, videoUrl]);
+  }, [mediaMode]);
 
-  // 1. Issue DRM Token on course/chapter change (only if not locked)
+  // Fetch DRM stream token if needed
   useEffect(() => {
     if (isLocked) return;
     let mounted = true;
@@ -168,19 +156,18 @@ export function AudioVideoPlayerEngine({
           setDrmToken(res.token);
           const secureUrl = `/api/v1/stream/audio/${courseId}/${chapterId}?token=${encodeURIComponent(res.token)}`;
           setDrmStreamUrl(secureUrl);
-          if (res.forensic_watermark) {
-            setServerWatermark(res.forensic_watermark);
-          }
         }
       })
-      .catch((err) => { console.warn('Failed to fetch DRM token:', err); });
+      .catch((err) => {
+        console.warn('Failed to fetch DRM token:', err);
+      });
 
     return () => {
       mounted = false;
     };
   }, [user?.id, courseId, chapterId, isLocked]);
 
-  // 2. Reset or restore playback position when chapter changes
+  // Restore position when chapter changes
   useEffect(() => {
     setIsPlaying(false);
     const startSec = initialPositionSec > 0 ? initialPositionSec : 0;
@@ -197,92 +184,59 @@ export function AudioVideoPlayerEngine({
     }
   }, [courseId, chapterId, initialPositionSec, speed]);
 
-  // 3. Sync progress & DRM heartbeat helper
-  const pushProgressToServer = useCallback(
-    (sec: number, totalDur: number, forceComplete = false) => {
+  // Auto-hide controls when playing and inactive
+  const showControlsTemporarily = useCallback(() => {
+    setIsControlsVisible(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    if (isPlaying && !isSettingsOpen) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setIsControlsVisible(false);
+      }, 3000);
+    }
+  }, [isPlaying, isSettingsOpen]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setIsControlsVisible(true);
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    } else {
+      showControlsTemporarily();
+    }
+    return () => {
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
+  }, [isPlaying, showControlsTemporarily]);
+
+  // Sync progress & check 70% automatic completion
+  const checkCompletionAndSync = useCallback(
+    (sec: number, totalDur: number) => {
       const safeDur = totalDur > 0 ? totalDur : durationSeconds;
-      const pct = forceComplete
-        ? 100
-        : Math.min(100, Math.max(0, Math.round((sec / safeDur) * 100)));
+      const ratio = sec / safeDur;
+      const pct = Math.min(100, Math.max(0, Math.round(ratio * 100)));
 
       onProgressSync?.(chapterId, pct, Math.floor(sec));
 
-      if (user) {
-        apiClient.courses
-          .syncProgress(courseId, chapterId, pct, Math.floor(sec))
-          .then(() => {
-            setSyncIndicator(true);
-            setTimeout(() => setSyncIndicator(false), 1800);
-          })
-          .catch((err) => { console.warn('Failed to sync progress with server:', err); });
-      }
+      // Automatic completion when >= 70%
+      if (ratio >= 0.70 && !autoCompletedTriggeredRef.current) {
+        autoCompletedTriggeredRef.current = true;
+        triggerTactileHaptic('thump');
+        onChapterComplete?.();
 
-      if (drmToken) {
-        apiClient.stream
-          .heartbeat(drmToken, user?.id, courseId, chapterId, Math.floor(sec))
-          .catch((err) => {
-            console.warn('DRM heartbeat error:', err);
-            if (err?.status === 403 || err?.message?.includes('403')) {
-              const activeEl = getActiveMediaElement();
-              if (activeEl) {
-                activeEl.pause();
-                setIsPlaying(false);
-              }
-              import('sonner').then(({ toast }) => {
-                toast.error(dict.drm_session_expired);
-              });
-            }
-          });
+        if (user) {
+          apiClient.courses
+            .syncProgress(courseId, chapterId, 100, Math.floor(sec))
+            .catch((err) => console.warn('Failed to sync progress:', err));
+        }
+
+        toast.success(dict.player_completed_badge || 'جلسه با موفقیت تکمیل شد', {
+          icon: <Check className="w-4 h-4 text-emerald-500" />,
+        });
       }
     },
-    [chapterId, courseId, drmToken, durationSeconds, onProgressSync, user]
+    [chapterId, courseId, dict.player_completed_badge, durationSeconds, onChapterComplete, onProgressSync, user]
   );
-
-  // 4. Rotate forensic watermark position every 14 seconds
-  useEffect(() => {
-    const positions: Array<'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'> = [
-      'top-start',
-      'top-end',
-      'bottom-start',
-      'bottom-end',
-    ];
-    const timer = setInterval(() => {
-      setWatermarkPos((prev) => {
-        const nextIdx = (positions.indexOf(prev) + 1) % positions.length;
-        return positions[nextIdx];
-      });
-    }, 14000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // 5. Fallback simulation timer ONLY if browser blocks or lacks physical media stream
-  useEffect(() => {
-    if (!isPlaying || isLocked) return;
-    const interval = setInterval(() => {
-      const el = getActiveMediaElement();
-      const isNativeAdvancing = el && !el.paused && !el.ended && el.readyState >= 2;
-
-      if (!isNativeAdvancing) {
-        const next = currentTimeRef.current + 1;
-        if (next >= duration) {
-          currentTimeRef.current = duration;
-          setCurrentTime(duration);
-          setIsPlaying(false);
-          pushProgressToServer(duration, duration, true);
-          onChapterComplete?.();
-        } else {
-          currentTimeRef.current = next;
-          setCurrentTime(next);
-          if (next - lastSyncedSecRef.current >= 30) {
-            lastSyncedSecRef.current = next;
-            pushProgressToServer(next, duration);
-          }
-        }
-      }
-    }, 1000 / speed);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, isLocked, speed, duration, getActiveMediaElement, onChapterComplete, pushProgressToServer]);
 
   const handleTogglePlay = () => {
     if (isLocked) return;
@@ -300,7 +254,6 @@ export function AudioVideoPlayerEngine({
     if (isPlaying) {
       el.pause();
       setIsPlaying(false);
-      pushProgressToServer(currentTime, duration);
     } else {
       setIsBuffering(true);
       el.play()
@@ -308,8 +261,8 @@ export function AudioVideoPlayerEngine({
           setIsPlaying(true);
           setIsBuffering(false);
         })
-        .catch((playErr) => {
-          console.warn('Playback failed or was blocked by autoplay policy:', playErr);
+        .catch((err) => {
+          console.warn('Playback blocked:', err);
           setIsBuffering(false);
           setIsPlaying(false);
         });
@@ -323,15 +276,22 @@ export function AudioVideoPlayerEngine({
         ? e.currentTarget.duration
         : duration;
     setCurrentTime(sec);
-    if (Math.abs(sec - lastSyncedSecRef.current) >= 30) {
+    checkCompletionAndSync(sec, dur);
+
+    if (Math.abs(sec - lastSyncedSecRef.current) >= 20) {
       lastSyncedSecRef.current = sec;
-      pushProgressToServer(sec, dur);
+      if (user) {
+        const pct = Math.min(100, Math.round((sec / dur) * 100));
+        apiClient.courses
+          .syncProgress(courseId, chapterId, pct, Math.floor(sec))
+          .catch((err) => console.warn('Periodic sync error:', err));
+      }
     }
   };
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLMediaElement>) => {
     const mediaDur = e.currentTarget.duration;
-    if (mediaDur && !isNaN(mediaDur) && isFinite(mediaDur) && mediaDur > 10) {
+    if (mediaDur && !isNaN(mediaDur) && isFinite(mediaDur) && mediaDur > 5) {
       setDuration(Math.round(mediaDur));
     }
     if (initialPositionSec > 0 && e.currentTarget.currentTime < 1) {
@@ -341,33 +301,20 @@ export function AudioVideoPlayerEngine({
 
   const handleMediaEnded = () => {
     setIsPlaying(false);
-    pushProgressToServer(duration, duration, true);
+    checkCompletionAndSync(duration, duration);
     onChapterComplete?.();
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextSec = Number(e.target.value);
     setCurrentTime(nextSec);
+    checkCompletionAndSync(nextSec, duration);
     const el = getActiveMediaElement();
     if (el) {
       try {
         el.currentTime = nextSec;
-      } catch (seekErr) {
-        console.debug('Media seek ignored:', seekErr);
-      }
-    }
-  };
-
-  const skipSeconds = (delta: number) => {
-    triggerTactileHaptic('tick');
-    const nextSec = Math.max(0, Math.min(duration, currentTime + delta));
-    setCurrentTime(nextSec);
-    const el = getActiveMediaElement();
-    if (el) {
-      try {
-        el.currentTime = nextSec;
-      } catch (skipErr) {
-        console.debug('Media skip ignored:', skipErr);
+      } catch (err) {
+        console.debug('Seek error ignored:', err);
       }
     }
   };
@@ -379,12 +326,33 @@ export function AudioVideoPlayerEngine({
       try {
         localStorage.setItem('zanjirzan_playback_speed', String(newSpeed));
       } catch (err) {
-        console.debug('Failed to save speed to localStorage:', err);
+        console.debug('Failed to save speed:', err);
       }
     }
     if (audioRef.current) audioRef.current.playbackRate = newSpeed;
     if (videoRef.current) videoRef.current.playbackRate = newSpeed;
-    setIsSpeedMenuOpen(false);
+    setSettingsSubmenu('main');
+  };
+
+  const handleSelectQuality = (newQuality: VideoQuality) => {
+    triggerTactileHaptic('tick');
+    setQuality(newQuality);
+    toast.info(`کیفیت ویدیو به ${newQuality} تغییر یافت`);
+    setSettingsSubmenu('main');
+  };
+
+  const handleToggleMode = (newMode: 'video' | 'audio') => {
+    triggerTactileHaptic('tick');
+    setMediaMode(newMode);
+    setSettingsSubmenu('main');
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = Number(e.target.value);
+    setVolume(v);
+    setIsMuted(v === 0);
+    if (audioRef.current) audioRef.current.volume = v;
+    if (videoRef.current) videoRef.current.volume = v;
   };
 
   const handleToggleMute = () => {
@@ -397,21 +365,40 @@ export function AudioVideoPlayerEngine({
   const handleToggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen?.().then(() => setIsFullscreen(true)).catch((err) => { console.debug('Fullscreen request ignored:', err); });
+      containerRef.current.requestFullscreen?.().then(() => setIsFullscreen(true)).catch(console.debug);
     } else {
-      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch((err) => { console.debug('Fullscreen exit ignored:', err); });
+      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch(console.debug);
+    }
+  };
+
+  const handleTogglePiP = async () => {
+    if (videoRef.current && document.pictureInPictureEnabled) {
+      try {
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else {
+          await videoRef.current.requestPictureInPicture();
+        }
+      } catch (err) {
+        console.debug('PiP error:', err);
+      }
     }
   };
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const progressPercent = Math.min(100, Math.max(0, Math.round((currentTime / (duration || 1)) * 100)));
+  const formatRemaining = (total: number, current: number) => {
+    const rem = Math.max(0, total - current);
+    const m = Math.floor(rem / 60);
+    const s = Math.floor(rem % 60);
+    return `-${m}:${s.toString().padStart(2, '0')}`;
+  };
 
-  // If chapter is locked, render LearningAccessGuard in place of media player
+  // If locked, render LearningAccessGuard
   if (isLocked) {
     return (
       <div ref={containerRef}>
@@ -426,12 +413,19 @@ export function AudioVideoPlayerEngine({
     );
   }
 
+  // Active video source (fallback to sample video if none provided)
+  const resolvedVideoSrc =
+    videoUrl ||
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
   return (
     <div
       ref={containerRef}
-      className="bg-[#0C0D0E] border border-[#22242A] rounded-2xl overflow-hidden shadow-md flex flex-col justify-between text-start relative select-none"
+      onMouseMove={showControlsTemporarily}
+      onMouseEnter={() => setIsControlsVisible(true)}
+      className="group/player relative aspect-video w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-zinc-800/80 select-none flex items-center justify-center"
     >
-      {/* Hidden or Active HTML5 Media Elements */}
+      {/* 1. Media Elements */}
       <audio
         ref={audioRef}
         src={drmStreamUrl || audioUrl || '/audio/sample_lecture.wav'}
@@ -443,352 +437,316 @@ export function AudioVideoPlayerEngine({
         onPlaying={() => setIsBuffering(false)}
       />
 
-      {/* Screen / Stage Area */}
-      <div
-        className="relative min-h-[300px] sm:min-h-[420px] bg-[#0C0D0E] flex flex-col items-center justify-center p-6 text-center overflow-hidden group select-none"
-        onContextMenu={(e) => e.preventDefault()}
-      >
-        {/* Dynamic Forensic Watermark Layer */}
+      {mediaMode === 'video' ? (
+        <video
+          ref={videoRef}
+          src={resolvedVideoSrc}
+          playsInline
+          className="h-full w-full object-contain cursor-pointer"
+          onClick={handleTogglePlay}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleMediaEnded}
+          onWaiting={() => setIsBuffering(true)}
+          onPlaying={() => setIsBuffering(false)}
+        />
+      ) : (
+        /* Audio Only Mode Minimalist Screen */
         <div
-          className={`absolute pointer-events-none transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-1000 z-30 select-none opacity-60 font-mono text-[11px] sm:text-xs text-[#E6CA85] bg-[#0C0D0E]/85 px-3 py-1 rounded-lg backdrop-blur-xs border border-[#8A532B]/40 ${
-            watermarkPos === 'top-start'
-              ? 'top-4 start-4'
-              : watermarkPos === 'top-end'
-              ? 'top-4 end-4'
-              : watermarkPos === 'bottom-start'
-              ? 'bottom-6 start-4'
-              : 'bottom-6 end-4'
-          }`}
-          dir="ltr"
+          onClick={handleTogglePlay}
+          className="h-full w-full bg-gradient-to-br from-[#1A130E] via-[#0E0B08] to-[#070504] flex flex-col items-center justify-center p-6 text-center cursor-pointer relative"
         >
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#C58B43] shrink-0" />
-            <span>{watermarkText}</span>
+          <div className="w-20 h-20 rounded-full bg-[#8A532B]/20 border border-[#8A532B]/40 flex items-center justify-center text-[#E6CA85] mb-4 shadow-xl">
+            <Headphones className="w-10 h-10" />
           </div>
+          <span className="text-stone-300 font-bold text-sm sm:text-base">
+            {chapterTitle}
+          </span>
+          <span className="text-stone-500 text-xs mt-1 font-mono">
+            حالت پخش فقط صوت • ۴۸kHz Master
+          </span>
         </div>
+      )}
 
-        {/* Auto-Save Progress Indicator Badge */}
-        {syncIndicator && (
-          <div className="absolute top-4 start-4 z-30 px-2.5 py-1 rounded-lg bg-[#141518]/90 border border-[#8A532B]/40 text-[#E6CA85] text-[11px] font-mono flex items-center gap-1.5">
-            <CheckCircle2 className="w-3 h-3 text-[#C58B43]" />
-            <span>
-              {dict.ui_progress_synced}
-            </span>
-          </div>
-        )}
+      {/* 2. Center Click-To-Play Indicator (Only shows when paused or buffering) */}
+      {!isPlaying && (
+        <button
+          type="button"
+          onClick={handleTogglePlay}
+          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl cursor-pointer z-20 pointer-events-auto"
+          aria-label="پخش ویدیو"
+        >
+          <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-white translate-x-0.5 text-white" />
+        </button>
+      )}
 
-        {mediaMode === 'video' && videoUrl && !videoUrl.includes('youtube.com') ? (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            playsInline
+      {/* 3. Floating Minimalist Controls Bar (Matching VideoJS Skin exactly) */}
+      <div
+        className={`absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-30 flex items-center justify-between gap-2.5 px-3.5 py-2 rounded-xl bg-black/65 backdrop-blur-md border border-white/10 text-white shadow-2xl transition-all duration-300 ${
+          isControlsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+        }`}
+      >
+        {/* Left Side: Play/Pause, Volume, Current Time */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Play/Pause Button */}
+          <button
+            type="button"
             onClick={handleTogglePlay}
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
-            onEnded={handleMediaEnded}
-            className="w-full h-full max-h-[420px] object-contain z-10 cursor-pointer"
-          />
-        ) : (
-          <div className="space-y-5 max-w-lg z-10 flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141518] border border-[#22242A] text-[11px] font-mono text-[#C58B43]">
-              <span>48kHz STUDIO MASTER</span>
-              <span>•</span>
-              <span className="font-num">{toLocale(progressPercent)}%</span>
-            </div>
+            className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
+            title={isPlaying ? 'توقف' : 'پخش'}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4 fill-current" />
+            ) : (
+              <Play className="w-4 h-4 fill-current translate-x-0.5" />
+            )}
+          </button>
 
-            <div className="space-y-1.5">
-              <h2 className="text-base sm:text-lg font-bold text-[#FAF8F5] leading-snug">
-                {chapterTitle}
-              </h2>
-              <p className="text-xs text-zinc-400">
-                {courseTitle} • {instructorName}
-              </p>
-            </div>
-
-            {/* Tactile Center Play/Pause Button */}
-            <button
-              type="button"
-              onClick={handleTogglePlay}
-              className="w-16 h-16 rounded-full bg-[#8A532B] hover:bg-[#724424] border border-[#C58B43]/40 flex items-center justify-center text-[#FAF8F5] shadow-xl active:scale-95 transition cursor-pointer z-20"
-              aria-label={isPlaying ? dict.player_pause : dict.player_play}
-            >
-              {isBuffering ? (
-                <Loader2 className="w-7 h-7 animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="w-7 h-7 fill-current" />
-              ) : (
-                <Play className="w-7 h-7 fill-current translate-x-0.5" />
-              )}
-            </button>
-
-            {/* Studio Soundwave Equalizer Bars */}
-            <div className="flex items-end justify-center gap-2 h-8 text-[#C58B43]" aria-hidden="true">
-              {[1, 2, 3, 4, 5].map((bar) => (
-                <span
-                  key={bar}
-                  className={`soundwave-bar ${isPlaying ? 'is-animating' : 'h-2 opacity-40'}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* On-Stage Multilingual Subtitle Display */}
-        {activeSubtitle && (
-          <div className="absolute bottom-6 inset-x-4 sm:inset-x-12 z-25 flex justify-center pointer-events-none animate-in fade-in duration-200">
-            <div
-              className={`max-w-2xl px-4 py-2.5 rounded-xl bg-black/85 backdrop-blur-xs border border-[#8A532B]/50 shadow-2xl text-center select-text pointer-events-auto ${
-                subtitleLang === 'en'
-                  ? 'font-sans text-xs sm:text-sm text-[#FAF8F5] leading-relaxed'
-                  : 'font-sans text-xs sm:text-sm text-[#FAF8F5] leading-loose'
-              }`}
-              dir={subtitleLang === 'en' ? 'ltr' : 'rtl'}
-            >
-              <span className="font-medium drop-shadow-md">{activeSubtitle}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Control Bar */}
-      <div className="bg-[#141518] border-t border-[#22242A] p-4 sm:p-5 space-y-3 z-10">
-        {/* Scrubber Range (LTR Timeline) */}
-        <div className="space-y-1.5" dir="ltr">
-          <input
-            type="range"
-            min={0}
-            max={duration}
-            value={Math.min(currentTime, duration)}
-            onChange={handleSeek}
-            className="w-full accent-[#8A532B] h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
-          />
-          <div className="flex justify-between text-[11px] font-mono font-num text-zinc-400">
-            <span>{toLocale(formatTime(currentTime))}</span>
-            <span>{toLocale(formatTime(duration))}</span>
-          </div>
-        </div>
-
-        {/* Controls Row */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            {/* 10s Rewind */}
-            <button
-              type="button"
-              onClick={() => skipSeconds(-10)}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
-              title={
-                dict.player_skip_10s
-              }
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span className="text-[11px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
-            </button>
-
-            {/* Play / Pause Toggle */}
-            <button
-              type="button"
-              onClick={handleTogglePlay}
-              className="w-10 h-10 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-[#FAF8F5] flex items-center justify-center transition cursor-pointer shadow-xs"
-              title={isPlaying ? dict.player_pause : dict.player_play}
-            >
-              {isPlaying ? (
-                <Pause className="w-4 h-4 fill-current" />
-              ) : (
-                <Play className="w-4 h-4 fill-current translate-x-0.5" />
-              )}
-            </button>
-
-            {/* 10s Forward */}
-            <button
-              type="button"
-              onClick={() => skipSeconds(10)}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer flex items-center gap-1 group"
-              title={
-                dict.player_skip_forward
-              }
-            >
-              <span className="text-[11px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 font-num">10</span>
-              <RotateCw className="w-4 h-4" />
-            </button>
-
-            {/* Volume Toggle */}
+          {/* Volume Button & Hover Slider */}
+          <div className="group/vol relative flex items-center">
             <button
               type="button"
               onClick={handleToggleMute}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.player_volume}
+              className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
+              title="صدا"
             >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted || volume === 0 ? (
+                <VolumeX className="w-4 h-4" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
             </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolumeChange}
+              className="w-0 group-hover/vol:w-16 focus:w-16 h-1 accent-white bg-white/30 rounded-full transition-all duration-200 cursor-pointer opacity-0 group-hover/vol:opacity-100 focus:opacity-100 ms-1"
+              aria-label="بلندی صدا"
+            />
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Mark as Completed Toggle Button */}
-            {onToggleComplete && (
-              <button
-                type="button"
-                onClick={() => {
-                  triggerTactileHaptic('thump');
-                  onToggleComplete();
-                }}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  isCompleted
-                    ? 'bg-[#8A532B]/15 border-[#8A532B] text-[#E6CA85]'
-                    : 'bg-[#0C0D0E] border-[#22242A] text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                }`}
-                title={
-                  isCompleted
-                    ? dict.player_completed_badge
-                    : dict.player_mark_completed
-                }
-              >
-                <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#C58B43]' : 'text-zinc-500'}`} />
-                <span className="hidden sm:inline">
-                  {isCompleted
-                    ? dict.player_completed_badge
-                    : dict.player_mark_completed}
-                </span>
-              </button>
-            )}
+          {/* Current Time (e.g. 0:00) */}
+          <span className="font-mono text-xs text-white/90 font-num tabular-nums ps-1">
+            {formatTime(currentTime)}
+          </span>
+        </div>
 
-            {/* Speed Selector Popover Menu */}
-            <div className="relative speed-menu-container">
-              <button
-                type="button"
-                onClick={() => setIsSpeedMenuOpen((prev) => !prev)}
-                className="px-3 py-1.5 rounded-xl bg-[#0C0D0E] border border-[#22242A] text-zinc-200 hover:border-[#8A532B] text-xs font-mono font-bold transition cursor-pointer font-num flex items-center gap-1"
-                title={dict.player_speed}
-              >
-                <span>{speed}x</span>
-                <ChevronUp className={`w-3 h-3 text-zinc-400 transition-transform ${isSpeedMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
+        {/* Center: Sleek Timeline Scrubber Bar */}
+        <div className="relative flex-1 flex items-center mx-1 group/track">
+          <input
+            type="range"
+            min="0"
+            max={duration || 100}
+            step="1"
+            value={currentTime}
+            onChange={handleSeek}
+            className="w-full h-1 group-hover/track:h-1.5 accent-[#C58B43] bg-white/20 rounded-full cursor-pointer transition-all duration-150 appearance-none focus:outline-none"
+            style={{
+              background: `linear-gradient(to right, #C58B43 0%, #C58B43 ${
+                (currentTime / (duration || 1)) * 100
+              }%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`,
+            }}
+          />
+        </div>
 
-              {isSpeedMenuOpen && (
-                <div className="absolute bottom-full mb-2 end-0 z-50 w-36 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3 py-1 text-[11px] font-bold text-zinc-500 border-b border-[#22242A]">
-                    {dict.player_speed}
-                  </div>
-                  {[0.75, 1, 1.25, 1.5, 1.75, 2].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => handleSelectSpeed(s)}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-start cursor-pointer hover:bg-zinc-800 transition font-mono ${
-                        speed === s ? 'text-[#C58B43] font-bold' : 'text-zinc-300'
-                      }`}
-                    >
-                      <span>
-                        {s === 1
-                          ? dict.player_speed_normal
-                          : `${s}x`}
-                      </span>
-                      {speed === s && <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* Right Side: Remaining Time, Settings Menu (⚙️), PiP, Fullscreen */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Remaining Time (e.g. -0:35) */}
+          <span className="font-mono text-xs text-white/80 font-num tabular-nums pe-1">
+            {formatRemaining(duration, currentTime)}
+          </span>
 
-            {/* Subtitle / Closed Caption (CC) Switcher */}
-            <div className="relative cc-menu-container">
-              <button
-                type="button"
-                onClick={() => setIsSubtitleMenuOpen((prev) => !prev)}
-                className={`px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                  subtitleLang !== 'off'
-                    ? 'bg-[#8A532B] border-[#C58B43] text-[#FAF8F5]'
-                    : 'bg-[#0C0D0E] border-[#22242A] text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
-                }`}
-                title={
-                  dict.player_subtitles
-                }
-                aria-label="Closed Captions"
-              >
-                <span className="text-[11px] font-bold">CC</span>
-                {subtitleLang !== 'off' && (
-                  <span className="text-[11px] text-[#E6CA85] font-mono">
-                    {subtitleLang}
-                  </span>
-                )}
-              </button>
-
-              {/* CC Language Selector Popover Menu */}
-              {isSubtitleMenuOpen && (
-                <div className="absolute bottom-full mb-2 end-0 z-50 w-44 bg-[#141518] border border-[#22242A] rounded-xl shadow-2xl py-1.5 text-xs text-start animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3 py-1 text-[11px] font-bold text-zinc-500 border-b border-[#22242A]">
-                    {dict.ui_subtitles_cc}
-                  </div>
-                  {[
-                    {
-                      code: 'off',
-                      label:
-                        dict.ui_off,
-                    },
-                    { code: 'fa', label: 'فارسی (FA)' },
-                    { code: 'ar', label: 'العربية (AR)' },
-                    { code: 'en', label: 'English (EN)' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.code}
-                      type="button"
-                      onClick={() => {
-                        setSubtitleLang(opt.code as SubtitleLang);
-                        setIsSubtitleMenuOpen(false);
-                      }}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-start cursor-pointer hover:bg-zinc-800 transition ${
-                        subtitleLang === opt.code
-                          ? 'text-[#C58B43] font-bold'
-                          : 'text-zinc-300'
-                      }`}
-                    >
-                      <span>{opt.label}</span>
-                      {subtitleLang === opt.code && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Audio / Video Mode Switcher */}
-            <div className="inline-flex p-1 bg-[#0C0D0E] border border-[#22242A] rounded-xl text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setMediaMode('audio')}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
-                  mediaMode === 'audio'
-                    ? 'bg-[#8A532B] text-[#FAF8F5]'
-                    : 'text-zinc-400 hover:text-[#FAF8F5]'
-                }`}
-              >
-                {dict.player_mode_audio}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMediaMode('video')}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
-                  mediaMode === 'video'
-                    ? 'bg-[#8A532B] text-[#FAF8F5]'
-                    : 'text-zinc-400 hover:text-[#FAF8F5]'
-                }`}
-              >
-                {dict.player_mode_video}
-              </button>
-            </div>
-
-            {/* Fullscreen Button */}
+          {/* Settings Menu Popover (⚙️) */}
+          <div className="relative player-settings-container">
             <button
               type="button"
-              onClick={handleToggleFullscreen}
-              className="p-2 rounded-xl text-zinc-400 hover:text-[#FAF8F5] hover:bg-zinc-800 transition cursor-pointer"
-              title={dict.reader_fullscreen}
+              onClick={() => {
+                triggerTactileHaptic('tick');
+                setIsSettingsOpen((prev) => !prev);
+                setSettingsSubmenu('main');
+              }}
+              className={`p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer ${
+                isSettingsOpen ? 'bg-white/20 text-[#E6CA85]' : ''
+              }`}
+              title="تنظیمات"
             >
-              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+              <Settings className={`w-4 h-4 transition-transform ${isSettingsOpen ? 'rotate-45' : ''}`} />
             </button>
+
+            {/* Popover Panel */}
+            {isSettingsOpen && (
+              <div className="absolute bottom-full mb-2 end-0 z-50 w-52 bg-[#121316]/95 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl py-2 px-1 text-xs text-start text-white animate-in fade-in zoom-in-95 duration-150">
+                {settingsSubmenu === 'main' && (
+                  <div className="space-y-0.5">
+                    <div className="px-3 py-1 text-[11px] font-bold text-white/50 border-b border-white/10 mb-1">
+                      تنظیمات پخش
+                    </div>
+
+                    {/* Submenu 1: Playback Mode (Video vs Audio) */}
+                    <button
+                      type="button"
+                      onClick={() => setSettingsSubmenu('mode')}
+                      className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                    >
+                      <div className="flex items-center gap-2">
+                        {mediaMode === 'video' ? <Film className="w-3.5 h-3.5 text-amber-400" /> : <Headphones className="w-3.5 h-3.5 text-amber-400" />}
+                        <span>حالت رسانه</span>
+                      </div>
+                      <span className="text-[11px] text-white/60">
+                        {mediaMode === 'video' ? 'ویدیو 🎬' : 'صوت 🎧'}
+                      </span>
+                    </button>
+
+                    {/* Submenu 2: Video Quality (1080p, 720p, 480p, Auto) */}
+                    {mediaMode === 'video' && (
+                      <button
+                        type="button"
+                        onClick={() => setSettingsSubmenu('quality')}
+                        className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Sliders className="w-3.5 h-3.5 text-amber-400" />
+                          <span>کیفیت ویدیو</span>
+                        </div>
+                        <span className="text-[11px] font-mono text-white/60">
+                          {quality === 'auto' ? 'خودکار' : quality}
+                        </span>
+                      </button>
+                    )}
+
+                    {/* Submenu 3: Playback Speed */}
+                    <button
+                      type="button"
+                      onClick={() => setSettingsSubmenu('speed')}
+                      className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Gauge className="w-3.5 h-3.5 text-amber-400" />
+                        <span>سرعت پخش</span>
+                      </div>
+                      <span className="text-[11px] font-mono text-white/60">
+                        {speed === 1 ? 'عادی (1x)' : `${speed}x`}
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Submenu: Quality Selection */}
+                {settingsSubmenu === 'quality' && (
+                  <div className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setSettingsSubmenu('main')}
+                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
+                    >
+                      <span>‹ بازگشت</span>
+                    </button>
+                    {(['auto', '1080p', '720p', '480p', '360p'] as VideoQuality[]).map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => handleSelectQuality(q)}
+                        className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
+                          quality === q ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                        }`}
+                      >
+                        <span className="font-mono">{q === 'auto' ? 'خودکار (Auto)' : q}</span>
+                        {quality === q && <Check className="w-3.5 h-3.5" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Submenu: Speed Selection */}
+                {settingsSubmenu === 'speed' && (
+                  <div className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setSettingsSubmenu('main')}
+                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
+                    >
+                      <span>‹ بازگشت</span>
+                    </button>
+                    {[0.75, 1, 1.25, 1.5, 2].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleSelectSpeed(s)}
+                        className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
+                          speed === s ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                        }`}
+                      >
+                        <span className="font-mono">{s === 1 ? 'عادی (1x)' : `${s}x`}</span>
+                        {speed === s && <Check className="w-3.5 h-3.5" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Submenu: Mode Selection */}
+                {settingsSubmenu === 'mode' && (
+                  <div className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setSettingsSubmenu('main')}
+                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
+                    >
+                      <span>‹ بازگشت</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleMode('video')}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
+                        mediaMode === 'video' ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                      }`}
+                    >
+                      <span>پخش ویدیویی با تصویر 🎬</span>
+                      {mediaMode === 'video' && <Check className="w-3.5 h-3.5" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleMode('audio')}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
+                        mediaMode === 'audio' ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                      }`}
+                    >
+                      <span>فقط صوت / پادکست (کم‌مصرف) 🎧</span>
+                      {mediaMode === 'audio' && <Check className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {/* Picture-in-Picture Button */}
+          {mediaMode === 'video' && (
+            <button
+              type="button"
+              onClick={handleTogglePiP}
+              className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
+              title="تصویر در تصویر"
+            >
+              <PictureInPicture className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Fullscreen Button */}
+          <button
+            type="button"
+            onClick={handleToggleFullscreen}
+            className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
+            title={isFullscreen ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
+          >
+            {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+export default AudioVideoPlayerEngine;

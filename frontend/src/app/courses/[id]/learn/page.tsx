@@ -198,7 +198,7 @@ export default function CourseLearnTheaterPage({
               onToggleComplete={handleToggleChapterComplete}
               onProgressSync={(chId, pct, sec) => {
                 setChapterPositions((prev) => ({ ...prev, [chId]: sec }));
-                if (pct >= 90 && !completedChapters.includes(chId)) {
+                if (pct >= 70 && !completedChapters.includes(chId)) {
                   setCompletedChapters((prev) => [...prev, chId]);
                 }
               }}
