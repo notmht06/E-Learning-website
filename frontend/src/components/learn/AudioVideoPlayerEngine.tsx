@@ -145,12 +145,15 @@ export function AudioVideoPlayerEngine({
 
   // Fetch DRM stream token if needed
   useEffect(() => {
-    if (isLocked) return;
+    if (isLocked || !user) {
+      setDrmStreamUrl(null);
+      setDrmToken(null);
+      return;
+    }
     let mounted = true;
     setDrmStreamUrl(null);
-    const uid = user?.id || 'guest-scholar';
     apiClient.stream
-      .getToken(uid, courseId, chapterId)
+      .getToken(user.id, courseId, chapterId)
       .then((res) => {
         if (mounted && res && res.token) {
           setDrmToken(res.token);
@@ -165,7 +168,7 @@ export function AudioVideoPlayerEngine({
     return () => {
       mounted = false;
     };
-  }, [user?.id, courseId, chapterId, isLocked]);
+  }, [user, courseId, chapterId, isLocked]);
 
   // Restore position when chapter changes
   useEffect(() => {

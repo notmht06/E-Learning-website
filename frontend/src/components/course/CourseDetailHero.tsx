@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { AudioCourse } from '@/lib/data';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
 interface CourseDetailHeroProps {
@@ -96,7 +97,12 @@ export function CourseDetailHero({
   toLocale,
 }: CourseDetailHeroProps) {
   const { localizeHref } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
   const disciplineBanner = getDisciplineBanner(course.subject, dict);
+
+  const targetLearnHref = !user || !isAuthenticated
+    ? localizeHref(`/login?redirect=${encodeURIComponent(`/courses/${course.id}/learn`)}`)
+    : localizeHref(`/courses/${course.id}/learn`);
 
   const scholarName = dict.scholar_name;
 
@@ -291,7 +297,7 @@ export function CourseDetailHero({
             {/* Center Play Button & Direct Learn Navigation (Centered in 16:9 Frame) */}
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
               <Link
-                href={localizeHref(`/courses/${course.id}/learn`)}
+                href={targetLearnHref}
                 onClick={() => triggerTactileHaptic("thump")}
                 className="group relative flex flex-col items-center pointer-events-auto cursor-pointer"
                 aria-label={t.preview_btn}

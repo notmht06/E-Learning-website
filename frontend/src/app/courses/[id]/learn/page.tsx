@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShieldCheck, Radio } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useData } from '@/context/DataContext';
@@ -20,11 +21,19 @@ export default function CourseLearnTheaterPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const courseId = resolvedParams.id || 'course-mantiq-mabadi';
   const { courses } = useData();
   const { dict, currentLang, localizeHref } = useLanguage();
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  // Authentication Guard: Unauthenticated visitors MUST NOT access the theater and must be redirected to login
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || !user)) {
+      router.replace(localizeHref(`/login?redirect=${encodeURIComponent(`/courses/${courseId}/learn`)}`));
+    }
+  }, [isLoading, isAuthenticated, user, router, courseId, localizeHref]);
 
   const course =
     courses[courseId] ||
@@ -108,6 +117,25 @@ export default function CourseLearnTheaterPage({
       return updated;
     });
   };
+
+  if (isLoading || !isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors">
+        <Navbar />
+        <main className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div className="w-9 h-9 rounded-full border-2 border-[#8A532B] dark:border-[#C58B43] border-t-transparent animate-spin" />
+          <div className="space-y-1">
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              درحال بررسی وضعیت ورود و انتقال به سامانه...
+            </h2>
+            <p className="text-xs text-zinc-500">
+              جهت مشاهده درس‌گفتارها، ورود به حساب کاربری الزامی است.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-8">

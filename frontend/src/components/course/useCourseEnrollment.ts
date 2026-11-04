@@ -25,7 +25,7 @@ export function useCourseEnrollment(courseId: string) {
 
   const handleEnroll = async (title: string, price: string) => {
     if (!user) {
-      router.push(localizeHref('/login'));
+      router.push(localizeHref(`/login?redirect=${encodeURIComponent(`/courses/${courseId}`)}`));
       return;
     }
     setIsLoading(true);

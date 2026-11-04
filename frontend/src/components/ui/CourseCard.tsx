@@ -14,6 +14,7 @@ import { getLocalizedCourse } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { usePlayer } from '@/context/PlayerContext';
+import { useAuth } from '@/context/AuthContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 import { Button } from '@/components/ui';
 
@@ -77,6 +78,11 @@ export function CourseCard({
   const { currentLang, dict, toLocale, localizeHref } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { playTrack, togglePlay, currentCourse, isPlaying: playerIsPlaying } = usePlayer();
+  const { user, isAuthenticated } = useAuth();
+
+  const targetLearnHref = !user || !isAuthenticated
+    ? localizeHref(`/login?redirect=${encodeURIComponent(`/courses/${course.id}/learn`)}`)
+    : localizeHref(`/courses/${course.id}/learn`);
 
   const bookmarked = isBookmarked(course.id);
   const loc = getLocalizedCourse(course, currentLang);
@@ -184,7 +190,7 @@ export function CourseCard({
 
         {/* Center Play Button: Direct Navigation to Classroom Theater */}
         <Link
-          href={localizeHref(`/courses/${course.id}/learn`)}
+          href={targetLearnHref}
           onClick={(e) => {
             e.stopPropagation();
             triggerTactileHaptic("thump");
