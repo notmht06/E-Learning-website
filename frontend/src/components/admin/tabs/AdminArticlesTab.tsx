@@ -14,6 +14,7 @@ import {
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { ScholarlyArticle } from '@/lib/data';
+import RichTextCmsEditor from '../RichTextCmsEditor';
 
 export function AdminArticlesTab() {
   const { articles, addArticle, updateArticle, deleteArticle, categories } = useData();
@@ -32,6 +33,7 @@ export function AdminArticlesTab() {
   const [author, setAuthor] = useState('حجت الاسلام دکتر زنجیر زن حسینی');
   const [abstractFa, setAbstractFa] = useState('');
   const [contentFa, setContentFa] = useState('');
+  const [readTimeFa, setReadTimeFa] = useState('۱۵ دقیقه مطالعه');
   const [pdfUrl, setPdfUrl] = useState('');
 
   const filteredArticles = (articles || []).filter((art) => {
@@ -51,6 +53,7 @@ export function AdminArticlesTab() {
     setAuthor('حجت الاسلام دکتر زنجیر زن حسینی');
     setAbstractFa('');
     setContentFa('');
+    setReadTimeFa('۱۵ دقیقه مطالعه');
     setPdfUrl('');
     setIsAddModalOpen(true);
   };
@@ -64,6 +67,7 @@ export function AdminArticlesTab() {
     setAuthor(art.author || 'حجت الاسلام دکتر زنجیر زن حسینی');
     setAbstractFa(art.abstract_fa || '');
     setContentFa(art.content_fa || '');
+    setReadTimeFa(art.readTime_fa || art.readTime || '۱۵ دقیقه مطالعه');
     setPdfUrl(art.pdf_url || '');
   };
 
@@ -77,8 +81,8 @@ export function AdminArticlesTab() {
       title_fa: titleFa,
       title_ar: titleAr || titleFa,
       title_en: titleEn || titleFa,
-      readTime: '۱۵ دقیقه مطالعه',
-      readTime_fa: '۱۵ دقیقه مطالعه',
+      readTime: readTimeFa,
+      readTime_fa: readTimeFa,
       publishDate: new Date().toLocaleDateString('fa-IR'),
       publishDate_fa: new Date().toLocaleDateString('fa-IR'),
       published_at: new Date().toLocaleDateString('fa-IR'),
@@ -108,6 +112,8 @@ export function AdminArticlesTab() {
       title_en: titleEn,
       abstract_fa: abstractFa,
       content_fa: contentFa,
+      readTime: readTimeFa,
+      readTime_fa: readTimeFa,
       category,
       author,
       pdf_url: pdfUrl || undefined,
@@ -239,7 +245,7 @@ export function AdminArticlesTab() {
       {/* Add Article Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 text-start shadow-xl">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                 افزودن مقاله و رساله پژوهشی جدید
@@ -252,7 +258,7 @@ export function AdminArticlesTab() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveAdd} className="space-y-3">
+            <form onSubmit={handleSaveAdd} className="space-y-4">
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
                   عنوان فارسی مقاله
@@ -302,7 +308,7 @@ export function AdminArticlesTab() {
                   چکیده مقاله
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={abstractFa}
                   onChange={(e) => setAbstractFa(e.target.value)}
                   placeholder="تبیین مقدماتی مسأله و برهان اصلی..."
@@ -311,15 +317,19 @@ export function AdminArticlesTab() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  متن تفصیلی / بدنه مقاله
-                </label>
-                <textarea
-                  rows={4}
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    متن تفصیلی و نگارش مقاله (ویرایشگر پیشرفته CMS)
+                  </label>
+                  <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] bg-amber-50 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-zinc-700 font-num">
+                    مدت مطالعه برآوردی: {readTimeFa}
+                  </span>
+                </div>
+                <RichTextCmsEditor
                   value={contentFa}
-                  onChange={(e) => setContentFa(e.target.value)}
-                  placeholder="متن کامل یا بخش‌های اصلی پژوهش..."
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none"
+                  onChange={setContentFa}
+                  onAutoReadTime={setReadTimeFa}
+                  placeholder="متن پژوهش، تحلیل برهانی، تصاویر و مستندات خود را اینجا درج فرمایید..."
                 />
               </div>
 
@@ -359,7 +369,7 @@ export function AdminArticlesTab() {
       {/* Edit Article Modal */}
       {editingArticle && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 text-start shadow-xl">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-4 text-start shadow-xl">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                 ویرایش مقاله پژوهشی
@@ -372,7 +382,7 @@ export function AdminArticlesTab() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveEdit} className="space-y-3">
+            <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
                 <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
                   عنوان مقاله
@@ -421,10 +431,27 @@ export function AdminArticlesTab() {
                   چکیده مقاله
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={abstractFa}
                   onChange={(e) => setAbstractFa(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    متن تفصیلی و نگارش مقاله (ویرایشگر پیشرفته CMS)
+                  </label>
+                  <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43] bg-amber-50 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-zinc-700 font-num">
+                    مدت مطالعه برآوردی: {readTimeFa}
+                  </span>
+                </div>
+                <RichTextCmsEditor
+                  value={contentFa}
+                  onChange={setContentFa}
+                  onAutoReadTime={setReadTimeFa}
+                  placeholder="متن پژوهش، تحلیل برهانی، تصاویر و مستندات خود را اینجا درج فرمایید..."
                 />
               </div>
 

@@ -40,7 +40,7 @@ interface ArticleDetailClientProps {
 
 export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
   const { currentLang, dict, toLocale, localizeHref } = useLanguage();
-  const { courses } = useData();
+  const { courses, articles } = useData();
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
   const [copiedCitation, setCopiedCitation] = useState(false);
@@ -56,11 +56,13 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
   }, []);
 
   const rawArticle = useMemo(() => {
+    const list = articles && articles.length > 0 ? articles : scholarlyArticlesDatabase;
     return (
+      list.find((a) => a.slug === slug || a.id === slug) ||
       scholarlyArticlesDatabase.find((a) => a.slug === slug || a.id === slug) ||
       scholarlyArticlesDatabase[0]
     );
-  }, [slug]);
+  }, [slug, articles]);
 
   const locArticle = useMemo(
     () => getLocalizedArticle(rawArticle, currentLang),
@@ -308,19 +310,26 @@ export function ArticleDetailClient({ slug }: ArticleDetailClientProps) {
             </p>
           </div>
 
-          {/* Full Treatise Sections */}
-          <div className="space-y-6">
-            {sections.map((sec, idx) => (
-              <section key={idx} className="space-y-2.5">
-                <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                  {sec.heading}
-                </h2>
-                <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-8 text-justify">
-                  {sec.body}
-                </p>
-              </section>
-            ))}
-          </div>
+          {/* Full Treatise Sections or Rich HTML Content */}
+          {rawArticle.content_fa && rawArticle.content_fa.trim() ? (
+            <div
+              className="prose dark:prose-invert max-w-none text-xs sm:text-sm leading-[2.2] text-justify space-y-4 cms-rich-content"
+              dangerouslySetInnerHTML={{ __html: rawArticle.content_fa }}
+            />
+          ) : (
+            <div className="space-y-6">
+              {sections.map((sec, idx) => (
+                <section key={idx} className="space-y-2.5">
+                  <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                    {sec.heading}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-8 text-justify">
+                    {sec.body}
+                  </p>
+                </section>
+              ))}
+            </div>
+          )}
 
           {/* Academic Citation Box */}
           <Separator className="my-4" />

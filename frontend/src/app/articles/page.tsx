@@ -283,6 +283,22 @@ export default function ArticlesPage() {
                     selectedArticle.abstract_fa}
                 </p>
               </div>
+
+              {selectedArticle.content_fa && (
+                <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-1.5">
+                  <span className="font-bold text-[#8A532B] dark:text-[#C58B43] block text-xs">
+                    گزیدهٔ متن تفصیلی مقاله
+                  </span>
+                  {/<[a-z][\s\S]*>/i.test(selectedArticle.content_fa) ? (
+                    <div
+                      className="prose dark:prose-invert max-w-none text-xs leading-[2.1] cms-rich-content max-h-60 overflow-y-auto pe-1"
+                      dangerouslySetInnerHTML={{ __html: selectedArticle.content_fa }}
+                    />
+                  ) : (
+                    <p className="line-clamp-4">{selectedArticle.content_fa}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-3 border-t border-[#E6E1D8] dark:border-[#22242A]">

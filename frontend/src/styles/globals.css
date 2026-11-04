@@ -613,3 +613,142 @@ body {
 
 
 
+
+/* ==========================================================================
+   CMS RICH TEXT & SCHOLARLY ARTICLE STYLING
+   ========================================================================== */
+.prose,
+.cms-rich-content {
+  line-height: 2.2;
+  color: inherit;
+}
+.prose h2,
+.cms-rich-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  color: #0C0D0E;
+}
+.dark .prose h2,
+.dark .cms-rich-content h2 {
+  color: #FAF8F5;
+}
+.prose h3,
+.cms-rich-content h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #0C0D0E;
+}
+.dark .prose h3,
+.dark .cms-rich-content h3 {
+  color: #FAF8F5;
+}
+.prose p,
+.cms-rich-content p {
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+.prose blockquote,
+.cms-rich-content blockquote {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1.25rem 0.75rem 0.75rem;
+  border-inline-start: 4px solid #C58B43;
+  background-color: rgba(197, 139, 67, 0.08);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-style: normal;
+  color: #8A532B;
+}
+.dark .prose blockquote,
+.dark .cms-rich-content blockquote {
+  border-inline-start-color: #C58B43;
+  background-color: rgba(197, 139, 67, 0.12);
+  color: #E6CA85;
+}
+.prose table,
+.cms-rich-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.875rem;
+  border: 1px solid rgba(228, 228, 231, 0.8);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.dark .prose table,
+.dark .cms-rich-content table {
+  border-color: rgba(39, 39, 42, 0.8);
+}
+.prose th,
+.cms-rich-content th {
+  padding: 0.65rem 0.85rem;
+  text-align: start;
+  background: rgba(244, 244, 245, 0.8);
+  border: 1px solid rgba(228, 228, 231, 0.8);
+  font-weight: 700;
+}
+.dark .prose th,
+.dark .cms-rich-content th {
+  background: rgba(39, 39, 42, 0.6);
+  border-color: rgba(63, 63, 70, 0.6);
+  color: #FAF8F5;
+}
+.prose td,
+.cms-rich-content td {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(228, 228, 231, 0.8);
+}
+.dark .prose td,
+.dark .cms-rich-content td {
+  border-color: rgba(63, 63, 70, 0.6);
+}
+.prose figure,
+.cms-rich-content figure {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+.prose figure img,
+.cms-rich-content figure img {
+  border-radius: 1rem;
+  max-width: 100%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(228, 228, 231, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.dark .prose figure img,
+.dark .cms-rich-content figure img {
+  border-color: rgba(63, 63, 70, 0.6);
+}
+.prose figcaption,
+.cms-rich-content figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #71717A;
+}
+.prose ul,
+.cms-rich-content ul {
+  list-style-type: disc;
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose ol,
+.cms-rich-content ol {
+  list-style-type: decimal;
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose hr,
+.cms-rich-content hr {
+  border: none;
+  border-top: 1px solid rgba(228, 228, 231, 0.8);
+  margin: 1.5rem 0;
+}
+.dark .prose hr,
+.dark .cms-rich-content hr {
+  border-top-color: rgba(63, 63, 70, 0.6);
+}
