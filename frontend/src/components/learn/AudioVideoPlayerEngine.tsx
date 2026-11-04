@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   Play,
   Pause,
@@ -11,12 +11,12 @@ import {
   Settings,
   PictureInPicture,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Headphones,
-  Film,
-  Radio,
   Sliders,
   Gauge,
-  Sparkles,
+  Film,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/context/LanguageContext';
@@ -48,13 +48,16 @@ export interface AudioVideoPlayerEngineProps {
 export type VideoQuality = 'auto' | '1080p' | '720p' | '480p' | '360p';
 export type SettingsSubmenu = 'main' | 'quality' | 'speed' | 'mode';
 
+const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+const QUALITY_OPTIONS: VideoQuality[] = ['auto', '1080p', '720p', '480p', '360p'];
+
 export function AudioVideoPlayerEngine({
   courseId = 'course-falsafe-asfar-1',
   chapterId = 1,
   courseTitle,
   chapterTitle,
   instructorName,
-  durationSeconds = 1200, // 20 minutes default
+  durationSeconds = 1200,
   videoUrl,
   audioUrl = '/audio/sample_lecture.wav',
   initialPositionSec = 0,
@@ -72,6 +75,7 @@ export function AudioVideoPlayerEngine({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const settingsRef = useRef<HTMLDivElement | null>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const autoCompletedTriggeredRef = useRef<boolean>(false);
 
@@ -84,7 +88,7 @@ export function AudioVideoPlayerEngine({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isControlsVisible, setIsControlsVisible] = useState(true);
 
-  // Default to video mode if videoUrl exists or by default, else audio
+  // Default to video mode
   const [mediaMode, setMediaMode] = useState<'video' | 'audio'>('video');
   const [quality, setQuality] = useState<VideoQuality>('1080p');
 
@@ -95,7 +99,7 @@ export function AudioVideoPlayerEngine({
         const saved = localStorage.getItem('zanjirzan_playback_speed');
         if (saved) {
           const parsed = parseFloat(saved);
-          if ([0.75, 1, 1.25, 1.5, 2].includes(parsed)) return parsed;
+          if (SPEED_OPTIONS.includes(parsed)) return parsed;
         }
       } catch (err) {
         console.debug('Failed to read speed from localStorage:', err);
@@ -110,21 +114,25 @@ export function AudioVideoPlayerEngine({
 
   const [drmToken, setDrmToken] = useState<string | null>(null);
   const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState(false);
 
   const lastSyncedSecRef = useRef<number>(0);
   const currentTimeRef = useRef<number>(initialPositionSec || 0);
 
-  // Close settings on outside click
+  // Safe outside click handler for settings
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (isSettingsOpen && !target.closest('.player-settings-container')) {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setIsSettingsOpen(false);
         setSettingsSubmenu('main');
       }
     };
-    window.addEventListener('click', handleOutsideClick);
-    return () => window.removeEventListener('click', handleOutsideClick);
+    if (isSettingsOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
   }, [isSettingsOpen]);
 
   // Reset autoCompletedTriggeredRef on chapter change
@@ -173,6 +181,7 @@ export function AudioVideoPlayerEngine({
   // Restore position when chapter changes
   useEffect(() => {
     setIsPlaying(false);
+    setVideoError(false);
     const startSec = initialPositionSec > 0 ? initialPositionSec : 0;
     setCurrentTime(startSec);
     lastSyncedSecRef.current = startSec;
@@ -196,7 +205,7 @@ export function AudioVideoPlayerEngine({
     if (isPlaying && !isSettingsOpen) {
       controlsTimeoutRef.current = setTimeout(() => {
         setIsControlsVisible(false);
-      }, 3000);
+      }, 3500);
     }
   }, [isPlaying, isSettingsOpen]);
 
@@ -241,9 +250,11 @@ export function AudioVideoPlayerEngine({
     [chapterId, courseId, dict.player_completed_badge, durationSeconds, onChapterComplete, onProgressSync, user]
   );
 
-  const handleTogglePlay = () => {
+  const handleTogglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (isLocked) return;
     triggerTactileHaptic('thump');
+
     if (!isPlaying && isGlobalIslandPlaying) {
       toggleGlobalIsland();
     }
@@ -259,16 +270,19 @@ export function AudioVideoPlayerEngine({
       setIsPlaying(false);
     } else {
       setIsBuffering(true);
-      el.play()
-        .then(() => {
-          setIsPlaying(true);
-          setIsBuffering(false);
-        })
-        .catch((err) => {
-          console.warn('Playback blocked:', err);
-          setIsBuffering(false);
-          setIsPlaying(false);
-        });
+      const playPromise = el.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            setIsBuffering(false);
+          })
+          .catch((err) => {
+            console.warn('Playback error or policy block:', err);
+            setIsBuffering(false);
+            setIsPlaying(false);
+          });
+      }
     }
   };
 
@@ -322,7 +336,8 @@ export function AudioVideoPlayerEngine({
     }
   };
 
-  const handleSelectSpeed = (newSpeed: number) => {
+  const handleSelectSpeed = (newSpeed: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     triggerTactileHaptic('tick');
     setSpeed(newSpeed);
     if (typeof window !== 'undefined') {
@@ -337,14 +352,16 @@ export function AudioVideoPlayerEngine({
     setSettingsSubmenu('main');
   };
 
-  const handleSelectQuality = (newQuality: VideoQuality) => {
+  const handleSelectQuality = (newQuality: VideoQuality, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     triggerTactileHaptic('tick');
     setQuality(newQuality);
-    toast.info(`کیفیت ویدیو به ${newQuality} تغییر یافت`);
+    toast.info(`Video quality set to ${newQuality}`);
     setSettingsSubmenu('main');
   };
 
-  const handleToggleMode = (newMode: 'video' | 'audio') => {
+  const handleToggleMode = (newMode: 'video' | 'audio', e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     triggerTactileHaptic('tick');
     setMediaMode(newMode);
     setSettingsSubmenu('main');
@@ -358,14 +375,16 @@ export function AudioVideoPlayerEngine({
     if (videoRef.current) videoRef.current.volume = v;
   };
 
-  const handleToggleMute = () => {
+  const handleToggleMute = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     const nextMute = !isMuted;
     setIsMuted(nextMute);
     if (audioRef.current) audioRef.current.muted = nextMute;
     if (videoRef.current) videoRef.current.muted = nextMute;
   };
 
-  const handleToggleFullscreen = () => {
+  const handleToggleFullscreen = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen?.().then(() => setIsFullscreen(true)).catch(console.debug);
@@ -374,7 +393,8 @@ export function AudioVideoPlayerEngine({
     }
   };
 
-  const handleTogglePiP = async () => {
+  const handleTogglePiP = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (videoRef.current && document.pictureInPictureEnabled) {
       try {
         if (document.pictureInPictureElement) {
@@ -389,13 +409,14 @@ export function AudioVideoPlayerEngine({
   };
 
   const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
+    const safe = Math.max(0, Math.floor(secs));
+    const m = Math.floor(safe / 60);
+    const s = Math.floor(safe % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   const formatRemaining = (total: number, current: number) => {
-    const rem = Math.max(0, total - current);
+    const rem = Math.max(0, Math.floor(total - current));
     const m = Math.floor(rem / 60);
     const s = Math.floor(rem % 60);
     return `-${m}:${s.toString().padStart(2, '0')}`;
@@ -416,17 +437,25 @@ export function AudioVideoPlayerEngine({
     );
   }
 
-  // Active video source (fallback to sample video if none provided)
-  const resolvedVideoSrc =
-    videoUrl ||
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+  // Resolve video source safely:
+  // If videoUrl is a direct video stream (ends with mp4/webm/m3u8/ogg/mov or starts with /) use it;
+  // If videoUrl is a YouTube link or failed, fallback to local reliable /videos/sample_lecture.mp4
+  const isDirectVideo =
+    Boolean(videoUrl) &&
+    !videoUrl?.includes('youtube.com') &&
+    !videoUrl?.includes('youtu.be') &&
+    /\.(mp4|webm|m3u8|ogg|mov)(\?.*)?$/i.test(videoUrl || '');
+
+  const resolvedVideoSrc = videoError || !isDirectVideo
+    ? '/videos/sample_lecture.mp4'
+    : (videoUrl || '/videos/sample_lecture.mp4');
 
   return (
     <div
       ref={containerRef}
       onMouseMove={showControlsTemporarily}
       onMouseEnter={() => setIsControlsVisible(true)}
-      className="group/player relative aspect-video w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-zinc-800/80 select-none flex items-center justify-center"
+      className="group/player relative aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-zinc-800/80 select-none flex items-center justify-center font-sans"
     >
       {/* 1. Media Elements */}
       <audio
@@ -452,6 +481,10 @@ export function AudioVideoPlayerEngine({
           onEnded={handleMediaEnded}
           onWaiting={() => setIsBuffering(true)}
           onPlaying={() => setIsBuffering(false)}
+          onError={() => {
+            console.warn('Video failed to load source, falling back to local lecture video');
+            setVideoError(true);
+          }}
         />
       ) : (
         /* Audio Only Mode Minimalist Screen */
@@ -476,32 +509,34 @@ export function AudioVideoPlayerEngine({
         <button
           type="button"
           onClick={handleTogglePlay}
-          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl cursor-pointer z-20 pointer-events-auto"
+          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/45 hover:bg-black/65 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl cursor-pointer z-20 pointer-events-auto"
           aria-label="پخش ویدیو"
         >
-          <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-white translate-x-0.5 text-white" />
+          <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-white translate-x-0.5 text-white" />
         </button>
       )}
 
-      {/* 3. Floating Minimalist Controls Bar (Matching VideoJS Skin exactly) */}
+      {/* 3. Floating Minimalist Controls Bar - STRICTLY LTR & VideoJS VideoSkin Layout */}
       <div
-        className={`absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-30 flex items-center justify-between gap-2.5 px-3.5 py-2 rounded-xl bg-black/65 backdrop-blur-md border border-white/10 text-white shadow-2xl transition-all duration-300 ${
+        dir="ltr"
+        className={`absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-30 flex flex-row items-center justify-between gap-2.5 px-3.5 py-1.5 sm:py-2 rounded-2xl bg-[#141518]/75 backdrop-blur-xl border border-white/10 text-white shadow-2xl transition-all duration-300 select-none ${
           isControlsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
         }`}
       >
         {/* Left Side: Play/Pause, Volume, Current Time */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* Play/Pause Button */}
           <button
             type="button"
             onClick={handleTogglePlay}
-            className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
-            title={isPlaying ? 'توقف' : 'پخش'}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            title={isPlaying ? 'Pause' : 'Play'}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? (
-              <Pause className="w-4 h-4 fill-current" />
+              <Pause className="w-4 h-4 fill-white text-white" />
             ) : (
-              <Play className="w-4 h-4 fill-current translate-x-0.5" />
+              <Play className="w-4 h-4 fill-white text-white translate-x-0.5" />
             )}
           </button>
 
@@ -510,8 +545,9 @@ export function AudioVideoPlayerEngine({
             <button
               type="button"
               onClick={handleToggleMute}
-              className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
-              title="صدا"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              title={isMuted ? 'Unmute' : 'Mute'}
+              aria-label={isMuted ? 'Unmute' : 'Mute'}
             >
               {isMuted || volume === 0 ? (
                 <VolumeX className="w-4 h-4" />
@@ -527,18 +563,18 @@ export function AudioVideoPlayerEngine({
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
               className="w-0 group-hover/vol:w-16 focus:w-16 h-1 accent-white bg-white/30 rounded-full transition-all duration-200 cursor-pointer opacity-0 group-hover/vol:opacity-100 focus:opacity-100 ms-1"
-              aria-label="بلندی صدا"
+              aria-label="Volume"
             />
           </div>
 
           {/* Current Time (e.g. 0:00) */}
-          <span className="font-mono text-xs text-white/90 font-num tabular-nums ps-1">
+          <span className="text-[11px] sm:text-xs font-mono font-medium text-white/90 tabular-nums select-none ps-0.5">
             {formatTime(currentTime)}
           </span>
         </div>
 
-        {/* Center: Sleek Timeline Scrubber Bar */}
-        <div className="relative flex-1 flex items-center mx-1 group/track">
+        {/* Center: Sleek VideoJS Timeline Scrubber Bar */}
+        <div className="relative flex-1 flex items-center mx-2 group/track">
           <input
             type="range"
             min="0"
@@ -546,94 +582,140 @@ export function AudioVideoPlayerEngine({
             step="1"
             value={currentTime}
             onChange={handleSeek}
-            className="w-full h-1 group-hover/track:h-1.5 accent-[#C58B43] bg-white/20 rounded-full cursor-pointer transition-all duration-150 appearance-none focus:outline-none"
+            className="w-full h-1 group-hover/track:h-1.5 accent-white bg-white/20 rounded-full cursor-pointer transition-all duration-150 appearance-none focus:outline-none"
             style={{
-              background: `linear-gradient(to right, #C58B43 0%, #C58B43 ${
+              background: `linear-gradient(to right, #ffffff 0%, #ffffff ${
                 (currentTime / (duration || 1)) * 100
               }%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`,
             }}
           />
         </div>
 
-        {/* Right Side: Remaining Time, Settings Menu (⚙️), PiP, Fullscreen */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Right Side: Remaining Time, Settings (⚙️), PiP, Fullscreen */}
+        <div className="flex items-center gap-1 shrink-0">
           {/* Remaining Time (e.g. -0:35) */}
-          <span className="font-mono text-xs text-white/80 font-num tabular-nums pe-1">
+          <span className="text-[11px] sm:text-xs font-mono font-medium text-white/70 tabular-nums select-none pe-1">
             {formatRemaining(duration, currentTime)}
           </span>
 
-          {/* Settings Menu Popover (⚙️) */}
-          <div className="relative player-settings-container">
+          {/* Settings Menu Button & Popover (⚙️) */}
+          <div ref={settingsRef} className="relative flex items-center justify-center">
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 triggerTactileHaptic('tick');
                 setIsSettingsOpen((prev) => !prev);
                 setSettingsSubmenu('main');
               }}
-              className={`p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer ${
-                isSettingsOpen ? 'bg-white/20 text-[#E6CA85]' : ''
+              className={`w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer ${
+                isSettingsOpen ? 'bg-white/20 text-white' : ''
               }`}
-              title="تنظیمات"
+              title="Settings"
+              aria-label="Settings"
             >
-              <Settings className={`w-4 h-4 transition-transform ${isSettingsOpen ? 'rotate-45' : ''}`} />
+              <Settings className={`w-4 h-4 transition-transform duration-200 ${isSettingsOpen ? 'rotate-45' : ''}`} />
             </button>
 
-            {/* Popover Panel */}
+            {/* VideoJS-Style Frosted Glass Popover (Matching media_1793806628823_b788a0dc.png) */}
             {isSettingsOpen && (
-              <div className="absolute bottom-full mb-2 end-0 z-50 w-52 bg-[#121316]/95 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl py-2 px-1 text-xs text-start text-white animate-in fade-in zoom-in-95 duration-150">
+              <div
+                dir="ltr"
+                className="absolute bottom-full mb-3 right-0 z-50 w-44 sm:w-48 bg-[#18181b]/85 backdrop-blur-2xl border border-white/15 rounded-2xl p-1.5 shadow-2xl text-white select-none animate-in fade-in zoom-in-95 duration-150"
+              >
+                {/* Main Settings Menu */}
                 {settingsSubmenu === 'main' && (
                   <div className="space-y-0.5">
-                    <div className="px-3 py-1 text-[11px] font-bold text-white/50 border-b border-white/10 mb-1">
-                      تنظیمات پخش
-                    </div>
-
-                    {/* Submenu 1: Playback Mode (Video vs Audio) */}
+                    {/* Mode Item */}
                     <button
                       type="button"
-                      onClick={() => setSettingsSubmenu('mode')}
-                      className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('mode');
+                      }}
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer text-left"
                     >
                       <div className="flex items-center gap-2">
-                        {mediaMode === 'video' ? <Film className="w-3.5 h-3.5 text-amber-400" /> : <Headphones className="w-3.5 h-3.5 text-amber-400" />}
-                        <span>حالت رسانه</span>
+                        {mediaMode === 'video' ? <Film className="w-3.5 h-3.5" /> : <Headphones className="w-3.5 h-3.5" />}
+                        <span>Mode</span>
                       </div>
-                      <span className="text-[11px] text-white/60">
-                        {mediaMode === 'video' ? 'ویدیو 🎬' : 'صوت 🎧'}
-                      </span>
+                      <div className="flex items-center gap-1 text-[11px] text-white/60">
+                        <span>{mediaMode === 'video' ? 'Video' : 'Audio'}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                      </div>
                     </button>
 
-                    {/* Submenu 2: Video Quality (1080p, 720p, 480p, Auto) */}
+                    {/* Quality Item */}
                     {mediaMode === 'video' && (
                       <button
                         type="button"
-                        onClick={() => setSettingsSubmenu('quality')}
-                        className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSettingsSubmenu('quality');
+                        }}
+                        className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <Sliders className="w-3.5 h-3.5 text-amber-400" />
-                          <span>کیفیت ویدیو</span>
+                          <Sliders className="w-3.5 h-3.5" />
+                          <span>Quality</span>
                         </div>
-                        <span className="text-[11px] font-mono text-white/60">
-                          {quality === 'auto' ? 'خودکار' : quality}
-                        </span>
+                        <div className="flex items-center gap-1 text-[11px] text-white/60">
+                          <span>{quality === 'auto' ? 'Auto' : quality}</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        </div>
                       </button>
                     )}
 
-                    {/* Submenu 3: Playback Speed */}
+                    {/* Speed Item */}
                     <button
                       type="button"
-                      onClick={() => setSettingsSubmenu('speed')}
-                      className="w-full px-3 py-2 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer text-start"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('speed');
+                      }}
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer text-left"
                     >
                       <div className="flex items-center gap-2">
-                        <Gauge className="w-3.5 h-3.5 text-amber-400" />
-                        <span>سرعت پخش</span>
+                        <Gauge className="w-3.5 h-3.5" />
+                        <span>Speed</span>
                       </div>
-                      <span className="text-[11px] font-mono text-white/60">
-                        {speed === 1 ? 'عادی (1x)' : `${speed}x`}
-                      </span>
+                      <div className="flex items-center gap-1 text-[11px] text-white/60">
+                        <span>{speed === 1 ? 'Normal' : `${speed}x`}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                      </div>
                     </button>
+                  </div>
+                )}
+
+                {/* Submenu: Speed Selection (Exact match to screenshot) */}
+                {settingsSubmenu === 'speed' && (
+                  <div className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('main');
+                      }}
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white rounded-lg transition cursor-pointer text-left border-b border-white/10 mb-1"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Speed</span>
+                    </button>
+                    {SPEED_OPTIONS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={(e) => handleSelectSpeed(s, e)}
+                        className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition cursor-pointer text-left ${
+                          speed === s
+                            ? 'bg-white/15 text-white font-medium'
+                            : 'text-white/80 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <span>{s === 1 ? '1x' : `${s}x`}</span>
+                        {speed === s && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                      </button>
+                    ))}
                   </div>
                 )}
 
@@ -642,48 +724,28 @@ export function AudioVideoPlayerEngine({
                   <div className="space-y-0.5">
                     <button
                       type="button"
-                      onClick={() => setSettingsSubmenu('main')}
-                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('main');
+                      }}
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white rounded-lg transition cursor-pointer text-left border-b border-white/10 mb-1"
                     >
-                      <span>‹ بازگشت</span>
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Quality</span>
                     </button>
-                    {(['auto', '1080p', '720p', '480p', '360p'] as VideoQuality[]).map((q) => (
+                    {QUALITY_OPTIONS.map((q) => (
                       <button
                         key={q}
                         type="button"
-                        onClick={() => handleSelectQuality(q)}
-                        className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
-                          quality === q ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                        onClick={(e) => handleSelectQuality(q, e)}
+                        className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition cursor-pointer text-left ${
+                          quality === q
+                            ? 'bg-white/15 text-white font-medium'
+                            : 'text-white/80 hover:text-white hover:bg-white/10'
                         }`}
                       >
-                        <span className="font-mono">{q === 'auto' ? 'خودکار (Auto)' : q}</span>
-                        {quality === q && <Check className="w-3.5 h-3.5" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Submenu: Speed Selection */}
-                {settingsSubmenu === 'speed' && (
-                  <div className="space-y-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setSettingsSubmenu('main')}
-                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
-                    >
-                      <span>‹ بازگشت</span>
-                    </button>
-                    {[0.75, 1, 1.25, 1.5, 2].map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => handleSelectSpeed(s)}
-                        className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
-                          speed === s ? 'text-[#E6CA85] font-bold' : 'text-white/80'
-                        }`}
-                      >
-                        <span className="font-mono">{s === 1 ? 'عادی (1x)' : `${s}x`}</span>
-                        {speed === s && <Check className="w-3.5 h-3.5" />}
+                        <span className="uppercase">{q}</span>
+                        {quality === q && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
                       </button>
                     ))}
                   </div>
@@ -694,30 +756,38 @@ export function AudioVideoPlayerEngine({
                   <div className="space-y-0.5">
                     <button
                       type="button"
-                      onClick={() => setSettingsSubmenu('main')}
-                      className="w-full px-3 py-1.5 text-[11px] font-bold text-white/60 hover:text-white flex items-center gap-1 border-b border-white/10 mb-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('main');
+                      }}
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white rounded-lg transition cursor-pointer text-left border-b border-white/10 mb-1"
                     >
-                      <span>‹ بازگشت</span>
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Mode</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleToggleMode('video')}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
-                        mediaMode === 'video' ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                      onClick={(e) => handleToggleMode('video', e)}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition cursor-pointer text-left ${
+                        mediaMode === 'video'
+                          ? 'bg-white/15 text-white font-medium'
+                          : 'text-white/80 hover:text-white hover:bg-white/10'
                       }`}
                     >
-                      <span>پخش ویدیویی با تصویر 🎬</span>
-                      {mediaMode === 'video' && <Check className="w-3.5 h-3.5" />}
+                      <span>Video</span>
+                      {mediaMode === 'video' && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleToggleMode('audio')}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between rounded-lg hover:bg-white/10 transition cursor-pointer ${
-                        mediaMode === 'audio' ? 'text-[#E6CA85] font-bold' : 'text-white/80'
+                      onClick={(e) => handleToggleMode('audio', e)}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition cursor-pointer text-left ${
+                        mediaMode === 'audio'
+                          ? 'bg-white/15 text-white font-medium'
+                          : 'text-white/80 hover:text-white hover:bg-white/10'
                       }`}
                     >
-                      <span>فقط صوت / پادکست (کم‌مصرف) 🎧</span>
-                      {mediaMode === 'audio' && <Check className="w-3.5 h-3.5" />}
+                      <span>Audio only</span>
+                      {mediaMode === 'audio' && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
                     </button>
                   </div>
                 )}
@@ -730,8 +800,9 @@ export function AudioVideoPlayerEngine({
             <button
               type="button"
               onClick={handleTogglePiP}
-              className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
-              title="تصویر در تصویر"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              title="Picture in Picture"
+              aria-label="Picture in Picture"
             >
               <PictureInPicture className="w-4 h-4" />
             </button>
@@ -741,8 +812,9 @@ export function AudioVideoPlayerEngine({
           <button
             type="button"
             onClick={handleToggleFullscreen}
-            className="p-1.5 rounded-lg text-white hover:bg-white/15 transition cursor-pointer"
-            title={isFullscreen ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
           </button>
