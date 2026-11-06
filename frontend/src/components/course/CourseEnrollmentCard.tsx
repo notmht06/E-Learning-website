@@ -41,6 +41,27 @@ export function CourseEnrollmentCard({
   currentLang,
 }: EnrollmentCardProps) {
   const { localizeHref } = useLanguage();
+  const [isEnteringLive, setIsEnteringLive] = React.useState(false);
+
+  const handleEnterLiveSkyroom = async () => {
+    setIsEnteringLive(true);
+    try {
+      const { apiClient } = await import('@/services/apiClient');
+      const ticket = await apiClient.courses.getLiveAccess(courseId);
+      if (ticket?.skyroom_url) {
+        window.open(ticket.skyroom_url, '_blank', 'noopener,noreferrer');
+        return;
+      }
+    } catch (err) {
+      console.debug('Failed to fetch authenticated live access ticket, falling back to static URL:', err);
+    } finally {
+      setIsEnteringLive(false);
+    }
+    if (skyroomUrl) {
+      window.open(skyroomUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const driveHref = driveFolderId
     ? `https://drive.google.com/drive/folders/${driveFolderId}`
     : 'https://drive.google.com/drive/folders/1sUP_2GUpJsDLK1dRkXw4Vu065y9bza30?usp=sharing';
@@ -83,16 +104,16 @@ export function CourseEnrollmentCard({
             <span>{dict.course_enrolled_all_sessions}</span>
           </div>
 
-          {courseType === 'online' && skyroomUrl && (
-            <a
-              href={skyroomUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+          {courseType === 'online' && (skyroomUrl || isEnrolled) && (
+            <button
+              type="button"
+              onClick={handleEnterLiveSkyroom}
+              disabled={isEnteringLive}
+              className="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
               <Radio className="w-4 h-4 text-emerald-300" />
-              <span>{dict.course_enter_live_skyroom}</span>
-            </a>
+              <span>{isEnteringLive ? 'درحال اتصال به وب‌سرویس اسکای‌روم...' : dict.course_enter_live_skyroom}</span>
+            </button>
           )}
 
           <Link

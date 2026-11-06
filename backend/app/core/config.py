@@ -39,6 +39,10 @@ class Settings(BaseModel):
     PAYMENT_MODE: str = os.getenv("PAYMENT_MODE", "sandbox")  # sandbox | production
     ZARINPAL_MERCHANT_ID: str = os.getenv("ZARINPAL_MERCHANT_ID", "zarinpal-sandbox-merchant-1403")
 
+    # Skyroom Online Classroom Settings
+    SKYROOM_API_KEY: str = os.getenv("SKYROOM_API_KEY", "")
+    SKYROOM_DEFAULT_ROOM_ID: Optional[str] = os.getenv("SKYROOM_DEFAULT_ROOM_ID")
+
     # AI Multi-Provider Router (DeepSeek 4.1 / V3-1017, OpenRouter Free, Gemini Flash Free, Groq Whisper) - Phase 7
     AI_PROVIDER: str = os.getenv("AI_PROVIDER", "deepseek")  # deepseek | openrouter | gemini | groq | openai | local
     AI_API_KEY: str = os.getenv("AI_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or os.getenv("OPENROUTER_API_KEY") or ""

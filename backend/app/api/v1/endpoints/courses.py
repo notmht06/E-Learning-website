@@ -17,6 +17,7 @@ from backend.app.schemas.course import (
     LiveAccessResponse,
 )
 from backend.app.services.course_service import course_service
+from backend.app.core.config import settings
 from backend.app.api.deps import get_current_user
 from backend.app.models.database import get_db
 from backend.app.models.models import Enrollment
@@ -178,17 +179,44 @@ async def get_live_course_access(
             )
 
     user_display = user.get("full_name") or f"دانش‌پژوه {user.get('phone', '')[-4:]}"
+    access_role_val = "admin" if user.get("role") == "admin" else "student"
+
+    # Direct Skyroom One-Click Ticket Integration (per official Skyroom Webservice specifications)
+    final_entry_url = skyroom_url
+    if getattr(settings, "SKYROOM_API_KEY", ""):
+        try:
+            from backend.app.services.skyroom_service import skyroom_service
+            # Extract target room identifier from course URL or default room ID
+            target_room = getattr(settings, "SKYROOM_DEFAULT_ROOM_ID", "")
+            if not target_room and "skyroom.online/ch/" in skyroom_url:
+                target_room = skyroom_url.rstrip("/").split("/")[-1]
+
+            if target_room:
+                sky_res = await skyroom_service.create_login_url(
+                    room_id=target_room,
+                    user_id=f"usr_{user['id'].replace('-', '')[:16]}",
+                    nickname=user_display,
+                    access=3 if user.get("role") == "admin" else 1,
+                    concurrent=1,
+                    language="fa",
+                    ttl=3600,
+                )
+                if sky_res.get("ok") and sky_res.get("result"):
+                    final_entry_url = sky_res["result"]
+        except Exception as sky_exc:
+            logger.debug("Skyroom direct login ticket exception: %s", sky_exc)
+
     return {
         "success": True,
         "course_id": course_id,
         "course_title": course_title,
         "schedule": schedule,
         "is_live_now": True,
-        "skyroom_url": skyroom_url,
+        "skyroom_url": final_entry_url,
         "student_display_name": user_display,
         "student_phone": user.get("phone", ""),
-        "ticket_ttl_seconds": 300,
-        "access_role": "admin" if user.get("role") == "admin" else "student",
+        "ticket_ttl_seconds": 3600,
+        "access_role": access_role_val,
         "notice": "ورود به کلاس با شناسه رسمی و احراز هویت شده شما انجام می‌شود.",
     }
 
