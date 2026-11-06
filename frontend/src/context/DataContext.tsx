@@ -54,7 +54,7 @@ export interface AudioChapter {
   isFreePreview?: boolean;
   audioUrl?: string;
   videoUrl?: string;
-  media_type?: 'audio' | 'video' | 'hybrid';
+  media_type?: 'audio' | 'video';
 }
 
 export interface ExtendedBook extends Book {

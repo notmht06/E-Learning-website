@@ -89,7 +89,7 @@ export function AdminCoursesTab() {
   const [formLevel, setFormLevel] = useState('سطوح عالی و خارج');
   const [formPrice, setFormPrice] = useState('رایگان');
   const [formType, setFormType] = useState<'offline' | 'online'>('offline');
-  const [formMediaType, setFormMediaType] = useState<'video' | 'audio' | 'hybrid'>('hybrid');
+  const [formMediaType, setFormMediaType] = useState<'video' | 'audio'>('video');
   const [formThumbnail, setFormThumbnail] = useState('/images/ostad_zanjirzan.jpg');
   const [formDesc, setFormDesc] = useState('');
   const [formSchedule, setFormSchedule] = useState('دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
@@ -109,7 +109,7 @@ export function AdminCoursesTab() {
     setFormLevel('سطوح عالی و خارج');
     setFormPrice('رایگان');
     setFormType('offline');
-    setFormMediaType('hybrid');
+    setFormMediaType('video');
     setFormThumbnail('/images/ostad_zanjirzan.jpg');
     setFormDesc('');
     setFormSchedule('دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
@@ -124,7 +124,7 @@ export function AdminCoursesTab() {
     setFormLevel(course.level_fa || 'سطوح عالی و خارج');
     setFormPrice(course.price_fa || 'رایگان');
     setFormType(course.course_type || 'offline');
-    setFormMediaType(course.media_type || 'hybrid');
+    setFormMediaType(course.media_type === 'audio' ? 'audio' : 'video');
     setFormThumbnail(course.thumbnail || '/images/ostad_zanjirzan.jpg');
     setFormDesc(course.desc_fa || '');
     setFormSchedule(course.schedule || 'دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
@@ -656,11 +656,10 @@ export function AdminCoursesTab() {
                   <select
                     value={formMediaType}
                     onChange={(e) =>
-                      setFormMediaType(e.target.value as 'video' | 'audio' | 'hybrid')
+                      setFormMediaType(e.target.value as 'video' | 'audio')
                     }
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none font-medium"
                   >
-                    <option value="hybrid">ویدیو + صوت (ترکیبی)</option>
                     <option value="video">دوره ویدیویی</option>
                     <option value="audio">دوره صوتی</option>
                   </select>

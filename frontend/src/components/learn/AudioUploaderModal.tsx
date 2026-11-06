@@ -26,7 +26,7 @@ interface AudioUploaderModalProps {
     isFreePreview: boolean;
     audioUrl: string;
     videoUrl?: string;
-    media_type?: 'audio' | 'video' | 'hybrid';
+    media_type?: 'audio' | 'video';
   }) => void;
 }
 

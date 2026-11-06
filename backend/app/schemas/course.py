@@ -13,7 +13,7 @@ class ChapterSchema(BaseModel):
     is_preview: bool = Field(False, example=True)
     audio_stream_url: str = Field(default="/audio/sample_lecture.wav", example="/api/v1/stream/hls/course-ishraq/1/master.m3u8")
     video_stream_url: Optional[str] = Field(None, example="/api/v1/stream/hls/course-ishraq/1/video.m3u8")
-    media_type: Optional[str] = Field("hybrid", example="hybrid")  # audio | video | hybrid
+    media_type: Optional[str] = Field("video", example="video")  # audio | video | hybrid
 
     @model_validator(mode="before")
     @classmethod
@@ -51,7 +51,7 @@ class CourseDetailSchema(BaseModel):
     description: str = Field(..., example="Comprehensive academic commentary analyzing the illuminationist ontology...")
     tags: List[str] = Field(default_factory=list, example=["Islamic Philosophy", "Suhrawardi", "Illuminationism"])
     syllabus: List[ChapterSchema] = Field(default_factory=list)
-    media_type: Optional[str] = Field("hybrid", example="hybrid")
+    media_type: Optional[str] = Field("video", example="video")
     course_type: Optional[str] = Field("offline", example="online")
     platform: Optional[str] = Field(None, example="skyroom")
     capacity: Optional[int] = Field(None, example=30)

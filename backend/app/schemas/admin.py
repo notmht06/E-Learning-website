@@ -65,7 +65,7 @@ class CourseCreateRequest(BaseModel):
     description: str = ""
     subject: Optional[str] = "فلسفه"
     thumbnail: Optional[str] = "/images/ostad_zanjirzan.jpg"
-    media_type: Optional[str] = "hybrid"
+    media_type: Optional[str] = "video"
     course_type: Optional[str] = "offline"
     capacity: Optional[int] = 50
     enrolled_count: Optional[int] = 0
@@ -274,7 +274,7 @@ def to_chapter_dict(data: Any, chapter_id: Optional[int] = None) -> Dict[str, An
         video_link = None
 
     # 7. Media type
-    media_type = raw.get("media_type") or ("hybrid" if video_link else "audio")
+    media_type = raw.get("media_type") or ("video" if video_link else "audio")
 
     return {
         "id": ch_id,

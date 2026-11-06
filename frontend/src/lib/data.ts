@@ -324,7 +324,7 @@ export interface AudioCourse {
   price_ar: string;
   price_en: string;
   sampleAudioUrl: string;
-  media_type?: 'audio' | 'video' | 'hybrid';
+  media_type?: 'audio' | 'video';
   thumbnail?: string;
   course_type: 'offline' | 'online';
   subject: string;
@@ -352,7 +352,7 @@ export interface AudioCourse {
     audioUrl?: string;
     videoUrl?: string;
     cloudUrl?: string;
-    media_type?: 'audio' | 'video' | 'hybrid';
+    media_type?: 'audio' | 'video';
   }[];
 }
 
@@ -1006,20 +1006,20 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     price_ar: 'مجاني',
     price_en: 'Free',
     sampleAudioUrl: '/audio/sample_lecture.wav',
-    media_type: 'hybrid',
+    media_type: 'video',
     course_type: 'offline',
     subject: 'منطق',
     telegramUrl: 'https://t.me/AlNajmosageb313/979',
     chapters: [
-      { id: 1, title_fa: 'جلسه ۰۱: تعریف علم و تقسیم به تصور و تصدیق', duration: '38:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=V2QMmbJEBLc', media_type: 'hybrid' },
-      { id: 2, title_fa: 'جلسه ۰۲: مباحث الفاظ، دلالت و اقسام سه‌گانه آن', duration: '44:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=KoOiRI_gt-k', media_type: 'hybrid' },
-      { id: 3, title_fa: 'جلسه ۰۳: نسبت‌های چهارگانه میان مفاهیم کلی', duration: '41:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 4, title_fa: 'جلسه ۰۴: کلیات خمس (جنس، فصل، نوع، عرض عام و خاص)', duration: '49:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 5, title_fa: 'جلسه ۰۵: معرف و شروط تعریف، حد تام و رسم تام', duration: '46:35', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 6, title_fa: 'جلسه ۰۶: قضایا و ساختار تصدیقات (حملیه و شرطیه)', duration: '52:00', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 7, title_fa: 'جلسه ۰۷: احکام قضایا، تناقض و عکس مستوی', duration: '47:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 8, title_fa: 'جلسه ۰۸: حجت و قیاس اقترانی، اشکال اربعه', duration: '50:45', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 9, title_fa: 'جلسه ۰۹: صناعات خمس، تحلیل برهان و دفع مغالطات', duration: '55:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=dpwVDaY_yT8', media_type: 'hybrid' },
+      { id: 1, title_fa: 'جلسه ۰۱: تعریف علم و تقسیم به تصور و تصدیق', duration: '38:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=V2QMmbJEBLc', media_type: 'video' },
+      { id: 2, title_fa: 'جلسه ۰۲: مباحث الفاظ، دلالت و اقسام سه‌گانه آن', duration: '44:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=KoOiRI_gt-k', media_type: 'video' },
+      { id: 3, title_fa: 'جلسه ۰۳: نسبت‌های چهارگانه میان مفاهیم کلی', duration: '41:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 4, title_fa: 'جلسه ۰۴: کلیات خمس (جنس، فصل، نوع، عرض عام و خاص)', duration: '49:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 5, title_fa: 'جلسه ۰۵: معرف و شروط تعریف، حد تام و رسم تام', duration: '46:35', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 6, title_fa: 'جلسه ۰۶: قضایا و ساختار تصدیقات (حملیه و شرطیه)', duration: '52:00', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 7, title_fa: 'جلسه ۰۷: احکام قضایا، تناقض و عکس مستوی', duration: '47:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 8, title_fa: 'جلسه ۰۸: حجت و قیاس اقترانی، اشکال اربعه', duration: '50:45', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 9, title_fa: 'جلسه ۰۹: صناعات خمس، تحلیل برهان و دفع مغالطات', duration: '55:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=dpwVDaY_yT8', media_type: 'video' },
     ]
   },
   'course-mantiq-muzaffar-suri': {
@@ -1119,12 +1119,12 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     price_ar: 'مجاني',
     price_en: 'Free',
     sampleAudioUrl: '/audio/sample_lecture.wav',
-    media_type: 'hybrid',
+    media_type: 'video',
     course_type: 'offline',
     subject: 'فلسفه',
     telegramUrl: 'https://t.me/AlNajmosageb313/134',
     chapters: [
-      { id: 1, title_fa: 'جلسه ۰۱: ضرورت فلسفه و ماهیت تفکر عقلی', duration: '48:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
+      { id: 1, title_fa: 'جلسه ۰۱: ضرورت فلسفه و ماهیت تفکر عقلی', duration: '48:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
     ]
   },
   'course-falsafe-bidayah': {
@@ -1283,16 +1283,16 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     price_ar: 'مجاني',
     price_en: 'Free Access',
     sampleAudioUrl: '/audio/sample_lecture.wav',
-    media_type: 'hybrid',
+    media_type: 'video',
     course_type: 'offline',
     subject: 'فلسفه',
     telegramUrl: 'https://t.me/AlNajmosageb313/4098',
     chapters: [
-      { id: 1, title_fa: 'جلسه ۰۱: دیباچه حکمت اشراق، سلوک نوری و روش‌شناسی سهروردی', duration: '48:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 2, title_fa: 'جلسه ۰۲: نقد منطق ارسطویی در بخش اول حکمت اشراق', duration: '52:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 3, title_fa: 'جلسه ۰۳: حقیقت نور مجرد و بداهت نورانیت نفس', duration: '49:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 4, title_fa: 'جلسه ۰۴: قاعده امکان اشرف و مراتب صدور انوار قاهره', duration: '53:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 5, title_fa: 'جلسه ۰۵: برهان نورالانوار و توحید اشراقی در عالم اعلی', duration: '55:00', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
+      { id: 1, title_fa: 'جلسه ۰۱: دیباچه حکمت اشراق، سلوک نوری و روش‌شناسی سهروردی', duration: '48:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 2, title_fa: 'جلسه ۰۲: نقد منطق ارسطویی در بخش اول حکمت اشراق', duration: '52:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 3, title_fa: 'جلسه ۰۳: حقیقت نور مجرد و بداهت نورانیت نفس', duration: '49:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 4, title_fa: 'جلسه ۰۴: قاعده امکان اشرف و مراتب صدور انوار قاهره', duration: '53:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 5, title_fa: 'جلسه ۰۵: برهان نورالانوار و توحید اشراقی در عالم اعلی', duration: '55:00', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
     ]
   },
   'course-falsafe-asfar-1': {
@@ -1319,16 +1319,16 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     price_ar: 'مجاني',
     price_en: 'Free Access',
     sampleAudioUrl: '/audio/sample_lecture.wav',
-    media_type: 'hybrid',
+    media_type: 'video',
     course_type: 'offline',
     subject: 'فلسفه',
     telegramUrl: 'https://t.me/AlNajmosageb313/4266',
     chapters: [
-      { id: 1, title_fa: 'جلسه ۰۱: خطبه کتاب اسفار، سلوک فی الحق و مقاصد اربعه سفر عقلانی', duration: '55:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=GKjiMYw7g_s', media_type: 'hybrid' },
-      { id: 2, title_fa: 'جلسه ۰۲: اصالت وجود در برابر اصالت ماهیت و نقد شبهات محقق دوانی', duration: '58:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 3, title_fa: 'جلسه ۰۳: حقیقت وجود و نفی ترکب در هویت صرف الوجود', duration: '51:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 4, title_fa: 'جلسه ۰۴: قاعده الواحد لا یصدر عنه الا الواحد و تبیین فیض اول', duration: '53:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 5, title_fa: 'جلسه ۰۵: برهان صدیقین صدرایی بر وجوب و وحدت حقیقت هستی', duration: '59:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
+      { id: 1, title_fa: 'جلسه ۰۱: خطبه کتاب اسفار، سلوک فی الحق و مقاصد اربعه سفر عقلانی', duration: '55:20', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', videoUrl: 'https://www.youtube.com/watch?v=GKjiMYw7g_s', media_type: 'video' },
+      { id: 2, title_fa: 'جلسه ۰۲: اصالت وجود در برابر اصالت ماهیت و نقد شبهات محقق دوانی', duration: '58:40', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 3, title_fa: 'جلسه ۰۳: حقیقت وجود و نفی ترکب در هویت صرف الوجود', duration: '51:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 4, title_fa: 'جلسه ۰۴: قاعده الواحد لا یصدر عنه الا الواحد و تبیین فیض اول', duration: '53:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 5, title_fa: 'جلسه ۰۵: برهان صدیقین صدرایی بر وجوب و وحدت حقیقت هستی', duration: '59:15', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
     ]
   },
   'course-falsafe-shifa': {
@@ -1653,13 +1653,13 @@ export const coursesDatabase: Record<string, AudioCourse> = {
     price_ar: 'مجاني',
     price_en: 'Free Access',
     sampleAudioUrl: '/audio/sample_lecture.wav',
-    media_type: 'hybrid',
+    media_type: 'video',
     course_type: 'offline',
     subject: 'عرفان نظری',
     telegramUrl: 'https://t.me/AlNajmosageb313/6308',
     chapters: [
-      { id: 1, title_fa: 'جلسه ۰۱: فص حکمة الهیة فی کلمة آدمیة؛ آفرینش انسان کامل به عنوان مرآت وجود', duration: '52:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
-      { id: 2, title_fa: 'جلسه ۰۲: نسبت اعیان ثابته با اسماء الهیه در فص آدمی', duration: '55:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'hybrid' },
+      { id: 1, title_fa: 'جلسه ۰۱: فص حکمة الهیة فی کلمة آدمیة؛ آفرینش انسان کامل به عنوان مرآت وجود', duration: '52:10', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
+      { id: 2, title_fa: 'جلسه ۰۲: نسبت اعیان ثابته با اسماء الهیه در فص آدمی', duration: '55:30', isFreePreview: true, audioUrl: '/audio/sample_lecture.wav', media_type: 'video' },
     ]
   },
 

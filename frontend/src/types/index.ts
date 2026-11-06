@@ -31,7 +31,7 @@ export interface Chapter {
   is_preview: boolean;
   audio_stream_url: string;
   video_stream_url?: string;
-  media_type?: 'audio' | 'video' | 'hybrid';
+  media_type?: 'audio' | 'video';
 }
 
 export interface Course {
@@ -52,7 +52,7 @@ export interface Course {
   description: string;
   tags: string[];
   syllabus: Chapter[];
-  media_type?: 'audio' | 'video' | 'hybrid';
+  media_type?: 'audio' | 'video';
   course_type?: 'online' | 'offline' | 'hybrid';
   capacity?: number;
   enrolled_count?: number;
