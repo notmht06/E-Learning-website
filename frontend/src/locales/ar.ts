@@ -53,7 +53,7 @@ export const ar: Dictionary = {
   nav_mobile_books: 'الكتب والمؤلفات',
   nav_mobile_support: 'الدعم والتواصل:',
   courses_offline_title: 'الدورات المسجلة',
-  courses_offline_badge: 'الدورات المسجلة',
+  courses_offline_badge: 'مسجل',
   courses_offline_desc: 'وصول شامل ودائم لمحاضرات العلوم العقلية والنقلية في ۸ مجالات تخصصية',
   courses_online_title: 'الدورات المباشرة',
   courses_online_badge: 'الدورات المباشرة',

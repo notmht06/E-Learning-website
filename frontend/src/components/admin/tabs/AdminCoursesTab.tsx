@@ -22,6 +22,7 @@ import { AudioCourse, coursesDatabase } from '@/lib/data';
 import { AudioUploaderModal } from '@/components/AudioUploaderModal';
 import { apiClient } from '@/services/apiClient';
 import { AdminConfirmDialog } from '../AdminConfirmDialog';
+import RichTextCmsEditor from '../RichTextCmsEditor';
 
 export function AdminCoursesTab() {
   const {
@@ -438,7 +439,7 @@ export function AdminCoursesTab() {
       {/* Create / Edit Course Modal */}
       {isCourseModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 space-y-4 text-start shadow-2xl max-h-[92vh] overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-4xl w-full p-6 space-y-4 text-start shadow-2xl max-h-[92vh] overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                 {editingCourseId ? 'ویرایش مشخصات و کاور درس‌گفتار' : dict.admin_courses_modal_title}
@@ -577,15 +578,13 @@ export function AdminCoursesTab() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  {dict.admin_courses_modal_field_desc}
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block mb-1.5">
+                  {dict.admin_courses_modal_field_desc} (ویرایشگر پیشرفته CMS)
                 </label>
-                <textarea
-                  rows={3}
-                  placeholder={dict.admin_courses_modal_desc_placeholder}
+                <RichTextCmsEditor
                   value={formDesc}
-                  onChange={(e) => setFormDesc(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed transition-colors"
+                  onChange={setFormDesc}
+                  placeholder="اهداف آموزشی، مبانی استدلال، پیش‌نیازها و سرفصل‌های تفصیلی درس‌گفتار..."
                 />
               </div>
 

@@ -53,7 +53,7 @@ export const en: Dictionary = {
   nav_mobile_books: 'Books & Monographs',
   nav_mobile_support: 'Contact & Support:',
   courses_offline_title: 'Offline Courses',
-  courses_offline_badge: 'Course Archive',
+  courses_offline_badge: 'Recorded',
   courses_offline_desc: 'Continuous access to audio and video archives across 8 rational disciplines.',
   courses_online_title: 'Online Courses',
   courses_online_badge: 'Online Courses',

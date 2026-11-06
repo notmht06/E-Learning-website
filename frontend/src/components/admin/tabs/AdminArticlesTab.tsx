@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   FileText,
   Plus,
@@ -10,12 +10,15 @@ import {
   ExternalLink,
   X,
   Upload,
+  RotateCw,
+  FileUp,
 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { ScholarlyArticle } from '@/lib/data';
 import RichTextCmsEditor from '../RichTextCmsEditor';
 import { AdminConfirmDialog } from '../AdminConfirmDialog';
+import { apiClient } from '@/services/apiClient';
 
 export function AdminArticlesTab() {
   const { articles, addArticle, updateArticle, deleteArticle, categories } = useData();
@@ -40,6 +43,27 @@ export function AdminArticlesTab() {
   const [contentFa, setContentFa] = useState('');
   const [readTimeFa, setReadTimeFa] = useState('۱۵ دقیقه مطالعه');
   const [pdfUrl, setPdfUrl] = useState('');
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [pdfUploadError, setPdfUploadError] = useState<string | null>(null);
+  const addPdfInputRef = useRef<HTMLInputElement>(null);
+  const editPdfInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePdfUpload = async (file: File | undefined) => {
+    if (!file) return;
+    setIsUploadingPdf(true);
+    setPdfUploadError(null);
+    try {
+      const res = await apiClient.admin.uploadMedia(file);
+      if (res && res.file_url) {
+        setPdfUrl(res.file_url);
+      }
+    } catch (err: any) {
+      console.error('PDF upload failed:', err);
+      setPdfUploadError(err.message || 'خطا در بارگذاری فایل PDF');
+    } finally {
+      setIsUploadingPdf(false);
+    }
+  };
 
   const filteredArticles = (articles || []).filter((art) => {
     const matchesSearch =
@@ -357,16 +381,80 @@ export function AdminArticlesTab() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  پیوند فایل PDF مقاله
-                </label>
+              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-[#8A532B]" />
+                    <span>فایل PDF مقاله پژوهشی:</span>
+                  </label>
+                  <input
+                    ref={addPdfInputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      handlePdfUpload(file);
+                      e.target.value = '';
+                    }}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addPdfInputRef.current?.click()}
+                    disabled={isUploadingPdf}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 transition disabled:opacity-50 shadow-xs"
+                  >
+                    {isUploadingPdf ? (
+                      <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileUp className="w-3.5 h-3.5" />
+                    )}
+                    <span>{isUploadingPdf ? 'در حال آپلود PDF...' : 'انتخاب و آپلود فایل PDF'}</span>
+                  </button>
+                </div>
+
+                {pdfUploadError && (
+                  <p className="text-xs text-red-600 dark:text-red-400 font-bold">{pdfUploadError}</p>
+                )}
+
+                {pdfUrl ? (
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 font-bold text-[10px] tracking-wider uppercase shrink-0">
+                        PDF
+                      </span>
+                      <a
+                        href={pdfUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-mono text-[#8A532B] hover:underline truncate"
+                        title={pdfUrl}
+                      >
+                        {pdfUrl}
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPdfUrl('')}
+                      className="p-1 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      title="حذف فایل PDF"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                    هنوز فایلی پیوست نشده است. دکمه «انتخاب و آپلود فایل PDF» را بزنید یا آدرس را دستی وارد کنید.
+                  </p>
+                )}
+
                 <input
                   type="text"
-                  placeholder="/articles/burhan_wujub.pdf"
+                  dir="ltr"
+                  placeholder="یا درج دستی آدرس فایل: /articles/burhan_wujub.pdf"
                   value={pdfUrl}
                   onChange={(e) => setPdfUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B] transition-colors"
                 />
               </div>
 
@@ -480,15 +568,80 @@ export function AdminArticlesTab() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
-                  پیوند فایل PDF
-                </label>
+              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-[#8A532B]" />
+                    <span>فایل PDF مقاله پژوهشی:</span>
+                  </label>
+                  <input
+                    ref={editPdfInputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      handlePdfUpload(file);
+                      e.target.value = '';
+                    }}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => editPdfInputRef.current?.click()}
+                    disabled={isUploadingPdf}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 transition disabled:opacity-50 shadow-xs"
+                  >
+                    {isUploadingPdf ? (
+                      <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileUp className="w-3.5 h-3.5" />
+                    )}
+                    <span>{isUploadingPdf ? 'در حال آپلود PDF...' : 'انتخاب و آپلود فایل PDF'}</span>
+                  </button>
+                </div>
+
+                {pdfUploadError && (
+                  <p className="text-xs text-red-600 dark:text-red-400 font-bold">{pdfUploadError}</p>
+                )}
+
+                {pdfUrl ? (
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 font-bold text-[10px] tracking-wider uppercase shrink-0">
+                        PDF
+                      </span>
+                      <a
+                        href={pdfUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-mono text-[#8A532B] hover:underline truncate"
+                        title={pdfUrl}
+                      >
+                        {pdfUrl}
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPdfUrl('')}
+                      className="p-1 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      title="حذف فایل PDF"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                    هنوز فایلی پیوست نشده است. دکمه «انتخاب و آپلود فایل PDF» را بزنید یا آدرس را دستی وارد کنید.
+                  </p>
+                )}
+
                 <input
                   type="text"
+                  dir="ltr"
+                  placeholder="یا درج دستی آدرس فایل: /articles/burhan_wujub.pdf"
                   value={pdfUrl}
                   onChange={(e) => setPdfUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B] transition-colors"
                 />
               </div>
 

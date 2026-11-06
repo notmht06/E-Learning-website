@@ -196,9 +196,10 @@ export function CourseDetailHero({
 
           {/* Academic Abstract / Description */}
           {description && (
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed text-justify">
-              {description}
-            </p>
+            <div
+              className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed text-justify cms-rich-content prose dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           )}
 
           {/* Official Scholar Bio & Rating Strip */}
