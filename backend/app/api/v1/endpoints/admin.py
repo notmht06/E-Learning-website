@@ -841,3 +841,28 @@ async def get_students_overview(
         "students": students_list,
         "orders": all_orders_list,
     }
+
+
+@router.post("/courses/{course_id}/handouts", summary="Upload or index a Professor PDF/Text Handout into Course RAG")
+async def upload_and_index_course_handout(
+    course_id: str,
+    payload: dict,
+    admin: dict = Depends(get_current_admin),
+):
+    from backend.app.services.auto_media_pipeline import ingest_course_handout_in_background
+    from backend.app.services.course_service import course_service
+    try:
+        c_obj = course_service.get_course_by_id(course_id)
+        c_title = c_obj.get("title", course_id)
+    except Exception:
+        c_title = course_id
+
+    res = await ingest_course_handout_in_background(
+        course_id=course_id,
+        course_title=c_title,
+        handout_title=payload.get("title", "جزوه رسمی دوره"),
+        file_url=payload.get("file_url", ""),
+        chapter_id=payload.get("chapter_id"),
+        raw_text=payload.get("raw_text"),
+    )
+    return res

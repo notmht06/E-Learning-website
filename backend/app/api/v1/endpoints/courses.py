@@ -271,3 +271,26 @@ async def get_chapter_ai_summary(course_id: str, chapter_id: int):
         ),
         "auto_indexed": True,
     }
+
+
+@router.get("/{course_id}/chapters/{chapter_id}/subtitles", summary="Get auto-generated Persian subtitles (JSON or WebVTT)")
+async def get_chapter_subtitles(course_id: str, chapter_id: int, format: str = "json", lang: str = "fa"):
+    from fastapi.responses import PlainTextResponse
+    from backend.app.services.auto_media_pipeline import get_session_summary, build_webvtt_from_cues
+    saved = get_session_summary(course_id, chapter_id)
+    cues = (saved or {}).get("subtitles") or [
+        {
+            "id": 1,
+            "start": 0,
+            "end": 15,
+            "text": {
+                "fa": "بسم الله الرحمن الرحیم. آغاز درس‌گفتار رسمی حجت الاسلام دکتر زنجیر زن حسینی.",
+                "ar": "بسم الله الرحمن الرحيم. بداية الدرس الرسمي لسماحة الدكتور زنجير زن حسيني.",
+                "en": "In the Name of God. Official lecture by Hojjat al-Islam Dr. Zanjirzan Hosseini.",
+            },
+        }
+    ]
+    if format.lower() == "vtt":
+        vtt_str = build_webvtt_from_cues(cues, lang=lang)
+        return PlainTextResponse(content=vtt_str, media_type="text/vtt; charset=utf-8")
+    return {"course_id": course_id, "chapter_id": chapter_id, "cues": cues}

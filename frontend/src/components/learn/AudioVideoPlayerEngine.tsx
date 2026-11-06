@@ -25,7 +25,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { apiClient } from '@/services/apiClient';
 import { triggerTactileHaptic } from '@/lib/haptics';
-import { getCourseSubtitles } from '@/lib/subtitles';
+import { getCourseSubtitles, SubtitleCue } from '@/lib/subtitles';
 import { LearningAccessGuard } from './LearningAccessGuard';
 
 export interface AudioVideoPlayerEngineProps {
@@ -115,10 +115,42 @@ export function AudioVideoPlayerEngine({
   const [settingsSubmenu, setSettingsSubmenu] = useState<SettingsSubmenu>('main');
   const [isSubtitleOn, setIsSubtitleOn] = useState<boolean>(false);
 
-  // Synchronized Persian Subtitles
+  // Synchronized Persian Subtitles (Dynamic API fetch with local fallback)
+  const [dynamicCues, setDynamicCues] = useState<SubtitleCue[] | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!courseId) return;
+
+    apiClient.courses
+      .getChapterSubtitles(courseId, chapterId || 1, 'json')
+      .then((res) => {
+        if (!isMounted || !res?.cues?.length) return;
+        const mapped: SubtitleCue[] = res.cues.map((c) => ({
+          id: c.id,
+          start: c.start,
+          end: c.end,
+          text: {
+            fa: c.text?.fa || c.text?.ar || String(c.text || ''),
+            ar: c.text?.ar || c.text?.fa || String(c.text || ''),
+            en: c.text?.en || c.text?.fa || String(c.text || ''),
+          },
+        }));
+        setDynamicCues(mapped);
+      })
+      .catch(() => {
+        // Fallback silently to static generated cues
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId, chapterId]);
+
   const subtitleCues = React.useMemo(() => {
+    if (dynamicCues && dynamicCues.length > 0) return dynamicCues;
     return getCourseSubtitles(courseId || 'course-asfar', chapterId || 1, duration);
-  }, [courseId, chapterId, duration]);
+  }, [dynamicCues, courseId, chapterId, duration]);
 
   const activeSubtitle = isSubtitleOn
     ? subtitleCues.find((cue) => currentTime >= cue.start && currentTime <= cue.end)

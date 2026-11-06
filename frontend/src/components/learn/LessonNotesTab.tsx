@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, BookOpen, Edit3, Save, Printer } from 'lucide-react';
+import { Copy, Check, BookOpen, Edit3, Save, Printer, Sparkles } from 'lucide-react';
+import { apiClient } from '@/services/apiClient';
 import { useLanguage } from '@/context/LanguageContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
 
@@ -22,6 +23,32 @@ export function LessonNotesTab({
   const [copied, setCopied] = useState(false);
   const [personalNotes, setPersonalNotes] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [copiedSummary, setCopiedSummary] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    apiClient.courses
+      .getChapterAiSummary(courseId, chapterId)
+      .then((res) => {
+        if (isMounted && res?.summary_fa) {
+          setAiSummary(res.summary_fa);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId, chapterId]);
+
+  const handleCopyAiSummary = () => {
+    triggerTactileHaptic('tick');
+    if (typeof navigator !== 'undefined' && navigator.clipboard && aiSummary) {
+      navigator.clipboard.writeText(`${chapterTitle}\n\n${aiSummary}`);
+      setCopiedSummary(true);
+      setTimeout(() => setCopiedSummary(false), 2200);
+    }
+  };
 
   const storageKey = `zanjirzan_notes_${courseId}_${chapterId}`;
 
@@ -68,6 +95,36 @@ export function LessonNotesTab({
 
   return (
     <div className="space-y-6 text-start">
+      {/* AI Session Summary Card */}
+      {aiSummary && (
+        <article className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141518] border border-[#8A532B]/30 dark:border-[#C58B43]/30 space-y-4 shadow-xs animate-in fade-in-0 duration-200">
+          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-[#8A532B]/10 dark:bg-[#C58B43]/10 flex items-center justify-center text-[#8A532B] dark:text-[#C58B43]">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                  خلاصه تحلیلی جلسه (هوش مصنوعی حکمت‌یار)
+                </h3>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400">استخراج خودکار از صوت و جزوه رسمی استاد</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyAiSummary}
+              className="px-2.5 py-1.5 rounded-xl border border-[#E6E1D8] dark:border-[#22242A] text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#8A532B] hover:text-[#8A532B] transition flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
+            >
+              {copiedSummary ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedSummary ? 'کپی شد' : 'کپی خلاصه'}</span>
+            </button>
+          </header>
+          <div className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed sm:leading-loose whitespace-pre-line">
+            {aiSummary}
+          </div>
+        </article>
+      )}
+
       {/* Monograph Card */}
       <article className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#22242A] space-y-4 shadow-xs">
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E1D8] dark:border-[#22242A] pb-4">

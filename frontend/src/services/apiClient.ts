@@ -192,6 +192,12 @@ class ApiClient {
         subtitles?: Array<{ id: number; start: number; end: number; text: Record<string, string> }>;
         auto_indexed?: boolean;
       }>(`/courses/${courseId}/chapters/${chapterId}/summary`),
+    getChapterSubtitles: (courseId: string, chapterId: number, format: 'json' | 'vtt' = 'json') =>
+      this.request<{
+        course_id: string;
+        chapter_id: number;
+        cues: Array<{ id: number; start: number; end: number; text: Record<string, string> }>;
+      }>(`/courses/${courseId}/chapters/${chapterId}/subtitles?format=${format}`),
   };
 
   // --- Books Module ---
@@ -430,6 +436,17 @@ class ApiClient {
     getStudentsOverview: () =>
       this.request<{ students: any[]; orders: any[] }>('/admin/students-overview'),
     getMetrics: () => this.request<any>('/observability/metrics'),
+    uploadAndIndexHandout: (courseId: string, payload: { title: string; file_url?: string; chapter_id?: number; raw_text?: string }) =>
+      this.request<{
+        success: boolean;
+        course_id: string;
+        handout_title: string;
+        pages_indexed: number;
+        chunks_created: number;
+      }>(`/admin/courses/${courseId}/handouts`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     uploadMedia: async (file: File): Promise<{ success: boolean; file_url: string; filename: string; original_filename: string }> => {
       const token = typeof window !== 'undefined' ? localStorage.getItem('zanjirzan_token') : null;
       const formData = new FormData();

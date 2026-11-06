@@ -15,6 +15,7 @@ import {
   Video,
   Headphones,
   Check,
+  FileText,
 } from 'lucide-react';
 import { useData, AudioChapter } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -42,6 +43,31 @@ export function AdminCoursesTab() {
   const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
   const [selectedCourseForStudio, setSelectedCourseForStudio] = useState<string | null>(null);
   const [isMediaUploaderOpen, setIsMediaUploaderOpen] = useState(false);
+  const handoutFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploadingHandout, setIsUploadingHandout] = useState(false);
+  const [selectedChapterForHandout, setSelectedChapterForHandout] = useState<{ id: number; title: string } | null>(null);
+
+  const handleHandoutUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeStudioCourse) return;
+    setIsUploadingHandout(true);
+    try {
+      const uploadRes = await apiClient.admin.uploadMedia(file);
+      const chId = selectedChapterForHandout?.id;
+      const chTitle = selectedChapterForHandout?.title || '';
+      await apiClient.admin.uploadAndIndexHandout(activeStudioCourse.id, {
+        title: chTitle ? `جزوه جلسه: ${chTitle}` : `جزوه رسمی ${file.name.replace(/\.[^/.]+$/, '')}`,
+        file_url: uploadRes.file_url,
+        chapter_id: chId,
+      });
+    } catch (err: any) {
+      console.error('Failed to upload/index handout:', err);
+    } finally {
+      setIsUploadingHandout(false);
+      setSelectedChapterForHandout(null);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   const [isSubmittingCourse, setIsSubmittingCourse] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
@@ -364,19 +390,41 @@ export function AdminCoursesTab() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-300">
                 {dict.admin_courses_studio_episodes_list} ({toLocale(activeStudioCourse.chapters?.length || 0)})
               </h4>
-              <button
-                type="button"
-                onClick={() => setIsMediaUploaderOpen(true)}
-                className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs active:scale-95 transition"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>+ آپلود جلسه جدید (ویدیو یا صوت)</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedChapterForHandout(null);
+                    handoutFileInputRef.current?.click();
+                  }}
+                  disabled={isUploadingHandout}
+                  className="px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-[#8A532B] text-zinc-700 dark:text-zinc-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 transition disabled:opacity-50"
+                  title="آپلود جزوه PDF و ایندکس خودکار در هوش مصنوعی دوره"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#8A532B]" />
+                  <span>{isUploadingHandout ? 'درحال ایندکس...' : 'آپلود جزوه درس (PDF)'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsMediaUploaderOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724424] text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs active:scale-95 transition"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>+ آپلود جلسه جدید</span>
+                </button>
+              </div>
             </div>
+            <input
+              ref={handoutFileInputRef}
+              type="file"
+              accept=".pdf,.txt,.doc,.docx"
+              className="hidden"
+              onChange={handleHandoutUpload}
+            />
 
             <div className="space-y-2.5 max-h-80 overflow-y-auto pe-1">
               {activeStudioCourse.chapters?.length === 0 ? (
@@ -410,8 +458,19 @@ export function AdminCoursesTab() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex items-center gap-2.5 shrink-0">
                         <span className="font-num text-zinc-500">{ch.duration}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedChapterForHandout({ id: ch.id, title: ch.title_fa });
+                            handoutFileInputRef.current?.click();
+                          }}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-[#8A532B] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition cursor-pointer"
+                          title="آپلود جزوه PDF این جلسه"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                         <button
                           type="button"
                           onClick={() =>
