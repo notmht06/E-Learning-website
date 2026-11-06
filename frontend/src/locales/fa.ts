@@ -850,6 +850,7 @@ export const fa = {
   admin_coupons_modal_title: 'تعریف کد تخفیف جدید',
   admin_coupons_field_code: 'کد تخفیف (لاتین)',
   admin_coupons_field_percent: 'درصد تخفیف (۱ تا ۱۰۰)',
+  admin_coupons_field_max_uses: 'سقف استفاده (تعداد نفرات مجاز)',
   admin_coupons_field_desc: 'توضیحات یا مناسبت',
   admin_drm_title: 'مرکز نظارت و صیانت از استریم DRM صوت ۴۸kHz',
   admin_drm_desc: 'نظارت بر پخش جلسات، تطبیق واترمرک امنیتی و بررسی توکن‌های همزمان',

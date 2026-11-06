@@ -851,6 +851,7 @@ export const ar: Dictionary = {
   admin_coupons_modal_title: 'تعريف قسيمة خصم جديدة',
   admin_coupons_field_code: 'رمز القسيمة (لاتيني)',
   admin_coupons_field_percent: 'نسبة التخفيض (١ إلى ١٠٠)',
+  admin_coupons_field_max_uses: 'الحد الأقصى للاستخدام (عدد الطلاب)',
   admin_coupons_field_desc: 'المناسبة أو الوصف',
   admin_drm_title: 'مركز الرقابة وحماية بث DRM الصوتي ٤٨kHz',
   admin_drm_desc: 'مراقبة بث الجلسات، مطابقة العلامة المائية وفحص الجلسات المتزامنة',

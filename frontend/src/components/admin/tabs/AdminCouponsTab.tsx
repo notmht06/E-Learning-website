@@ -19,6 +19,7 @@ export function AdminCouponsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [code, setCode] = useState('');
   const [percent, setPercent] = useState('20');
+  const [maxUses, setMaxUses] = useState('50');
   const [desc, setDesc] = useState('');
 
   const [couponToDelete, setCouponToDelete] = useState<CouponRecord | null>(null);
@@ -31,7 +32,7 @@ export function AdminCouponsTab() {
     const newCoupon: CouponRecord = {
       code: code.trim().toUpperCase(),
       discountPercent: Number(percent) || 10,
-      maxUses: 100,
+      maxUses: Math.max(1, parseInt(maxUses, 10) || 50),
       usedCount: 0,
       expiresAt: '۱۴۰۴/۰۱/۰۱',
       isActive: true,
@@ -40,6 +41,8 @@ export function AdminCouponsTab() {
     addCoupon(newCoupon);
     setIsModalOpen(false);
     setCode('');
+    setPercent('20');
+    setMaxUses('50');
     setDesc('');
   };
 
@@ -193,6 +196,22 @@ export function AdminCouponsTab() {
                   placeholder="20"
                   value={percent}
                   onChange={(e) => setPercent(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                  {dict.admin_coupons_field_max_uses}
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10000"
+                  placeholder="50"
+                  value={maxUses}
+                  onChange={(e) => setMaxUses(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
                   required
                 />

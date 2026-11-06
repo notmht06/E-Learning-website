@@ -851,6 +851,7 @@ export const en: Dictionary = {
   admin_coupons_modal_title: 'Create Promotional Coupon',
   admin_coupons_field_code: 'Coupon Code (Latin)',
   admin_coupons_field_percent: 'Discount Percent (1-100)',
+  admin_coupons_field_max_uses: 'Maximum Uses (Allowed Students)',
   admin_coupons_field_desc: 'Description / Event',
   admin_drm_title: '48kHz DRM Stream Security & Playback Supervision',
   admin_drm_desc: 'Live session surveillance, watermark integrity & concurrent tokens',

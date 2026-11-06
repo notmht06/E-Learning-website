@@ -211,15 +211,23 @@ export function AdminSettingsTab() {
                   <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">نوار اعلان سراسری بالای سایت</h4>
                   <p className="text-[11px] text-zinc-500 mt-0.5">نمایش پیام‌های مهم، تقویم ترم جدید یا ثبت‌نام کلاس‌ها در بالاترین بخش تمامی صفحات</p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(formData.announcement_bar_active)}
-                    onChange={(e) => handleChange('announcement_bar_active', e.target.checked)}
-                    className="sr-only peer"
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={Boolean(formData.announcement_bar_active)}
+                  onClick={() => handleChange('announcement_bar_active', !formData.announcement_bar_active)}
+                  className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer shrink-0 ${
+                    formData.announcement_bar_active
+                      ? 'bg-[#8A532B] dark:bg-[#C58B43]'
+                      : 'bg-zinc-300 dark:bg-zinc-700'
+                  }`}
+                >
+                  <span
+                    className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${
+                      formData.announcement_bar_active ? 'ltr:translate-x-4 rtl:-translate-x-4' : 'translate-x-0'
+                    }`}
                   />
-                  <div className="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-transform after:duration-200 peer-checked:bg-[#8A532B]"></div>
-                </label>
+                </button>
               </div>
 
               <input
@@ -420,15 +428,23 @@ export function AdminSettingsTab() {
                   در صورت فعال بودن، مدل هوش مصنوعی تنها به متون معتبر تدریس‌های استاد استناد می‌کند و از حدس‌های متفرقه امتناع می‌ورزد.
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={Boolean(formData.strict_corpus_only)}
-                  onChange={(e) => handleChange('strict_corpus_only', e.target.checked)}
-                  className="sr-only peer"
+              <button
+                type="button"
+                role="switch"
+                aria-checked={Boolean(formData.strict_corpus_only)}
+                onClick={() => handleChange('strict_corpus_only', !formData.strict_corpus_only)}
+                className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer shrink-0 ${
+                  formData.strict_corpus_only
+                    ? 'bg-[#8A532B] dark:bg-[#C58B43]'
+                    : 'bg-zinc-300 dark:bg-zinc-700'
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${
+                    formData.strict_corpus_only ? 'ltr:translate-x-4 rtl:-translate-x-4' : 'translate-x-0'
+                  }`}
                 />
-                <div className="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-transform after:duration-200 peer-checked:bg-[#8A532B]"></div>
-              </label>
+              </button>
             </div>
 
             <div>

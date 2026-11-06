@@ -906,6 +906,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       apiClient.admin.createCoupon({
         code: coupon.code,
         discount_percent: coupon.discountPercent,
+        max_uses: coupon.maxUses,
         active: coupon.isActive,
       }).catch(err => console.debug('Backend createCoupon skipped:', err));
     });
