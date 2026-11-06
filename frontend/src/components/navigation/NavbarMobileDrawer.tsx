@@ -164,32 +164,8 @@ export const NavbarMobileDrawer: React.FC<NavbarMobileDrawerProps> = ({
 
         {/* Mobile Language and Theme Controls */}
         <div className="pt-2 border-t border-book-border dark:border-stone-800 flex items-center justify-between px-3">
-          <div className="flex items-center gap-1 bg-black/[0.04] dark:bg-white/[0.06] p-1 rounded-full text-xs font-bold">
-            <button
-              onClick={() => onLanguageChange('fa')}
-              className={`px-3 py-1 rounded-full transition cursor-pointer ${
-                currentLang === 'fa' ? 'bg-[#8A532B] text-white shadow-xs' : 'text-stone-500'
-              }`}
-            >
-              فارسی
-            </button>
-            <button
-              onClick={() => onLanguageChange('ar')}
-              className={`px-3 py-1 rounded-full transition cursor-pointer ${
-                currentLang === 'ar' ? 'bg-[#8A532B] text-white shadow-xs' : 'text-stone-500'
-              }`}
-            >
-              العربية
-            </button>
-            <button
-              onClick={() => onLanguageChange('en')}
-              className={`px-3 py-1 rounded-full transition cursor-pointer ${
-                currentLang === 'en' ? 'bg-[#8A532B] text-white shadow-xs' : 'text-stone-500'
-              }`}
-            >
-              EN
-            </button>
-          </div>
+          {/* Mobile language switcher temporarily hidden for launch */}
+          <div />
           {onThemeToggle && (
             <button
               onClick={onThemeToggle}

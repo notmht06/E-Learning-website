@@ -1,7 +1,7 @@
 const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   // A service worker in `next dev` serves stale bundles and 404s on its dev worker file.
-  disable: process.env.NODE_ENV === 'development',
+  disable: true, // PWA temporarily disabled for fast launch
   register: true,
   skipWaiting: true,
   cacheOnFrontEndNav: true,

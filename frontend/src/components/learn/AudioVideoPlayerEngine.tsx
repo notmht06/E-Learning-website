@@ -10,6 +10,7 @@ import {
   Minimize,
   Settings,
   PictureInPicture,
+  Subtitles,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -24,6 +25,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { apiClient } from '@/services/apiClient';
 import { triggerTactileHaptic } from '@/lib/haptics';
+import { getCourseSubtitles } from '@/lib/subtitles';
 import { LearningAccessGuard } from './LearningAccessGuard';
 
 export interface AudioVideoPlayerEngineProps {
@@ -46,7 +48,7 @@ export interface AudioVideoPlayerEngineProps {
 }
 
 export type VideoQuality = 'auto' | '1080p' | '720p' | '480p' | '360p';
-export type SettingsSubmenu = 'main' | 'quality' | 'speed' | 'mode';
+export type SettingsSubmenu = 'main' | 'quality' | 'speed' | 'mode' | 'subtitles';
 
 const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const QUALITY_OPTIONS: VideoQuality[] = ['auto', '1080p', '720p', '480p', '360p'];
@@ -111,6 +113,17 @@ export function AudioVideoPlayerEngine({
   // Settings popover state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settingsSubmenu, setSettingsSubmenu] = useState<SettingsSubmenu>('main');
+  const [isSubtitleOn, setIsSubtitleOn] = useState<boolean>(false);
+
+  // Synchronized Persian Subtitles
+  const subtitleCues = React.useMemo(() => {
+    return getCourseSubtitles(courseId || 'course-asfar', chapterId || 1, duration);
+  }, [courseId, chapterId, duration]);
+
+  const activeSubtitle = isSubtitleOn
+    ? subtitleCues.find((cue) => currentTime >= cue.start && currentTime <= cue.end)
+    : null;
+  const currentSubtitleFa = activeSubtitle ? activeSubtitle.text.fa : '';
 
   const [drmToken, setDrmToken] = useState<string | null>(null);
   const [drmStreamUrl, setDrmStreamUrl] = useState<string | null>(null);
@@ -509,6 +522,15 @@ export function AudioVideoPlayerEngine({
         </button>
       )}
 
+            {/* Synchronized Persian Subtitle Overlay (Strictly Persian Only) */}
+      {isSubtitleOn && currentSubtitleFa && (
+        <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-30 max-w-[85%] text-center pointer-events-none transition-all duration-200 ease-out animate-in fade-in">
+          <div className="inline-block px-4 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm font-medium leading-relaxed shadow-2xl">
+            {currentSubtitleFa}
+          </div>
+        </div>
+      )}
+
       {/* 3. Floating Minimalist Controls Bar - STRICTLY LTR & VideoJS VideoSkin Layout */}
       <div
         dir="ltr"
@@ -674,6 +696,25 @@ export function AudioVideoPlayerEngine({
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-white/60">
                         <span>{speed === 1 ? 'Normal' : `${speed}x`}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                      </div>
+                    </button>
+
+                    {/* Subtitles Item (Persian only) */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('subtitles');
+                      }}
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Subtitles className="w-3.5 h-3.5" />
+                        <span>زیرنویس</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-white/60">
+                        <span>{isSubtitleOn ? 'فارسی' : 'خاموش'}</span>
                         <ChevronRight className="w-3.5 h-3.5 text-white/40" />
                       </div>
                     </button>

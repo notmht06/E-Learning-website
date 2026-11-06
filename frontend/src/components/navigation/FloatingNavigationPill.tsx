@@ -223,62 +223,7 @@ export const FloatingNavigationPill: React.FC<FloatingNavigationPillProps> = ({
             )}
           </button>
 
-          {/* Elegant Dropdown Language Switcher */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/5 text-zinc-700 dark:text-zinc-300 hover:text-[#8A532B] dark:hover:text-[#C58B43] hover:border-[#8A532B]/30 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 cursor-pointer shrink-0"
-                aria-label={dict.nav_language}
-                title={dict.nav_language}
-              >
-                <Globe className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
-                <span className="text-[11px] font-bold">
-                  {dict.ui_english}
-                </span>
-                <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0 opacity-70" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="w-36 p-1.5 bg-[#FAF8F5] dark:bg-[#141518] border border-[#E6E1D8] dark:border-[#27282D] rounded-2xl shadow-xl space-y-0.5 z-50 text-xs"
-            >
-              <DropdownMenuItem
-                onClick={() => setLanguage('fa')}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors ${
-                  currentLang === 'fa'
-                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-              >
-                <span>فارسی</span>
-                <span className="text-[11px] font-mono opacity-60">FA</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('ar')}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors ${
-                  currentLang === 'ar'
-                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-              >
-                <span>العربية</span>
-                <span className="text-[11px] font-mono opacity-60">AR</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('en')}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-bold transition-colors font-sans ${
-                  currentLang === 'en'
-                    ? 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/15 dark:text-[#C58B43]'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-              >
-                <span>English</span>
-                <span className="text-[11px] font-mono opacity-60">EN</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Multi-language switcher temporarily hidden for launch - Persian default */}
 
           {/* Cart Drawer Trigger */}
           <button
