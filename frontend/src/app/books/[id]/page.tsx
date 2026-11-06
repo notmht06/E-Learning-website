@@ -1,10 +1,11 @@
-import { redirect } from 'next/navigation';
+import { BookDetailClient } from './BookDetailClient';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function BookDetailPage({ params }: Props) {
-  redirect('/courses');
-  return null;
+  const { id } = await params;
+  return <BookDetailClient bookId={id} />;
 }
+
