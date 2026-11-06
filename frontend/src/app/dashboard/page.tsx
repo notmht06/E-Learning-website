@@ -106,6 +106,12 @@ export default function UserDashboardPage() {
   const titles = tabLocalization[langKey];
   const labels = navLabels[langKey];
 
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+      router.push(localizeHref('/login?redirect=/dashboard'));
+    }
+  }, [user, isLoading, router, localizeHref]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#0C0D0E] flex items-center justify-center">
@@ -118,7 +124,7 @@ export default function UserDashboardPage() {
     return (
       <ShellAuthGate
         portalType="student"
-        onLogin={() => router.push(localizeHref('/login'))}
+        onLogin={() => router.push(localizeHref('/login?redirect=/dashboard'))}
       />
     );
   }

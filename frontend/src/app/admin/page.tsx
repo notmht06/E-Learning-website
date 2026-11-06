@@ -133,8 +133,12 @@ export default function AdminPage() {
   const labels = navLabels[langKey];
 
   React.useEffect(() => {
-    if (!isLoading && (!user || !isAdmin)) {
-      router.push(localizeHref('/login'));
+    if (!isLoading) {
+      if (!user) {
+        router.push(localizeHref('/login?redirect=/admin'));
+      } else if (!isAdmin) {
+        router.push(localizeHref('/dashboard'));
+      }
     }
   }, [user, isAdmin, isLoading, router, localizeHref]);
 
@@ -151,8 +155,8 @@ export default function AdminPage() {
     return (
       <ShellAuthGate
         portalType="admin"
-        demoActionLabel={dict.ui_go_to_login}
-        onLogin={() => router.push(localizeHref('/login'))}
+        demoActionLabel={!user ? dict.ui_go_to_login : 'ورود به داشبورد دانش‌پژوه'}
+        onLogin={() => router.push(localizeHref(!user ? '/login?redirect=/admin' : '/dashboard'))}
       />
     );
   }

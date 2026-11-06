@@ -46,13 +46,40 @@ class ApiClient {
         } else if (typeof errorMessage === 'object' && errorMessage !== null) {
           errorMessage = errorMessage.msg || errorMessage.message || JSON.stringify(errorMessage);
         }
+
+        // Global 401 Unauthorized / Session Expiry Handling
+        const isAuthFormEndpoint =
+          endpoint.includes('/auth/login') ||
+          endpoint.includes('/auth/otp') ||
+          endpoint.includes('/auth/register');
+
+        if (response.status === 401 && !isAuthFormEndpoint) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('zanjirzan_token');
+            localStorage.removeItem('zanjirzan_user');
+            window.dispatchEvent(
+              new CustomEvent('zan_auth_expired', {
+                detail: {
+                  message: errorMessage || 'توکن نشست نامعتبر یا منقضی شده است. لطفاً مجدداً وارد شوید.',
+                  endpoint,
+                  status: 401,
+                },
+              })
+            );
+          }
+        }
+
         const errObj = new Error(errorMessage || `Request failed with status ${response.status}`);
         (errObj as any).status = response.status;
         throw errObj;
       }
       return await response.json();
     } catch (error: any) {
-      console.error(`API Error on [${options.method || 'GET'}] ${endpoint}:`, error.message);
+      if (error?.status === 401) {
+        console.warn(`Auth session expired or unauthorized on [${options.method || 'GET'}] ${endpoint}:`, error.message);
+      } else {
+        console.error(`API Error on [${options.method || 'GET'}] ${endpoint}:`, error.message);
+      }
       throw error;
     }
   }

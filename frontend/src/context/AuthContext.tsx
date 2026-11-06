@@ -110,6 +110,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => { isMounted = false; };
   }, []);
 
+  useEffect(() => {
+    const handleAuthExpired = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.warn('Authentication session expired or invalidated:', customEvent?.detail?.message);
+      setUser(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('zanjirzan_token');
+        localStorage.removeItem('zanjirzan_user');
+        const pathname = window.location.pathname;
+        const isProtected =
+          pathname.startsWith('/admin') ||
+          pathname.startsWith('/dashboard') ||
+          pathname.includes('/learn');
+
+        if (isProtected) {
+          window.location.href = `/login?redirect=${encodeURIComponent(pathname)}`;
+        }
+      }
+    };
+
+    window.addEventListener('zan_auth_expired', handleAuthExpired);
+    return () => {
+      window.removeEventListener('zan_auth_expired', handleAuthExpired);
+    };
+  }, []);
+
   const login = async (phone: string, password: string = ''): Promise<UserProfile> => {
     const userRes = await apiClient.auth.login(phone, password);
     if (userRes.access_token) {
@@ -149,8 +175,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('zanjirzan_token');
-    localStorage.removeItem('zanjirzan_user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('zanjirzan_token');
+      localStorage.removeItem('zanjirzan_user');
+      const pathname = window.location.pathname;
+      const isProtected =
+        pathname.startsWith('/admin') ||
+        pathname.startsWith('/dashboard') ||
+        pathname.includes('/learn');
+
+      if (isProtected) {
+        window.location.href = '/login';
+      }
+    }
   };
 
   const enrollCourse = async (courseId: string): Promise<boolean> => {

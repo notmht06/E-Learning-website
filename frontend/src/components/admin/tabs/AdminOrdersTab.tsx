@@ -28,6 +28,11 @@ export function AdminOrdersTab() {
 
   useEffect(() => {
     let mounted = true;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('zanjirzan_token') : null;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
     apiClient.admin
       .getStudentsOverview()
@@ -37,7 +42,7 @@ export function AdminOrdersTab() {
         if (Array.isArray(data.orders)) setServerOrders(data.orders);
       })
       .catch((err: any) => {
-        console.warn('Failed to load students overview:', err);
+        console.warn('Failed to load students overview:', err?.message || err);
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
