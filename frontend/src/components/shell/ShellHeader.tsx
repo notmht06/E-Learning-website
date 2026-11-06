@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   Menu,
   ShieldCheck,
   User,
-  Globe,
-  Check,
-  ChevronDown,
   Home,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-import { SupportedLang } from '@/lib/data';
+import { getScholarName } from '@/lib/constants';
 
 export interface ShellHeaderProps {
   portalType: 'student' | 'admin';
@@ -23,14 +20,6 @@ export interface ShellHeaderProps {
   onOpenMobileNav?: () => void;
 }
 
-import { getScholarName } from '@/lib/constants';
-
-const languages: { code: SupportedLang; label: string; dir: 'rtl' | 'ltr' }[] = [
-  { code: 'fa', label: 'فارسی', dir: 'rtl' },
-  { code: 'ar', label: 'العربية', dir: 'rtl' },
-  { code: 'en', label: 'English', dir: 'ltr' },
-];
-
 export function ShellHeader({
   portalType,
   portalBadge,
@@ -39,19 +28,7 @@ export function ShellHeader({
   userRole,
   onOpenMobileNav,
 }: ShellHeaderProps) {
-  const { dict, currentLang, setLanguage, localizeHref } = useLanguage();
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) {
-        setIsLangOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const { dict, currentLang, localizeHref } = useLanguage();
 
   const defaultRole = portalType === 'admin'
     ? (dict.ui_administrator)
@@ -91,7 +68,7 @@ export function ShellHeader({
         </div>
       </div>
 
-      {/* Right (RTL End) Group: Scholar Credit, Language Switcher, Profile */}
+      {/* Right (RTL End) Group: Scholar Credit, Main Site Link, Profile */}
       <div className="flex items-center gap-2 sm:gap-3 text-xs shrink-0">
         {/* Scholar Identity Guarantee */}
         <div className="hidden xl:flex items-center gap-2 text-zinc-500 pe-2">
@@ -112,47 +89,6 @@ export function ShellHeader({
             {dict.ui_main_site}
           </span>
         </Link>
-
-        {/* Language Switcher Dropdown */}
-        <div className="relative" ref={langRef}>
-          <button
-            type="button"
-            onClick={() => setIsLangOpen(!isLangOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition cursor-pointer text-xs font-mono"
-            aria-expanded={isLangOpen}
-            aria-label={dict.nav_language}
-          >
-            <Globe className="w-3.5 h-3.5 text-zinc-500" />
-            <span>{currentLang.toUpperCase()}</span>
-            <ChevronDown className={`w-3 h-3 text-zinc-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {isLangOpen && (
-            <div className="absolute end-0 mt-2 w-36 bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg p-2 z-50 text-start">
-              {languages.map((lang) => {
-                const isSelected = currentLang === lang.code;
-                return (
-                  <button
-                    key={lang.code}
-                    type="button"
-                    onClick={() => {
-                      setLanguage(lang.code);
-                      setIsLangOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] font-bold'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    }`}
-                  >
-                    <span>{lang.label}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5" />}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
         {/* User Profile Trigger */}
         <div className="flex items-center gap-2 ps-2 sm:ps-3 border-s border-zinc-200 dark:border-zinc-800">
