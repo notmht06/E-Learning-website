@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   TrendingUp,
   Headphones,
+  Compass,
   Layers,
   FileText,
   ShoppingBag,
@@ -21,6 +22,7 @@ import { ShellNavItem } from '@/components/shell/ShellSidebar';
 import {
   AdminStatsTab,
   AdminCoursesTab,
+  AdminRoadmapTab,
   AdminCategoriesTab,
   AdminArticlesTab,
   AdminOrdersTab,
@@ -33,6 +35,7 @@ import {
 export type AdminTab =
   | 'stats'
   | 'courses'
+  | 'roadmap'
   | 'categories'
   | 'articles'
   | 'orders'
@@ -45,6 +48,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   fa: {
     stats: 'داشبورد آماری و هوش تجاری',
     courses: 'استودیو درس‌گفتارها و جلسات صوتی/ویدیویی',
+    roadmap: 'استودیو مدیریت سیر مطالعاتی و مراحل علمی',
     categories: 'مدیریت موضوعات و شاخه‌های علمی',
     articles: 'مدیریت مقالات علمی و جستارها',
     orders: 'بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها',
@@ -56,6 +60,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   ar: {
     stats: 'الإحصاءات والتقارير المالية وذكاء الأعمال',
     courses: 'إدارة الدروس الصوتية والمحاضرات',
+    roadmap: 'استوديو إدارة المسار الدراسي والمراحل العلمية',
     categories: 'التصنيفات والعلوم العقلية والنقلية',
     articles: 'إدارة المقالات العلمية والبحوث',
     orders: 'سجلات تسجيل الطلاب والطلبات',
@@ -67,6 +72,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   en: {
     stats: 'Business Intelligence & Revenue Analytics',
     courses: 'Lecture Studio & Audio Curriculum',
+    roadmap: 'Curriculum Roadmap & Scientific Stages Studio',
     categories: 'Scholarly Disciplines Taxonomy',
     articles: 'Scholarly Articles & Research Papers',
     orders: 'Student Database & Course Enrollments CRM',
@@ -81,6 +87,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   fa: {
     stats: 'آمار و گزارش‌های مالی',
     courses: 'مدیریت درس‌گفتارها',
+    roadmap: 'سیر مطالعاتی و مراحل',
     categories: 'دسته‌بندی‌های علمی',
     articles: 'مقالات و رساله‌ها',
     orders: 'دانش‌پژوهان و ثبت‌نام‌ها',
@@ -92,6 +99,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   ar: {
     stats: 'الإحصاءات والتقارير',
     courses: 'إدارة الدروس',
+    roadmap: 'المسار الدراسي',
     categories: 'التصنيفات العلمية',
     articles: 'البحوث والرسائل',
     orders: 'الطلاب والتسجيلات',
@@ -103,6 +111,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   en: {
     stats: 'Analytics & BI',
     courses: 'Course Studio',
+    roadmap: 'Curriculum Roadmap',
     categories: 'Disciplines',
     articles: 'Articles & Papers',
     orders: 'Students & Orders',
@@ -119,7 +128,7 @@ export default function AdminPage() {
   const { dict, currentLang, t, localizeHref } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
-  const langKey = (currentLang === 'ar' || currentLang === 'en') ? currentLang : 'fa';
+  const langKey = currentLang === 'ar' || currentLang === 'en' ? currentLang : 'fa';
   const titles = tabLocalization[langKey];
   const labels = navLabels[langKey];
 
@@ -151,6 +160,7 @@ export default function AdminPage() {
   const navItems: ShellNavItem[] = [
     { id: 'stats', label: t('admin_tab_stats', labels.stats), icon: TrendingUp },
     { id: 'courses', label: t('admin_tab_courses', labels.courses), icon: Headphones },
+    { id: 'roadmap', label: labels.roadmap, icon: Compass },
     { id: 'categories', label: t('admin_tab_categories', labels.categories), icon: Layers },
     { id: 'articles', label: t('admin_tab_articles', labels.articles), icon: FileText },
     { id: 'orders', label: t('admin_tab_orders', labels.orders), icon: ShoppingBag },
@@ -179,6 +189,7 @@ export default function AdminPage() {
       <div className="animate-in fade-in-0 duration-200">
         {activeTab === 'stats' && <AdminStatsTab />}
         {activeTab === 'courses' && <AdminCoursesTab />}
+        {activeTab === 'roadmap' && <AdminRoadmapTab />}
         {activeTab === 'categories' && <AdminCategoriesTab />}
         {activeTab === 'articles' && <AdminArticlesTab />}
         {activeTab === 'orders' && <AdminOrdersTab />}

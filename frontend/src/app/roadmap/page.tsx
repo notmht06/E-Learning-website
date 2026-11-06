@@ -1,27 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
   Compass,
   ArrowLeft,
   ChevronDown,
   HelpCircle,
+  Sparkles,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { CurriculumRoadmap } from '@/components/CurriculumRoadmap';
-import { ConceptGraphVisualizer } from '@/components/concept-graph';
 import { useLanguage, lookupDictionary } from '@/context/LanguageContext';
+import { useData } from '@/context/DataContext';
 
 export default function RoadmapPage() {
-  const { dict, toLocale, localizeHref } = useLanguage();
-  const [viewMode, setViewMode] = useState<'timeline' | 'graph'>('timeline');
+  const { dict, toLocale, localizeHref, currentLang } = useLanguage();
+  const { siteConfig, roadmapStages, roadmapFaqs } = useData();
 
   // Dynamic localization of FAQ items across Persian, Arabic, and English
   const faqIndices = [1, 2, 3, 4];
   const dynamicFaqs = faqIndices
     .map((i) => ({
+      id: `faq-i18n-${i}`,
       q: lookupDictionary(dict, `roadmap_faq_${i}_q`),
       a: lookupDictionary(dict, `roadmap_faq_${i}_a`),
     }))
@@ -29,32 +31,54 @@ export default function RoadmapPage() {
 
   const fallbackFaqs = [
     {
+      id: 'faq-1',
       q: 'آیا یادگیری منطق برای ورود به فلسفه الزامی است؟',
       a: 'بله، منطق صوری و مادی، ترازوی سنجش تفکر و تشخیص برهان صحیح از مغالطه است. فهم دقیق مفاهیمی چون جنس، فصل، نوع، شرایط انتاج قیاس و برهان لِم و إن در فهم فلسفه اسلامی بنیادین است.',
     },
     {
+      id: 'faq-2',
       q: 'چه زمانی می‌توان ورود به اسفار اربعه را آغاز کرد؟',
       a: 'پیش‌نیاز ضروری اسفار اربعه، تسلط بر بدایة الحکمة یا نهایة الحکمة، آشنایی با آراء مشائی ابن‌سینا در نجات و شفا، و منظومه حکمی ملاهادی سبزواری است.',
     },
     {
+      id: 'faq-3',
       q: 'نقش علم اصول فقه در منظومه علوم عقلی چیست؟',
       a: 'اصول فقه، آزمایشگاهی توانمند در حوزه معرفت‌شناسی، تحلیل الفاظ و گزاره‌ها، و روش استنباط عقلی است که ذهن را برای تدقیق در غوامض فلسفی به بالاترین آمادگی می‌رساند.',
     },
     {
+      id: 'faq-4',
       q: 'آیا مطالعه انفرادی کتب فلسفی بدون استاد راهنما توصیه می‌شود؟',
       a: 'متون فلسفه اسلامی دارای دقایق اصطلاحی و ابعاد برهانی ژرفی هستند که خوانش خودسرانه آن‌ها غالباً به بدفهمی یا مغالطات پیچیده می‌انجامد. تلمذ نزد استاد خبیر برای درک عمق مبانی ضروری است.',
     },
   ];
 
-  const faqItems = dynamicFaqs.length > 0 ? dynamicFaqs : fallbackFaqs;
+  // Prefer dynamic admin-configured FAQs when in Persian or available, otherwise fall back to localized/static FAQs
+  const activeFaqs =
+    currentLang === 'fa' && roadmapFaqs && roadmapFaqs.length > 0
+      ? roadmapFaqs
+      : dynamicFaqs.length > 0
+      ? dynamicFaqs
+      : roadmapFaqs && roadmapFaqs.length > 0
+      ? roadmapFaqs
+      : fallbackFaqs;
+
+  const pageTitle =
+    currentLang === 'fa' && siteConfig?.roadmap_title_fa
+      ? siteConfig.roadmap_title_fa
+      : dict.roadmap_stage_title;
+
+  const pageSubtitle =
+    currentLang === 'fa' && siteConfig?.roadmap_subtitle_fa
+      ? siteConfig.roadmap_subtitle_fa
+      : dict.roadmap_stage_subtitle;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors pb-8">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors pb-12">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header Breadcrumb & Title */}
-        <div className="space-y-4 text-start border-b border-zinc-200 dark:border-zinc-800 pb-5">
+        <div className="space-y-4 text-start border-b border-zinc-200 dark:border-zinc-800 pb-6">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <Link href={localizeHref('/')} className="hover:text-zinc-700 dark:hover:text-zinc-200">
               {dict.nav_home}
@@ -65,81 +89,58 @@ export default function RoadmapPage() {
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-                {dict.roadmap_stage_title}
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-[#8A532B]/10 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 mb-2">
+                <Compass className="w-3.5 h-3.5" />
+                <span>{dict.roadmap_tab_timeline || 'سیر مطالعاتی ترتیبی'}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+                {pageTitle}
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed mt-1">
-                {dict.roadmap_stage_subtitle}
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed mt-2 text-justify">
+                {pageSubtitle}
               </p>
-            </div>
-
-            {/* View Switcher: Sequential Timeline vs Concept Graph */}
-            <div className="flex items-center gap-1 p-1 bg-black/[0.04] dark:bg-white/[0.06] rounded-2xl border border-black/5 dark:border-white/5 shrink-0 self-start sm:self-center">
-              <button
-                onClick={() => setViewMode('timeline')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer active:scale-95 ${
-                  viewMode === 'timeline'
-                    ? 'bg-[#8A532B] text-white shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-                }`}
-              >
-                {dict.roadmap_tab_timeline}
-              </button>
-              <button
-                onClick={() => setViewMode('graph')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-200 ease-out cursor-pointer active:scale-95 ${
-                  viewMode === 'graph'
-                    ? 'bg-[#8A532B] text-white shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-                }`}
-              >
-                {dict.roadmap_tab_graph}
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Dynamic View Display with Smooth Fade Transition */}
+        {/* Dynamic Sequential Curriculum Roadmap */}
         <section className="space-y-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={viewMode}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {viewMode === 'timeline' ? <CurriculumRoadmap /> : <ConceptGraphVisualizer />}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <CurriculumRoadmap stages={roadmapStages} />
+          </motion.div>
         </section>
 
         {/* Study Methodology & FAQ Accordion */}
-        <section className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-4 text-start shadow-xs">
+        <section className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-7 space-y-4 text-start shadow-xs">
           <div className="space-y-1 border-b border-zinc-200 dark:border-zinc-800 pb-3">
             <span className="text-[11px] font-mono text-[#8A532B] block">
               {dict.roadmap_faq_subtitle ? `[ ${dict.roadmap_faq_subtitle} ]` : '[ پرسش‌های متداول سیر علمی ]'}
             </span>
-            <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-              {dict.roadmap_faq_title}
+            <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-[#8A532B]" />
+              <span>{dict.roadmap_faq_title || 'پرسش‌های متداول درباره سیر مطالعاتی'}</span>
             </h3>
           </div>
 
-          <div className="space-y-2">
-            {faqItems.map((item, idx) => (
+          <div className="space-y-2.5 pt-1">
+            {activeFaqs.map((item, idx) => (
               <details
-                key={idx}
+                key={item.id || idx}
                 className="group rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 overflow-hidden transition"
               >
-                <summary className="p-4 flex items-center justify-between cursor-pointer list-none select-none text-xs font-bold text-zinc-900 dark:text-zinc-100">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-zinc-400 text-[11px] shrink-0">[{toLocale(idx + 1)}]</span>
+                <summary className="p-4 flex items-center justify-between cursor-pointer list-none select-none text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-[#8A532B] text-xs shrink-0">[{toLocale(idx + 1)}]</span>
                     <span>{item.q}</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform duration-200 shrink-0" />
                 </summary>
 
-                <div className="p-4 pt-1 border-t border-zinc-200/60 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed text-justify">
+                <div className="p-4 pt-1 border-t border-zinc-200/60 dark:border-zinc-800 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed text-justify">
                   {item.a}
                 </div>
               </details>

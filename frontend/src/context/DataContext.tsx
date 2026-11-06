@@ -1,5 +1,7 @@
 'use client';
 
+import { StageData, roadmapStagesData } from '@/lib/roadmapData';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   Book,
@@ -12,6 +14,36 @@ import {
   scholarlyArticlesDatabase,
   COURSE_ID_ALIASES,
 } from '@/lib/data';
+
+
+export interface RoadmapFaqItem {
+  id: string;
+  q: string;
+  a: string;
+}
+
+export const defaultRoadmapFaqs: RoadmapFaqItem[] = [
+  {
+    id: 'faq-1',
+    q: 'آیا یادگیری منطق برای ورود به فلسفه الزامی است؟',
+    a: 'بله، منطق صوری و مادی، ترازوی سنجش تفکر و تشخیص برهان صحیح از مغالطه است. فهم دقیق مفاهیمی چون جنس، فصل، نوع، شرایط انتاج قیاس و برهان لِم و إن در فهم فلسفه اسلامی بنیادین است.',
+  },
+  {
+    id: 'faq-2',
+    q: 'چه زمانی می‌توان ورود به اسفار اربعه را آغاز کرد؟',
+    a: 'پیش‌نیاز ضروری اسفار اربعه، تسلط بر بدایة الحکمة یا نهایة الحکمة، آشنایی با آراء مشائی ابن‌سینا در نجات و شفا، و منظومه حکمی ملاهادی سبزواری است.',
+  },
+  {
+    id: 'faq-3',
+    q: 'نقش علم اصول فقه در منظومه علوم عقلی چیست؟',
+    a: 'اصول فقه، آزمایشگاهی توانمند در حوزه معرفت‌شناسی، تحلیل الفاظ و گزاره‌ها، و روش استنباط عقلی است که ذهن را برای تدقیق در غوامض فلسفی به بالاترین آمادگی می‌رساند.',
+  },
+  {
+    id: 'faq-4',
+    q: 'آیا مطالعه انفرادی کتب فلسفی بدون استاد راهنما توصیه می‌شود؟',
+    a: 'متون فلسفه اسلامی دارای دقایق اصطلاحی و ابعاد برهانی ژرفی هستند که خوانش خودسرانه آن‌ها غالباً به بدفهمی یا مغالطات پیچیده می‌انجامد. تلمذ نزد استاد خبیر برای درک عمق مبانی ضروری است.',
+  },
+];
 
 export interface AudioChapter {
   id: number;
@@ -132,6 +164,17 @@ interface DataContextType {
   addCoupon: (coupon: CouponRecord) => void;
   toggleCoupon: (code: string) => void;
   deleteCoupon: (code: string) => void;
+  // Dynamic Roadmap CMS actions
+  roadmapStages: StageData[];
+  roadmapFaqs: RoadmapFaqItem[];
+  saveRoadmapData: (stages: StageData[], faqs: RoadmapFaqItem[], meta?: { title_fa?: string; subtitle_fa?: string }) => Promise<void>;
+  addRoadmapStage: (stage: StageData) => Promise<void>;
+  updateRoadmapStage: (id: string, partial: Partial<StageData>) => Promise<void>;
+  deleteRoadmapStage: (id: string) => Promise<void>;
+  addRoadmapFaq: (faq: Omit<RoadmapFaqItem, 'id'>) => Promise<void>;
+  updateRoadmapFaq: (id: string, partial: Partial<RoadmapFaqItem>) => Promise<void>;
+  deleteRoadmapFaq: (id: string) => Promise<void>;
+
 }
 
 const initialOrders: OrderRecord[] = [];
@@ -156,6 +199,8 @@ const defaultSiteConfig = {
   telegram_channel: 'https://t.me/zanjirzan_philosophy',
   eitaa_channel: 'https://eitaa.com/zanjirzan_philosophy',
   skyroom_default_url: 'https://www.skyroom.online/ch/zanjirzan/live',
+  roadmap_title_fa: 'سیر مطالعاتی و مراحل علمی',
+  roadmap_subtitle_fa: 'نقشه راه جامع و گام‌به‌گام فراگیری علوم عقلی، منطق و حکمت متعالیه تحت اشراف علمی حجت الاسلام دکتر زنجیر زن حسینی',
   footer_copyright_fa: 'تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.',
   ai_welcome_message: 'سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.',
   suggested_questions: [
@@ -173,6 +218,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [categories, setCategories] = useState<CourseCategory[]>(initialCategories);
   const [articles, setArticles] = useState<ScholarlyArticle[]>(scholarlyArticlesDatabase);
   const [siteConfig, setSiteConfig] = useState<Record<string, any>>(defaultSiteConfig);
+  const [roadmapStages, setRoadmapStages] = useState<StageData[]>(roadmapStagesData);
+  const [roadmapFaqs, setRoadmapFaqs] = useState<RoadmapFaqItem[]>(defaultRoadmapFaqs);
   const [enrolledOnlineIds, setEnrolledOnlineIds] = useState<string[]>([]);
   const [books, setBooks] = useState<Record<string, ExtendedBook>>(() => {
     const initial: Record<string, ExtendedBook> = {};
@@ -214,6 +261,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const savedOnlineEnrolls = localStorage.getItem('zan_enrolled_online');
         if (savedOnlineEnrolls) setEnrolledOnlineIds(JSON.parse(savedOnlineEnrolls));
+
+        const savedRoadmapStages = localStorage.getItem('zan_roadmap_stages');
+        if (savedRoadmapStages) {
+          try { setRoadmapStages(JSON.parse(savedRoadmapStages)); } catch(e) {}
+        }
+        const savedRoadmapFaqs = localStorage.getItem('zan_roadmap_faqs');
+        if (savedRoadmapFaqs) {
+          try { setRoadmapFaqs(JSON.parse(savedRoadmapFaqs)); } catch(e) {}
+        }
 
         // دریافت همگام فهرست دروس از API بک‌اند بدون خفه‌سازی خاموش
         import('@/services/apiClient').then(({ apiClient }) => {
@@ -595,6 +651,60 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw err;
     }
   };
+  // Dynamic Roadmap Actions
+  const saveRoadmapData = async (
+    newStages: StageData[],
+    newFaqs: RoadmapFaqItem[],
+    meta?: { title_fa?: string; subtitle_fa?: string }
+  ) => {
+    setRoadmapStages(newStages);
+    setRoadmapFaqs(newFaqs);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('zan_roadmap_stages', JSON.stringify(newStages));
+      localStorage.setItem('zan_roadmap_faqs', JSON.stringify(newFaqs));
+    }
+    const payload: Record<string, any> = {
+      roadmap_stages: newStages,
+      roadmap_faqs: newFaqs,
+    };
+    if (meta?.title_fa) payload.roadmap_title_fa = meta.title_fa;
+    if (meta?.subtitle_fa) payload.roadmap_subtitle_fa = meta.subtitle_fa;
+    await updateSiteConfig(payload);
+  };
+
+  const addRoadmapStage = async (stage: StageData) => {
+    const updated = [...roadmapStages, stage].sort((a, b) => a.stepNumber - b.stepNumber);
+    await saveRoadmapData(updated, roadmapFaqs);
+  };
+
+  const updateRoadmapStage = async (id: string, partial: Partial<StageData>) => {
+    const updated = roadmapStages
+      .map((st) => (st.id === id ? { ...st, ...partial } : st))
+      .sort((a, b) => a.stepNumber - b.stepNumber);
+    await saveRoadmapData(updated, roadmapFaqs);
+  };
+
+  const deleteRoadmapStage = async (id: string) => {
+    const updated = roadmapStages.filter((st) => st.id !== id);
+    await saveRoadmapData(updated, roadmapFaqs);
+  };
+
+  const addRoadmapFaq = async (faq: Omit<RoadmapFaqItem, 'id'>) => {
+    const newFaq: RoadmapFaqItem = { id: `faq-${Date.now()}`, ...faq };
+    const updated = [...roadmapFaqs, newFaq];
+    await saveRoadmapData(roadmapStages, updated);
+  };
+
+  const updateRoadmapFaq = async (id: string, partial: Partial<RoadmapFaqItem>) => {
+    const updated = roadmapFaqs.map((f) => (f.id === id ? { ...f, ...partial } : f));
+    await saveRoadmapData(roadmapStages, updated);
+  };
+
+  const deleteRoadmapFaq = async (id: string) => {
+    const updated = roadmapFaqs.filter((f) => f.id !== id);
+    await saveRoadmapData(roadmapStages, updated);
+  };
+
 
   // Article Actions
   const addArticle = async (article: ScholarlyArticle) => {
@@ -928,6 +1038,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         articles,
         siteConfig,
         updateSiteConfig,
+        roadmapStages,
+        roadmapFaqs,
+        saveRoadmapData,
+        addRoadmapStage,
+        updateRoadmapStage,
+        deleteRoadmapStage,
+        addRoadmapFaq,
+        updateRoadmapFaq,
+        deleteRoadmapFaq,
+
         addArticle,
         updateArticle,
         deleteArticle,

@@ -17,10 +17,15 @@ import { StageData, roadmapStagesData } from '@/lib/roadmapData';
 export { roadmapStagesData };
 export type { StageData };
 
-export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
+export const CurriculumRoadmap: React.FC<{ compact?: boolean; stages?: StageData[] }> = ({
+  compact = false,
+  stages,
+}) => {
   const { toLocale, dict, currentLang, localizeHref } = useLanguage();
   const [completedStages, setCompletedStages] = useState<number[]>([1]);
   const [expandedStageIds, setExpandedStageIds] = useState<string[]>(['stage-1', 'stage-2']);
+
+  const activeStages = stages && stages.length > 0 ? stages : roadmapStagesData;
 
   const toggleStage = (id: string) => {
     setExpandedStageIds((prev) =>
@@ -34,17 +39,17 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
     return {
       id: stage.id,
       stepNumber: stage.stepNumber,
-      title: isEn ? stage.title_en : isAr ? stage.title_ar : stage.title_fa,
-      subtitle: isEn ? stage.subtitle_en : isAr ? stage.subtitle_ar : stage.subtitle_fa,
-      description: isEn ? stage.description_en : isAr ? stage.description_ar : stage.description_fa,
-      outcomes: isEn ? stage.outcomes_en : isAr ? stage.outcomes_ar : stage.outcomes_fa,
-      keyBooks: isEn ? stage.keyBooks_en : isAr ? stage.keyBooks_ar : stage.keyBooks_fa,
-      sessionEstimate: isEn ? stage.sessionEstimate_en : isAr ? stage.sessionEstimate_ar : stage.sessionEstimate_fa,
-      level: isEn ? stage.level_en : isAr ? stage.level_ar : stage.level_fa,
-      category: isEn ? stage.category_en : isAr ? stage.category_ar : stage.category_fa,
-      coursesList: stage.coursesList.map((c) => ({
-        title: isEn ? c.title_en : isAr ? c.title_ar : c.title_fa,
-        sessions: isEn ? c.sessions_en : isAr ? c.sessions_ar : c.sessions_fa,
+      title: (isEn ? stage.title_en : isAr ? stage.title_ar : stage.title_fa) || stage.title_fa || stage.title_en || '',
+      subtitle: (isEn ? stage.subtitle_en : isAr ? stage.subtitle_ar : stage.subtitle_fa) || stage.subtitle_fa || stage.subtitle_en || '',
+      description: (isEn ? stage.description_en : isAr ? stage.description_ar : stage.description_fa) || stage.description_fa || '',
+      outcomes: (isEn ? stage.outcomes_en : isAr ? stage.outcomes_ar : stage.outcomes_fa) || stage.outcomes_fa || [],
+      keyBooks: (isEn ? stage.keyBooks_en : isAr ? stage.keyBooks_ar : stage.keyBooks_fa) || stage.keyBooks_fa || [],
+      sessionEstimate: (isEn ? stage.sessionEstimate_en : isAr ? stage.sessionEstimate_ar : stage.sessionEstimate_fa) || stage.sessionEstimate_fa || '',
+      level: (isEn ? stage.level_en : isAr ? stage.level_ar : stage.level_fa) || stage.level_fa || '',
+      category: (isEn ? stage.category_en : isAr ? stage.category_ar : stage.category_fa) || stage.category_fa || '',
+      coursesList: (stage.coursesList || []).map((c) => ({
+        title: (isEn ? c.title_en : isAr ? c.title_ar : c.title_fa) || c.title_fa || '',
+        sessions: (isEn ? c.sessions_en : isAr ? c.sessions_ar : c.sessions_fa) || c.sessions_fa || '',
         slug: c.slug,
       })),
     };
@@ -57,7 +62,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
         <span className="text-xs font-bold text-zinc-500 shrink-0">
           {dict.roadmap_quick_jump}
         </span>
-        {roadmapStagesData.map((stage) => {
+        {activeStages.map((stage) => {
           const loc = getLocalizedStage(stage);
           return (
             <a
@@ -73,7 +78,7 @@ export const CurriculumRoadmap: React.FC<{ compact?: boolean }> = ({ compact = f
 
       {/* Continuous Vertical Timeline Stepper */}
       <div className="relative border-s-2 border-zinc-100 dark:border-zinc-800 ms-4 sm:ms-6 ps-6 sm:ps-8 space-y-8 pt-2 pb-6">
-        {roadmapStagesData.map((rawStage) => {
+        {activeStages.map((rawStage) => {
           const stage = getLocalizedStage(rawStage);
           const isCompleted = completedStages.includes(rawStage.stepNumber);
           const isCurrent = rawStage.stepNumber === 2;

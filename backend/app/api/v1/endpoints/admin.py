@@ -67,6 +67,8 @@ DEFAULT_SITE_CONFIG: Dict[str, Any] = {
     "telegram_channel": "https://t.me/zanjirzan_philosophy",
     "eitaa_channel": "https://eitaa.com/zanjirzan_philosophy",
     "skyroom_default_url": "https://www.skyroom.online/ch/zanjirzan/live",
+    "roadmap_title_fa": "سیر مطالعاتی و مراحل اجتهادی علوم عقلی",
+    "roadmap_subtitle_fa": "ترتیب منطقی و گام‌به‌گام فراگیری علوم عقلی و نقلی، از مبادی تفکر تا قله‌های حکمت متعالیه و عرفان نظری",
     "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.",
     "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
     "suggested_questions": [
