@@ -496,6 +496,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         hours: course.duration_fa || '۲۰ ساعت',
         price: course.price_fa || 'رایگان',
         description: course.desc_fa || '',
+        schedule: course.schedule,
+        skyroom_url: course.skyroom_url || course.skyroomUrl,
+        course_type: course.course_type,
       });
       const { toast } = await import('sonner');
       toast.success(`دوره «${course.title_fa}» با موفقیت در پایگاه داده ثبت شد.`);

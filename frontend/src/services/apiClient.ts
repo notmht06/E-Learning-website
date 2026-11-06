@@ -336,7 +336,7 @@ class ApiClient {
   // --- Admin Cockpit ---
   admin = {
     getAnalytics: () => this.request<AdminKPIAnalytics>('/admin/analytics'),
-    createCourse: (data: { title: string; instructor: string; level: string; hours: string; price: string; description: string }) =>
+    createCourse: (data: { title: string; instructor: string; level: string; hours: string; price: string; description: string; schedule?: string; skyroom_url?: string; course_type?: string }) =>
       this.request<any>('/admin/courses/create', {
         method: 'POST',
         body: JSON.stringify(data),

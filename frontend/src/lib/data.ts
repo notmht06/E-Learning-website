@@ -335,6 +335,7 @@ export interface AudioCourse {
   enrolledCount?: number;
   platform?: 'online' | 'skyroom';
   skyroomUrl?: string;
+  skyroom_url?: string;
   schedule?: string;
   status?: 'registration_open' | 'capacity_full' | 'in_progress';
   // Offline course properties

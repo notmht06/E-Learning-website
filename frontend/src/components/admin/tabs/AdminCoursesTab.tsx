@@ -24,6 +24,8 @@ import { AudioUploaderModal } from '@/components/AudioUploaderModal';
 import { apiClient } from '@/services/apiClient';
 import { AdminConfirmDialog } from '../AdminConfirmDialog';
 import RichTextCmsEditor from '../RichTextCmsEditor';
+import { PersianCalendarPicker } from '@/components/ui/PersianCalendarPicker';
+import { Radio, Calendar as CalendarIcon } from 'lucide-react';
 
 export function AdminCoursesTab() {
   const {
@@ -90,6 +92,8 @@ export function AdminCoursesTab() {
   const [formMediaType, setFormMediaType] = useState<'video' | 'audio' | 'hybrid'>('hybrid');
   const [formThumbnail, setFormThumbnail] = useState('/images/ostad_zanjirzan.jpg');
   const [formDesc, setFormDesc] = useState('');
+  const [formSchedule, setFormSchedule] = useState('دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
+  const [formSkyroomUrl, setFormSkyroomUrl] = useState('https://www.skyroom.online/ch/zanjirzan/live');
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const coursesList = Object.values(courses).filter((c) => {
@@ -108,6 +112,8 @@ export function AdminCoursesTab() {
     setFormMediaType('hybrid');
     setFormThumbnail('/images/ostad_zanjirzan.jpg');
     setFormDesc('');
+    setFormSchedule('دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
+    setFormSkyroomUrl('https://www.skyroom.online/ch/zanjirzan/live');
     setIsCourseModalOpen(true);
   };
 
@@ -121,6 +127,8 @@ export function AdminCoursesTab() {
     setFormMediaType(course.media_type || 'hybrid');
     setFormThumbnail(course.thumbnail || '/images/ostad_zanjirzan.jpg');
     setFormDesc(course.desc_fa || '');
+    setFormSchedule(course.schedule || 'دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰');
+    setFormSkyroomUrl(course.skyroom_url || course.skyroomUrl || 'https://www.skyroom.online/ch/zanjirzan/live');
     setIsCourseModalOpen(true);
   };
 
@@ -156,6 +164,9 @@ export function AdminCoursesTab() {
           media_type: formMediaType,
           thumbnail: formThumbnail,
           desc_fa: formDesc,
+          schedule: formSchedule,
+          skyroom_url: formSkyroomUrl,
+          skyroomUrl: formSkyroomUrl,
         });
       } else {
         const id = `course-${Date.now()}`;
@@ -180,6 +191,9 @@ export function AdminCoursesTab() {
           media_type: formMediaType,
           thumbnail: formThumbnail,
           desc_fa: formDesc || `درسگفتار تخصصی در شاخه ${formCategory}.`,
+          schedule: formSchedule,
+          skyroom_url: formSkyroomUrl,
+          skyroomUrl: formSkyroomUrl,
           duration_fa: '۲۰ ساعت',
           duration_ar: '٢٠ ساعة',
           duration_en: '20 Hours',
@@ -604,6 +618,36 @@ export function AdminCoursesTab() {
                     <option value="online">{dict.admin_courses_type_online}</option>
                   </select>
                 </div>
+
+              {/* Online Class Calendar & Skyroom URL Integration */}
+              {formType === 'online' && (
+                <div className="col-span-1 sm:col-span-2 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3.5">
+                  <div>
+                    <label className="text-xs font-bold text-zinc-800 dark:text-zinc-200 block mb-1">
+                      زمان‌بندی کلاس برخط و جلسات (ترکیب تقویم شمسی و ورودی متنی):
+                    </label>
+                    <PersianCalendarPicker
+                      value={formSchedule}
+                      onChange={setFormSchedule}
+                      placeholder="مثال: دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-zinc-800 dark:text-zinc-200 block mb-1">
+                      آدرس یا شناسه اتاق اسکای‌روم (جهت ورود با توکن احراز هویت):
+                    </label>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      placeholder="https://www.skyroom.online/ch/zanjirzan/live"
+                      value={formSkyroomUrl}
+                      onChange={(e) => setFormSkyroomUrl(e.target.value)}
+                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs font-mono outline-none focus:border-[#8A532B] transition-colors"
+                    />
+                  </div>
+                </div>
+              )}
 
                 <div>
                   <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
