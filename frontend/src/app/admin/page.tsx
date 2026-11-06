@@ -10,6 +10,7 @@ import {
   ShieldAlert,
   Tag,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +27,7 @@ import {
   AdminDrmTab,
   AdminCouponsTab,
   AdminSettingsTab,
+  AdminQATab,
 } from '@/components/admin/tabs';
 
 export type AdminTab =
@@ -36,17 +38,19 @@ export type AdminTab =
   | 'orders'
   | 'drm'
   | 'coupons'
+  | 'qa'
   | 'settings';
 
 const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
   fa: {
     stats: 'داشبورد آماری و هوش تجاری',
-    courses: 'استودیو درس‌گفتارها و جلسات صوتی',
+    courses: 'استودیو درس‌گفتارها و جلسات صوتی/ویدیویی',
     categories: 'مدیریت موضوعات و شاخه‌های علمی',
     articles: 'مدیریت مقالات علمی و جستارها',
     orders: 'بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها',
     drm: 'مرکز نظارت بر استریم و امنیت DRM',
     coupons: 'کدهای تخفیف و جوایز دوره‌ها',
+    qa: 'پاسخگویی به پرسش‌های علمی دانش‌پژوهان (Q&A)',
     settings: 'تنظیمات کلان و پویای سامانه (Zero-Code CMS)',
   },
   ar: {
@@ -57,6 +61,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'سجلات تسجيل الطلاب والطلبات',
     drm: 'مركز الرقابة الأمنية وحماية البث DRM',
     coupons: 'قسائم الخصم والمكافآت الدراسية',
+    qa: 'منتدى المباحثات والإجابة عن الأسئلة العلمية',
     settings: 'الإعدادات العامة للنظام (Zero-Code CMS)',
   },
   en: {
@@ -67,6 +72,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'Student Database & Course Enrollments CRM',
     drm: 'DRM Stream Supervision & Security',
     coupons: 'Promotional Discount Coupons',
+    qa: 'Scholarly Q&A Discussions',
     settings: 'Site Configuration (Zero-Code CMS)',
   },
 };
@@ -80,6 +86,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'دانش‌پژوهان و ثبت‌نام‌ها',
     drm: 'نشست‌ها و امنیت DRM',
     coupons: 'کدهای تخفیف و کوپن',
+    qa: 'پرسش‌های علمی Q&A',
     settings: 'تنظیمات کلان CMS',
   },
   ar: {
@@ -90,6 +97,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'الطلاب والتسجيلات',
     drm: 'أمن البث DRM',
     coupons: 'قسائم الخصم',
+    qa: 'الأسئلة العلمية',
     settings: 'إعدادات النظام CMS',
   },
   en: {
@@ -100,6 +108,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'Students & Orders',
     drm: 'DRM Security',
     coupons: 'Discounts',
+    qa: 'Scholarly Q&A',
     settings: 'Site Settings CMS',
   },
 };
@@ -147,6 +156,7 @@ export default function AdminPage() {
     { id: 'orders', label: t('admin_tab_orders', labels.orders), icon: ShoppingBag },
     { id: 'drm', label: t('admin_tab_drm', labels.drm), icon: ShieldAlert },
     { id: 'coupons', label: t('admin_tab_coupons', labels.coupons), icon: Tag },
+    { id: 'qa', label: labels.qa, icon: MessageSquare },
     { id: 'settings', label: t('admin_settings_title', labels.settings), icon: Settings },
   ];
 
@@ -166,14 +176,17 @@ export default function AdminPage() {
       userRole={user.role}
       onLogout={logout}
     >
-      {activeTab === 'stats' && <AdminStatsTab />}
-      {activeTab === 'courses' && <AdminCoursesTab />}
-      {activeTab === 'categories' && <AdminCategoriesTab />}
-      {activeTab === 'articles' && <AdminArticlesTab />}
-      {activeTab === 'orders' && <AdminOrdersTab />}
-      {activeTab === 'drm' && <AdminDrmTab />}
-      {activeTab === 'coupons' && <AdminCouponsTab />}
-      {activeTab === 'settings' && <AdminSettingsTab />}
+      <div className="animate-in fade-in-0 duration-200">
+        {activeTab === 'stats' && <AdminStatsTab />}
+        {activeTab === 'courses' && <AdminCoursesTab />}
+        {activeTab === 'categories' && <AdminCategoriesTab />}
+        {activeTab === 'articles' && <AdminArticlesTab />}
+        {activeTab === 'orders' && <AdminOrdersTab />}
+        {activeTab === 'drm' && <AdminDrmTab />}
+        {activeTab === 'coupons' && <AdminCouponsTab />}
+        {activeTab === 'qa' && <AdminQATab />}
+        {activeTab === 'settings' && <AdminSettingsTab />}
+      </div>
     </ShellLayout>
   );
 }

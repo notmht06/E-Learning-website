@@ -14,6 +14,7 @@ import {
 import { useData, ExtendedBook } from '@/context/DataContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { booksDatabase } from '@/lib/data';
+import { AdminConfirmDialog } from '../AdminConfirmDialog';
 
 export function AdminBooksTab() {
   const { books, addBook, updateBook, deleteBook } = useData();
@@ -21,6 +22,7 @@ export function AdminBooksTab() {
 
   const [search, setSearch] = useState('');
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState<ExtendedBook | null>(null);
 
   // New Book State
   const [newTitle, setNewTitle] = useState('');
@@ -184,12 +186,9 @@ export function AdminBooksTab() {
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => {
-                          if (confirm(`${dict.admin_books_confirm_delete} (${book.title_fa})`)) {
-                            deleteBook(book.id);
-                          }
-                        }}
-                        className="p-1 rounded-lg text-[#8A532B] hover:bg-[#8A532B]/10 dark:hover:bg-[#C58B43]/20 transition cursor-pointer"
+                        type="button"
+                        onClick={() => setBookToDelete(book)}
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition active:scale-95 cursor-pointer"
                         title={dict.admin_books_btn_delete_tooltip}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -453,6 +452,28 @@ export function AdminBooksTab() {
           </div>
         </div>
       )}
+      {/* Delete Confirmation Dialog */}
+      <AdminConfirmDialog
+        isOpen={Boolean(bookToDelete)}
+        title="تأیید حذف اثر مکتوب"
+        description={
+          bookToDelete ? (
+            <span>
+              آیا از حذف کتاب «<strong>{bookToDelete.title_fa}</strong>» اطمینان دارید؟
+            </span>
+          ) : null
+        }
+        confirmLabel="بله، حذف شود"
+        cancelLabel="انصراف"
+        variant="danger"
+        onConfirm={() => {
+          if (bookToDelete) {
+            deleteBook(bookToDelete.id);
+            setBookToDelete(null);
+          }
+        }}
+        onClose={() => setBookToDelete(null)}
+      />
     </div>
   );
 }

@@ -100,14 +100,14 @@ export function AdminQATab() {
               placeholder="جستجو در پرسش‌های شاگردان..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full ps-8 pe-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+              className="w-full ps-9 pe-3 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="w-full sm:w-auto px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none text-zinc-700 dark:text-zinc-300"
+            className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none text-zinc-700 dark:text-zinc-300 transition-colors"
           >
             <option value="all">همه پرسش‌ها</option>
             <option value="pending">در انتظار پاسخ استاد</option>
@@ -137,16 +137,16 @@ export function AdminQATab() {
           filtered.map((q) => (
             <div
               key={q.id}
-              className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#8A532B]/40 transition"
+              className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#8A532B]/40 transition group"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium ${
                         (q.is_answered || q.is_resolved || q.answer_text)
                           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                          : 'bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/20 dark:text-[#C58B43]'
                       }`}
                     >
                       {(q.is_answered || q.is_resolved || q.answer_text) ? (
@@ -166,30 +166,31 @@ export function AdminQATab() {
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#8A532B] transition-colors">
                     {q.title}
                   </h3>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => handleOpenAnswer(q)}
-                  className="px-3 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold transition active:scale-95 cursor-pointer flex items-center gap-1.5 shrink-0 shadow-xs"
                 >
                   <Send className="w-3 h-3" />
                   <span>{(q.is_answered || q.is_resolved || q.answer_text) ? 'ویرایش پاسخ' : 'پاسخ استاد'}</span>
                 </button>
               </div>
 
-              <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
+              <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-100 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-[11px] mb-1 font-medium">
-                  <User className="w-3 h-3" />
+                  <User className="w-3 h-3 text-[#8A532B]" />
                   <span>پرسشگر: {q.user_name}</span>
                 </div>
                 {q.question_text}
               </div>
 
               {Boolean(q.answer_text) && (
-                <div className="p-3 rounded-xl bg-[#8A532B]/5 border border-[#8A532B]/20 text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-[#8A532B]/5 border border-[#8A532B]/20 text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed">
                   <div className="flex items-center gap-1.5 text-[#8A532B] text-[11px] mb-1 font-bold">
                     <span>پاسخ حجت الاسلام دکتر زنجیر زن حسینی:</span>
                   </div>
@@ -203,30 +204,31 @@ export function AdminQATab() {
 
       {/* Answer Modal */}
       {selectedQuestion && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 text-start shadow-xl">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 space-y-4 text-start shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                 پاسخ استاد به پرسش علمی
               </h3>
               <button
+                type="button"
                 onClick={() => setSelectedQuestion(null)}
-                className="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center cursor-pointer"
+                className="w-8 h-8 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition active:scale-95 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-600 dark:text-zinc-400">
+            <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400">
               <div className="font-bold text-zinc-900 dark:text-zinc-200 mb-1">
                 {selectedQuestion.title}
               </div>
-              <p className="line-clamp-3">{selectedQuestion.question_text}</p>
+              <p className="line-clamp-3 leading-relaxed">{selectedQuestion.question_text}</p>
             </div>
 
             <form onSubmit={handleSubmitAnswer} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block mb-1">
                   متن پاسخ رسمی استاد (حجت الاسلام دکتر زنجیر زن حسینی)
                 </label>
                 <textarea
@@ -234,23 +236,23 @@ export function AdminQATab() {
                   value={answerText}
                   onChange={(e) => setAnswerText(e.target.value)}
                   placeholder="پاسخ برهانی و ارجاع به ابواب حکمت متعالیه و نصوص حکمی..."
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed transition-colors"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setSelectedQuestion(null)}
-                  className="px-4 py-2 rounded-xl text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
                 >
                   انصراف
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium transition cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold transition active:scale-95 cursor-pointer disabled:opacity-50 shadow-xs"
                 >
                   {isSubmitting ? 'در حال ثبت...' : 'انتشار پاسخ'}
                 </button>

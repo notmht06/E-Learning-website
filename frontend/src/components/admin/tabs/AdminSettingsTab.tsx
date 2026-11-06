@@ -69,8 +69,10 @@ export function AdminSettingsTab() {
         scholar_name_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
       };
       await updateSiteConfig(payload);
+      toast.success('تنظیمات پایگاه با موفقیت در سرور ذخیره شد.');
     } catch (err) {
       console.error('Failed to save settings:', err);
+      toast.error('خطا در ذخیره تنظیمات');
     } finally {
       setIsSaving(false);
     }
@@ -93,7 +95,7 @@ export function AdminSettingsTab() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-medium shadow-xs transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{isSaving ? 'در حال ذخیره...' : 'ذخیره سراسری تنظیمات'}</span>
@@ -101,13 +103,13 @@ export function AdminSettingsTab() {
       </div>
 
       {/* Settings Navigation Tabs */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-2 overflow-x-auto text-xs pb-1">
+      <div className="flex bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-2xl gap-1.5 overflow-x-auto text-xs">
         <button
           type="button"
           onClick={() => setActiveSection('hero')}
-          className={`px-4 py-2 rounded-t-xl transition cursor-pointer font-medium flex items-center gap-2 ${
+          className={`px-4 py-2.5 rounded-xl transition-all active:scale-95 cursor-pointer font-bold flex items-center gap-2 shrink-0 ${
             activeSection === 'hero'
-              ? 'bg-white dark:bg-[#141518] text-[#8A532B] border-t-2 border-x border-[#8A532B]'
+              ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
@@ -118,9 +120,9 @@ export function AdminSettingsTab() {
         <button
           type="button"
           onClick={() => setActiveSection('bio')}
-          className={`px-4 py-2 rounded-t-xl transition cursor-pointer font-medium flex items-center gap-2 ${
+          className={`px-4 py-2.5 rounded-xl transition-all active:scale-95 cursor-pointer font-bold flex items-center gap-2 shrink-0 ${
             activeSection === 'bio'
-              ? 'bg-white dark:bg-[#141518] text-[#8A532B] border-t-2 border-x border-[#8A532B]'
+              ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
@@ -131,9 +133,9 @@ export function AdminSettingsTab() {
         <button
           type="button"
           onClick={() => setActiveSection('links')}
-          className={`px-4 py-2 rounded-t-xl transition cursor-pointer font-medium flex items-center gap-2 ${
+          className={`px-4 py-2.5 rounded-xl transition-all active:scale-95 cursor-pointer font-bold flex items-center gap-2 shrink-0 ${
             activeSection === 'links'
-              ? 'bg-white dark:bg-[#141518] text-[#8A532B] border-t-2 border-x border-[#8A532B]'
+              ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
@@ -144,9 +146,9 @@ export function AdminSettingsTab() {
         <button
           type="button"
           onClick={() => setActiveSection('ai')}
-          className={`px-4 py-2 rounded-t-xl transition cursor-pointer font-medium flex items-center gap-2 ${
+          className={`px-4 py-2.5 rounded-xl transition-all active:scale-95 cursor-pointer font-bold flex items-center gap-2 shrink-0 ${
             activeSection === 'ai'
-              ? 'bg-white dark:bg-[#141518] text-[#8A532B] border-t-2 border-x border-[#8A532B]'
+              ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs'
               : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
           }`}
         >
@@ -168,7 +170,7 @@ export function AdminSettingsTab() {
                 type="text"
                 disabled
                 value="حجت الاسلام دکتر زنجیر زن حسینی"
-                className="w-full px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-500 cursor-not-allowed"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-500 cursor-not-allowed"
               />
               <span className="text-[11px] text-zinc-400 mt-0.5 block">
                 تثبیت‌شده طبق دستورالعمل‌های بنیادین معماری
@@ -185,7 +187,7 @@ export function AdminSettingsTab() {
                   value={formData.hero_title_fa || ''}
                   onChange={(e) => handleChange('hero_title_fa', e.target.value)}
                   placeholder="پایگاه تخصصی حکمت اسلامی و علوم عقلی"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
                 />
               </div>
 
@@ -198,16 +200,16 @@ export function AdminSettingsTab() {
                   value={formData.hero_subtitle_fa || ''}
                   onChange={(e) => handleChange('hero_subtitle_fa', e.target.value)}
                   placeholder="تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
                 />
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 space-y-3">
+            <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">نوار اعلان سراسری بالای سایت</h4>
-                  <p className="text-[11px] text-zinc-500">نمایش پیام‌های مهم، تقویم ترم جدید یا ثبت‌نام کلاس‌ها در بالاترین بخش تمامی صفحات</p>
+                  <p className="text-[11px] text-zinc-500 mt-0.5">نمایش پیام‌های مهم، تقویم ترم جدید یا ثبت‌نام کلاس‌ها در بالاترین بخش تمامی صفحات</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -225,7 +227,7 @@ export function AdminSettingsTab() {
                 value={formData.announcement_bar_text || ''}
                 onChange={(e) => handleChange('announcement_bar_text', e.target.value)}
                 placeholder="آغاز ثبت‌نام دوره جامع حکمت اشراق و اسفار اربعه — سال تحصیلی جدید"
-                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
               />
             </div>
           </div>
@@ -248,7 +250,7 @@ export function AdminSettingsTab() {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
                   این تصویر در کارت‌های معرفی، هیرو و شناسنامه علمی استاد در سراسر سامانه به صورت زنده نمایش داده می‌شود.
                 </p>
-                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold cursor-pointer transition-all">
+                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold cursor-pointer transition-all active:scale-95">
                   <span>{isUploadingAvatar ? 'در حال بارگذاری تصویر...' : 'انتخاب و آپلود عکس استاد از کامپیوتر'}</span>
                   <input
                     type="file"
@@ -268,7 +270,7 @@ export function AdminSettingsTab() {
                 rows={4}
                 value={formData.bio_fa || ''}
                 onChange={(e) => handleChange('bio_fa', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed transition-colors"
               />
             </div>
 
@@ -333,7 +335,7 @@ export function AdminSettingsTab() {
                   value={formData.telegram_support || ''}
                   onChange={(e) => handleChange('telegram_support', e.target.value)}
                   placeholder="https://t.me/zanjirzan_support"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
 
@@ -346,7 +348,7 @@ export function AdminSettingsTab() {
                   value={formData.telegram_channel || ''}
                   onChange={(e) => handleChange('telegram_channel', e.target.value)}
                   placeholder="https://t.me/zanjirzan_philosophy"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
 
@@ -359,7 +361,7 @@ export function AdminSettingsTab() {
                   value={formData.eitaa_channel || ''}
                   onChange={(e) => handleChange('eitaa_channel', e.target.value)}
                   placeholder="https://eitaa.com/zanjirzan_philosophy"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
 
@@ -372,7 +374,7 @@ export function AdminSettingsTab() {
                   value={formData.skyroom_default_url || ''}
                   onChange={(e) => handleChange('skyroom_default_url', e.target.value)}
                   placeholder="https://www.skyroom.online/ch/zanjirzan/live"
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
             </div>
@@ -386,7 +388,7 @@ export function AdminSettingsTab() {
                 value={formData.footer_copyright_fa || ''}
                 onChange={(e) => handleChange('footer_copyright_fa', e.target.value)}
                 placeholder="تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است."
-                className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
               />
             </div>
           </div>
@@ -404,11 +406,11 @@ export function AdminSettingsTab() {
                 value={formData.ai_welcome_message || ''}
                 onChange={(e) => handleChange('ai_welcome_message', e.target.value)}
                 placeholder="سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم..."
-                className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed transition-colors"
               />
             </div>
 
-            <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 flex items-center justify-between">
+            <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 flex items-center justify-between">
               <div>
                 <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5 text-emerald-600" />
@@ -447,7 +449,7 @@ export function AdminSettingsTab() {
                   )
                 }
                 placeholder="اصالت وجود در حکمت متعالیه چیست؟&#10;سلسله مراتب انوار در حکمت اشراق&#10;برهان صدیقین در اثبات واجب تعالی"
-                className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono leading-relaxed"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono leading-relaxed transition-colors"
               />
             </div>
           </div>
@@ -458,7 +460,7 @@ export function AdminSettingsTab() {
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="px-6 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs transition active:scale-95 flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>{isSaving ? 'در حال اعمال تغییرات...' : 'ثبت نهایی و انتشار بر روی پایگاه'}</span>
