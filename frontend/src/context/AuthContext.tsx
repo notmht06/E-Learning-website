@@ -36,6 +36,14 @@ interface AuthContextType {
   updateProfile: (data: { full_name?: string; email?: string; password?: string; current_password?: string }) => Promise<UserProfile>;
 }
 
+const normalizeWalletBalance = (b?: string): string => {
+  if (!b) return '۰ تومان';
+  const digits: Record<string, string> = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
+  return b
+    .replace(/Tomans?/gi, 'تومان')
+    .replace(/[0-9]/g, (d) => digits[d] || d);
+};
+
 function mapUserResponseToProfile(userRes: any, fallbackName?: string): UserProfile {
   const role: UserRole = userRes.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'STUDENT';
   let enrolledIds: string[] = [];
@@ -57,7 +65,7 @@ function mapUserResponseToProfile(userRes: any, fallbackName?: string): UserProf
     role,
     avatar: userRes.avatar_url,
     avatar_url: userRes.avatar_url,
-    wallet_balance: userRes.wallet_balance || '۰ تومان',
+    wallet_balance: normalizeWalletBalance(userRes.wallet_balance),
     enrolledCourseIds: finalEnrolledIds,
     purchasedBookIds: role === 'ADMIN' ? ['book1', 'book2', 'book3', 'book4'] : (userRes.purchasedBookIds || ['book1']),
     enrolled_courses_count: typeof userRes.enrolled_courses_count === 'number'

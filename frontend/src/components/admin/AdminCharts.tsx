@@ -62,7 +62,7 @@ const schoolDistribution = [
   { name: 'حکمت متعالیه (ملاصدرا)', share: 42, color: '#D97706', revenue: '۱۱,۹۵۰,۰۰۰ تومان' },
   { name: 'حکمت اشراق (سهروردی)', share: 31, color: '#10B981', revenue: '۸,۸۲۰,۰۰۰ تومان' },
   { name: 'فلسفه تطبیقی و معاصر', share: 18, color: '#3B82F6', revenue: '۵,۱۲۰,۰۰۰ تومان' },
-  { name: 'رسالات و کتب متفرقه', share: 9, color: '#8B5CF6', revenue: '۲,۵۶۰,۰۰۰ تومان' },
+  { name: 'دوره‌ها و مباحث متفرقه', share: 9, color: '#8B5CF6', revenue: '۲,۵۶۰,۰۰۰ تومان' },
 ];
 
 export const AdminCharts: React.FC = () => {
@@ -336,7 +336,7 @@ export const AdminCharts: React.FC = () => {
                 توزیع درآمدی به تفکیک مکاتب و موضوعات
               </h3>
             </div>
-            <span className="text-xs text-book-subtext font-num">مجموع: ۲۸,۴۵۰,۰۰۰ تومان</span>
+            <span className="text-xs text-book-subtext font-num">مجموع ثبت‌نام‌ها: ۲۸,۴۵۰,۰۰۰ تومان</span>
           </div>
 
           <div className="space-y-4">

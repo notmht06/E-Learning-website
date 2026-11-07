@@ -342,7 +342,7 @@ export function AdminSettingsTab() {
                   type="text"
                   value={formData.telegram_support || ''}
                   onChange={(e) => handleChange('telegram_support', e.target.value)}
-                  placeholder="https://t.me/zanjirzan_support"
+                  placeholder="https://t.me/Hekkmat7"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
@@ -355,7 +355,7 @@ export function AdminSettingsTab() {
                   type="text"
                   value={formData.telegram_channel || ''}
                   onChange={(e) => handleChange('telegram_channel', e.target.value)}
-                  placeholder="https://t.me/zanjirzan_philosophy"
+                  placeholder="https://t.me/AlNajmosageb313"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>
@@ -368,7 +368,7 @@ export function AdminSettingsTab() {
                   type="text"
                   value={formData.eitaa_channel || ''}
                   onChange={(e) => handleChange('eitaa_channel', e.target.value)}
-                  placeholder="https://eitaa.com/zanjirzan_philosophy"
+                  placeholder="https://eitaa.com/Hekkmat7"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] font-mono"
                 />
               </div>

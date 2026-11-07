@@ -182,7 +182,7 @@ export default function AboutAndContactPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="مثلاً: علی موسوی"
+                  placeholder="نام و نام خانوادگی خود را وارد کنید"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-zinc-900 border border-[#E6E1D8] dark:border-zinc-800 text-xs font-bold outline-none focus:border-[#8A532B]"
                 />
               </div>
