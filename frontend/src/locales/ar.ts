@@ -468,7 +468,7 @@ export const ar: Dictionary = {
   admin_btn_home: 'عرض الموقع العام',
   admin_btn_logout: 'تسجيل الخروج',
   // Command Palette
-  cmd_search_placeholder: 'ابحث عن عنوان الدرس، السرفصل، الكتاب أو الموضوع (مثال: الأسفار، الاستصحاب، المنطق)...',
+  cmd_search_placeholder: 'ابحث عن الدورات، السرفصل أو الموضوعات...',
   cmd_quick_categories: 'الوصول السريع إلى المحاور التخصصية الثمانية:',
   cmd_search_guide_title: 'دليل البحث:',
   cmd_search_guide_text: 'يمكنك البحث عن اسم الكتاب المرجعي (مثل «الكفاية»، «الإشراق»)، أو اسم التخصص («الأصول»، «المنطق») أو المفاهيم الفلسفية.',

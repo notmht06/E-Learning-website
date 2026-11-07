@@ -468,7 +468,7 @@ export const en: Dictionary = {
   admin_btn_home: 'View Public Site',
   admin_btn_logout: 'Sign Out',
   // Command Palette
-  cmd_search_placeholder: 'Search courses, syllabus, books or disciplines (e.g. Asfar, Epistemology, Logic)...',
+  cmd_search_placeholder: 'Search courses, syllabus, or topics...',
   cmd_quick_categories: 'Quick Access to 8 Specialized Disciplines:',
   cmd_search_guide_title: 'Search Guide:',
   cmd_search_guide_text: 'You can search by canonical book title, philosophical discipline, or core doctrinal concepts.',

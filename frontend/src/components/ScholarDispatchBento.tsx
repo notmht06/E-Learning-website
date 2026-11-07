@@ -77,7 +77,7 @@ export function ScholarDispatchBento() {
               ) : (
                 <>
                   <span>{dict.dispatch_btn}</span>
-                  <Send className="w-3.5 h-3.5 rtl:rotate-180" />
+                  <Send className="w-3.5 h-3.5" />
                 </>
               )}
             </button>

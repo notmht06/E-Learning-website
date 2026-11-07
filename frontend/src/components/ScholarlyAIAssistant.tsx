@@ -681,7 +681,7 @@ export function ScholarlyAIAssistant() {
                     className="p-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white disabled:opacity-40 transition active:scale-95"
                     title={dict.ui_send_message}
                   >
-                    <Send className="w-4 h-4 rtl:rotate-180" />
+                    <Send className="w-4 h-4" />
                   </button>
                 </form>
               </div>

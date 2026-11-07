@@ -218,7 +218,7 @@ export default function AboutAndContactPage() {
               type="submit"
               className="px-6 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold flex items-center gap-2 cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 rtl:rotate-180" />
+              <Send className="w-3.5 h-3.5" />
               <span>ارسال پیام</span>
             </button>
           </form>

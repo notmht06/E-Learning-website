@@ -467,7 +467,7 @@ export const fa = {
   admin_btn_home: 'مشاهده سایت عمومی',
   admin_btn_logout: 'خروج از حساب مدیریت',
   // Command Palette
-  cmd_search_placeholder: 'جستجوی عنوان دوره، سرفصل، کتاب یا موضوع (مثال: اسفار، استصحاب، منطق)...',
+  cmd_search_placeholder: 'جستجوی دوره‌ها، سرفصل‌ها یا موضوعات...',
   cmd_quick_categories: 'دسترسی سریع به ۸ شاخه تخصصی:',
   cmd_search_guide_title: 'راهنمای جستجو:',
   cmd_search_guide_text: 'می‌توانید نام کتاب مرجع (مانند «کفایه»، «اشراق»)، نام موضوع («اصول»، «منطق») یا مفاهیم فلسفی را جستجو کنید.',

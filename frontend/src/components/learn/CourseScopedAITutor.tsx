@@ -291,7 +291,7 @@ export function CourseScopedAITutor({
           className="px-5 py-3 rounded-xl bg-[#8A532B] hover:bg-[#724424] disabled:opacity-50 text-[#FAF8F5] text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0"
         >
           <span>{dict.ai_tutor_submit_btn}</span>
-          <Send className="w-3.5 h-3.5 rtl:rotate-180" />
+          <Send className="w-3.5 h-3.5" />
         </button>
       </form>
     </div>
