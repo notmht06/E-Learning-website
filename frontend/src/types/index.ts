@@ -6,6 +6,7 @@ export interface User {
   id: string;
   full_name: string;
   phone: string;
+  email?: string;
   role: 'student' | 'admin';
   wallet_balance: string;
   enrolled_courses_count: number;

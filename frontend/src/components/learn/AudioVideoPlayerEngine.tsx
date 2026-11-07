@@ -645,6 +645,29 @@ export function AudioVideoPlayerEngine({
             {formatRemaining(duration, currentTime)}
           </span>
 
+          {/* Direct Subtitles Toggle Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerTactileHaptic('tick');
+              const nextState = !isSubtitleOn;
+              setIsSubtitleOn(nextState);
+              if (nextState) {
+                toast.success('زیرنویس فارسی فعال شد');
+              } else {
+                toast.info('زیرنویس غیرفعال شد');
+              }
+            }}
+            className={`w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer ${
+              isSubtitleOn ? 'bg-amber-500/25 text-amber-300 border border-amber-500/40' : ''
+            }`}
+            title={isSubtitleOn ? 'غیرفعال‌سازی زیرنویس' : 'فعال‌سازی زیرنویس فارسی'}
+            aria-label="Subtitles toggle"
+          >
+            <Subtitles className={`w-4 h-4 ${isSubtitleOn ? 'text-amber-300' : ''}`} />
+          </button>
+
           {/* Settings Menu Button & Popover (⚙️) */}
           <div ref={settingsRef} className="relative flex items-center justify-center">
             <button
@@ -854,6 +877,59 @@ export function AudioVideoPlayerEngine({
                     >
                       <span>Audio only</span>
                       {mediaMode === 'audio' && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                    </button>
+                  </div>
+                )}
+
+                {/* Submenu: Subtitles Selection */}
+                {settingsSubmenu === 'subtitles' && (
+                  <div className="space-y-0.5 animate-in fade-in slide-in-from-right-2 duration-150 ease-out">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSettingsSubmenu('main');
+                      }}
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-left border-b border-white/10 mb-1"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>زیرنویس (Subtitles)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSubtitleOn(false);
+                        setIsSettingsOpen(false);
+                        setSettingsSubmenu('main');
+                        toast.info('زیرنویس غیرفعال شد');
+                      }}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                        !isSubtitleOn
+                          ? 'bg-white/15 text-white font-medium'
+                          : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
+                      }`}
+                    >
+                      <span>خاموش (Off)</span>
+                      {!isSubtitleOn && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSubtitleOn(true);
+                        setIsSettingsOpen(false);
+                        setSettingsSubmenu('main');
+                        toast.success('زیرنویس فارسی فعال شد');
+                      }}
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                        isSubtitleOn
+                          ? 'bg-white/15 text-white font-medium'
+                          : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
+                      }`}
+                    >
+                      <span>فارسی (Persian)</span>
+                      {isSubtitleOn && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
                     </button>
                   </div>
                 )}

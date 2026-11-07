@@ -165,6 +165,7 @@ class User(Base):
             "id": self.id,
             "full_name": self.full_name or "",
             "phone": self.mobile,
+            "email": self.email or "",
             "role": self.role or "student",
             "wallet_balance": self.wallet_balance or "0 Tomans",
             "enrolled_courses_count": count,

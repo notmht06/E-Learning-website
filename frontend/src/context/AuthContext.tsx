@@ -10,6 +10,7 @@ export interface UserProfile {
   name: string;
   full_name?: string;
   phone: string;
+  email?: string;
   role: UserRole;
   avatar?: string;
   avatar_url?: string;
@@ -32,6 +33,7 @@ interface AuthContextType {
   logout: () => void;
   enrollCourse: (courseId: string) => Promise<boolean>;
   purchaseBook: (bookId: string) => void;
+  updateProfile: (data: { full_name?: string; email?: string; password?: string; current_password?: string }) => Promise<UserProfile>;
 }
 
 function mapUserResponseToProfile(userRes: any, fallbackName?: string): UserProfile {
@@ -51,6 +53,7 @@ function mapUserResponseToProfile(userRes: any, fallbackName?: string): UserProf
     name: userRes.full_name || fallbackName || 'کاربر',
     full_name: userRes.full_name || fallbackName || 'کاربر',
     phone: userRes.phone || '',
+    email: userRes.email || '',
     role,
     avatar: userRes.avatar_url,
     avatar_url: userRes.avatar_url,
@@ -213,6 +216,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
+  const updateProfile = async (data: {
+    full_name?: string;
+    email?: string;
+    password?: string;
+    current_password?: string;
+  }): Promise<UserProfile> => {
+    const updatedUser = await apiClient.auth.updateProfile(data);
+    const profile = mapUserResponseToProfile(updatedUser);
+    setUser(profile);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('zanjirzan_user', JSON.stringify(profile));
+    }
+    return profile;
+  };
+
   const purchaseBook = (bookId: string) => {
     if (!user || user.purchasedBookIds.includes(bookId)) return;
     const updated = { ...user, purchasedBookIds: [...user.purchasedBookIds, bookId] };
@@ -234,6 +252,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         enrollCourse,
         purchaseBook,
+        updateProfile,
       }}
     >
       {children}

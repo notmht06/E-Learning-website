@@ -10,6 +10,7 @@ import {
   Award,
   ShieldCheck,
   Sparkles,
+  UserCog,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -23,6 +24,7 @@ import {
   DashboardOrdersTab,
   DashboardCertificatesTab,
   DashboardSecurityTab,
+  DashboardSettingsTab,
 } from '@/components/dashboard/tabs';
 import { CourseScopedAITutor } from '@/components/learn/CourseScopedAITutor';
 
@@ -33,7 +35,8 @@ export type DashboardTab =
   | 'notes'
   | 'orders'
   | 'certificates'
-  | 'security';
+  | 'security'
+  | 'settings';
 
 const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
@@ -44,6 +47,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'فاکتورها و سوابق ثبت‌نام دوره‌ها',
     certificates: 'گواهی‌نامه‌های رسمی پایان دوره',
     security: 'امنیت حساب و دستگاه‌های متصل (DRM)',
+    settings: 'تنظیمات مشخصات فردی و صدور مدرک',
   },
   ar: {
     overview: 'لوحة الباحث العلمي',
@@ -53,6 +57,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'فواتير وسجلات التسجيل في الدورات',
     certificates: 'شهادات إتمام الدورات الرسمية',
     security: 'الأمان وإدارة الأجهزة المتصلة',
+    settings: 'إعدادات الحساب وإصدار الشهادة',
   },
   en: {
     overview: 'Student Scholarly Dashboard',
@@ -62,6 +67,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
     orders: 'Enrollment Records & Invoices',
     certificates: 'Official Academic Certificates',
     security: 'Account Security & Active Devices',
+    settings: 'Account Settings & Certificate Profile',
   },
 };
 
@@ -74,6 +80,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'فاکتورها و ثبت‌نام',
     certificates: 'گواهی‌نامه‌ها',
     security: 'امنیت و نشست‌ها',
+    settings: 'تنظیمات و مدرک',
   },
   ar: {
     overview: 'لوحة الباحث',
@@ -83,6 +90,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'سجلات التسجيل',
     certificates: 'الشهادات',
     security: 'الأجهزة المتصلة',
+    settings: 'الإعدادات',
   },
   en: {
     overview: 'Research Workspace',
@@ -92,6 +100,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
     orders: 'Invoices',
     certificates: 'Certificates',
     security: 'Active Devices',
+    settings: 'Settings & Profile',
   },
 };
 
@@ -137,6 +146,7 @@ export default function UserDashboardPage() {
     { id: 'orders', label: t('dash_tab_orders', labels.orders), icon: Package },
     { id: 'certificates', label: t('dash_tab_certificates', labels.certificates), icon: Award },
     { id: 'security', label: t('dash_tab_security', labels.security), icon: ShieldCheck },
+    { id: 'settings', label: t('dash_tab_settings', labels.settings), icon: UserCog },
   ];
 
   const portalBadge =
@@ -172,6 +182,7 @@ export default function UserDashboardPage() {
       {activeTab === 'orders' && <DashboardOrdersTab />}
       {activeTab === 'certificates' && <DashboardCertificatesTab />}
       {activeTab === 'security' && <DashboardSecurityTab />}
+      {activeTab === 'settings' && <DashboardSettingsTab />}
     </ShellLayout>
   );
 }

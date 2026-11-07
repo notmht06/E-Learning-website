@@ -119,6 +119,18 @@ class ApiClient {
 
     getMe: () => this.request<User>('/auth/me'),
 
+    updateProfile: (data: {
+      full_name?: string;
+      email?: string;
+      avatar_url?: string;
+      password?: string;
+      current_password?: string;
+    }) =>
+      this.request<User>('/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
     getSessions: () =>
       this.request<{
         max_concurrent_devices: number;

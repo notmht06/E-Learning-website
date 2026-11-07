@@ -146,6 +146,8 @@ async def update_profile(
             full_name=req.full_name,
             email=req.email,
             avatar_url=req.avatar_url,
+            password=req.password,
+            current_password=req.current_password,
             db=db,
         )
     except AppException as e:

@@ -450,6 +450,8 @@ class AuthService:
         full_name: Optional[str] = None,
         email: Optional[str] = None,
         avatar_url: Optional[str] = None,
+        password: Optional[str] = None,
+        current_password: Optional[str] = None,
         user_id: Optional[str] = None,
         db: Optional[AsyncSession] = None,
         **kwargs,
@@ -464,10 +466,10 @@ class AuthService:
 
         if actual_db is None:
             async with async_session() as session:
-                res = await self._update_profile_tx(session, actual_user_id, full_name, email, avatar_url)
+                res = await self._update_profile_tx(session, actual_user_id, full_name, email, avatar_url, password, current_password)
                 await session.commit()
                 return res
-        return await self._update_profile_tx(actual_db, actual_user_id, full_name, email, avatar_url)
+        return await self._update_profile_tx(actual_db, actual_user_id, full_name, email, avatar_url, password, current_password)
 
     async def _update_profile_tx(
         self,
@@ -476,6 +478,8 @@ class AuthService:
         full_name: Optional[str],
         email: Optional[str],
         avatar_url: Optional[str],
+        password: Optional[str] = None,
+        current_password: Optional[str] = None,
     ) -> Dict[str, Any]:
         result = await db.execute(
             select(User)
@@ -492,6 +496,18 @@ class AuthService:
             user.email = email
         if avatar_url is not None:
             user.avatar_url = avatar_url
+        if password is not None and password.strip():
+            clean_pass = password.strip()
+            if len(clean_pass) < 6:
+                raise AppException(message="کلمه عبور جدید باید حداقل ۶ کاراکتر باشد.", code="WEAK_PASSWORD", status_code=400)
+            if user.hashed_password and current_password:
+                from backend.app.core.security import verify_password
+                if not verify_password(current_password, user.hashed_password):
+                    raise AppException(message="کلمه عبور فعلی واردشده نادرست است.", code="INVALID_CURRENT_PASSWORD", status_code=400)
+            elif user.hashed_password and not current_password:
+                raise AppException(message="برای تغییر کلمه عبور، وارد کردن کلمه عبور فعلی الزامی است.", code="CURRENT_PASSWORD_REQUIRED", status_code=400)
+            from backend.app.core.security import hash_password
+            user.hashed_password = hash_password(clean_pass)
         await db.flush()
 
         return user.to_dict()

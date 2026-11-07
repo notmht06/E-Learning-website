@@ -37,6 +37,7 @@ class UserRegisterRequest(BaseModel):
 
 class UserLoginRequest(BaseModel):
     phone: str = Field(..., example="09123456789")
+    email: Optional[str] = Field(None, example="ali@example.com")
     password: str = Field(..., example="Secret1234")
 
     @field_validator("phone", mode="before")
@@ -56,6 +57,7 @@ class OTPRequest(BaseModel):
 
 class OTPVerifyRequest(BaseModel):
     phone: str = Field(..., example="09123456789")
+    email: Optional[str] = Field(None, example="ali@example.com")
     code: str = Field(..., min_length=4, max_length=6, example="123456")
     full_name: Optional[str] = Field(None, example="Ali Mousavi")
     password: Optional[str] = Field(None, min_length=6, example="Secret1234")
@@ -72,6 +74,8 @@ class OTPVerifyRequest(BaseModel):
 
 
 class UserProfileUpdate(BaseModel):
+    password: Optional[str] = Field(None, min_length=6, description="کلمه عبور جدید")
+    current_password: Optional[str] = Field(None, description="کلمه عبور فعلی")
     full_name: Optional[str] = Field(None, example="Ali Mousavi")
     email: Optional[str] = Field(None, example="ali@example.com")
     avatar_url: Optional[str] = Field(None, example="https://api.zanjirzan.ir/avatars/user.jpg")
@@ -81,6 +85,7 @@ class UserResponse(BaseModel):
     id: str = Field(..., example="usr-140301")
     full_name: str = Field(..., example="Ali Mousavi")
     phone: str = Field(..., example="09123456789")
+    email: Optional[str] = Field(None, example="ali@example.com")
     role: str = Field(..., example="student")
     wallet_balance: str = Field(..., example="350,000 Tomans")
     enrolled_courses_count: int = Field(0, example=2)
