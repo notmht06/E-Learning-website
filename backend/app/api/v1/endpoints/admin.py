@@ -31,7 +31,7 @@ from backend.app.services.admin_service import admin_service
 from backend.app.services.book_service import book_service
 from backend.app.services.coupon_service import coupon_service
 from backend.app.services.course_service import course_service
-from backend.app.core.storage import storage_service
+from backend.app.services.storage_service import storage_service
 from backend.app.models.models import (
     SiteConfig,
     ArticleModel,
@@ -693,43 +693,35 @@ async def upload_media(
             status_code=400,
         )
 
-    upload_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "static", "uploads")
-    )
-    os.makedirs(upload_dir, exist_ok=True)
     safe_name = f"{uuid.uuid4().hex[:12]}{ext}"
-    dest_path = os.path.join(upload_dir, safe_name)
-
     max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
     chunk_size = 1024 * 1024
+    chunks = []
     total_bytes = 0
-    upload_success = False
 
     try:
-        with open(dest_path, "wb") as buffer:
-            while True:
-                chunk = await file.read(chunk_size)
-                if not chunk:
-                    break
-                total_bytes += len(chunk)
-                if total_bytes > max_bytes:
-                    buffer.close()
-                    raise AppException(
-                        f"حجم فایل بیش از سقف مجاز ({settings.MAX_UPLOAD_SIZE_MB} مگابایت) است.",
-                        code="PAYLOAD_TOO_LARGE",
-                        status_code=413,
-                    )
-                buffer.write(chunk)
-        upload_success = True
+        while True:
+            chunk = await file.read(chunk_size)
+            if not chunk:
+                break
+            total_bytes += len(chunk)
+            if total_bytes > max_bytes:
+                raise AppException(
+                    f"حجم فایل بیش از سقف مجاز ({settings.MAX_UPLOAD_SIZE_MB} مگابایت) است.",
+                    code="PAYLOAD_TOO_LARGE",
+                    status_code=413,
+                )
+            chunks.append(chunk)
 
-        # Upload to Cloud Object Storage (S3 / MinIO) or preserve in local uploads
+        file_bytes = b"".join(chunks)
         content_type = file.content_type or "application/octet-stream"
-        with open(dest_path, "rb") as saved_f:
-            file_url = storage_service.upload_file_obj(
-                file_obj=saved_f,
-                filename=safe_name,
-                content_type=content_type,
-            )
+
+        # Route through Dual Storage Engine (Hybrid Local + S3-Compatible Storage)
+        file_url = storage_service.upload_file(
+            file_bytes=file_bytes,
+            filename=safe_name,
+            content_type=content_type,
+        )
     except AppException:
         raise
     except Exception as exc:
@@ -738,12 +730,6 @@ async def upload_media(
             code="FILE_UPLOAD_ERROR",
             status_code=500,
         )
-    finally:
-        if not upload_success and os.path.exists(dest_path):
-            try:
-                os.remove(dest_path)
-            except OSError as exc:
-                logger.debug("Failed to remove incomplete upload %s: %s", dest_path, exc)
 
     return {
         "success": True,

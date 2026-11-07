@@ -59,12 +59,15 @@ class Settings(BaseModel):
     # Media Upload Settings
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "500"))
 
-    # Cloud Object Storage (S3 / MinIO / ArvanCloud S3)
+    # Cloud Object Storage (S3 / MinIO / ArvanCloud S3 / Liara S3)
     S3_ENDPOINT_URL: Optional[str] = os.getenv("S3_ENDPOINT_URL")
-    S3_ACCESS_KEY: Optional[str] = os.getenv("S3_ACCESS_KEY")
-    S3_SECRET_KEY: Optional[str] = os.getenv("S3_SECRET_KEY")
+    S3_ACCESS_KEY_ID: Optional[str] = os.getenv("S3_ACCESS_KEY_ID") or os.getenv("S3_ACCESS_KEY")
+    S3_SECRET_ACCESS_KEY: Optional[str] = os.getenv("S3_SECRET_ACCESS_KEY") or os.getenv("S3_SECRET_KEY")
+    S3_ACCESS_KEY: Optional[str] = os.getenv("S3_ACCESS_KEY") or os.getenv("S3_ACCESS_KEY_ID")
+    S3_SECRET_KEY: Optional[str] = os.getenv("S3_SECRET_KEY") or os.getenv("S3_SECRET_ACCESS_KEY")
     S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "zanjirzan-media")
-    S3_REGION_NAME: str = os.getenv("S3_REGION_NAME", "us-east-1")
+    S3_REGION: str = os.getenv("S3_REGION") or os.getenv("S3_REGION_NAME", "us-east-1")
+    S3_REGION_NAME: str = os.getenv("S3_REGION_NAME") or os.getenv("S3_REGION", "us-east-1")
     S3_PUBLIC_URL: Optional[str] = os.getenv("S3_PUBLIC_URL")
 
     # CORS Origins
