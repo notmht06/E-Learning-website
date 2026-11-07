@@ -1202,7 +1202,7 @@ export const en: Dictionary = {
   ui_copied: 'Copied',
   ui_copy_citation: 'Copy Citation',
   ui_related_audio_video_lecture_series: 'Related Audio & Video Lecture Series',
-  ui_all_treatises: 'All Treatises',
+  ui_all_treatises: 'All Subjects',
   ui_philosophy: 'Philosophy',
   ui_logic: 'Logic',
   ui_spiritual_wayfaring: 'Spiritual Wayfaring',

@@ -1201,7 +1201,7 @@ export const fa = {
   ui_copied: 'کپی شد',
   ui_copy_citation: 'کپی ارجاع',
   ui_related_audio_video_lecture_series: 'درس‌گفتارها و دوره‌های مرتبط با این جستار',
-  ui_all_treatises: 'همه جستارها',
+  ui_all_treatises: 'همه موضوعات',
   ui_philosophy: 'فلسفه',
   ui_logic: 'منطق',
   ui_spiritual_wayfaring: 'عرفان عملی',

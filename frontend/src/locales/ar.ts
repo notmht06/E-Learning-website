@@ -1202,7 +1202,7 @@ export const ar: Dictionary = {
   ui_copied: 'تم النسخ',
   ui_copy_citation: 'نسخ التوثيق',
   ui_related_audio_video_lecture_series: 'الدورات والمحاضرات المرتبطة بهذا البحث',
-  ui_all_treatises: 'جميع الأبحاث',
+  ui_all_treatises: 'جميع الموضوعات',
   ui_philosophy: 'الفلسفة',
   ui_logic: 'المنطق',
   ui_spiritual_wayfaring: 'العرفان العملي',

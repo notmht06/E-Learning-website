@@ -22,12 +22,16 @@ import {
   CardFooter,
   Badge,
   Button,
+  Tabs,
+  TabsList,
+  TabsTrigger,
 } from '@/components/ui';
 import { scholarlyArticlesDatabase, ScholarlyArticle } from '@/lib/data';
 import { getLocalizedArticle } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { SCHOLAR_NAME } from '@/lib/constants';
+import { triggerTactileHaptic } from '@/lib/haptics';
 
 export default function ArticlesPage() {
   const { currentLang, dict, toLocale, localizeHref } = useLanguage();
@@ -38,27 +42,35 @@ export default function ArticlesPage() {
   const [selectedArticle, setSelectedArticle] = useState<ScholarlyArticle | null>(null);
 
   const categoryOptions = useMemo(() => {
+    const totalCount = scholarlyArticlesDatabase.length;
+    const getCount = (catName: string) =>
+      scholarlyArticlesDatabase.filter(
+        (a) => a.category === catName || a.category_fa === catName
+      ).length;
+
     return [
       {
         id: 'all',
-        label:
-          dict.ui_all_treatises,
+        label: dict.catalog_filter_all_categories || dict.ui_all_treatises || 'همه موضوعات',
+        count: totalCount,
       },
       {
         id: 'فلسفه',
         label: dict.ui_philosophy,
+        count: getCount('فلسفه'),
       },
       {
         id: 'منطق',
         label: dict.ui_logic,
+        count: getCount('منطق'),
       },
       {
         id: 'عرفان عملی',
-        label:
-          dict.ui_spiritual_wayfaring,
+        label: dict.ui_spiritual_wayfaring,
+        count: getCount('عرفان عملی'),
       },
     ];
-  }, [currentLang]);
+  }, [currentLang, dict]);
 
   const articles = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -119,22 +131,29 @@ export default function ArticlesPage() {
             />
           </div>
 
-          <div className="inline-flex p-1 bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] rounded-xl text-xs font-bold self-start sm:self-auto">
-            {categoryOptions.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3.5 py-1.5 rounded-lg transition cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#8A532B] text-[#FAF8F5]'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-[#0C0D0E] dark:hover:text-[#FAF8F5]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(val: string) => {
+              triggerTactileHaptic('tick');
+              setSelectedCategory(val);
+            }}
+            className="self-start sm:self-auto"
+          >
+            <TabsList className="bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] p-1">
+              {categoryOptions.map((cat) => (
+                <TabsTrigger
+                  key={cat.id}
+                  value={cat.id}
+                  className="gap-1.5 text-xs font-bold"
+                >
+                  <span>{cat.label}</span>
+                  <span className="text-[11px] font-mono opacity-60">
+                    ({toLocale(cat.count)})
+                  </span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Articles Grid */}
