@@ -86,6 +86,7 @@ async def app_exception_handler(request: Request, exc: AppException):
             "success": False,
             "error_code": exc.code,
             "message": exc.message,
+            "detail": exc.message,
             "path": str(request.url.path)
         }
     )

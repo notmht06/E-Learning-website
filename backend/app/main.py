@@ -11,7 +11,8 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.core.config import settings
 from backend.app.core.exceptions import AppException, app_exception_handler
@@ -57,6 +58,24 @@ Architected adhering to core **backend-skill** engineering principles and 4 qual
 
 # Exception handlers
 app.add_exception_handler(AppException, app_exception_handler)
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc: Exception):
+    detail = getattr(exc, "detail", "مسیر یا منبع درخواستی در سامانه یافت نشد.")
+    msg = detail if detail and detail != "Not Found" else "مسیر یا منبع درخواستی در سامانه یافت نشد."
+    headers = getattr(exc, "headers", None)
+    return JSONResponse(
+        status_code=404,
+        headers=headers,
+        content={
+            "success": False,
+            "error_code": "NOT_FOUND",
+            "message": msg,
+            "detail": msg,
+            "path": str(request.url.path),
+        },
+    )
 
 # CORS Configuration
 cors_origins = settings.ALLOWED_ORIGINS if settings.ENVIRONMENT == "production" else ["*"]
