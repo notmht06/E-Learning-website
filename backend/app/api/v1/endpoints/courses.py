@@ -3,7 +3,7 @@ Audio Courses and Academic Syllabus API Endpoints.
 Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine - Async Def).
 """
 import logging
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,7 +18,13 @@ from backend.app.schemas.course import (
 )
 from backend.app.services.course_service import course_service
 from backend.app.core.config import settings
-from backend.app.api.deps import get_current_user
+from backend.app.api.deps import get_current_user, get_optional_user
+from backend.app.services.review_service import review_service
+from backend.app.schemas.review import (
+    ReviewCreateRequest,
+    ReviewResponse,
+    CourseReviewsSummaryResponse,
+)
 from backend.app.models.database import get_db
 from backend.app.models.models import Enrollment
 
@@ -322,3 +328,35 @@ async def get_chapter_subtitles(course_id: str, chapter_id: int, format: str = "
         vtt_str = build_webvtt_from_cues(cues, lang=lang)
         return PlainTextResponse(content=vtt_str, media_type="text/vtt; charset=utf-8")
     return {"course_id": course_id, "chapter_id": chapter_id, "cues": cues}
+
+
+@router.get("/{course_id}/reviews", response_model=CourseReviewsSummaryResponse, summary="Get course reviews and ratings")
+async def get_course_reviews(
+    course_id: str,
+    user: Optional[dict] = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Retrieves verified student reviews, average score, and rating distribution for a course.
+    """
+    return await review_service.get_course_reviews(db=db, course_id=course_id, current_user=user)
+
+
+@router.post("/{course_id}/reviews", response_model=ReviewResponse, summary="Submit or update course review")
+async def submit_course_review(
+    course_id: str,
+    payload: ReviewCreateRequest,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Allows enrolled students (1-5 stars) to submit an academic review.
+    Strictly forbids non-enrolled students and banned users.
+    """
+    return await review_service.submit_review(
+        db=db,
+        course_id=course_id,
+        user_id=user["id"],
+        rating=payload.rating,
+        comment=payload.comment,
+    )

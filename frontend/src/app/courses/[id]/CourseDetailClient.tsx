@@ -10,6 +10,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { CourseDetailHero } from '@/components/course/CourseDetailHero';
 import { CourseSyllabusAccordion } from '@/components/course/CourseSyllabusAccordion';
 import { CourseInstructorCard } from '@/components/course/CourseInstructorCard';
+import { CourseReviewsSection } from '@/components/course/CourseReviewsSection';
 import { CourseFaqAccordion } from '@/components/course/CourseFaqAccordion';
 import { CourseEnrollmentCard } from '@/components/course/CourseEnrollmentCard';
 import { StickyEnrollmentBar } from '@/components/course/StickyEnrollmentBar';
@@ -70,6 +71,8 @@ export function CourseDetailClient({ courseId }: { courseId: string }) {
             />
 
             <CourseInstructorCard />
+
+            <CourseReviewsSection courseId={course.id} />
 
             <CourseFaqAccordion />
           </div>

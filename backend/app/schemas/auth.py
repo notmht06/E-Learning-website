@@ -86,6 +86,7 @@ class UserResponse(BaseModel):
     enrolled_courses_count: int = Field(0, example=2)
     enrolled_course_ids: List[str] = Field(default_factory=list, example=["course-mabadi-mantiq"])
     access_token: Optional[str] = None
+    is_comment_banned: bool = Field(default=False)
     avatar_url: Optional[str] = Field(None, example="https://api.zanjirzan.ir/avatars/user.jpg")
 
 

@@ -9,4 +9,5 @@ export * from './AdminOrdersTab';
 export * from './AdminArticlesTab';
 export * from './AdminQATab';
 export * from './AdminRoadmapTab';
+export * from './AdminReviewsTab';
 export * from './AdminSettingsTab';

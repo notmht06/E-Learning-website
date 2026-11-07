@@ -16,6 +16,8 @@ import {
   StudyNote,
   QADiscussion,
   AdminKPIAnalytics,
+  CourseReview,
+  CourseReviewsSummary,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
@@ -198,6 +200,13 @@ class ApiClient {
         chapter_id: number;
         cues: Array<{ id: number; start: number; end: number; text: Record<string, string> }>;
       }>(`/courses/${courseId}/chapters/${chapterId}/subtitles?format=${format}`),
+    getReviews: (courseId: string) =>
+      this.request<CourseReviewsSummary>(`/courses/${courseId}/reviews`),
+    submitReview: (courseId: string, payload: { rating: number; comment?: string }) =>
+      this.request<CourseReview>(`/courses/${courseId}/reviews`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
   };
 
   // --- Books Module ---
@@ -462,6 +471,19 @@ class ApiClient {
       }
       return await res.json();
     },
+    getReviews: () => this.request<CourseReview[]>('/admin/reviews'),
+    deleteReview: (reviewId: string) =>
+      this.request<{ success: boolean; detail: string }>(`/admin/reviews/${reviewId}`, {
+        method: 'DELETE',
+      }),
+    banUserComments: (userId: string, is_banned: boolean) =>
+      this.request<{ success: boolean; user_id: string; is_comment_banned: boolean; detail: string }>(
+        `/admin/users/${userId}/ban-comments`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ is_banned }),
+        }
+      ),
   };
 
   // --- AI Scholarly Assistant ---

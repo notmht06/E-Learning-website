@@ -17,6 +17,7 @@ export interface UserProfile {
   enrolledCourseIds: string[];
   purchasedBookIds: string[];
   enrolled_courses_count?: number;
+  is_comment_banned?: boolean;
 }
 
 interface AuthContextType {
@@ -59,6 +60,7 @@ function mapUserResponseToProfile(userRes: any, fallbackName?: string): UserProf
     enrolled_courses_count: typeof userRes.enrolled_courses_count === 'number'
       ? userRes.enrolled_courses_count
       : finalEnrolledIds.length,
+    is_comment_banned: Boolean(userRes.is_comment_banned),
   };
 }
 

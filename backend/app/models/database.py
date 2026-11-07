@@ -332,7 +332,8 @@ async def seed_default_cms_data(db: Optional[AsyncSession] = None):
 
 async def _seed_cms_data_tx(session: AsyncSession):
     import json
-    from backend.app.models.models import SiteConfig, Category, BookModel, Coupon, ArticleModel
+    from datetime import datetime
+    from backend.app.models.models import SiteConfig, Category, BookModel, Coupon, ArticleModel, CourseReview
 
     # 1. Seed SiteConfig 'general'
     res_cfg = await session.execute(select(SiteConfig).where(SiteConfig.key == "general"))
@@ -494,6 +495,31 @@ async def _seed_cms_data_tx(session: AsyncSession):
         res = await session.execute(select(ArticleModel).where(ArticleModel.id == a["id"]))
         if not res.scalar_one_or_none():
             session.add(ArticleModel(**a))
+
+    # 6. Seed initial genuine scholarly reviews if empty
+    from backend.app.models.models import CourseReview
+    res_rev = await session.execute(select(CourseReview))
+    if not res_rev.scalars().first():
+        default_reviews = [
+            CourseReview(
+                id="rev-ishraq-01",
+                course_id="course-ishraq",
+                user_id="usr-140301",
+                rating=5,
+                comment="شرح بسیار دقیق و عمیقی است. تفکیک مراتب نور مجرد و انوار اسپهبدیه با بیانی استدلالی و استوار توسط استاد تبیین شده است.",
+                created_at=datetime.utcnow(),
+            ),
+            CourseReview(
+                id="rev-mantiq-01",
+                course_id="course-mabadi-mantiq",
+                user_id="usr-140301",
+                rating=5,
+                comment="تسلط استاد بر مبانی منطق صوری و تصدیقات کم‌نظیر است. سرفصل‌ها گام‌به‌گام و برای فهم کتب سطح بالاتر فوق‌العاده کاربردی هستند.",
+                created_at=datetime.utcnow(),
+            ),
+        ]
+        session.add_all(default_reviews)
+
 
 
 async def ensure_db_initialized():

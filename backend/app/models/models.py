@@ -79,6 +79,7 @@ class Course(Base):
     lessons = relationship("Lesson", back_populates="course", cascade="all, delete-orphan", order_by="Lesson.session_number")
     enrollments = relationship("Enrollment", back_populates="course", cascade="all, delete-orphan")
     favorited_by = relationship("UserFavorite", back_populates="course", cascade="all, delete-orphan")
+    reviews = relationship("CourseReview", back_populates="course", cascade="all, delete-orphan")
 
 
 class Lesson(Base):
@@ -113,12 +114,14 @@ class User(Base):
     wallet_balance = Column(String(50), default="0 Tomans")
     avatar_url = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True)
+    is_comment_banned = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     enrollments = relationship("Enrollment", back_populates="user", cascade="all, delete-orphan")
     orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
     favorites = relationship("UserFavorite", back_populates="user", cascade="all, delete-orphan")
     sessions = relationship("UserSession", back_populates="user", cascade="all, delete-orphan")
+    reviews = relationship("CourseReview", back_populates="user", cascade="all, delete-orphan")
 
     @property
     def phone(self) -> str:
@@ -167,6 +170,7 @@ class User(Base):
             "enrolled_courses_count": count,
             "enrolled_course_ids": course_ids,
             "avatar_url": self.avatar_url,
+            "is_comment_banned": bool(getattr(self, "is_comment_banned", False)),
         }
         if access_token is not None:
             data["access_token"] = access_token
@@ -625,4 +629,53 @@ class ArticleModel(Base):
             "author": self.author,
             "created_at": self.created_at.isoformat() if self.created_at else datetime.utcnow().isoformat(),
         }
+
+
+class CourseReview(Base):
+    __tablename__ = "course_reviews"
+    __table_args__ = (
+        UniqueConstraint("user_id", "course_id", name="uq_user_course_review"),
+        Index("ix_reviews_course_created", "course_id", "created_at"),
+    )
+
+    id = Column(String(50), primary_key=True, index=True)
+    course_id = Column(String(50), ForeignKey("courses.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    rating = Column(Integer, nullable=False)  # 1 to 5
+    comment = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="reviews")
+    course = relationship("Course", back_populates="reviews")
+
+    def to_dict(self) -> Dict[str, Any]:
+        user_name = "دانش‌پژوه حیات"
+        user_phone = ""
+        user_avatar = None
+        is_user_banned = False
+        if "user" in self.__dict__ and self.user is not None:
+            user_name = self.user.full_name or user_name
+            user_phone = self.user.mobile or ""
+            user_avatar = self.user.avatar_url
+            is_user_banned = bool(getattr(self.user, "is_comment_banned", False))
+
+        course_title = self.course_id
+        if "course" in self.__dict__ and self.course is not None:
+            course_title = self.course.title_fa or course_title
+
+        return {
+            "id": self.id,
+            "course_id": self.course_id,
+            "course_title": course_title,
+            "user_id": self.user_id,
+            "user_name": user_name,
+            "user_phone": user_phone,
+            "user_avatar": user_avatar,
+            "rating": self.rating,
+            "comment": self.comment,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "is_user_banned": is_user_banned,
+        }
+
 

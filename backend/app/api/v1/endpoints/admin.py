@@ -852,3 +852,45 @@ async def upload_and_index_course_handout(
         raw_text=payload.get("raw_text"),
     )
     return res
+
+
+@router.get("/reviews", summary="List all course reviews for moderation")
+async def list_admin_reviews(
+    admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Returns all submitted course reviews across the platform for moderation.
+    """
+    from backend.app.services.review_service import review_service
+    return await review_service.get_all_reviews_for_admin(db=db)
+
+
+@router.delete("/reviews/{review_id}", summary="Delete inappropriate review")
+async def delete_admin_review(
+    review_id: str,
+    admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Deletes an offensive or spam review.
+    """
+    from backend.app.services.review_service import review_service
+    await review_service.delete_review_by_admin(db=db, review_id=review_id)
+    return {"success": True, "detail": "دیدگاه با موفقیت حذف شد."}
+
+
+@router.post("/users/{user_id}/ban-comments", summary="Ban or unban user from commenting")
+async def ban_user_from_comments(
+    user_id: str,
+    payload: dict,
+    admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Bans or unbans a user from submitting reviews and comments.
+    """
+    from backend.app.services.review_service import review_service
+    is_banned = bool(payload.get("is_banned", True))
+    return await review_service.ban_user_from_comments(db=db, user_id=user_id, is_banned=is_banned)
+

@@ -220,10 +220,14 @@ export function CourseDetailHero({
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-700 dark:text-amber-300 shrink-0 self-start sm:self-auto">
+            <a
+              href="#course-reviews"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-mono text-amber-700 dark:text-amber-300 shrink-0 self-start sm:self-auto transition cursor-pointer"
+              title="مشاهده نظرات و ارزیابی‌های علمی دوره"
+            >
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>{t.satisfaction}</span>
-            </div>
+            </a>
           </div>
 
           {/* 4-Item Key Info Bento Grid (Sabzlearn-style) */}

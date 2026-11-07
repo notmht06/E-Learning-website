@@ -12,6 +12,33 @@ export interface User {
   enrolled_course_ids?: string[];
   access_token?: string;
   avatar_url?: string;
+  is_comment_banned?: boolean;
+}
+
+export interface CourseReview {
+  id: string;
+  course_id: string;
+  course_title?: string;
+  user_id: string;
+  user_name: string;
+  user_phone?: string;
+  user_avatar?: string;
+  rating: number;
+  comment: string;
+  created_at?: string;
+  is_user_banned?: boolean;
+}
+
+export interface CourseReviewsSummary {
+  course_id: string;
+  average_rating: number;
+  total_reviews: number;
+  rating_distribution: Record<string, number>;
+  reviews: CourseReview[];
+  user_review?: CourseReview | null;
+  can_review: boolean;
+  is_enrolled: boolean;
+  is_comment_banned: boolean;
 }
 
 export interface CourseEnrollmentResponse {

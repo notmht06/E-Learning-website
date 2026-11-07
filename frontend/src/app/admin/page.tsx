@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   ShieldAlert,
   Tag,
+  Star,
   Settings,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ import {
   AdminOrdersTab,
   AdminDrmTab,
   AdminCouponsTab,
+  AdminReviewsTab,
   AdminSettingsTab,
 } from '@/components/admin/tabs';
 
@@ -39,6 +41,7 @@ export type AdminTab =
   | 'orders'
   | 'drm'
   | 'coupons'
+  | 'reviews'
   | 'settings';
 
 const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
@@ -51,6 +54,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها',
     drm: 'مرکز نظارت بر استریم و امنیت DRM',
     coupons: 'کدهای تخفیف و جوایز دوره‌ها',
+    reviews: 'مدیریت نظرات و امتیازهای دانش‌پژوهان',
     settings: 'تنظیمات کلان و پویای سامانه (Zero-Code CMS)',
   },
   ar: {
@@ -62,6 +66,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'سجلات تسجيل الطلاب والطلبات',
     drm: 'مركز الرقابة الأمنية وحماية البث DRM',
     coupons: 'قسائم الخصم والمكافآت الدراسية',
+    reviews: 'إدارة التقييمات وآراء الطلاب',
     settings: 'الإعدادات العامة للنظام (Zero-Code CMS)',
   },
   en: {
@@ -73,6 +78,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'Student Database & Course Enrollments CRM',
     drm: 'DRM Stream Supervision & Security',
     coupons: 'Promotional Discount Coupons',
+    reviews: 'Course Reviews & Ratings Moderation',
     settings: 'Site Configuration (Zero-Code CMS)',
   },
 };
@@ -87,6 +93,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'دانش‌پژوهان و ثبت‌نام‌ها',
     drm: 'نشست‌ها و امنیت DRM',
     coupons: 'کدهای تخفیف و کوپن',
+    reviews: 'نظرات و امتیازها',
     settings: 'تنظیمات کلان CMS',
   },
   ar: {
@@ -98,6 +105,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'الطلاب والتسجيلات',
     drm: 'أمن البث DRM',
     coupons: 'قسائم الخصم',
+    reviews: 'التقييمات والآراء',
     settings: 'إعدادات النظام CMS',
   },
   en: {
@@ -109,6 +117,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     orders: 'Students & Orders',
     drm: 'DRM Security',
     coupons: 'Discounts',
+    reviews: 'Reviews',
     settings: 'Site Settings CMS',
   },
 };
@@ -161,6 +170,7 @@ export default function AdminPage() {
     { id: 'orders', label: t('admin_tab_orders', labels.orders), icon: ShoppingBag },
     { id: 'drm', label: t('admin_tab_drm', labels.drm), icon: ShieldAlert },
     { id: 'coupons', label: t('admin_tab_coupons', labels.coupons), icon: Tag },
+    { id: 'reviews', label: t('admin_tab_reviews', labels.reviews), icon: Star },
     { id: 'settings', label: t('admin_settings_title', labels.settings), icon: Settings },
   ];
 
@@ -189,6 +199,7 @@ export default function AdminPage() {
         {activeTab === 'orders' && <AdminOrdersTab />}
         {activeTab === 'drm' && <AdminDrmTab />}
         {activeTab === 'coupons' && <AdminCouponsTab />}
+        {activeTab === 'reviews' && <AdminReviewsTab />}
         {activeTab === 'settings' && <AdminSettingsTab />}
       </div>
     </ShellLayout>
