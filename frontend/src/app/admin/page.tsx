@@ -55,7 +55,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     drm: 'مرکز نظارت بر استریم و امنیت DRM',
     coupons: 'کدهای تخفیف و جوایز دوره‌ها',
     reviews: 'مدیریت نظرات و امتیازهای دانش‌پژوهان',
-    settings: 'تنظیمات کلان و پویای سامانه (Zero-Code CMS)',
+    settings: 'تنظیمات سراسری سامانه',
   },
   ar: {
     stats: 'الإحصاءات والتقارير المالية وذكاء الأعمال',
@@ -67,7 +67,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     drm: 'مركز الرقابة الأمنية وحماية البث DRM',
     coupons: 'قسائم الخصم والمكافآت الدراسية',
     reviews: 'إدارة التقييمات وآراء الطلاب',
-    settings: 'الإعدادات العامة للنظام (Zero-Code CMS)',
+    settings: 'الإعدادات العامة للنظام',
   },
   en: {
     stats: 'Business Intelligence & Revenue Analytics',
@@ -79,7 +79,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     drm: 'DRM Stream Supervision & Security',
     coupons: 'Promotional Discount Coupons',
     reviews: 'Course Reviews & Ratings Moderation',
-    settings: 'Site Configuration (Zero-Code CMS)',
+    settings: 'Platform Settings',
   },
 };
 

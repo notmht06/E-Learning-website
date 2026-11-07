@@ -47,17 +47,17 @@ export function useAuthForm() {
 
   const validatePhone = (val: string): string | null => {
     const cleanPhone = val.trim();
-    if (!cleanPhone) return 'لطفاً شماره تلفن همراه را وارد کنید.';
+    if (!cleanPhone) return 'شماره تلفن همراه را وارد کنید.';
     if (!/^09\d{9}$/.test(cleanPhone)) {
-      return 'شماره تماس باید ۱۱ رقم و با ۰۹ آغاز شود.';
+      return 'شماره موبایل باید ۱۱ رقم باشد و با ۰۹ شروع شود.';
     }
     return null;
   };
 
   const validatePassword = (val: string): string | null => {
-    if (!val) return 'لطفاً کلمه عبور را وارد کنید.';
+    if (!val) return 'کلمه عبور را وارد کنید.';
     if (val.length < 6) {
-      return 'کلمه عبور باید حداقل ۶ نویسه باشد.';
+      return 'کلمه عبور باید حداقل ۶ کاراکتر باشد.';
     }
     return null;
   };
@@ -76,14 +76,14 @@ export function useAuthForm() {
   const validateRegister = (): boolean => {
     const newErrors: AuthFieldErrors = {};
     if (!fullName.trim()) {
-      newErrors.fullName = 'لطفاً نام و نام خانوادگی خود را وارد کنید.';
+      newErrors.fullName = 'نام و نام خانوادگی خود را وارد کنید.';
     }
     const phoneErr = validatePhone(phone);
     if (phoneErr) newErrors.phone = phoneErr;
     const pwdErr = validatePassword(password);
     if (pwdErr) newErrors.password = pwdErr;
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'تکرار کلمه عبور با کلمه عبور اصلی همخوانی ندارد.';
+      newErrors.confirmPassword = 'تکرار کلمه عبور با رمز عبور اصلی همخوانی ندارد.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -107,7 +107,7 @@ export function useAuthForm() {
     } catch (err: any) {
       const msg = err?.message || 'خطا در برقراری ارتباط با سامانه.';
       if (msg.includes('شماره تماس یا کلمه عبور') || msg.includes('نادرست') || msg.includes('401')) {
-        setErrors({ password: 'شماره تماس یا کلمه عبور وارد شده نادرست است.' });
+        setErrors({ password: 'شماره تلفن همراه یا رمز عبور نادرست است.' });
       } else {
         setErrors({ general: msg });
       }
@@ -135,7 +135,7 @@ export function useAuthForm() {
     } catch (err: any) {
       const msg = err?.message || 'خطا در ارسال کد تأیید.';
       if (msg.includes('قبلاً در سامانه ثبت شده') || msg.includes('USER_ALREADY_EXISTS') || msg.includes('تکراری')) {
-        setErrors({ phone: 'این شماره تماس قبلاً در سامانه ثبت شده است. لطفاً وارد شوید.' });
+        setErrors({ phone: 'این شماره قبلاً در سامانه ثبت شده است. وارد شوید.' });
       } else {
         setErrors({ general: msg });
       }

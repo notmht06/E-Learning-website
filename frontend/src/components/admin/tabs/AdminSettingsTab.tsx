@@ -85,7 +85,7 @@ export function AdminSettingsTab() {
         <div>
           <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
             <Settings className="w-4 h-4 text-[#8A532B]" />
-            <span>تنظیمات سراسری پایگاه و سامانه مدیریت محتوا (Zero-Code CMS)</span>
+            <span>تنظیمات سراسری پایگاه و سامانه مدیریت محتوا</span>
           </h2>
           <p className="text-xs text-zinc-500 mt-1">
             ویرایش مستقیم عنوان صفحه اول، بنر اعلانات، زندگینامه، پیوندهای شبکه‌های ارتباطی و تنظیمات دستیار هوش مصنوعی
