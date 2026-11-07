@@ -773,3 +773,32 @@ body {
 .dark .cms-rich-content hr {
   border-top-color: rgba(63, 63, 70, 0.6);
 }
+
+/* ------------------------------------------------------------------
+   VibeFarsi Native RTL Loading Shimmer & Zero-CLS Animations
+------------------------------------------------------------------- */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes shine-rtl {
+  0% {
+    transform: translateX(160%) skewX(-15deg);
+  }
+  60%, 100% {
+    transform: translateX(-240%) skewX(-15deg);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-shine-rtl {
+  animation: shine-rtl 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

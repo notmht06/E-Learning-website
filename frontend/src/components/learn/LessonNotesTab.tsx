@@ -5,6 +5,7 @@ import { Copy, Check, BookOpen, Edit3, Save, Printer, Sparkles } from 'lucide-re
 import { apiClient } from '@/services/apiClient';
 import { useLanguage } from '@/context/LanguageContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
+import { Callout, KeyTerms } from '@/components/ui/LessonNote';
 
 export interface LessonNotesTabProps {
   courseId: string;
@@ -161,6 +162,30 @@ export function LessonNotesTab({
         {/* Official Monograph Prose */}
         <div className="prose dark:prose-invert max-w-none text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed sm:leading-loose">
           <p>{monographContent}</p>
+        </div>
+
+        {/* Core Philosophical Terminology & Callouts from VibeFarsi LessonNote */}
+        <div className="space-y-4 pt-3 border-t border-[#E6E1D8]/60 dark:border-[#22242A]/60">
+          <Callout kind="quote" title="فراز برگزیده از تدریس استاد">
+            «حقیقت وجود، امری اصیل و مشکک است که ماهیات تنها به منزله حدود و تعیّنات عدمی آن در صقع عقل ادراک می‌شوند.»
+          </Callout>
+
+          <Callout kind="tip" title="مسئله محوری این جلسه">
+            تمایز میان مفهوم وجود (که امری بدیهی و عام‌ترین مفاهیم است) با حقیقت عینی وجود (که کنه آن جز به شهود برهانی یا عیان معصوم درک نمی‌شود).
+          </Callout>
+
+          <KeyTerms
+            terms={[
+              {
+                term: 'اصالت وجود (Fundamentality of Existence)',
+                definition: 'مبنای بنیادین حکمت متعالیه که هستی را متن واقعیت و عین تحقق خارج دانسته و ماهیت را امر اعتباری و ظلّی برمی‌شمارد.',
+              },
+              {
+                term: 'تشکیک در وجود (Gradation of Being)',
+                definition: 'وحدت در عین کثرت و کثرت در عین وحدت؛ حقیقت هستی دارای مراتب طولی از فیض اقدس تا هیولای اولی است.',
+              },
+            ]}
+          />
         </div>
 
         {/* Academic Source Citation Footnote */}

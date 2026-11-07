@@ -9,4 +9,7 @@ export * from './slider';
 export * from './scroll-area';
 export * from './accordion';
 export * from './FeedbackStates';
+export * from './Skeleton';
+export * from './CourseOutline';
+export * from './LessonNote';
 export * from '../LocalizedLink';

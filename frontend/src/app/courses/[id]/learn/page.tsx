@@ -12,6 +12,7 @@ import { coursesDatabase } from '@/lib/data';
 import { AudioVideoPlayerEngine } from '@/components/learn/AudioVideoPlayerEngine';
 import { CoursePlaylistSidebar } from '@/components/course/CoursePlaylistSidebar';
 import { LessonWorkspaceTabs } from '@/components/learn/LessonWorkspaceTabs';
+import { Skeleton, SkeletonRow } from '@/components/ui/Skeleton';
 import { apiClient } from '@/services/apiClient';
 import { SCHOLAR_NAME, getScholarName } from '@/lib/constants';
 import { getLocalizedChapterTitle, getLocalizedSubject } from '@/lib/localization';
@@ -120,17 +121,39 @@ export default function CourseLearnTheaterPage({
 
   if (isLoading || !isAuthenticated || !user) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors">
+      <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-zinc-900 dark:text-zinc-100 transition-colors pb-8">
         <Navbar />
-        <main className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4">
-          <div className="w-9 h-9 rounded-full border-2 border-[#8A532B] dark:border-[#C58B43] border-t-transparent animate-spin" />
-          <div className="space-y-1">
-            <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-              درحال بررسی وضعیت ورود و انتقال به سامانه...
-            </h2>
-            <p className="text-xs text-zinc-500">
-              جهت مشاهده درس‌گفتارها، ورود به حساب کاربری الزامی است.
-            </p>
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 w-full text-start">
+          {/* Breadcrumb Skeleton */}
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-28 rounded-md" />
+            <span className="text-zinc-400">/</span>
+            <Skeleton className="h-4 w-44 rounded-md" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Player Main Area Skeleton (16:9 ratio) */}
+            <div className="lg:col-span-8 space-y-5">
+              <Skeleton className="w-full aspect-video rounded-2xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-2/3 rounded-lg" />
+                <Skeleton className="h-4 w-1/3 rounded-md" />
+              </div>
+            </div>
+
+            {/* Playlist Sidebar Skeleton */}
+            <div className="lg:col-span-4 space-y-3">
+              <div className="p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#141518] space-y-4">
+                <Skeleton className="h-5 w-1/2 rounded-md" />
+                <div className="space-y-3 pt-2">
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                </div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
