@@ -2,15 +2,15 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { ShoppingBag, ShieldCheck, CheckCircle } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, CheckCircle, X } from 'lucide-react';
 import { SupportedLang } from '@/lib/data';
 import { useLanguage } from '@/context/LanguageContext';
 import { parseNumericPrice } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
+  DialogClose,
   Button,
   Separator,
 } from '@/components/ui';
@@ -63,13 +63,23 @@ export const CartModal: React.FC<CartModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md p-6 space-y-4">
-        <DialogHeader className="flex flex-row items-center gap-2 space-y-0 pb-2 border-b border-[#E6E1D8] dark:border-[#22242A] pe-10">
-          <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
-          <DialogTitle className="text-base font-bold truncate">
-            {dict.cart_title}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-md p-6 space-y-4" hideCloseButton>
+        <div className="flex items-center justify-between pb-3 border-b border-[#E6E1D8] dark:border-[#22242A]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <ShoppingBag className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43] shrink-0" />
+            <DialogTitle className="text-base font-bold truncate text-zinc-900 dark:text-zinc-50">
+              {dict.cart_title}
+            </DialogTitle>
+          </div>
+
+          <DialogClose
+            className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 active:scale-95 cursor-pointer shrink-0"
+            aria-label="بستن"
+          >
+            <X className="w-4 h-4" />
+            <span className="sr-only">بستن</span>
+          </DialogClose>
+        </div>
 
         {items.length === 0 ? (
           <div className="py-8 text-center text-xs sm:text-sm text-zinc-500 space-y-2">

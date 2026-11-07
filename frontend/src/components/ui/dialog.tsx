@@ -28,25 +28,32 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+export interface DialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+  hideCloseButton?: boolean;
+}
+
 const DialogContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  DialogContentProps
+>(({ className, children, hideCloseButton = false, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-[#E6E1D8] dark:border-[#24262D] bg-[#FAF8F5] dark:bg-[#141518] p-6 shadow-2xl shadow-black/20 dark:shadow-black/70 duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-[#E6E1D8] dark:border-[#24262D] bg-[#FAF8F5] dark:bg-[#141518] p-6 shadow-2xl shadow-black/20 dark:shadow-black/70 duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] rounded-2xl outline-none',
         className
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute top-4 end-4 ltr:right-4 ltr:left-auto rtl:left-4 rtl:right-auto p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-[color,background-color,border-color,opacity,transform,box-shadow] focus:outline-none focus:ring-2 focus:ring-[#8A532B] disabled:pointer-events-none cursor-pointer z-20">
-        <X className="h-4 w-4" />
-        <span className="sr-only">بستن</span>
-      </DialogPrimitive.Close>
+      {!hideCloseButton && (
+        <DialogPrimitive.Close className="absolute top-4 end-4 ltr:right-4 ltr:left-auto rtl:left-4 rtl:right-auto p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-[color,background-color,border-color,opacity,transform,box-shadow] focus:outline-none focus:ring-2 focus:ring-[#8A532B] disabled:pointer-events-none cursor-pointer z-20">
+          <X className="h-4 w-4" />
+          <span className="sr-only">بستن</span>
+        </DialogPrimitive.Close>
+      )}
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
