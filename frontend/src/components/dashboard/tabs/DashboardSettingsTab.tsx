@@ -59,8 +59,8 @@ export function DashboardSettingsTab() {
         full_name: fullName.trim(),
         email: email.trim() || undefined,
       });
-      setProfileSuccessMsg('مشخصات هویتی شما با موفقیت در سامانه ذخیره شد و در مدارک لحاظ می‌شود.');
-      toast.success('مشخصات هویتی با موفقیت به‌روزرسانی شد');
+      setProfileSuccessMsg('مشخصات هویتی در سامانه ذخیره شد و در مدارک رسمی درج می‌شود.');
+      toast.success('مشخصات هویتی به‌روزرسانی شد');
     } catch (err: any) {
       const msg = err?.message || 'خطا در ذخیره مشخصات کاربری';
       toast.error(msg);
@@ -91,7 +91,7 @@ export function DashboardSettingsTab() {
         password: newPassword,
         current_password: currentPassword || undefined,
       });
-      toast.success('کلمه عبور جدید شما با موفقیت ثبت شد');
+      toast.success('کلمه عبور جدید ثبت شد');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
