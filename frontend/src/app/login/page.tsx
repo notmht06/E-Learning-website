@@ -112,7 +112,6 @@ function LoginContent() {
                 onPasswordChange={setPassword}
                 onConfirmPasswordChange={setConfirmPassword}
                 onSubmit={handleRegisterSubmit}
-                onDirectPasswordSubmit={handleDirectPasswordRegister}
               />
             )}
           </>

@@ -14,8 +14,8 @@ interface AuthTabsProps {
 export function AuthTabs({
   activeTab,
   onTabChange,
-  loginLabel = 'ورود به سامانه',
-  registerLabel = 'ثبت‌نام دانش‌پژوه',
+  loginLabel = 'ورود به حساب',
+  registerLabel = 'ثبت‌نام',
 }: AuthTabsProps) {
   return (
     <div className="grid grid-cols-2 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/80">

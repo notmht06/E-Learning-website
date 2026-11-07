@@ -18,7 +18,6 @@ interface RegisterFormProps {
   onPasswordChange: (val: string) => void;
   onConfirmPasswordChange: (val: string) => void;
   onSubmit: (e: React.FormEvent) => void;
-  onDirectPasswordSubmit?: (e: React.FormEvent) => void;
 }
 
 export function RegisterForm({
@@ -33,7 +32,6 @@ export function RegisterForm({
   onPasswordChange,
   onConfirmPasswordChange,
   onSubmit,
-  onDirectPasswordSubmit,
 }: RegisterFormProps) {
   const { dict } = useLanguage();
 
@@ -123,16 +121,7 @@ export function RegisterForm({
           )}
         </button>
 
-        {onDirectPasswordSubmit && (
-          <button
-            type="button"
-            disabled={isSubmitting}
-            onClick={onDirectPasswordSubmit}
-            className="w-full py-2 px-3 text-xs font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer text-center"
-          >
-            <span>{dict.auth_direct_register}</span>
-          </button>
-        )}
+
       </div>
     </form>
   );
