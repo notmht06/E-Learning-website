@@ -83,6 +83,11 @@ export function AudioVideoPlayerEngine({
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [centerFeedback, setCenterFeedback] = useState<'play' | 'pause' | null>(null);
+  const centerFeedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const preservedTimeRef = useRef<number>(0);
+  const wasPlayingBeforeSwitchRef = useRef<boolean>(false);
   const [currentTime, setCurrentTime] = useState(initialPositionSec || 0);
   const [duration, setDuration] = useState(durationSeconds || 1200);
   const [volume, setVolume] = useState(1);
@@ -92,7 +97,17 @@ export function AudioVideoPlayerEngine({
 
   // Default to video mode
   const [mediaMode, setMediaMode] = useState<'video' | 'audio'>('video');
-  const [quality, setQuality] = useState<VideoQuality>('1080p');
+  const [quality, setQuality] = useState<VideoQuality>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('zanjirzan_video_quality') as VideoQuality;
+        if (saved && QUALITY_OPTIONS.includes(saved)) return saved;
+      } catch (err) {
+        console.debug('Failed to read quality from localStorage:', err);
+      }
+    }
+    return 'auto';
+  });
 
   // Hydrate preferred speed from localStorage
   const [speed, setSpeed] = useState<number>(() => {
@@ -223,9 +238,16 @@ export function AudioVideoPlayerEngine({
     };
   }, [user, courseId, chapterId, isLocked]);
 
-  // Restore position when chapter changes
+  // Track active chapter to only re-initialize position on actual chapter transition
+  const activeChapterKeyRef = useRef<string>('');
   useEffect(() => {
+    const key = `${courseId}-${chapterId}`;
+    if (activeChapterKeyRef.current === key) return;
+    activeChapterKeyRef.current = key;
+
     setIsPlaying(false);
+    setHasStarted(false);
+    setCenterFeedback(null);
     setVideoError(false);
     const startSec = initialPositionSec > 0 ? initialPositionSec : 0;
     setCurrentTime(startSec);
@@ -240,6 +262,18 @@ export function AudioVideoPlayerEngine({
       videoRef.current.playbackRate = speed;
     }
   }, [courseId, chapterId, initialPositionSec, speed]);
+
+  // Handle speed updates independently without resetting chapter state
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = speed;
+    if (videoRef.current) videoRef.current.playbackRate = speed;
+  }, [speed]);
+
+  useEffect(() => {
+    return () => {
+      if (centerFeedbackTimeoutRef.current) clearTimeout(centerFeedbackTimeoutRef.current);
+    };
+  }, []);
 
   // Auto-hide controls when playing and inactive
   const showControlsTemporarily = useCallback(() => {
@@ -310,6 +344,14 @@ export function AudioVideoPlayerEngine({
       return;
     }
 
+    // Trigger transient pulse feedback in the center (450ms)
+    const nextFeedback = isPlaying ? 'pause' : 'play';
+    setCenterFeedback(nextFeedback);
+    if (centerFeedbackTimeoutRef.current) clearTimeout(centerFeedbackTimeoutRef.current);
+    centerFeedbackTimeoutRef.current = setTimeout(() => {
+      setCenterFeedback(null);
+    }, 450);
+
     if (isPlaying) {
       el.pause();
       setIsPlaying(false);
@@ -321,6 +363,7 @@ export function AudioVideoPlayerEngine({
           .then(() => {
             setIsPlaying(true);
             setIsBuffering(false);
+            setHasStarted(true);
           })
           .catch((err) => {
             console.warn('Playback error or policy block:', err);
@@ -397,10 +440,54 @@ export function AudioVideoPlayerEngine({
     setSettingsSubmenu('main');
   };
 
+  const handleCanPlay = useCallback(() => {
+    setIsBuffering(false);
+    if (preservedTimeRef.current > 0 && videoRef.current) {
+      videoRef.current.currentTime = preservedTimeRef.current;
+      preservedTimeRef.current = 0;
+    }
+    if (wasPlayingBeforeSwitchRef.current && videoRef.current) {
+      videoRef.current.play().catch(console.debug);
+      wasPlayingBeforeSwitchRef.current = false;
+    }
+  }, []);
+
   const handleSelectQuality = (newQuality: VideoQuality, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     triggerTactileHaptic('tick');
+    if (newQuality === quality) {
+      setSettingsSubmenu('main');
+      return;
+    }
+
+    const vid = videoRef.current;
+    if (vid) {
+      preservedTimeRef.current = vid.currentTime;
+      wasPlayingBeforeSwitchRef.current = !vid.paused;
+      setIsBuffering(true);
+    }
+
     setQuality(newQuality);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('zanjirzan_video_quality', newQuality);
+      } catch (err) {
+        console.debug('Failed to save quality:', err);
+      }
+    }
+
+    const qualityLabels: Record<VideoQuality, string> = {
+      auto: 'خودکار (Auto)',
+      '1080p': '1080p Full HD',
+      '720p': '720p HD',
+      '480p': '480p SD',
+      '360p': '360p',
+    };
+
+    toast.success(`کیفیت تصویر به ${qualityLabels[newQuality]} تغییر یافت`, {
+      icon: <Sliders className="w-4 h-4 text-amber-500" />,
+    });
+
     setSettingsSubmenu('main');
   };
 
@@ -452,6 +539,66 @@ export function AudioVideoPlayerEngine({
     }
   };
 
+  // Keyboard accessibility (Space/K for Play, Left/Right for Seek, M for Mute, F for Fullscreen)
+  const handleTogglePlayRef = useRef(handleTogglePlay);
+  useEffect(() => {
+    handleTogglePlayRef.current = handleTogglePlay;
+  });
+  const handleToggleMuteRef = useRef(handleToggleMute);
+  useEffect(() => {
+    handleToggleMuteRef.current = handleToggleMute;
+  });
+  const handleToggleFullscreenRef = useRef(handleToggleFullscreen);
+  useEffect(() => {
+    handleToggleFullscreenRef.current = handleToggleFullscreen;
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (!containerRef.current) return;
+      const isHovered = containerRef.current.matches(':hover');
+      const hasFocus = containerRef.current.contains(document.activeElement);
+
+      if (!isHovered && !hasFocus && !isFullscreen) return;
+
+      if (e.code === 'Space' || e.key === 'k' || e.key === 'K') {
+        e.preventDefault();
+        handleTogglePlayRef.current();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        const nextTime = Math.min(duration, currentTimeRef.current + 5);
+        setCurrentTime(nextTime);
+        const el = getActiveMediaElement();
+        if (el) el.currentTime = nextTime;
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const nextTime = Math.max(0, currentTimeRef.current - 5);
+        setCurrentTime(nextTime);
+        const el = getActiveMediaElement();
+        if (el) el.currentTime = nextTime;
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        handleToggleMuteRef.current();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        handleToggleFullscreenRef.current();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [duration, getActiveMediaElement, isFullscreen]);
+
   const formatTime = (secs: number) => {
     const safe = Math.max(0, Math.floor(secs));
     const m = Math.floor(safe / 60);
@@ -490,9 +637,15 @@ export function AudioVideoPlayerEngine({
     !videoUrl?.includes('youtu.be') &&
     /\.(mp4|webm|m3u8|ogg|mov)(\?.*)?$/i.test(videoUrl || '');
 
-  const resolvedVideoSrc = videoError || !isDirectVideo
+  const baseVideoSrc = videoError || !isDirectVideo
     ? '/videos/sample_lecture.mp4'
     : (videoUrl || '/videos/sample_lecture.mp4');
+
+  const resolvedVideoSrc = React.useMemo(() => {
+    if (quality === 'auto') return baseVideoSrc;
+    const sep = baseVideoSrc.includes('?') ? '&' : '?';
+    return `${baseVideoSrc}${sep}quality=${quality}`;
+  }, [baseVideoSrc, quality]);
 
   return (
     <div
@@ -522,7 +675,18 @@ export function AudioVideoPlayerEngine({
           onClick={handleTogglePlay}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
+          onCanPlay={handleCanPlay}
+          onLoadedData={handleCanPlay}
           onEnded={handleMediaEnded}
+          onPlay={() => {
+            setIsPlaying(true);
+            setIsBuffering(false);
+            setHasStarted(true);
+          }}
+          onPause={() => {
+            setIsPlaying(false);
+            setIsBuffering(false);
+          }}
           onWaiting={() => setIsBuffering(true)}
           onPlaying={() => setIsBuffering(false)}
           onError={() => {
@@ -542,16 +706,37 @@ export function AudioVideoPlayerEngine({
         </div>
       )}
 
-      {/* 2. Center Click-To-Play Indicator (Only shows when paused or buffering) */}
-      {!isPlaying && (
+      {/* 2. Big Center Play Button (Initial Start Only - VideoJS Style) */}
+      {!hasStarted && !isPlaying && (
         <button
           type="button"
           onClick={handleTogglePlay}
-          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/45 hover:bg-black/65 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl cursor-pointer z-20 pointer-events-auto"
-          aria-label="پخش ویدیو"
+          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl cursor-pointer z-20 pointer-events-auto"
+          aria-label="شروع پخش ویدیو"
         >
           <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-white translate-x-0.5 text-white" />
         </button>
+      )}
+
+      {/* 3. Transient Center Action Pulse (Only pulses on play/pause for 450ms, never stays stuck) */}
+      {centerFeedback && (
+        <div
+          key={centerFeedback + '-' + Date.now()}
+          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center pointer-events-none z-20 transition-all duration-500 animate-out fade-out zoom-out-90 fill-mode-forwards"
+        >
+          {centerFeedback === 'play' ? (
+            <Play className="w-8 h-8 fill-white translate-x-0.5 text-white" />
+          ) : (
+            <Pause className="w-8 h-8 fill-white text-white" />
+          )}
+        </div>
+      )}
+
+      {/* 4. Buffering Spinner Indicator */}
+      {isBuffering && (
+        <div className="absolute inset-0 m-auto w-12 h-12 flex items-center justify-center pointer-events-none z-20">
+          <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+        </div>
       )}
 
             {/* Synchronized Persian Subtitle Overlay (Strictly Persian Only) */}
@@ -822,21 +1007,34 @@ export function AudioVideoPlayerEngine({
                       <ChevronLeft className="w-3.5 h-3.5" />
                       <span>Quality</span>
                     </button>
-                    {QUALITY_OPTIONS.map((q) => (
-                      <button
-                        key={q}
-                        type="button"
-                        onClick={(e) => handleSelectQuality(q, e)}
-                        className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
-                          quality === q
-                            ? 'bg-white/15 text-white font-medium'
-                            : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
-                        }`}
-                      >
-                        <span className="uppercase">{q}</span>
-                        {quality === q && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
-                      </button>
-                    ))}
+                    {QUALITY_OPTIONS.map((q) => {
+                      const qualityDetails: Record<VideoQuality, { label: string; sub: string }> = {
+                        auto: { label: 'Auto', sub: 'تطبیقی خودکار' },
+                        '1080p': { label: '1080p', sub: 'Full HD' },
+                        '720p': { label: '720p', sub: 'HD' },
+                        '480p': { label: '480p', sub: 'SD' },
+                        '360p': { label: '360p', sub: 'کم‌حجم' },
+                      };
+                      const isSelected = quality === q;
+                      return (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={(e) => handleSelectQuality(q, e)}
+                          className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                            isSelected
+                              ? 'bg-white/15 text-white font-medium'
+                              : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold">{qualityDetails[q].label}</span>
+                            <span className="text-[10px] text-white/50">{qualityDetails[q].sub}</span>
+                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
 
