@@ -107,7 +107,7 @@ export default function ArticlesPage() {
             </span>
           </div>
 
-          {/* Scholar official identity: حجت الاسلام دکتر زنجیر زن حسینی */}
+          {/* Scholar official identity: حجت الاسلام دکتر زنجیرزن حسینی */}
           <h1 className="text-xl sm:text-2xl font-bold text-[#0C0D0E] dark:text-[#FAF8F5] leading-snug">
             {dict.articles_home_title}
           </h1>

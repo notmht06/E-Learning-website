@@ -111,7 +111,7 @@ async def get_course(course_id: str, db: AsyncSession = Depends(get_db)):
                 "id": db_c.id,
                 "title": db_c.title_fa,
                 "slug": db_c.slug,
-                "instructor": db_c.author_name or "حجت الاسلام دکتر زنجیر زن حسینی",
+                "instructor": db_c.author_name or "حجت الاسلام دکتر زنجیرزن حسینی",
                 "level": db_c.level or "سطوح عالی و خارج",
                 "hours": f"{db_c.total_duration_hours} ساعت",
                 "sessions_count": len(db_c.lessons) if db_c.lessons else 0,
@@ -318,7 +318,7 @@ async def get_chapter_subtitles(course_id: str, chapter_id: int, format: str = "
             "start": 0,
             "end": 15,
             "text": {
-                "fa": "بسم الله الرحمن الرحیم. آغاز درس‌گفتار رسمی حجت الاسلام دکتر زنجیر زن حسینی.",
+                "fa": "بسم الله الرحمن الرحیم. آغاز درس‌گفتار رسمی حجت الاسلام دکتر زنجیرزن حسینی.",
                 "ar": "بسم الله الرحمن الرحيم. بداية الدرس الرسمي لسماحة الدكتور زنجير زن حسيني.",
                 "en": "In the Name of God. Official lecture by Hojjat al-Islam Dr. Zanjirzan Hosseini.",
             },

@@ -323,7 +323,7 @@ def test_4_order_with_unseeded_course_fallback():
         c_row = cur.execute("SELECT id, title_fa, author_name FROM courses WHERE id = ?", (custom_cid,)).fetchone()
         assert c_row is not None, "Dynamic course was not created in courses table!"
         assert c_row[1] == custom_title
-        assert c_row[2] == "حجت الاسلام دکتر زنجیر زن حسینی", f"Author name mismatch: {c_row[2]}"
+        assert c_row[2] == "حجت الاسلام دکتر زنجیرزن حسینی", f"Author name mismatch: {c_row[2]}"
 
         # 2. Enrollment record must be created
         enr_row = cur.execute("SELECT id, user_id, course_id FROM enrollments WHERE user_id = ? AND course_id = ?",

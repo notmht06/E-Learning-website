@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Automated Comprehensive Test Suite for Dynamic Database-Backed Admin CMS.
-Platform: پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+Platform: پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی
 """
 import pytest
 
@@ -14,14 +14,14 @@ def test_site_config_cms_flow(client, admin_token, student_token):
     res = client.get("/api/v1/admin/public-config")
     assert res.status_code == 200
     cfg = res.json()
-    assert cfg["scholar_name_fa"] == "حجت الاسلام دکتر زنجیر زن حسینی"
+    assert cfg["scholar_name_fa"] == "حجت الاسلام دکتر زنجیرزن حسینی"
     assert "announcement_bar_text" in cfg
     assert "stat_years" in cfg
 
     # 2. Courses alias also works
     res_alias = client.get("/api/v1/courses/site-config")
     assert res_alias.status_code == 200
-    assert res_alias.json()["scholar_name_fa"] == "حجت الاسلام دکتر زنجیر زن حسینی"
+    assert res_alias.json()["scholar_name_fa"] == "حجت الاسلام دکتر زنجیرزن حسینی"
 
     # 3. RBAC: anonymous or student cannot update site config
     res_anon = client.put("/api/v1/admin/site-config", json={"announcement_bar_text": "تست هک"})
@@ -82,7 +82,7 @@ def test_articles_cms_crud(client, admin_token, student_token):
         "abstract_fa": "این مقاله به تبیین مقدمات برهانی ملاصدرا در اثبات واجب تعالی بدون وساطت خلق می‌پردازد.",
         "content_fa": "حقیقت وجود، خیر محض و اصیل است و تشکیک در مراتب آن راهگشای حل معضل ربط حادث به قدیم است...",
         "pdf_url": "/sample-books/burhan.pdf",
-        "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+        "author": "حجت الاسلام دکتر زنجیرزن حسینی",
     }
     res_create = client.post("/api/v1/admin/articles", json=article_payload, headers=admin_headers)
     assert res_create.status_code == 200
@@ -161,7 +161,7 @@ def test_books_cms_crud(client, admin_token):
         "id": "book-test-asfar-vol1",
         "title": "شرح برهان صدیقین اسفار اربعه",
         "subtitle": "تقریرات دروس خارج حکمت متعالیه",
-        "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+        "author": "حجت الاسلام دکتر زنجیرزن حسینی",
         "publisher": "انتشارات حکمت و فلسفه اسلامی",
         "print_edition": "چاپ اول (جلد گالینگور)",
         "pages_count": 520,
@@ -237,7 +237,7 @@ def test_observability_metrics(client):
     assert res.status_code == 200
     data = res.json()
     assert data["status"] == "healthy"
-    assert data["scholar_identity"] == "حجت الاسلام دکتر زنجیر زن حسینی"
+    assert data["scholar_identity"] == "حجت الاسلام دکتر زنجیرزن حسینی"
     assert "system" in data
     assert "performance" in data
     assert "security_logs" in data

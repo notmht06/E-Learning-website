@@ -89,7 +89,7 @@ def test_2_sqlite_foreign_key_enforcement():
 
 def test_3_seeded_courses_and_scholar_identity():
     print("\n--- [TEST 3] Seeded Courses and Scholar Identity ---")
-    expected_scholar = "حجت الاسلام دکتر زنجیر زن حسینی"
+    expected_scholar = "حجت الاسلام دکتر زنجیرزن حسینی"
     with sqlite3.connect(DB_PATH) as con:
         cur = con.cursor()
         courses = cur.execute("SELECT id, title_fa, author_name FROM courses").fetchall()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 LangGraph 5-Node StateGraph Architecture for Course-Scoped Scholarly AI Tutor.
-Official Platform of حجت الاسلام دکتر زنجیر زن حسینی.
+Official Platform of حجت الاسلام دکتر زنجیرزن حسینی.
 Nodes:
 1. course_scope_guard -> Extracts course_id / chapter_id context & validates scope
 2. philosophical_query_rewriter -> Expands query with canonical Sadrian/Illuminationist terms
@@ -14,7 +14,7 @@ from typing import TypedDict, List, Dict, Any, Optional, Callable
 from backend.app.services.rag_engine import rag_engine
 from backend.app.core.config import settings
 
-SCHOLAR_NAME = "حجت الاسلام دکتر زنجیر زن حسینی"
+SCHOLAR_NAME = "حجت الاسلام دکتر زنجیرزن حسینی"
 SCHOLAR_NAME_AR = "حجة الإسلام الدكتور زنجير زن حسيني"
 SCHOLAR_NAME_EN = "Hojjat al-Islam Dr. Zanjirzan Hosseini"
 

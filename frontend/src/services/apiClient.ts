@@ -649,7 +649,7 @@ class ApiClient {
           reply: finalPayload?.reply || accumulated,
           citations: finalPayload?.citations || [],
           suggested_followups: finalPayload?.suggested_followups || [],
-          scholar_identity: finalPayload?.scholar_identity || 'حجت الاسلام دکتر زنجیر زن حسینی',
+          scholar_identity: finalPayload?.scholar_identity || 'حجت الاسلام دکتر زنجیرزن حسینی',
         };
 
         if (onDone) {

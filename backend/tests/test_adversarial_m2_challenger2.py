@@ -68,7 +68,7 @@ def test_1_admin_rbac_student_tokens_rejected_everywhere():
         ("GET", "/api/v1/admin/analytics", None),
         ("POST", "/api/v1/admin/courses/create", {
             "title": "حکمت آزمایشی",
-            "instructor": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "instructor": "حجت الاسلام دکتر زنجیرزن حسینی",
             "level": "مقدماتی",
             "price": 0
         }),
@@ -181,8 +181,8 @@ def test_3_admin_rbac_legitimate_admin_access():
     assert res_root.status_code == 200, f"Admin root failed: {res_root.text}"
     root_data = res_root.json()
     assert root_data["role"] == "admin"
-    assert root_data["scholar_name"] == "حجت الاسلام دکتر زنجیر زن حسینی"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in root_data["message"]
+    assert root_data["scholar_name"] == "حجت الاسلام دکتر زنجیرزن حسینی"
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in root_data["message"]
     
     # GET /api/v1/admin/analytics
     res_analytics = client.get("/api/v1/admin/analytics", headers=admin_headers)

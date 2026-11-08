@@ -60,7 +60,7 @@ class Course(Base):
     slug = Column(String(255), unique=True, index=True, nullable=False)
     course_type = Column(String(20), default="offline", index=True)  # 'offline' or 'online'
     desc_fa = Column(Text, nullable=True)
-    author_name = Column(String(255), default="حجت الاسلام دکتر زنجیر زن حسینی")
+    author_name = Column(String(255), default="حجت الاسلام دکتر زنجیرزن حسینی")
     level = Column(String(50), default="سطوح عالی و خارج")
     
     # Online Skyroom specific fields
@@ -345,7 +345,7 @@ class BookModel(Base):
     id = Column(String(50), primary_key=True, index=True)
     title = Column(String(255), nullable=False, index=True)
     subtitle = Column(String(255), nullable=True)
-    author = Column(String(255), default="حجت الاسلام دکتر زنجیر زن حسینی")
+    author = Column(String(255), default="حجت الاسلام دکتر زنجیرزن حسینی")
     publisher = Column(String(255), default="انتشارات حیات")
     print_edition = Column(String(100), default="چاپ اول (گالینگور نفیس)")
     pages_count = Column(Integer, default=385)
@@ -596,7 +596,7 @@ class ArticleModel(Base):
     content_ar = Column(Text, nullable=True)
     content_en = Column(Text, nullable=True)
     pdf_url = Column(String(500), nullable=True)
-    author = Column(String(255), default="حجت الاسلام دکتر زنجیر زن حسینی")
+    author = Column(String(255), default="حجت الاسلام دکتر زنجیرزن حسینی")
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self) -> Dict[str, Any]:

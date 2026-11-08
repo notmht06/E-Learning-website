@@ -99,14 +99,14 @@ async def _seed_users_tx(session: AsyncSession):
             if not student.id:
                 student.id = "usr-140301"
 
-    # 2. Seed or sync admin (adm-001 strictly named «حجت الاسلام دکتر زنجیر زن حسینی»)
+    # 2. Seed or sync admin (adm-001 strictly named «حجت الاسلام دکتر زنجیرزن حسینی»)
     res_adm = await session.execute(select(User).where(User.mobile == "09120000000"))
     admin = res_adm.scalar_one_or_none()
     if not admin:
         admin = User(
             id="adm-001",
             mobile="09120000000",
-            full_name="حجت الاسلام دکتر زنجیر زن حسینی",
+            full_name="حجت الاسلام دکتر زنجیرزن حسینی",
             hashed_password=hash_password(admin_initial_password),
             role="admin",
             wallet_balance="0 Tomans",
@@ -115,7 +115,7 @@ async def _seed_users_tx(session: AsyncSession):
         session.add(admin)
     else:
         admin.role = "admin"
-        admin.full_name = "حجت الاسلام دکتر زنجیر زن حسینی"
+        admin.full_name = "حجت الاسلام دکتر زنجیرزن حسینی"
         admin.is_active = True
         if not admin.id:
             admin.id = "adm-001"
@@ -176,7 +176,7 @@ async def _seed_courses_tx(session: AsyncSession):
                 slug=c["slug"],
                 course_type="offline",
                 desc_fa=c.get("description", ""),
-                author_name=c.get("instructor", "حجت الاسلام دکتر زنجیر زن حسینی"),
+                author_name=c.get("instructor", "حجت الاسلام دکتر زنجیرزن حسینی"),
                 level=c.get("level", "مقدماتی"),
                 cover_image=c.get("thumbnail", "/images/ostad_zanjirzan.jpg"),
                 total_duration_hours=hours_val,
@@ -219,7 +219,7 @@ async def _seed_courses_tx(session: AsyncSession):
                         slug=cid,
                         course_type=cdata.get("course_type", "offline"),
                         desc_fa=cdata.get("desc_fa", ""),
-                        author_name=cdata.get("instructor_fa", "حجت الاسلام دکتر زنجیر زن حسینی"),
+                        author_name=cdata.get("instructor_fa", "حجت الاسلام دکتر زنجیرزن حسینی"),
                         level=cdata.get("level_fa", "متوسط"),
                         cover_image=cdata.get("thumbnail") or "/images/ostad_zanjirzan.jpg",
                         total_duration_hours=dur_val,
@@ -339,19 +339,19 @@ async def _seed_cms_data_tx(session: AsyncSession):
     res_cfg = await session.execute(select(SiteConfig).where(SiteConfig.key == "general"))
     if not res_cfg.scalar_one_or_none():
         cfg_dict = {
-            "scholar_name_fa": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "scholar_name_fa": "حجت الاسلام دکتر زنجیرزن حسینی",
             "scholar_name_ar": "حجة الإسلام الدكتور زنجير زن حسيني",
             "scholar_name_en": "Hojjat al-Islam Dr. Zanjirzan Hosseini",
             "hero_title_fa": "پایگاه تخصصی حکمت اسلامی و علوم عقلی",
             "hero_title_ar": "المنصة التخصصية للحكمة الإسلامية والعلوم العقلية",
             "hero_title_en": "Specialized Platform for Islamic Wisdom and Rational Sciences",
-            "hero_subtitle_fa": "تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی",
+            "hero_subtitle_fa": "تحت اشراف و تدریس حجت الاسلام دکتر زنجیرزن حسینی",
             "hero_subtitle_ar": "تحت إشراف وتدريس حجة الإسلام الدكتور زنجير زن حسيني",
             "hero_subtitle_en": "Under the instruction and supervision of Hojjat al-Islam Dr. Zanjirzan Hosseini",
             "quote_fa": "العلم نور يقذفه الله في قلب من يشاء من عباده",
             "announcement_bar_text": "آغاز ثبت‌نام دوره جامع حکمت اشراق و اسفار اربعه — سال تحصیلی جدید",
             "announcement_bar_active": True,
-            "bio_fa": "حجت الاسلام دکتر زنجیر زن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.",
+            "bio_fa": "حجت الاسلام دکتر زنجیرزن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.",
             "stat_years": "+۱۵ سال",
             "stat_sessions": "+۴۵۰ جلسه",
             "stat_books": "۲۱ دوره",
@@ -360,8 +360,8 @@ async def _seed_cms_data_tx(session: AsyncSession):
             "telegram_channel": "https://t.me/AlNajmosageb313",
             "eitaa_channel": "https://eitaa.com/Hekkmat7",
             "skyroom_default_url": "https://www.skyroom.online/ch/zanjirzan/live",
-            "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.",
-            "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
+            "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی است.",
+            "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیرزن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
             "suggested_questions": [
                 "اصالت وجود در حکمت متعالیه چیست؟",
                 "سلسله مراتب انوار در حکمت اشراق",
@@ -397,7 +397,7 @@ async def _seed_cms_data_tx(session: AsyncSession):
                     id=b["id"],
                     title=b["title"],
                     subtitle=b.get("subtitle"),
-                    author=b.get("author", "حجت الاسلام دکتر زنجیر زن حسینی"),
+                    author=b.get("author", "حجت الاسلام دکتر زنجیرزن حسینی"),
                     publisher=b.get("publisher", "انتشارات حیات"),
                     print_edition=b.get("print_edition", "چاپ اول"),
                     pages_count=b.get("pages_count", 380),
@@ -448,7 +448,7 @@ async def _seed_cms_data_tx(session: AsyncSession):
             "abstract_fa": "این مقاله به بررسی برهان صدیقین بر اصالت و وحدت وجود پرداخته و تمایزات بنیادین تلقی صدرایی از مفهوم و حقیقت هستی را تحلیل می‌کند.",
             "content_fa": "برهان صدیقین در حکمت متعالیه بر این اصل استوار است که حقیقت وجود، فی‌نفسه اصیل، بسیط و مشکک است...",
             "pdf_url": "/sample-books/aslat-vojood.pdf",
-            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "author": "حجت الاسلام دکتر زنجیرزن حسینی",
         },
         {
             "id": "art-2",
@@ -468,7 +468,7 @@ async def _seed_cms_data_tx(session: AsyncSession):
             "abstract_fa": "پژوهشی در ساختار نظام اشراقی، انوار قاهره و اسفهبدیه و نسبت آنها با نورالانوار و مقایسه آن با نظریه عقول ده‌گانه سینوی.",
             "content_fa": "شیخ اشراق در حکمة‌الاشراق، حقیقت نور را ظاهر بالذات و مظهر للغیر تعریف می‌کند...",
             "pdf_url": "/sample-books/noor-al-anwar.pdf",
-            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "author": "حجت الاسلام دکتر زنجیرزن حسینی",
         },
         {
             "id": "art-3",
@@ -488,7 +488,7 @@ async def _seed_cms_data_tx(session: AsyncSession):
             "abstract_fa": "بررسی شروط مواد قیاس برهانی، بدیهیات اولی، و راهکارهای شناسایی مغالطات زبانی و ساختاری در استدلال‌های فلسفی معاصر.",
             "content_fa": "برهان، شریف‌ترین صناعات خمس است که مطلوب آن یقین تام و دائم است...",
             "pdf_url": "/sample-books/mantiq-borhan.pdf",
-            "author": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "author": "حجت الاسلام دکتر زنجیرزن حسینی",
         },
     ]
     for a in default_articles:

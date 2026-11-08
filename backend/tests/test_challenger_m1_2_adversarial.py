@@ -6,7 +6,7 @@ Covers:
 1. Concurrency & Race Conditions (identical phone, high-throughput distinct phones, mixed read/write)
 2. Database Locking & SQLite WAL Mode
 3. Bcrypt Password Hashing & Edge Cases (Unicode, length limits, hash inspection)
-4. Scholar Official Identity Preservation («حجت الاسلام دکتر زنجیر زن حسینی»)
+4. Scholar Official Identity Preservation («حجت الاسلام دکتر زنجیرزن حسینی»)
 5. Tampered, Expired, and Malformed JWT Tokens against /api/v1/auth/me
 6. Role Escalation Attempts across all Admin Endpoints
 7. Duplicate Registration Payload & Contract Conformity
@@ -35,7 +35,7 @@ client = TestClient(app)
 
 def test_scholar_identity_preservation():
     """Verify scholar official identity is strictly preserved across all surfaces."""
-    expected_name = "حجت الاسلام دکتر زنجیر زن حسینی"
+    expected_name = "حجت الاسلام دکتر زنجیرزن حسینی"
     print("\n--- [1] SCHOLAR IDENTITY PRESERVATION ---")
 
     # 1. Root endpoint

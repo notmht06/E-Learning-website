@@ -324,7 +324,7 @@ export function DashboardSettingsTab() {
 
               <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
                 <span className="font-sans font-bold text-zinc-700 dark:text-zinc-300">
-                  حجت الاسلام دکتر زنجیر زن حسینی
+                  حجت الاسلام دکتر زنجیرزن حسینی
                 </span>
                 <span>ZAN-CERT-1403-XXXX</span>
               </div>

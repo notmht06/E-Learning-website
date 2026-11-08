@@ -89,7 +89,7 @@ class CertificateService:
                 "course_id": cert.course_id,
                 "score": cert.score,
                 "issued_at": cert.issued_at.isoformat() if cert.issued_at else "",
-                "institute": "مؤسسه علمی و پژوهشی حیات (حجت الاسلام دکتر زنجیر زن حسینی)",
+                "institute": "مؤسسه علمی و پژوهشی حیات (حجت الاسلام دکتر زنجیرزن حسینی)",
                 "message": "این گواهی موقت است؛ دانش‌پژوه هنوز سرفصل‌های دوره را به پایان نرسانده است."
             }
 
@@ -102,7 +102,7 @@ class CertificateService:
             "course_id": cert.course_id,
             "score": cert.score,
             "issued_at": cert.issued_at.isoformat() if cert.issued_at else "",
-            "institute": "مؤسسه علمی و پژوهشی حیات (حجت الاسلام دکتر زنجیر زن حسینی)",
+            "institute": "مؤسسه علمی و پژوهشی حیات (حجت الاسلام دکتر زنجیرزن حسینی)",
             "message": "اصالت این گواهینامه مورد تأیید رسمی است."
         }
 

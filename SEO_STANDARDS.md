@@ -1,6 +1,6 @@
 # استانداردهای جامع سئو تکنیکال و رتبه‌بندی («SEO_STANDARDS.md»)
 ## انطباق کامل با ۳۳۲ قاعده مهندسی «seo-audit-skill»
-### پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+### پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی
 
 ---
 
@@ -13,8 +13,8 @@
 {
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": "حجت الاسلام دکتر زنجیر زن حسینی",
-  "alternateName": ["دکتر زنجیر زن حسینی", "Dr. Zanjirzan Hosseini"],
+  "name": "حجت الاسلام دکتر زنجیرزن حسینی",
+  "alternateName": ["دکتر زنجیرزن حسینی", "Dr. Zanjirzan Hosseini"],
   "jobTitle": "استاد سطوح عالی و خارج حوزه علمیه، پژوهشگر علوم عقلی و نقلی",
   "description": "مدرس دروس خارج فقه، اصول، فلسفه، کلام، تفسیر و عرفان اسلامی",
   "image": "https://zanjirzan.ir/images/ostad_zanjirzan.jpg"
@@ -36,7 +36,7 @@
 - `duration`: طول صوت به استاندارد ISO 8601 (مانند `PT45M`)
 - `encodingFormat`: `audio/mpeg`
 - `audioQuality`: استودیویی پالایش‌شده با هوش مصنوعی (RNNoise 48kHz)
-- `author`: حجت الاسلام دکتر زنجیر زن حسینی
+- `author`: حجت الاسلام دکتر زنجیرزن حسینی
 
 ---
 

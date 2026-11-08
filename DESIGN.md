@@ -3,8 +3,8 @@
 > **Single Source of Visual Truth:** Every page, component, modal, badge, table, and state in this repository MUST strictly obey this specification.
 
 ## 1. Aesthetic Identity & Brand Persona
-* **Platform Title:** پایگاه رسمی نشر آثار و دروس حجت الاسلام دکتر زنجیر زن حسینی (Hayat)
-* **Canonical Scholar Name:** `حجت الاسلام دکتر زنجیر زن حسینی` (Must ALWAYS be used consistently across all Persian headers, footers, metadata, and cards).
+* **Platform Title:** پایگاه رسمی نشر آثار و دروس حجت الاسلام دکتر زنجیرزن حسینی (Hayat)
+* **Canonical Scholar Name:** `حجت الاسلام دکتر زنجیرزن حسینی` (Must ALWAYS be used consistently across all Persian headers, footers, metadata, and cards).
 * **Aesthetic Direction:** *"Scholastic Editorial Minimalism"* — Warm archival chamois paper surfaces (`#FAF8F5`), deep obsidian night surfaces (`#0C0D0E`), 1px hairline borders (`#E6E1D8` / `#22242A`), raw umber leather accents (`#8A532B`), and burnished brass highlights (`#C58B43`).
 
 ## 2. Strict Color & Surface Tokens

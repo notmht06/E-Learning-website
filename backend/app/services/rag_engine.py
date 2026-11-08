@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Vector & Semantic RAG Retrieval Engine for Audio, Video, and Text Corpus.
-Official Platform of حجت الاسلام دکتر زنجیر زن حسینی.
+Official Platform of حجت الاسلام دکتر زنجیرزن حسینی.
 Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine & Reliability Engine).
 """
 import os
@@ -132,11 +132,11 @@ def _tokenize(text: str) -> List[str]:
 class RAGEngine:
     """
     Hybrid Vector, Lexical & Timestamped Media Retrieval Engine.
-    Indexes all 21 courses, audio/video lectures, and treatises of حجت الاسلام دکتر زنجیر زن حسینی.
+    Indexes all 21 courses, audio/video lectures, and treatises of حجت الاسلام دکتر زنجیرزن حسینی.
     """
 
     def __init__(self):
-        self.scholar_name = "حجت الاسلام دکتر زنجیر زن حسینی"
+        self.scholar_name = "حجت الاسلام دکتر زنجیرزن حسینی"
         self.chunks: List[Dict[str, Any]] = []
         self._doc_frequencies: Dict[str, int] = {}
         self._persistence_file = self._resolve_persistence_file()
@@ -370,7 +370,7 @@ class RAGEngine:
                 "timestamp_label": None,
                 "subject": "راهنمای سیر مطالعاتی",
                 "keywords": ["سیر مطالعاتی", "شروع", "کتاب", "ترتیب", "مقدماتی", "پیشرفته", "راهنما", "دوره‌ها"],
-                "snippet": "سیر مطالعاتی متقن در پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی در سه تراز سازمان یافته است: ۱. تراز مقدماتی: دوره ۲۴ جلسه‌ای مبادی منطق و تفکر عقلانی؛ ۲. تراز متوسط: شرح بدایة الحکمة علامه طباطبایی در ۱۲۰ جلسه منقح؛ ۳. تراز اجتهادی و خارج: شرح اسفار اربعه و حکمة‌الاشراق سهروردی به همراه کتاب‌های چاپی انتشارات حیات.",
+                "snippet": "سیر مطالعاتی متقن در پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی در سه تراز سازمان یافته است: ۱. تراز مقدماتی: دوره ۲۴ جلسه‌ای مبادی منطق و تفکر عقلانی؛ ۲. تراز متوسط: شرح بدایة الحکمة علامه طباطبایی در ۱۲۰ جلسه منقح؛ ۳. تراز اجتهادی و خارج: شرح اسفار اربعه و حکمة‌الاشراق سهروردی به همراه کتاب‌های چاپی انتشارات حیات.",
                 "followups": [
                     "پیش‌نیازهای ورود به دوره شرح اسفار اربعه چیست؟",
                     "چگونه در دوره‌های آنلاین ثبت‌نام کنم؟",
@@ -414,7 +414,7 @@ class RAGEngine:
                     "timestamp_label": "۰۰:۰۰ - ۰۳:۰۰",
                     "subject": subject,
                     "keywords": _tokenize(f"{title} {subject}")[:8],
-                    "snippet": f"دوره تخصصی {title} به تدریس حجت الاسلام دکتر زنجیر زن حسینی شامل {episodes} جلسه آموزشی پیرامون {subject}. {desc}",
+                    "snippet": f"دوره تخصصی {title} به تدریس حجت الاسلام دکتر زنجیرزن حسینی شامل {episodes} جلسه آموزشی پیرامون {subject}. {desc}",
                     "followups": [
                         f"سرفصل‌های آموزشی دوره {title} چیست؟",
                         f"چگونه در دوره {title} ثبت‌نام کنم؟",

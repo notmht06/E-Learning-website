@@ -26,7 +26,7 @@ Target Features:
    - SSE streaming format parsing:
      * content-type: text/event-stream
      * intermediate chunks: data: {"chunk": ..., "done": false}
-     * final chunk: data: {"done": true, "citations": [...], "scholar_identity": "حجت الاسلام دکتر زنجیر زن حسینی"}
+     * final chunk: data: {"done": true, "citations": [...], "scholar_identity": "حجت الاسلام دکتر زنجیرزن حسینی"}
    - Token-bucket rate limiting (10 burst capacity, 11th request -> 429 + Retry-After).
 
 4. Admin RBAC Router-level Enforcement:
@@ -49,7 +49,7 @@ from backend.app.core.rate_limiter import ai_token_bucket_limiter
 
 client = TestClient(app)
 DB_PATH = "zanjirzan_platform.db"
-OFFICIAL_SCHOLAR_NAME = "حجت الاسلام دکتر زنجیر زن حسینی"
+OFFICIAL_SCHOLAR_NAME = "حجت الاسلام دکتر زنجیرزن حسینی"
 
 
 def get_student_auth():
@@ -458,7 +458,7 @@ def test_admin_rbac_strictness():
     adm_data = res_adm_root.json()
     assert adm_data["role"] == "admin"
     assert adm_data["scholar_name"] == OFFICIAL_SCHOLAR_NAME
-    assert adm_data["message"] == "پنل مدیریت حجت الاسلام دکتر زنجیر زن حسینی"
+    assert adm_data["message"] == "پنل مدیریت حجت الاسلام دکتر زنجیرزن حسینی"
 
     res_adm_analytics = client.get("/api/v1/admin/analytics", headers=admin_headers)
     assert res_adm_analytics.status_code == 200

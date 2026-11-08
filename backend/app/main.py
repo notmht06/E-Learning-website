@@ -1,7 +1,7 @@
 """
 Enterprise FastAPI Application Entrypoint.
 Complies with BACKEND_SYSTEM_DESIGN.md (backend-skill quality standards).
-Official Platform: حجت الاسلام دکتر زنجیر زن حسینی
+Official Platform: حجت الاسلام دکتر زنجیرزن حسینی
 """
 import sys
 from contextlib import asynccontextmanager
@@ -39,10 +39,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Academic and Wisdom Platform of حجت الاسلام دکتر زنجیر زن حسینی",
+    title="Academic and Wisdom Platform of حجت الاسلام دکتر زنجیرزن حسینی",
     version=settings.VERSION,
     description="""
-## Enterprise Scholarly Publishing and Audio Discourse Platform of حجت الاسلام دکتر زنجیر زن حسینی
+## Enterprise Scholarly Publishing and Audio Discourse Platform of حجت الاسلام دکتر زنجیرزن حسینی
 
 Architected adhering to core **backend-skill** engineering principles and 4 quality engines:
 * **Security Guardian:** JWT bearer authentication, argon2/bcrypt password hashing, and DRM-protected signed media stream tokens.
@@ -129,7 +129,7 @@ def root():
     """
     return {
         "status": "healthy",
-        "service": "پایگاه علمی و معرفتی حجت الاسلام دکتر زنجیر زن حسینی",
+        "service": "پایگاه علمی و معرفتی حجت الاسلام دکتر زنجیرزن حسینی",
         "scholar_name": settings.SCHOLAR_NAME_FA,
         "version": settings.VERSION,
         "swagger_documentation": "/docs",

@@ -192,7 +192,7 @@ export function AdminQATab() {
               {Boolean(q.answer_text) && (
                 <div className="p-3.5 rounded-xl bg-[#8A532B]/5 border border-[#8A532B]/20 text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed">
                   <div className="flex items-center gap-1.5 text-[#8A532B] text-[11px] mb-1 font-bold">
-                    <span>پاسخ حجت الاسلام دکتر زنجیر زن حسینی:</span>
+                    <span>پاسخ حجت الاسلام دکتر زنجیرزن حسینی:</span>
                   </div>
                   {q.answer_text}
                 </div>
@@ -229,7 +229,7 @@ export function AdminQATab() {
             <form onSubmit={handleSubmitAnswer} className="space-y-3">
               <div>
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block mb-1">
-                  متن پاسخ رسمی استاد (حجت الاسلام دکتر زنجیر زن حسینی)
+                  متن پاسخ رسمی استاد (حجت الاسلام دکتر زنجیرزن حسینی)
                 </label>
                 <textarea
                   rows={6}

@@ -1,4 +1,4 @@
-export const SCHOLAR_NAME = "حجت الاسلام دکتر زنجیر زن حسینی";
+export const SCHOLAR_NAME = "حجت الاسلام دکتر زنجیرزن حسینی";
 export const SCHOLAR_NAME_AR = "حجة الإسلام الدكتور زنجير زن حسيني";
 export const SCHOLAR_NAME_EN = "Hojjat al-Islam Dr. Zanjirzan Hosseini";
 

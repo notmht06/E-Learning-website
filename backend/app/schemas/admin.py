@@ -58,7 +58,7 @@ class AdminAnalyticsResponse(BaseModel):
 class CourseCreateRequest(BaseModel):
     id: Optional[str] = None
     title: str = "دوره جدید"
-    instructor: str = "حجت الاسلام دکتر زنجیر زن حسینی"
+    instructor: str = "حجت الاسلام دکتر زنجیرزن حسینی"
     level: str = "سطح مقدماتی تا پیشرفته"
     hours: str = "۲۰ ساعت"
     price: str = "رایگان"
@@ -411,7 +411,7 @@ class ArticleCreateRequest(BaseModel):
     content_ar: Optional[str] = None
     content_en: Optional[str] = None
     pdf_url: Optional[str] = None
-    author: Optional[str] = "حجت الاسلام دکتر زنجیر زن حسینی"
+    author: Optional[str] = "حجت الاسلام دکتر زنجیرزن حسینی"
 
     @model_validator(mode="before")
     @classmethod
@@ -475,7 +475,7 @@ class BookCreateRequest(BaseModel):
     id: Optional[str] = None
     title: str
     subtitle: Optional[str] = None
-    author: Optional[str] = "حجت الاسلام دکتر زنجیر زن حسینی"
+    author: Optional[str] = "حجت الاسلام دکتر زنجیرزن حسینی"
     publisher: Optional[str] = "انتشارات حیات"
     print_edition: Optional[str] = "چاپ اول"
     pages_count: Optional[int] = 350

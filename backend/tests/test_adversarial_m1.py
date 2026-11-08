@@ -283,7 +283,7 @@ def test_scholar_admin_identity_in_db():
         rows = cur.fetchall()
         assert len(rows) > 0, "No admin user found in SQLite database"
         for mobile, full_name, role in rows:
-            assert "حجت الاسلام دکتر زنجیر زن حسینی" in full_name, f"Admin full_name violation: '{full_name}'"
+            assert "حجت الاسلام دکتر زنجیرزن حسینی" in full_name, f"Admin full_name violation: '{full_name}'"
 
 
 if __name__ == "__main__":

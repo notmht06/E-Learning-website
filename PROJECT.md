@@ -16,7 +16,7 @@
   - Student Dashboard (`DashboardOverviewTab`, `DashboardCoursesTab`, `OngoingCoursesTable`) dynamically synchronizing with active enrolled courses, with continue learning links to `/courses/[id]/learn`.
 - **Design Tokens & System**:
   - Obsidian `#0C0D0E`, warm paper `#FAF8F5`, copper/terracotta accent `#8A532B`, 1px borders, rigid 4px spacing scale (`p-1` through `p-8`), 100% Tailwind logical properties (`ps-`, `pe-`, `ms-`, `me-`).
-  - Official Scholar Identity: «حجت الاسلام دکتر زنجیر زن حسینی» across all database records, components, and metadata.
+  - Official Scholar Identity: «حجت الاسلام دکتر زنجیرزن حسینی» across all database records, components, and metadata.
   - Persian Quality: Strict prohibition of bureaucratic tells (`می‌باشد`, `می‌گردد`), proper ZWNJ (نیم‌فاصله), Persian numerals (۰-۹), Persian quotes («گیومه»).
 
 ## Feature Inventory

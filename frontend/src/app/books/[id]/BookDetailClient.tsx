@@ -79,7 +79,7 @@ export function BookDetailClient({ bookId }: { bookId: string }) {
                   {title}
                 </h2>
                 <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                  {book.author_fa || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                  {book.author_fa || 'حجت الاسلام دکتر زنجیرزن حسینی'}
                 </p>
               </div>
               <span className="text-[11px] font-bold text-[#8A532B] dark:text-[#C58B43]">

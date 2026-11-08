@@ -54,7 +54,7 @@ export function AdminRoadmapTab() {
   );
   const [headerSubtitle, setHeaderSubtitle] = useState(
     siteConfig?.roadmap_subtitle_fa ||
-      'نقشه راه جامع و گام‌به‌گام فراگیری علوم عقلی، منطق و حکمت متعالیه تحت اشراف علمی حجت الاسلام دکتر زنجیر زن حسینی'
+      'نقشه راه جامع و گام‌به‌گام فراگیری علوم عقلی، منطق و حکمت متعالیه تحت اشراف علمی حجت الاسلام دکتر زنجیرزن حسینی'
   );
   const [isSavingHeader, setIsSavingHeader] = useState(false);
 

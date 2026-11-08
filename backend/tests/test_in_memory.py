@@ -33,7 +33,7 @@ def test_root_health():
     assert res.status_code == 200
     data = res.json()
     assert data["status"] == "healthy"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data["scholar_name"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data["scholar_name"]
     print("✅ Root health check passed:", data["scholar_name"])
 
 
@@ -194,7 +194,7 @@ def test_ai_chat_assistant():
     assert res.status_code == 200
     data = res.json()
     assert "reply" in data
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data["scholar_identity"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data["scholar_identity"]
     assert len(data["citations"]) > 0
     assert len(data["suggested_followups"]) > 0
     print("✅ AI Scholarly Assistant RAG Chat passed.")
@@ -219,7 +219,7 @@ def test_admin_course_management(admin_token: str):
     # 1. Create course
     create_res = client.post("/api/v1/admin/courses/create", json={
         "title": "دوره آزمایشی مبانی حکمت",
-        "instructor": "حجت الاسلام دکتر زنجیر زن حسینی",
+        "instructor": "حجت الاسلام دکتر زنجیرزن حسینی",
         "level": "سطح عالی",
         "hours": "۲۰ ساعت",
         "price": "۱,۲۰۰,۰۰۰ تومان",
@@ -492,7 +492,7 @@ def test_enrolled_courses_retrieval(student_token: str = None):
     """
     Milestone 1 Test 3:
     1. Calls GET /api/v1/courses/enrolled with student token -> asserts HTTP 200 and course details.
-    2. Verifies scholar identity «حجت الاسلام دکتر زنجیر زن حسینی» and syllabus integrity.
+    2. Verifies scholar identity «حجت الاسلام دکتر زنجیرزن حسینی» and syllabus integrity.
     3. Calls GET /api/v1/auth/me -> asserts enrolled_course_ids and enrolled_courses_count sync.
     4. Verifies unauthenticated access to /enrolled returns HTTP 401.
     """
@@ -519,7 +519,7 @@ def test_enrolled_courses_retrieval(student_token: str = None):
     matched = next((c for c in courses if c["id"] == target_course_id), None)
     assert matched is not None, f"Enrolled course {target_course_id} was not returned in /enrolled list!"
     assert matched["title"] == "سلسله جلسات مبادی منطق و تفکر عقلانی"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in matched.get("instructor", "")
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in matched.get("instructor", "")
     assert len(matched.get("syllabus", [])) == 9
 
     # 3. Verify session profile hydration via /api/v1/auth/me
@@ -969,7 +969,7 @@ def test_ai_token_by_token_sse_and_rate_limiter():
     terminal = parsed_events[-1]
     assert terminal.get("done") is True
     assert "citations" in terminal and len(terminal["citations"]) > 0
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in terminal.get("scholar_identity", "")
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in terminal.get("scholar_identity", "")
 
     # 2. Oversized prompt validation (> 2000 chars) -> MUST FAIL with HTTP 400
     oversized_message = "کلمه " * 501  # > 2500 characters
@@ -1029,7 +1029,7 @@ def test_admin_rbac_strict_shield(student_token: str, admin_token: str):
     adata = admin_res.json()
     assert adata["status"] == "ok"
     assert adata["role"] == "admin"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in adata["scholar_name"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in adata["scholar_name"]
 
     # 4. Student access to admin sub-route -> 403 Forbidden
     sub_res = client.get("/api/v1/admin/analytics", headers=student_headers)
@@ -1840,7 +1840,7 @@ def test_phase6_payment_gateway_and_certificate_issuance(student_token: str):
     v_data = verify_api_res.json()
     assert v_data["valid"] is True
     assert v_data["certificate_code"] == cert_code
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in v_data["institute"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in v_data["institute"]
 
     # 4. Invalid and Empty Certificate Verification Rejection
     bad_verify_res = client.get("/api/v1/certificates/verify/FAKE-CODE-9999")
@@ -1929,7 +1929,7 @@ def test_phase7_multimedia_rag_and_router(student_token: str, admin_token: str):
     assert sdata["audio_chunks"] >= 1
     assert sdata["video_chunks"] >= 1
     assert sdata["total_courses"] == 21
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in sdata["scholar_name"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in sdata["scholar_name"]
 
     # 2. RBAC on Ingestion
     ingest_payload = {
@@ -1987,7 +1987,7 @@ def test_phase7_multimedia_rag_and_router(student_token: str, admin_token: str):
     })
     assert out_of_scope_res.status_code == 200
     closed_book_data = out_of_scope_res.json()
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in closed_book_data["scholar_identity"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in closed_book_data["scholar_identity"]
     assert ("خارج از قلمرو" in closed_book_data["reply"] or "منحصراً" in closed_book_data["reply"])
 
     print("✅ Phase 7: Multimedia Vector RAG, Timestamped Chunks, Strict Closed-Book & Router Admin endpoints verified.")

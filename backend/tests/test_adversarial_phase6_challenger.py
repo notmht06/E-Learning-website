@@ -347,7 +347,7 @@ def test_selectinload_relational_hydration():
                 id=test_c_id,
                 title_fa="دوره آزمون سلکت‌این‌لود",
                 slug=f"test-slug-{uuid.uuid4().hex[:6]}",
-                author_name="حجت الاسلام دکتر زنجیر زن حسینی",
+                author_name="حجت الاسلام دکتر زنجیرزن حسینی",
             )
             lesson1 = Lesson(
                 id=f"les-{uuid.uuid4().hex[:8]}",

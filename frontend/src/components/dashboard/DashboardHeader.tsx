@@ -24,7 +24,7 @@ export function DashboardHeader({ activeTabTitle, userName }: DashboardHeaderPro
         <div className="hidden md:flex items-center gap-2 text-zinc-500">
           <ShieldCheck className="w-4 h-4 text-[#8A532B]" />
           <span className="font-medium text-zinc-800 dark:text-zinc-200">
-            حجت الاسلام دکتر زنجیر زن حسینی
+            حجت الاسلام دکتر زنجیرزن حسینی
           </span>
         </div>
 

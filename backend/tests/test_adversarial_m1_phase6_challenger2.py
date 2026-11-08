@@ -516,7 +516,7 @@ def test_vector_5_selectinload_hygiene():
 def test_vector_6_scholar_identity_and_anti_slop():
     banner("Vector 6: Scholar Official Identity & Persian Anti-Slop")
 
-    official_name = "حجت الاسلام دکتر زنجیر زن حسینی"
+    official_name = "حجت الاسلام دکتر زنجیرزن حسینی"
 
     # 1. Health check scholar identity
     res_root = client.get("/")

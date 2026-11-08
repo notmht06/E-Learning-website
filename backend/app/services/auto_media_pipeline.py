@@ -200,7 +200,7 @@ async def summarize_transcript_via_llm(course_title: str, chapter_title: str, tr
     if not p_info["is_local"] and p_info["api_key"]:
         try:
             prompt = (
-                f"شما دستیار علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستید.\n"
+                f"شما دستیار علمی پایگاه حجت الاسلام دکتر زنجیرزن حسینی هستید.\n"
                 f"دوره: {course_title}\n"
                 f"جلسه: {chapter_title}\n"
                 f"متن پیاده‌شده جلسه:\n{transcript_text[:5000]}\n\n"
@@ -223,7 +223,7 @@ async def summarize_transcript_via_llm(course_title: str, chapter_title: str, tr
 
     return (
         f"خلاصه تحلیلی «{chapter_title}» از دوره «{course_title}»:\n"
-        f"• تبیین مبانی و تعاریف کلیدی مبحث بر پایه روش برهانی حجت الاسلام دکتر زنجیر زن حسینی.\n"
+        f"• تبیین مبانی و تعاریف کلیدی مبحث بر پایه روش برهانی حجت الاسلام دکتر زنجیرزن حسینی.\n"
         f"• تحلیل مقدمات استدلال و تفکیک دقیق مفاهیم ذهنی از واقعیت عینی.\n"
         f"• جمع‌بندی نهایی و پاسخ به اشکالات مقدر پیرامون موضوع جلسه."
     )
@@ -270,7 +270,7 @@ async def process_uploaded_chapter_in_background(
             })
     else:
         full_transcript = (
-            f"درس‌گفتار رسمی حجت الاسلام دکتر زنجیر زن حسینی در دوره «{course_title}»، "
+            f"درس‌گفتار رسمی حجت الاسلام دکتر زنجیرزن حسینی در دوره «{course_title}»، "
             f"مربوط به «{chapter_title}». در این جلسه مبانی استدلالی، تعریف دقیق موضوع، "
             f"براهین اثبات مدعا و پاسخ به اشکالات پیرامون {chapter_title} به تفصیل تبیین شده است."
         )

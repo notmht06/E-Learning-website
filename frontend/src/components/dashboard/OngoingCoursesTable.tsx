@@ -99,7 +99,7 @@ export function OngoingCoursesTable({
                             {course.subject}
                           </span>
                           <span className="text-zinc-500 dark:text-zinc-400">
-                            مدرس: حجت الاسلام دکتر زنجیر زن حسینی
+                            مدرس: حجت الاسلام دکتر زنجیرزن حسینی
                           </span>
                         </div>
                       </div>

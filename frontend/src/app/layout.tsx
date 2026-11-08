@@ -13,8 +13,8 @@ import { SupportedLang } from '@/locales';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://zanjirzan.ir'),
-  title: 'پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی | دروس و معارف علوم عقلی و نقلی',
-  description: 'پلتفرم تخصصی نشر کتب فلسفی، رسالات تحلیلی و دوره‌های آموزشی منقح حجت الاسلام دکتر زنجیر زن حسینی',
+  title: 'پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی | دروس و معارف علوم عقلی و نقلی',
+  description: 'پلتفرم تخصصی نشر کتب فلسفی، رسالات تحلیلی و دوره‌های آموزشی منقح حجت الاسلام دکتر زنجیرزن حسینی',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

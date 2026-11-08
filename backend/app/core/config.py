@@ -13,8 +13,8 @@ load_dotenv()
 
 
 class Settings(BaseModel):
-    PROJECT_NAME: str = "پایگاه علمی و معرفتی حجت الاسلام دکتر زنجیر زن حسینی"
-    SCHOLAR_NAME_FA: str = "حجت الاسلام دکتر زنجیر زن حسینی"
+    PROJECT_NAME: str = "پایگاه علمی و معرفتی حجت الاسلام دکتر زنجیرزن حسینی"
+    SCHOLAR_NAME_FA: str = "حجت الاسلام دکتر زنجیرزن حسینی"
     VERSION: str = "3.0.0"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")  # development | production
     API_V1_STR: str = "/api/v1"

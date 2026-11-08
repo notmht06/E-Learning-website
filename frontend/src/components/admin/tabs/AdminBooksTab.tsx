@@ -26,7 +26,7 @@ export function AdminBooksTab() {
 
   // New Book State
   const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('حجت الاسلام دکتر زنجیر زن حسینی');
+  const [newAuthor, setNewAuthor] = useState('حجت الاسلام دکتر زنجیرزن حسینی');
   const [newCategory, setNewCategory] = useState('حکمت متعالیه');
   const [newPrice, setNewPrice] = useState('۳۵۰,۰۰۰ تومان');
   const [newStock, setNewStock] = useState('50');
@@ -35,7 +35,7 @@ export function AdminBooksTab() {
   // Edit Book State
   const [editingBook, setEditingBook] = useState<ExtendedBook | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const [editAuthor, setEditAuthor] = useState('حجت الاسلام دکتر زنجیر زن حسینی');
+  const [editAuthor, setEditAuthor] = useState('حجت الاسلام دکتر زنجیرزن حسینی');
   const [editCategory, setEditCategory] = useState('حکمت متعالیه');
   const [editPrice, setEditPrice] = useState('۳۵۰,۰۰۰ تومان');
   const [editStock, setEditStock] = useState('50');
@@ -48,7 +48,7 @@ export function AdminBooksTab() {
   const handleOpenEditBook = (b: ExtendedBook) => {
     setEditingBook(b);
     setEditTitle(b.title_fa || '');
-    setEditAuthor(b.author_fa || 'حجت الاسلام دکتر زنجیر زن حسینی');
+    setEditAuthor(b.author_fa || 'حجت الاسلام دکتر زنجیرزن حسینی');
     setEditCategory(b.subjectCategory || b.category_fa || 'حکمت متعالیه');
     setEditPrice(b.price_fa || '۳۵۰,۰۰۰ تومان');
     setEditStock(String(b.stock || 50));
@@ -163,7 +163,7 @@ export function AdminBooksTab() {
                     {book.title_fa}
                   </td>
                   <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400">
-                    {book.author_fa || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                    {book.author_fa || 'حجت الاسلام دکتر زنجیرزن حسینی'}
                   </td>
                   <td className="py-3 px-4 font-mono text-zinc-500">
                     {book.isbn || '1403-ZAN-PUB'}

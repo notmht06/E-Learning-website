@@ -247,7 +247,7 @@ function CallbackContent() {
             </div>
 
             <div className="p-3.5 rounded-lg border border-stone-200 dark:border-[#22242A] bg-[#FAF8F5]/80 dark:bg-[#18191D] text-xs text-book-subtext dark:text-stone-400 print:text-stone-600 print:bg-stone-50">
-              این رسید به منزله سند پرداخت رسمی در پایگاه «حیات» متعلق به حجت الاسلام دکتر زنجیر زن حسینی است. لطفاً شماره پیگیری بانکی را جهت مراجعات بعدی نزد خود نگه دارید.
+              این رسید به منزله سند پرداخت رسمی در پایگاه «حیات» متعلق به حجت الاسلام دکتر زنجیرزن حسینی است. لطفاً شماره پیگیری بانکی را جهت مراجعات بعدی نزد خود نگه دارید.
             </div>
           </div>
 
@@ -342,7 +342,7 @@ export default function CheckoutCallbackPage() {
                 سامانه پرداخت «حیات»
               </span>
               <span className="text-[11px] sm:text-xs text-book-subtext dark:text-stone-400">
-                حجت الاسلام دکتر زنجیر زن حسینی
+                حجت الاسلام دکتر زنجیرزن حسینی
               </span>
             </div>
           </Link>

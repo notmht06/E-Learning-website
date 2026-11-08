@@ -2,7 +2,7 @@
 Dual Storage Engine (Hybrid Local Disk + S3-Compatible Cloud Object Storage).
 Supports Liara S3, ArvanCloud S3, ParsPack, MinIO, and AWS S3 with transparent Local Fallback.
 Complies with BACKEND_SYSTEM_DESIGN.md (Reliability Engine & Performance Engine).
-Official Platform: حجت الاسلام دکتر زنجیر زن حسینی
+Official Platform: حجت الاسلام دکتر زنجیرزن حسینی
 """
 import os
 import shutil

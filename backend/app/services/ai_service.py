@@ -3,7 +3,7 @@
 AI Scholarly Philosophical Assistant Service (Phase 7).
 Multi-Provider Router: DeepSeek 4.1 / Gemini Flash Free / OpenRouter Free / Groq Whisper.
 Strict Closed-Book Grounding (AI_STRICT_CORPUS_ONLY) exclusively on the audio, video,
-and written treatises of «حجت الاسلام دکتر زنجیر زن حسینی».
+and written treatises of «حجت الاسلام دکتر زنجیرزن حسینی».
 Complies with BACKEND_SYSTEM_DESIGN.md (Performance Engine & Security Guardian).
 """
 import os
@@ -30,7 +30,7 @@ logger = logging.getLogger("platform.ai")
 
 class AIScholarlyService:
     def __init__(self):
-        self.scholar_name = "حجت الاسلام دکتر زنجیر زن حسینی"
+        self.scholar_name = "حجت الاسلام دکتر زنجیرزن حسینی"
 
     def _resolve_provider_endpoint(self) -> Dict[str, Any]:
         provider = (settings.AI_PROVIDER or "deepseek").lower().strip()
@@ -109,7 +109,7 @@ class AIScholarlyService:
             return "Hojjat al-Islam Dr. Zanjirzan Hosseini"
         if lang == "ar":
             return "حجة الإسلام الدكتور زنجير زن حسيني"
-        return "حجت الاسلام دکتر زنجیر زن حسینی"
+        return "حجت الاسلام دکتر زنجیرزن حسینی"
 
     def _build_system_prompt_prefix(self, lang: str = "fa") -> str:
         """

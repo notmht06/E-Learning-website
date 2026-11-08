@@ -21,30 +21,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!article) {
     return {
-      title: 'صفحه یا اثر مورد نظر یافت نشد | حجت الاسلام دکتر زنجیر زن حسینی',
+      title: 'صفحه یا اثر مورد نظر یافت نشد | حجت الاسلام دکتر زنجیرزن حسینی',
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `${article.title_fa || article.title} | حجت الاسلام دکتر زنجیر زن حسینی`;
+  const title = `${article.title_fa || article.title} | حجت الاسلام دکتر زنجیرزن حسینی`;
   const description =
     article.abstract_fa ||
     article.abstract ||
-    'مقالات و جستارهای برهانی پایگاه رسمی حیات (حجت الاسلام دکتر زنجیر زن حسینی)';
+    'مقالات و جستارهای برهانی پایگاه رسمی حیات (حجت الاسلام دکتر زنجیرزن حسینی)';
   const url = `https://zanjirzan.ir/articles/${article.slug}`;
 
   return {
     title,
     description,
-    authors: [{ name: 'حجت الاسلام دکتر زنجیر زن حسینی', url: 'https://zanjirzan.ir' }],
+    authors: [{ name: 'حجت الاسلام دکتر زنجیرزن حسینی', url: 'https://zanjirzan.ir' }],
     openGraph: {
       title,
       description,
       url,
-      siteName: 'پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی (حیات)',
+      siteName: 'پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی (حیات)',
       type: 'article',
       locale: 'fa_IR',
-      authors: ['حجت الاسلام دکتر زنجیر زن حسینی'],
+      authors: ['حجت الاسلام دکتر زنجیرزن حسینی'],
       images: [
         {
           url: 'https://zanjirzan.ir/images/ostad_zanjirzan.jpg',
@@ -84,7 +84,7 @@ export default async function ArticleDetailPage({ params }: Props) {
     inLanguage: 'fa-IR',
     author: {
       '@type': 'Person',
-      name: 'حجت الاسلام دکتر زنجیر زن حسینی',
+      name: 'حجت الاسلام دکتر زنجیرزن حسینی',
       jobTitle: 'استاد سطوح عالی و خارج حوزه علمیه، پژوهشگر علوم عقلی و نقلی',
       url: 'https://zanjirzan.ir',
     },

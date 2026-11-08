@@ -149,7 +149,7 @@ def test_contract_certificate_in_progress_and_completion_rules(client):
     v1_data = v1_res.json()
     assert v1_data["valid"] is True
     assert v1_data["status"] == "verified"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in v1_data["institute"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in v1_data["institute"]
 
 
 def test_contract_ai_index_stats_sanitization(client):
@@ -165,8 +165,8 @@ def test_contract_ai_index_stats_sanitization(client):
     assert "video_chunks" in data
     assert "audio_video_segments_count" in data
     assert data["total_courses"] == 21
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data["scholar_name"]
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data["scholar_identity"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data["scholar_name"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data["scholar_identity"]
     assert data["status"] == "ready"
 
     # Internal sensitive configuration fields MUST NOT be present

@@ -11,7 +11,7 @@ test.describe('Hayat SaaS — End-to-End & DESIGN.md Compliance Suite', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa');
 
     // Verify canonical scholar name in Hero & Header
-    await expect(page.locator('h1').first()).toContainText('زنجیر زن حسینی');
+    await expect(page.locator('h1').first()).toContainText('زنجیرزن حسینی');
 
     // Verify zero horizontal scroll overflow (break-ui check)
     const overflow = await page.evaluate(() => {

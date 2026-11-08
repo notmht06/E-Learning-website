@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Automated i18n Dictionary Parity & Enterprise Compliance Test
-پایگاه رسمی و جامع علمی و پژوهشی حجت الاسلام دکتر زنجیر زن حسینی
+پایگاه رسمی و جامع علمی و پژوهشی حجت الاسلام دکتر زنجیرزن حسینی
 """
 
 import re
@@ -43,7 +43,7 @@ def test_i18n_parity_and_compliance():
     assert fa_keys == ar_keys == en_keys, "Key order mismatch across languages!"
 
     # Scholar identity checks
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in fa_text, "Official Scholar name missing in fa.ts"
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in fa_text, "Official Scholar name missing in fa.ts"
     assert "حجة الإسلام الدكتور زنجير زن حسيني" in ar_text, "Official Scholar name in Arabic missing in ar.ts"
     assert "Hujjat al-Islam Dr. Zanjirzan Hosseini" in en_text, "Official Scholar name in English missing in en.ts"
 

@@ -61,7 +61,7 @@ def challenge_admin_rbac_matrix():
         ("GET", "/api/v1/admin/analytics", None),
         ("POST", "/api/v1/admin/courses/create", {
             "title": "دوره آزمایشی متخاصم",
-            "instructor": "حجت الاسلام دکتر زنجیر زن حسینی",
+            "instructor": "حجت الاسلام دکتر زنجیرزن حسینی",
             "price": "500000"
         }),
         ("PUT", "/api/v1/admin/courses/course-ishraq", {

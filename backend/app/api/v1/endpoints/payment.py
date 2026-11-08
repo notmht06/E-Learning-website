@@ -74,7 +74,7 @@ async def _process_order_paid_and_enroll(db: AsyncSession, order_id: str, tx_use
                                 id=iid,
                                 title_fa=ctitle,
                                 slug=cslug,
-                                author_name="حجت الاسلام دکتر زنجیر زن حسینی",
+                                author_name="حجت الاسلام دکتر زنجیرزن حسینی",
                                 desc_fa="",
                                 level="سطوح عالی و خارج",
                                 is_published=True,

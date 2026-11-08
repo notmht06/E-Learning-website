@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Automated Phase 8 SEO & Articles Compliance Test
-پایگاه رسمی و جامع علمی و پژوهشی حجت الاسلام دکتر زنجیر زن حسینی
+پایگاه رسمی و جامع علمی و پژوهشی حجت الاسلام دکتر زنجیرزن حسینی
 """
 
 import sys
@@ -27,7 +27,7 @@ def test_phase8_seo_and_articles():
     assert "print:hidden" in client_code, "Missing print:hidden styling for academic PDF printout!"
     assert "SCHOLAR_NAME" in client_code
     constants_code = (ROOT_DIR / "frontend/src/lib/constants.ts").read_text(encoding="utf-8")
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in constants_code
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in constants_code
     assert "می‌باشد" not in client_code and "می باشد" not in client_code
     assert "به شمار می‌آیند" not in client_code
 
@@ -40,7 +40,7 @@ def test_phase8_seo_and_articles():
     assert "BreadcrumbList" in page_code
     assert "datePublished" in page_code
     assert "image" in page_code
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in page_code
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in page_code
 
     # 3. Check /articles/page.tsx
     archive_code = (frontend_app / "articles/page.tsx").read_text(encoding="utf-8")
@@ -48,7 +48,7 @@ def test_phase8_seo_and_articles():
     assert "scholarlyArticlesDatabase" in archive_code
     assert "categoryOptions" in archive_code
     assert "EmptyStateCard" in archive_code
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in archive_code
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in archive_code
     assert "می‌باشد" not in archive_code
 
     # 4. Check sitemap.ts
@@ -62,14 +62,14 @@ def test_phase8_seo_and_articles():
     # 5. Check opengraph-image.tsx
     og_code = (frontend_app / "opengraph-image.tsx").read_text(encoding="utf-8")
     assert "export const runtime = 'edge';" in og_code
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in og_code
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in og_code
     assert "#0C0D0E" in og_code and "#FAF8F5" in og_code and "#8A532B" in og_code and "#C58B43" in og_code
     assert "تخصصی‌ترین درگاه پژوهش و آموزش حکمت اسلامی" in og_code
     assert "۲۱ دوره تخصصی" in og_code
 
     # 6. Check llms.txt
     llms_text = (ROOT_DIR / "frontend/public/llms.txt").read_text(encoding="utf-8")
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in llms_text
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in llms_text
     assert "مقالات و جستارهای علمی" in llms_text
     assert "/articles/aslat-vojood-seddiqin" in llms_text
 

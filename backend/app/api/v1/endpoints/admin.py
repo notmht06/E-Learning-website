@@ -46,19 +46,19 @@ from backend.app.api.deps import get_current_admin
 from backend.app.models.database import get_db
 
 DEFAULT_SITE_CONFIG: Dict[str, Any] = {
-    "scholar_name_fa": "حجت الاسلام دکتر زنجیر زن حسینی",
+    "scholar_name_fa": "حجت الاسلام دکتر زنجیرزن حسینی",
     "scholar_name_ar": "حجة الإسلام الدكتور زنجير زن حسيني",
     "scholar_name_en": "Hojjat al-Islam Dr. Zanjirzan Hosseini",
     "hero_title_fa": "پایگاه تخصصی حکمت اسلامی و علوم عقلی",
     "hero_title_ar": "المنصة التخصصية للحكمة الإسلامية والعلوم العقلية",
     "hero_title_en": "Specialized Platform for Islamic Wisdom and Rational Sciences",
-    "hero_subtitle_fa": "تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی",
+    "hero_subtitle_fa": "تحت اشراف و تدریس حجت الاسلام دکتر زنجیرزن حسینی",
     "hero_subtitle_ar": "تحت إشراف وتدريس حجة الإسلام الدكتور زنجير زن حسيني",
     "hero_subtitle_en": "Under the instruction and supervision of Hojjat al-Islam Dr. Zanjirzan Hosseini",
     "quote_fa": "العلم نور يقذفه الله في قلب من يشاء من عباده",
     "announcement_bar_text": "آغاز ثبت‌نام دوره جامع حکمت اشراق و اسفار اربعه — سال تحصیلی جدید",
     "announcement_bar_active": True,
-    "bio_fa": "حجت الاسلام دکتر زنجیر زن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.",
+    "bio_fa": "حجت الاسلام دکتر زنجیرزن حسینی، استاد خارج فقه، اصول، فلسفه و کلام اسلامی، با بیش از دو دهه تدریس در حوزه‌های علمیه و دانشگاه‌های برجسته، به تبیین برهانی معارف الهی اهتمام دارند.",
     "stat_years": "+۱۵ سال",
     "stat_sessions": "+۴۵۰ جلسه",
     "stat_books": "۲۱ دوره",
@@ -69,8 +69,8 @@ DEFAULT_SITE_CONFIG: Dict[str, Any] = {
     "skyroom_default_url": "https://www.skyroom.online/ch/zanjirzan/live",
     "roadmap_title_fa": "سیر مطالعاتی و مراحل اجتهادی علوم عقلی",
     "roadmap_subtitle_fa": "ترتیب منطقی و گام‌به‌گام فراگیری علوم عقلی و نقلی، از مبادی تفکر تا قله‌های حکمت متعالیه و عرفان نظری",
-    "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است.",
-    "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
+    "footer_copyright_fa": "تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی است.",
+    "ai_welcome_message": "سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیرزن حسینی هستم. می‌توانید هر پرسشی درباره دروس، کتب و مباحث فلسفی و کلامی بپرسید.",
     "suggested_questions": [
         "اصالت وجود در حکمت متعالیه چیست؟",
         "سلسله مراتب انوار در حکمت اشراق",
@@ -137,7 +137,7 @@ async def get_observability_metrics():
     return {
         "status": "healthy",
         "service": "hayat-platform-api",
-        "scholar_identity": "حجت الاسلام دکتر زنجیر زن حسینی",
+        "scholar_identity": "حجت الاسلام دکتر زنجیرزن حسینی",
         "uptime_seconds": 86400,
         "environment": settings.ENVIRONMENT,
         "database": {
@@ -179,8 +179,8 @@ async def admin_root(admin: dict = Depends(get_current_admin)):
     return {
         "status": "ok",
         "role": "admin",
-        "scholar_name": "حجت الاسلام دکتر زنجیر زن حسینی",
-        "message": "پنل مدیریت حجت الاسلام دکتر زنجیر زن حسینی",
+        "scholar_name": "حجت الاسلام دکتر زنجیرزن حسینی",
+        "message": "پنل مدیریت حجت الاسلام دکتر زنجیرزن حسینی",
     }
 
 
@@ -371,7 +371,7 @@ async def create_article(
         content_ar=req.content_ar,
         content_en=req.content_en,
         pdf_url=req.pdf_url,
-        author=req.author or "حجت الاسلام دکتر زنجیر زن حسینی",
+        author=req.author or "حجت الاسلام دکتر زنجیرزن حسینی",
     )
     db.add(article)
     await db.flush()
@@ -489,7 +489,7 @@ async def create_book(
             id=book_id,
             title=req.title,
             subtitle=req.subtitle,
-            author=req.author or "حجت الاسلام دکتر زنجیر زن حسینی",
+            author=req.author or "حجت الاسلام دکتر زنجیرزن حسینی",
             publisher=req.publisher or "انتشارات حیات",
             print_edition=req.print_edition or "چاپ اول",
             pages_count=req.pages_count or 350,

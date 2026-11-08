@@ -268,7 +268,7 @@ def run_all_tests():
     # 19. Phase 9: Admin RBAC 403 Forbidden Enforcement on Student Role
     status, denied = request("POST", "/api/v1/admin/courses/create", {
         "title": "دوره غیرمجاز دانشجو",
-        "instructor": "حجت الاسلام دکتر زنجیر زن حسینی",
+        "instructor": "حجت الاسلام دکتر زنجیرزن حسینی",
         "price": "رایگان"
     }, headers=auth_headers)
     assert status == 403, f"Expected 403 for student accessing admin create course, got {status}"

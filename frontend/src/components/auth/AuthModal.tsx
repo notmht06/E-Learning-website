@@ -110,7 +110,7 @@ export function AuthModal({
             <BookOpen className="w-5 h-5" />
           </div>
           <h2 id="auth-modal-title" className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
-            پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی
+            پایگاه آثار حجت الاسلام دکتر زنجیرزن حسینی
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'

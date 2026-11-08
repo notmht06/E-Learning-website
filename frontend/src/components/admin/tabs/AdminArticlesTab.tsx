@@ -38,7 +38,7 @@ export function AdminArticlesTab() {
   const [titleAr, setTitleAr] = useState('');
   const [titleEn, setTitleEn] = useState('');
   const [category, setCategory] = useState('حکمت متعالیه');
-  const [author, setAuthor] = useState('حجت الاسلام دکتر زنجیر زن حسینی');
+  const [author, setAuthor] = useState('حجت الاسلام دکتر زنجیرزن حسینی');
   const [abstractFa, setAbstractFa] = useState('');
   const [contentFa, setContentFa] = useState('');
   const [readTimeFa, setReadTimeFa] = useState('۱۵ دقیقه مطالعه');
@@ -79,7 +79,7 @@ export function AdminArticlesTab() {
     setTitleAr('');
     setTitleEn('');
     setCategory(categories[0]?.name_fa || 'حکمت متعالیه');
-    setAuthor('حجت الاسلام دکتر زنجیر زن حسینی');
+    setAuthor('حجت الاسلام دکتر زنجیرزن حسینی');
     setAbstractFa('');
     setContentFa('');
     setReadTimeFa('۱۵ دقیقه مطالعه');
@@ -93,7 +93,7 @@ export function AdminArticlesTab() {
     setTitleAr(art.title_ar || '');
     setTitleEn(art.title_en || '');
     setCategory(art.category || 'حکمت متعالیه');
-    setAuthor(art.author || 'حجت الاسلام دکتر زنجیر زن حسینی');
+    setAuthor(art.author || 'حجت الاسلام دکتر زنجیرزن حسینی');
     setAbstractFa(art.abstract_fa || '');
     setContentFa(art.content_fa || '');
     setReadTimeFa(art.readTime_fa || art.readTime || '۱۵ دقیقه مطالعه');
@@ -241,7 +241,7 @@ export function AdminArticlesTab() {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400 font-medium">
-                      {art.author || 'حجت الاسلام دکتر زنجیر زن حسینی'}
+                      {art.author || 'حجت الاسلام دکتر زنجیرزن حسینی'}
                     </td>
                     <td className="py-3 px-4 font-num text-zinc-500">
                       {art.published_at || art.publishDate || 'معاصر'}

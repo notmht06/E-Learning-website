@@ -52,7 +52,7 @@ function LoginContent() {
             <BookOpen className="w-6 h-6" />
           </Link>
           <h1 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
-            پایگاه آثار حجت الاسلام دکتر زنجیر زن حسینی
+            پایگاه آثار حجت الاسلام دکتر زنجیرزن حسینی
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             {step === 'otp_verify'

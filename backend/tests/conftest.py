@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Hermetic Pytest Configuration and Test Harness for backend test suite.
-Platform: پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+Platform: پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی
 
 Ensures fully hermetic test execution with:
 1. Isolated temporary SQLite database routing (both SQLAlchemy async/sync and sqlite3.connect)

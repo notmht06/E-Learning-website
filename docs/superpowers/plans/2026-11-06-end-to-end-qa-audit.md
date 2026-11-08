@@ -16,7 +16,7 @@
 5. Student Dashboard & Metric Strip (`/dashboard`)
 
 ## Global Constraints
-- Strictly adhere to scholar identity: «حجت الاسلام دکتر زنجیر زن حسینی».
+- Strictly adhere to scholar identity: «حجت الاسلام دکتر زنجیرزن حسینی».
 - Anti-slop: No neon glow balls, no gradient clipped text, no pulsing green dots, Dana Persian typography.
 - Hard evidence rule: No completion claims without fresh screenshot evidence and tool outputs.
 
@@ -33,7 +33,7 @@
   - Type: `حضوری / آفلاین`
   - Media Format: `ویدیو + صوت (ترکیبی)`
   - Price: `رایگان`
-  - Description: `بررسی جامع مبانی حکمت متعالیه در باب تجرد نفس و معاد جسمانی تحت اشراف حجت الاسلام دکتر زنجیر زن حسینی.`
+  - Description: `بررسی جامع مبانی حکمت متعالیه در باب تجرد نفس و معاد جسمانی تحت اشراف حجت الاسلام دکتر زنجیرزن حسینی.`
 - [ ] Capture Screenshot 1: `qa_1_course_creation_form.png`.
 - [ ] Submit the form and verify the new course appears in the admin courses table.
 - [ ] Capture Screenshot 2: `qa_2_admin_course_table_updated.png`.

@@ -24,7 +24,7 @@ const ROOT = process.cwd();
 const faReplacements = {
   // 1. Auth & Login Modal (Clean, natural Persian without robotic "6-digit" repetition)
   auth_modal_title: 'ورود یا ثبت‌نام در پایگاه',
-  auth_modal_subtitle: 'پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی',
+  auth_modal_subtitle: 'پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی',
   auth_tab_login: 'ورود به حساب',
   auth_tab_register: 'ثبت‌نام دانش‌پژوه',
   auth_otp_login_mode: 'ورود با رمز یکبارمصرف پیامکی',
@@ -67,7 +67,7 @@ const faReplacements = {
   auth_otp_student_prefix: 'دانش‌پژوه: ',
   auth_otp_sent_prefix: 'کد تأیید به شماره ',
   auth_otp_sent_suffix: ' ارسال شد.',
-  login_title: 'ورود به پایگاه حجت الاسلام دکتر زنجیر زن حسینی',
+  login_title: 'ورود به پایگاه حجت الاسلام دکتر زنجیرزن حسینی',
   login_sub: 'دسترسی به دوره‌های ثبت‌نام‌شده و میز مطالعه',
   login_phone_label: 'شماره تلفن همراه:',
   login_send_otp_btn: 'دریافت کد تأیید پیامکی',
@@ -78,7 +78,7 @@ const faReplacements = {
   login_role_admin: 'ورود مدیر سایت',
 
   // 2. Remove Technical Jargon (AST, 48kHz, 320kbps, FLAC, DRM, AES, LangGraph RAG, Zero-Code CMS)
-  hero_folio_stamp: 'پایگاه رسمی نشر آثار و دروس حجت الاسلام دکتر زنجیر زن حسینی',
+  hero_folio_stamp: 'پایگاه رسمی نشر آثار و دروس حجت الاسلام دکتر زنجیرزن حسینی',
   hero_book_format: 'قطع وزیری • چاپ و صفحه‌آرایی پژوهشی',
   hero_book_paper: 'جلد گالینگور با کاغذ بالک کرم مخصوص مطالعه',
   player_mastered_badge: 'ضبط رسمی جلسه',
@@ -107,7 +107,7 @@ const faReplacements = {
   admin_media_btn_ingest: 'ثبت در حافظه هوشمند دوره',
   admin_settings_title: 'تنظیمات عمومی پایگاه و محتوای صفحات',
   discourse_subtitle: 'پخش آنلاین جلسات درس با تفکیک موضوعی و زیرنویس همگام',
-  discourse_drm_label: 'پخش رسمی دروس پایگاه حجت الاسلام دکتر زنجیر زن حسینی',
+  discourse_drm_label: 'پخش رسمی دروس پایگاه حجت الاسلام دکتر زنجیرزن حسینی',
   guard_benefit_1: 'دسترسی دائمی به فایل‌های صوتی، تصویری و جزوات مکتوب دوره',
   learn_attachment_audio_master: 'فایل صوتی کامل جلسه (قابل دانلود)',
   learn_attachment_pdf_handout: 'جزوه مکتوب و خلاصه جلسه (PDF)',

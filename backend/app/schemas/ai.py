@@ -48,7 +48,7 @@ class AIChatResponse(BaseModel):
     reply: str = Field(..., description="Dialectic answer formulated under rational Islamic philosophy standards")
     citations: List[AICitation] = Field(default=[], description="Authoritative grounding citations")
     suggested_followups: List[str] = Field(default=[], description="Related inquiries to advance comprehension")
-    scholar_identity: str = Field(default="حجت الاسلام دکتر زنجیر زن حسینی", description="Official scholar name")
+    scholar_identity: str = Field(default="حجت الاسلام دکتر زنجیرزن حسینی", description="Official scholar name")
 
 
 class AITranscribeRequest(BaseModel):

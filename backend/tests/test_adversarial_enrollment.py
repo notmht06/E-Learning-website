@@ -288,14 +288,14 @@ def test_session_hydration_consistency():
 
 def test_scholar_identity_and_anti_slop():
     """
-    Verifies scholar identity is strictly «حجت الاسلام دکتر زنجیر زن حسینی»
+    Verifies scholar identity is strictly «حجت الاسلام دکتر زنجیرزن حسینی»
     in course instructor metadata and seeded database tables.
     """
     res = client.get("/api/v1/courses")
     assert res.status_code == 200
     courses = res.json()
     for c in courses:
-        assert "حجت الاسلام دکتر زنجیر زن حسینی" in c["instructor"], \
+        assert "حجت الاسلام دکتر زنجیرزن حسینی" in c["instructor"], \
             f"Scholar identity violation in course {c['id']}: {c['instructor']}"
 
     # Direct SQLite courses table check
@@ -305,7 +305,7 @@ def test_scholar_identity_and_anti_slop():
         rows = cur.fetchall()
         assert len(rows) > 0, "No courses in SQLite database"
         for cid, title, author in rows:
-            assert "حجت الاسلام دکتر زنجیر زن حسینی" in author, \
+            assert "حجت الاسلام دکتر زنجیرزن حسینی" in author, \
                 f"SQLite author_name violation in {cid}: {author}"
 
 

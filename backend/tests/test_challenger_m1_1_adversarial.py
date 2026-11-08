@@ -25,7 +25,7 @@ from backend.app.main import app
 client = TestClient(app)
 DB_PATH = "zanjirzan_platform.db"
 
-SCHOLAR_NAME = "حجت الاسلام دکتر زنجیر زن حسینی"
+SCHOLAR_NAME = "حجت الاسلام دکتر زنجیرزن حسینی"
 
 
 def create_test_student() -> Dict[str, Any]:

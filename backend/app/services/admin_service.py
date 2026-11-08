@@ -55,7 +55,7 @@ class AdminService:
             "id": course_id,
             "title": data.get("title", "درس جدید"),
             "slug": data.get("slug") or data.get("title", "new-course").lower().replace(" ", "-"),
-            "instructor": data.get("instructor") or "حجت الاسلام دکتر زنجیر زن حسینی",
+            "instructor": data.get("instructor") or "حجت الاسلام دکتر زنجیرزن حسینی",
             "level": data.get("level", "متوسط"),
             "hours": data.get("hours", "۲۰ ساعت"),
             "sessions_count": 1,

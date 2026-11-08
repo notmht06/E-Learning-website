@@ -590,7 +590,7 @@ export function AdminCoursesTab() {
           title_fa: formTitle.trim(),
           title_ar: formTitle.trim(),
           title_en: formTitle.trim(),
-          instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
+          instructor_fa: 'حجت الاسلام دکتر زنجیرزن حسینی',
           instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
           instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
           subject: formCategory,

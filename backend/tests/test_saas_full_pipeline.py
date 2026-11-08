@@ -66,7 +66,7 @@ def test_01_health_and_security_headers():
     assert resp.status_code == 200
     data = resp.json()
     assert data["status"] == "healthy"
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data["scholar_name"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data["scholar_name"]
     assert resp.headers.get("X-Content-Type-Options") == "nosniff"
     assert resp.headers.get("X-Frame-Options") == "DENY"
 
@@ -305,7 +305,7 @@ def test_08_multimedia_vector_rag_and_strict_grounding():
     )
     assert chat_in.status_code == 200
     data_in = chat_in.json()
-    assert "حجت الاسلام دکتر زنجیر زن حسینی" in data_in["reply"]
+    assert "حجت الاسلام دکتر زنجیرزن حسینی" in data_in["reply"]
     assert len(data_in["citations"]) > 0
     assert "دقیقه" in data_in["citations"][0]["page_or_session"] or "جلسه" in data_in["citations"][0]["page_or_session"]
 

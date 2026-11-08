@@ -64,7 +64,7 @@ export function AdminSettingsTab() {
       // Always enforce official scholar identity
       const payload = {
         ...formData,
-        scholar_name_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
+        scholar_name_fa: 'حجت الاسلام دکتر زنجیرزن حسینی',
         scholar_name_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
         scholar_name_en: 'Hojjat al-Islam Dr. Zanjirzan Hosseini',
       };
@@ -169,7 +169,7 @@ export function AdminSettingsTab() {
               <input
                 type="text"
                 disabled
-                value="حجت الاسلام دکتر زنجیر زن حسینی"
+                value="حجت الاسلام دکتر زنجیرزن حسینی"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-500 cursor-not-allowed"
               />
               <span className="text-[11px] text-zinc-400 mt-0.5 block">
@@ -199,7 +199,7 @@ export function AdminSettingsTab() {
                   type="text"
                   value={formData.hero_subtitle_fa || ''}
                   onChange={(e) => handleChange('hero_subtitle_fa', e.target.value)}
-                  placeholder="تحت اشراف و تدریس حجت الاسلام دکتر زنجیر زن حسینی"
+                  placeholder="تحت اشراف و تدریس حجت الاسلام دکتر زنجیرزن حسینی"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
                 />
               </div>
@@ -248,12 +248,12 @@ export function AdminSettingsTab() {
             <div className="flex flex-col sm:flex-row items-center gap-5 p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
               <img
                 src={formData.scholar_avatar || '/images/ostad_zanjirzan.jpg'}
-                alt="حجت الاسلام دکتر زنجیر زن حسینی"
+                alt="حجت الاسلام دکتر زنجیرزن حسینی"
                 className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8A532B]/40 shadow-sm"
               />
               <div className="space-y-2 text-center sm:text-start flex-1">
                 <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
-                  تصویر رسمی پروفایل استاد (حجت الاسلام دکتر زنجیر زن حسینی)
+                  تصویر رسمی پروفایل استاد (حجت الاسلام دکتر زنجیرزن حسینی)
                 </h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
                   این تصویر در کارت‌های معرفی، هیرو و شناسنامه علمی استاد در سراسر سامانه به صورت زنده نمایش داده می‌شود.
@@ -395,7 +395,7 @@ export function AdminSettingsTab() {
                 type="text"
                 value={formData.footer_copyright_fa || ''}
                 onChange={(e) => handleChange('footer_copyright_fa', e.target.value)}
-                placeholder="تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی است."
+                placeholder="تمامی حقوق مادی و معنوی متعلق به پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی است."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B]"
               />
             </div>
@@ -413,7 +413,7 @@ export function AdminSettingsTab() {
                 rows={3}
                 value={formData.ai_welcome_message || ''}
                 onChange={(e) => handleChange('ai_welcome_message', e.target.value)}
-                placeholder="سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیر زن حسینی هستم..."
+                placeholder="سلام! من دستیار هوشمند علمی پایگاه حجت الاسلام دکتر زنجیرزن حسینی هستم..."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] resize-none leading-relaxed transition-colors"
               />
             </div>

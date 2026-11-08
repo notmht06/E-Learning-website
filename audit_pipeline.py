@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 🔍 Automated Real Quality Gate Pipeline
-پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی
+پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی
 Only runs real backend integration test suites and frontend production build checks.
 """
 
@@ -97,7 +97,7 @@ def check_seo_artifacts():
 def main():
     print("="*75)
     print("🚀 چرخه خودکار ارزیابی کیفیت واقعی سامانه")
-    print("   پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی")
+    print("   پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی")
     print("="*75)
     
     steps = [

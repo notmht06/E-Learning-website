@@ -5,7 +5,7 @@ Verifies:
 1. Local fallback upload, path generation, reading, and deletion.
 2. S3 upload, public URL generation, and presigned URL generation.
 3. Resilient fallback to local disk when S3 encounters errors or is unconfigured.
-Official Platform: حجت الاسلام دکتر زنجیر زن حسینی
+Official Platform: حجت الاسلام دکتر زنجیرزن حسینی
 """
 import os
 import io

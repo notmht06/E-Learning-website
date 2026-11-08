@@ -11,7 +11,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const course = coursesDatabase[id] || coursesDatabase['course-mantiq-mabadi'] || Object.values(coursesDatabase)[0];
-  const title = `${course.title_fa} | حجت الاسلام دکتر زنجیر زن حسینی`;
+  const title = `${course.title_fa} | حجت الاسلام دکتر زنجیرزن حسینی`;
   const description = course.desc_fa || 'درس‌گفتارهای تحلیلی و تخصصی علوم عقلی و نقلی';
   const url = `https://zanjirzan.ir/courses/${id}`;
 
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url,
-      siteName: 'پایگاه رسمی حجت الاسلام دکتر زنجیر زن حسینی',
+      siteName: 'پایگاه رسمی حجت الاسلام دکتر زنجیرزن حسینی',
       images: [
         {
           url: 'https://zanjirzan.ir/images/ostad_zanjirzan.jpg',
@@ -57,7 +57,7 @@ export default async function CourseDetailPage({ params }: Props) {
     description: course.desc_fa,
     provider: {
       '@type': 'Person',
-      name: 'حجت الاسلام دکتر زنجیر زن حسینی',
+      name: 'حجت الاسلام دکتر زنجیرزن حسینی',
       jobTitle: 'استاد سطوح عالی و خارج حوزه علمیه، پژوهشگر علوم عقلی و نقلی',
       url: 'https://zanjirzan.ir',
       image: 'https://zanjirzan.ir/images/ostad_zanjirzan.jpg',
@@ -70,8 +70,8 @@ export default async function CourseDetailPage({ params }: Props) {
   const personJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: 'حجت الاسلام دکتر زنجیر زن حسینی',
-    alternateName: ['دکتر زنجیر زن حسینی', 'Dr. Zanjirzan Hosseini'],
+    name: 'حجت الاسلام دکتر زنجیرزن حسینی',
+    alternateName: ['دکتر زنجیرزن حسینی', 'Dr. Zanjirzan Hosseini'],
     jobTitle: 'استاد سطوح عالی و خارج حوزه علمیه، پژوهشگر علوم عقلی و نقلی',
     description: 'مدرس دروس خارج فقه، اصول، فلسفه، کلام، تفسیر و عرفان اسلامی',
     image: 'https://zanjirzan.ir/images/ostad_zanjirzan.jpg',
@@ -87,7 +87,7 @@ export default async function CourseDetailPage({ params }: Props) {
         name: 'مدرس این دوره تخصصی کیست؟',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'این دوره توسط حجت الاسلام دکتر زنجیر زن حسینی تدریس شده است.',
+          text: 'این دوره توسط حجت الاسلام دکتر زنجیرزن حسینی تدریس شده است.',
         },
       },
       {

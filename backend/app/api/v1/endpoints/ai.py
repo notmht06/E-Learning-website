@@ -97,7 +97,7 @@ async def chat_with_assistant(
 ):
     """
     RAG-grounded philosophical conversational response citing official treatises
-    of حجت الاسلام دکتر زنجیر زن حسینی.
+    of حجت الاسلام دکتر زنجیرزن حسینی.
     """
     _validate_prompt_length(req.message)
     _check_ai_rate_limit(request, user)
@@ -113,7 +113,7 @@ async def stream_chat_with_assistant(
 ):
     """
     Token-by-token SSE streaming response citing official treatises
-    of حجت الاسلام دکتر زنجیر زن حسینی.
+    of حجت الاسلام دکتر زنجیرزن حسینی.
     """
     _validate_prompt_length(req.message)
     _check_ai_rate_limit(request, user)
@@ -162,7 +162,7 @@ async def analyze_document(
 async def get_index_stats():
     """
     Returns public statistics on indexed audio, video, text chunks, and courses
-    of حجت الاسلام دکتر زنجیر زن حسینی.
+    of حجت الاسلام دکتر زنجیرزن حسینی.
     Sensitive internal configuration details (persistence_file, active_provider, active_model, whisper_model)
     are excluded from this public endpoint.
     """

@@ -177,7 +177,7 @@ export function AdminCoursesTab() {
           title_fa: formTitle.trim(),
           title_ar: formTitle.trim(),
           title_en: formTitle.trim(),
-          instructor_fa: 'حجت الاسلام دکتر زنجیر زن حسینی',
+          instructor_fa: 'حجت الاسلام دکتر زنجیرزن حسینی',
           instructor_ar: 'حجة الإسلام الدكتور زنجير زن حسيني',
           instructor_en: 'Hujjat al-Islam Dr. Zanjirzan Hosseini',
           subject: formCategory,
@@ -317,7 +317,7 @@ export function AdminCoursesTab() {
                         <div className="min-w-0">
                           <span className="line-clamp-1 block text-sm">{course.title_fa}</span>
                           <span className="text-[11px] text-zinc-400 font-normal mt-0.5 block">
-                            مدرس: حجت الاسلام دکتر زنجیر زن حسینی
+                            مدرس: حجت الاسلام دکتر زنجیرزن حسینی
                           </span>
                         </div>
                       </div>
