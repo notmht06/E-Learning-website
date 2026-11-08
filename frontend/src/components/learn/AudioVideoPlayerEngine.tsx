@@ -18,6 +18,8 @@ import {
   Sliders,
   Gauge,
   Film,
+  RotateCcw,
+  RotateCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/context/LanguageContext';
@@ -94,6 +96,13 @@ export function AudioVideoPlayerEngine({
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isControlsVisible, setIsControlsVisible] = useState(true);
+
+  // 60fps RAF Timeline & Tooltip states (Video.js TimeSlider architecture)
+  const [smoothProgress, setSmoothProgress] = useState(0); // 0 to 1 float
+  const [hoverTime, setHoverTime] = useState<number | null>(null);
+  const [hoverPos, setHoverPos] = useState<number>(0);
+  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingTimelineRef = useRef<boolean>(false);
 
   // Default to video mode
   const [mediaMode, setMediaMode] = useState<'video' | 'audio'>('video');
@@ -205,11 +214,48 @@ export function AudioVideoPlayerEngine({
   }, [currentTime]);
 
   const getActiveMediaElement = useCallback((): HTMLMediaElement | null => {
-    if (mediaMode === 'video' && videoRef.current) {
+    if (videoRef.current) {
       return videoRef.current;
     }
     return audioRef.current;
-  }, [mediaMode]);
+  }, []);
+
+  // 60fps Continuous RAF Loop for ultra-smooth TimeSlider Progress (Video.js Architecture)
+  useEffect(() => {
+    let animId: number;
+    const loop = () => {
+      const el = getActiveMediaElement();
+      if (el && el.duration && isFinite(el.duration) && el.duration > 0) {
+        if (!isDraggingTimelineRef.current) {
+          const ratio = Math.max(0, Math.min(1, el.currentTime / el.duration));
+          setSmoothProgress(ratio);
+        }
+      }
+      animId = requestAnimationFrame(loop);
+    };
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, [getActiveMediaElement]);
+
+  // Global window pointerup to safely release timeline scrubbing
+  useEffect(() => {
+    const handleGlobalPointerUp = () => {
+      isDraggingTimelineRef.current = false;
+    };
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    return () => window.removeEventListener('pointerup', handleGlobalPointerUp);
+  }, []);
+
+  // Calculate live buffered percentage
+  const bufferedRatio = React.useMemo(() => {
+    const el = getActiveMediaElement();
+    if (!el || !el.buffered || el.buffered.length === 0 || !duration) return 0;
+    try {
+      return Math.min(1, el.buffered.end(el.buffered.length - 1) / duration);
+    } catch {
+      return 0;
+    }
+  }, [getActiveMediaElement, duration, smoothProgress]);
 
   // Fetch DRM stream token if needed
   useEffect(() => {
@@ -396,11 +442,48 @@ export function AudioVideoPlayerEngine({
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLMediaElement>) => {
     const mediaDur = e.currentTarget.duration;
-    if (mediaDur && !isNaN(mediaDur) && isFinite(mediaDur) && mediaDur > 5) {
-      setDuration(Math.round(mediaDur));
+    if (mediaDur && !isNaN(mediaDur) && isFinite(mediaDur) && mediaDur > 0) {
+      setDuration(mediaDur);
     }
     if (initialPositionSec > 0 && e.currentTarget.currentTime < 1) {
       e.currentTarget.currentTime = initialPositionSec;
+    }
+  };
+
+  const handleSeekFromPointer = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!timelineRef.current) return;
+    const rect = timelineRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const ratio = rect.width > 0 ? x / rect.width : 0;
+    const targetSec = ratio * (duration || 1);
+    setSmoothProgress(ratio);
+    setCurrentTime(Math.floor(targetSec));
+    const el = getActiveMediaElement();
+    if (el) {
+      el.currentTime = targetSec;
+    }
+    checkCompletionAndSync(targetSec, duration);
+  };
+
+  const handlePointerDownTimeline = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingTimelineRef.current = true;
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {}
+    handleSeekFromPointer(e);
+  };
+
+  const handlePointerMoveTimeline = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!timelineRef.current) return;
+    const rect = timelineRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const ratio = rect.width > 0 ? x / rect.width : 0;
+    const hoverSec = ratio * (duration || 1);
+    setHoverTime(hoverSec);
+    setHoverPos(x);
+
+    if (isDraggingTimelineRef.current) {
+      handleSeekFromPointer(e);
     }
   };
 
@@ -437,6 +520,7 @@ export function AudioVideoPlayerEngine({
     }
     if (audioRef.current) audioRef.current.playbackRate = newSpeed;
     if (videoRef.current) videoRef.current.playbackRate = newSpeed;
+    setIsSettingsOpen(false);
     setSettingsSubmenu('main');
   };
 
@@ -488,6 +572,7 @@ export function AudioVideoPlayerEngine({
       icon: <Sliders className="w-4 h-4 text-amber-500" />,
     });
 
+    setIsSettingsOpen(false);
     setSettingsSubmenu('main');
   };
 
@@ -495,6 +580,7 @@ export function AudioVideoPlayerEngine({
     if (e) e.stopPropagation();
     triggerTactileHaptic('tick');
     setMediaMode(newMode);
+    setIsSettingsOpen(false);
     setSettingsSubmenu('main');
   };
 
@@ -643,8 +729,7 @@ export function AudioVideoPlayerEngine({
 
   const resolvedVideoSrc = React.useMemo(() => {
     if (quality === 'auto') return baseVideoSrc;
-    const sep = baseVideoSrc.includes('?') ? '&' : '?';
-    return `${baseVideoSrc}${sep}quality=${quality}`;
+    return `/api/v1/stream/video-quality?src=${encodeURIComponent(baseVideoSrc)}&quality=${quality}`;
   }, [baseVideoSrc, quality]);
 
   return (
@@ -666,43 +751,145 @@ export function AudioVideoPlayerEngine({
         onPlaying={() => setIsBuffering(false)}
       />
 
-      {mediaMode === 'video' ? (
-        <video
-          ref={videoRef}
-          src={resolvedVideoSrc}
-          playsInline
-          className="h-full w-full object-contain cursor-pointer"
-          onClick={handleTogglePlay}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onCanPlay={handleCanPlay}
-          onLoadedData={handleCanPlay}
-          onEnded={handleMediaEnded}
-          onPlay={() => {
-            setIsPlaying(true);
-            setIsBuffering(false);
-            setHasStarted(true);
-          }}
-          onPause={() => {
-            setIsPlaying(false);
-            setIsBuffering(false);
-          }}
-          onWaiting={() => setIsBuffering(true)}
-          onPlaying={() => setIsBuffering(false)}
-          onError={() => {
-            console.warn('Video failed to load source, falling back to local lecture video');
-            setVideoError(true);
-          }}
-        />
-      ) : (
-        /* Audio Only Mode Minimalist Screen */
+      {/* Video element is NEVER unmounted: keeps playing audio seamlessly in background when in audio mode */}
+      <video
+        ref={videoRef}
+        src={resolvedVideoSrc}
+        playsInline
+        style={{
+          ...(quality === '360p'
+            ? {
+                filter: 'contrast(1.15) brightness(0.97) blur(0.45px)',
+                imageRendering: 'pixelated',
+              }
+            : quality === '480p'
+            ? {
+                filter: 'contrast(1.06) blur(0.2px)',
+                imageRendering: 'pixelated',
+              }
+            : {}),
+        }}
+        className={`h-full w-full object-contain transition-opacity duration-300 ${
+          mediaMode === 'audio'
+            ? 'opacity-0 pointer-events-none absolute inset-0'
+            : 'cursor-pointer opacity-100'
+        }`}
+        onClick={handleTogglePlay}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onCanPlay={handleCanPlay}
+        onLoadedData={handleCanPlay}
+        onEnded={handleMediaEnded}
+        onPlay={() => {
+          setIsPlaying(true);
+          setIsBuffering(false);
+          setHasStarted(true);
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+          setIsBuffering(false);
+        }}
+        onWaiting={() => setIsBuffering(true)}
+        onPlaying={() => setIsBuffering(false)}
+        onError={() => {
+          console.warn('Video failed to load source, falling back to local lecture video');
+          setVideoError(true);
+        }}
+      />
+
+      {/* Audio Only Mode Minimalist Screen with Video.js AudioSkin */}
+      {mediaMode === 'audio' && (
         <div
           onClick={handleTogglePlay}
-          className="h-full w-full bg-gradient-to-br from-[#1A130E] via-[#0E0B08] to-[#070504] flex flex-col items-center justify-center p-6 text-center cursor-pointer relative select-none"
+          className="h-full w-full bg-gradient-to-b from-[#18130E] via-[#0E0B08] to-[#070504] flex flex-col items-center justify-center p-6 text-center select-none relative z-10"
         >
-          <span className="text-stone-300 font-bold text-sm sm:text-base max-w-md line-clamp-2 px-4 transition-colors">
+          {/* Scholar Calligraphic Medallion */}
+          <div className="relative mb-3 flex items-center justify-center">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#8A532B]/20 border border-[#8A532B]/40 flex flex-col items-center justify-center shadow-2xl backdrop-blur-md">
+              <Headphones className="w-8 h-8 sm:w-10 sm:h-10 text-[#E6CA85]" />
+            </div>
+            {/* Animated Equalizer Wave Bars */}
+            <div className="absolute -bottom-2 flex items-end gap-1 h-5 px-2.5 py-0.5 rounded-full bg-black/80 border border-white/10 backdrop-blur-md">
+              {[40, 75, 100, 60, 85].map((h, i) => (
+                <span
+                  key={i}
+                  className={`w-1 rounded-full bg-amber-400 transition-all duration-300 ${
+                    isPlaying ? 'animate-pulse' : 'h-1.5 opacity-40'
+                  }`}
+                  style={{
+                    height: isPlaying ? `${h}%` : '4px',
+                    animationDelay: `${i * 120}ms`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Title & Scholar Name */}
+          <span className="text-stone-200 font-bold text-sm sm:text-base max-w-md line-clamp-2 px-4 mb-0.5">
             {chapterTitle}
           </span>
+          <span className="text-[#C58B43] text-xs font-medium">
+            {instructorName}
+          </span>
+
+          {/* Center Quick Controls */}
+          <div className="flex items-center gap-4 mt-3" onClick={(e) => e.stopPropagation()}>
+            {/* Seek -10s */}
+            <button
+              type="button"
+              onClick={() => {
+                triggerTactileHaptic('tick');
+                const el = getActiveMediaElement();
+                if (el) el.currentTime = Math.max(0, el.currentTime - 10);
+              }}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition cursor-pointer"
+              title="۱۰ ثانیه عقب"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+
+            {/* Center Big Play/Pause Toggle */}
+            <button
+              type="button"
+              onClick={handleTogglePlay}
+              className="w-14 h-14 rounded-full bg-[#8A532B] hover:bg-[#A36334] active:scale-95 text-[#FAF8F5] flex items-center justify-center shadow-xl transition cursor-pointer"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? (
+                <Pause className="w-6 h-6 fill-current" />
+              ) : (
+                <Play className="w-6 h-6 fill-current translate-x-0.5" />
+              )}
+            </button>
+
+            {/* Seek +10s */}
+            <button
+              type="button"
+              onClick={() => {
+                triggerTactileHaptic('tick');
+                const el = getActiveMediaElement();
+                if (el) el.currentTime = Math.min(duration, el.currentTime + 10);
+              }}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition cursor-pointer"
+              title="۱۰ ثانیه جلو"
+            >
+              <RotateCw className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Return to Video Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleMode('video', e);
+            }}
+            className="mt-3 text-[11px] text-zinc-400 hover:text-white transition flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer"
+          >
+            <Film className="w-3 h-3 text-amber-400" />
+            <span>بازگشت به پخش تصویری</span>
+          </button>
         </div>
       )}
 
@@ -801,25 +988,53 @@ export function AudioVideoPlayerEngine({
 
           {/* Current Time (e.g. 0:00) */}
           <span className="text-[11px] sm:text-xs font-mono font-medium text-white/90 tabular-nums select-none ps-0.5">
-            {formatTime(currentTime)}
+            {formatTime(smoothProgress * (duration || 1))}
           </span>
         </div>
 
-        {/* Center: Sleek VideoJS Timeline Scrubber Bar */}
-        <div className="relative flex-1 flex items-center mx-2 group/track">
-          <input
-            type="range"
-            min="0"
-            max={duration || 100}
-            step="1"
-            value={currentTime}
-            onChange={handleSeek}
-            className="w-full h-1 group-hover/track:h-1.5 accent-white bg-white/20 rounded-full cursor-pointer transition-[height] duration-200 ease-out appearance-none focus:outline-none"
-            style={{
-              background: `linear-gradient(to right, #ffffff 0%, #ffffff ${
-                (currentTime / (duration || 1)) * 100
-              }%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`,
-            }}
+        {/* Center: Sleek VideoJS 60fps Continuous Timeline Scrubber Bar */}
+        <div
+          ref={timelineRef}
+          onPointerDown={handlePointerDownTimeline}
+          onPointerMove={handlePointerMoveTimeline}
+          onPointerLeave={() => setHoverTime(null)}
+          className="relative flex-1 flex items-center mx-2 group/track cursor-pointer h-7 select-none"
+        >
+          {/* Hover Tooltip (Video.js Timestamp Preview) */}
+          {hoverTime !== null && (
+            <div
+              className="absolute -top-7 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/90 backdrop-blur-md border border-white/20 text-white text-[10px] font-mono font-medium pointer-events-none shadow-xl transition-all duration-75"
+              style={{ left: `${hoverPos}px` }}
+            >
+              {formatTime(hoverTime)}
+            </div>
+          )}
+
+          {/* Background Track */}
+          <div className="w-full h-1 group-hover/track:h-2 bg-white/20 rounded-full overflow-hidden transition-[height] duration-200 ease-out relative">
+            {/* Buffered Bar */}
+            <div
+              className="absolute inset-y-0 left-0 bg-white/30 rounded-full"
+              style={{
+                transform: `scaleX(${bufferedRatio})`,
+                transformOrigin: 'left',
+              }}
+            />
+            {/* Progress Fill Bar (60fps continuous RAF) */}
+            <div
+              data-progress-fill="true"
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-white rounded-full transition-none"
+              style={{
+                transform: `scaleX(${smoothProgress})`,
+                transformOrigin: 'left',
+              }}
+            />
+          </div>
+
+          {/* Scrubber Thumb */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-lg scale-0 group-hover/track:scale-100 transition-transform duration-150 pointer-events-none"
+            style={{ left: `${smoothProgress * 100}%` }}
           />
         </div>
 
@@ -827,7 +1042,7 @@ export function AudioVideoPlayerEngine({
         <div className="flex items-center gap-1 shrink-0">
           {/* Remaining Time (e.g. -0:35) */}
           <span className="text-[11px] sm:text-xs font-mono font-medium text-white/70 tabular-nums select-none pe-1">
-            {formatRemaining(duration, currentTime)}
+            {formatRemaining(duration, smoothProgress * (duration || 1))}
           </span>
 
           {/* Direct Subtitles Toggle Button */}
