@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import {
   VibeFarsiHero,
-  VibeFarsiBento,
   VibeFarsiMarquee,
   VibeFarsiFAQ,
   CourseCategoryCarousel,
@@ -53,40 +52,37 @@ export default function HomePage() {
         onOpenCart={openCart}
       />
 
-      {/* 2. Main Content Layout (VibeFarsi-Inspired Scholastic Editorial Architecture) */}
+      {/* 2. Main Content Layout (Clean Editorial Architecture) */}
       <main className="flex-1 space-y-10 sm:space-y-14 pb-16">
-        {/* SECTION 1: Interactive RTL Hero with Live Mini Player, AI Prompt Typewriter & Segmented Syllabus */}
+        {/* SECTION 1: Masterpiece Hero Banner with Instant Search & CTAs */}
         <VibeFarsiHero />
 
-        {/* SECTION 2: Dual-Row RTL Marquee & Persian Numeral Counter Stats */}
+        {/* SECTION 2: 4 Counter Stats Bar */}
         <VibeFarsiMarquee />
 
-        {/* SECTION 3: Live Platform Bento Grid Showcase (VibeFarsi Component Blocks) */}
-        <VibeFarsiBento />
-
-        {/* SECTION 4: 8 Academic Branches Category Carousel */}
+        {/* SECTION 3: 8 Academic Branches Category Carousel */}
         <CourseCategoryCarousel />
 
-        {/* SECTION 5: Featured & Masterpiece Courses Catalog */}
+        {/* SECTION 4: Featured & Masterpiece Courses Catalog */}
         <CourseCatalogBento
           courses={allCourses}
           categories={categories}
           onAddToCart={handleAddToBag}
         />
 
-        {/* SECTION 6: 6 Core Pillars of Instruction & Guarantees */}
+        {/* SECTION 5: 6 Core Pillars of Instruction & Guarantees */}
         <MethodologyGuarantees />
 
-        {/* SECTION 7: Comprehensive Learning Roadmap Banner */}
+        {/* SECTION 6: Comprehensive Learning Roadmap Banner */}
         <RoadmapBannerSection />
 
-        {/* SECTION 8: Scholar Latest Research Articles & Treatises */}
+        {/* SECTION 7: Scholar Latest Research Articles & Treatises */}
         <LatestArticlesHomeSection />
 
-        {/* SECTION 9: Clean RTL FAQ Accordion */}
+        {/* SECTION 8: Clean RTL FAQ Accordion */}
         <VibeFarsiFAQ />
 
-        {/* SECTION 10: Scholar Dispatch Newsletter Banner */}
+        {/* SECTION 9: Scholar Dispatch Newsletter Banner */}
         <ScholarDispatchBento />
       </main>
 

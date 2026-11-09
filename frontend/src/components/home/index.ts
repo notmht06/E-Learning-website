@@ -6,6 +6,5 @@ export * from './MethodologyGuarantees';
 export * from './RoadmapBannerSection';
 export * from './LatestArticlesHomeSection';
 export * from './VibeFarsiHero';
-export * from './VibeFarsiBento';
 export * from './VibeFarsiMarquee';
 export * from './VibeFarsiFAQ';
