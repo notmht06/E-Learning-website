@@ -111,7 +111,7 @@ class User(Base):
     full_name = Column(String(100), nullable=True)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(20), default="student", index=True)  # 'student' | 'admin'
-    wallet_balance = Column(String(50), default="0 Tomans")
+    wallet_balance = Column(String(50), default="0 تومان")
     avatar_url = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True)
     is_comment_banned = Column(Boolean, default=False)
@@ -167,7 +167,7 @@ class User(Base):
             "phone": self.mobile,
             "email": self.email or "",
             "role": self.role or "student",
-            "wallet_balance": self.wallet_balance or "0 Tomans",
+            "wallet_balance": self.wallet_balance or "0 تومان",
             "enrolled_courses_count": count,
             "enrolled_course_ids": course_ids,
             "avatar_url": self.avatar_url,
@@ -651,7 +651,7 @@ class CourseReview(Base):
     course = relationship("Course", back_populates="reviews")
 
     def to_dict(self) -> Dict[str, Any]:
-        user_name = "دانش‌پژوه حیات"
+        user_name = "دانشجوی حیات"
         user_phone = ""
         user_avatar = None
         is_user_banned = False

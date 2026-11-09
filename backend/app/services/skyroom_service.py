@@ -103,7 +103,7 @@ class SkyroomService:
         - ttl: lifetime in seconds (default 3600 = 1 hour)
         """
         clean_user_id = str(user_id).replace(" ", "_").replace("-", "")[:32]
-        clean_nickname = (nickname or "دانش‌پژوه حیات").strip()[:128]
+        clean_nickname = (nickname or "دانشجوی حیات").strip()[:128]
 
         # Convert room_id to integer if numeric
         parsed_room_id: Union[int, str] = int(room_id) if str(room_id).isdigit() else str(room_id)

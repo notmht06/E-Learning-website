@@ -40,9 +40,9 @@ export type DashboardTab =
 
 const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
-    overview: 'پیشخوان پژوهشی دانش‌پژوه',
+    overview: 'پیشخوان پژوهشی دانشجو',
     courses: 'درس‌گفتارهای ثبت‌نام‌شده من',
-    ai: 'حکمت‌یار دوره‌های دانش‌پژوه (AI)',
+    ai: 'حکمت‌یار دوره‌های دانشجو (AI)',
     notes: 'دفتر یادداشت و حاشیه‌نگاری دروس',
     orders: 'فاکتورها و سوابق ثبت‌نام دوره‌ها',
     certificates: 'گواهی‌نامه‌های رسمی پایان دوره',

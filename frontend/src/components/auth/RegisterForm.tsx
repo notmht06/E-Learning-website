@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { User, Smartphone, Lock, ShieldCheck, AlertCircle, Loader2, KeyRound } from 'lucide-react';
+import { User, Smartphone, AlertCircle, Loader2, KeyRound } from 'lucide-react';
 import { AuthFormField } from './AuthFormField';
 import { AuthFieldErrors } from '@/hooks/useAuthForm';
 import { useLanguage } from '@/context/LanguageContext';
@@ -9,28 +9,24 @@ import { useLanguage } from '@/context/LanguageContext';
 interface RegisterFormProps {
   fullName: string;
   phone: string;
-  password: string;
-  confirmPassword: string;
+  password?: string;
+  confirmPassword?: string;
   errors: AuthFieldErrors;
   isSubmitting: boolean;
   onFullNameChange: (val: string) => void;
   onPhoneChange: (val: string) => void;
-  onPasswordChange: (val: string) => void;
-  onConfirmPasswordChange: (val: string) => void;
+  onPasswordChange?: (val: string) => void;
+  onConfirmPasswordChange?: (val: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
 export function RegisterForm({
   fullName,
   phone,
-  password,
-  confirmPassword,
   errors,
   isSubmitting,
   onFullNameChange,
   onPhoneChange,
-  onPasswordChange,
-  onConfirmPasswordChange,
   onSubmit,
 }: RegisterFormProps) {
   const { dict } = useLanguage();
@@ -74,33 +70,9 @@ export function RegisterForm({
         icon={<Smartphone className="w-4 h-4" />}
       />
 
-      <AuthFormField
-        label={dict.auth_password_label}
-        name="register_password"
-        type="password"
-        placeholder={dict.auth_password_placeholder}
-        value={password}
-        onChange={onPasswordChange}
-        error={errors.password}
-        required
-        autoComplete="new-password"
-        dir="ltr"
-        icon={<Lock className="w-4 h-4" />}
-      />
-
-      <AuthFormField
-        label={dict.auth_confirm_password_label}
-        name="register_confirm_password"
-        type="password"
-        placeholder={dict.auth_confirm_password_placeholder}
-        value={confirmPassword}
-        onChange={onConfirmPasswordChange}
-        error={errors.confirmPassword}
-        required
-        autoComplete="new-password"
-        dir="ltr"
-        icon={<ShieldCheck className="w-4 h-4" />}
-      />
+      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 text-center leading-relaxed px-2">
+        کد تأیید یکبارمصرف به شماره همراه شما پیامک می‌شود تا صحت شماره احراز شود.
+      </p>
 
       <div className="pt-1 space-y-2">
         <button
@@ -120,8 +92,6 @@ export function RegisterForm({
             </>
           )}
         </button>
-
-
       </div>
     </form>
   );

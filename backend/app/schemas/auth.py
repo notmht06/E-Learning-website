@@ -87,7 +87,7 @@ class UserResponse(BaseModel):
     phone: str = Field(..., example="09123456789")
     email: Optional[str] = Field(None, example="ali@example.com")
     role: str = Field(..., example="student")
-    wallet_balance: str = Field(..., example="350,000 Tomans")
+    wallet_balance: str = Field(..., example="0 تومان")
     enrolled_courses_count: int = Field(0, example=2)
     enrolled_course_ids: List[str] = Field(default_factory=list, example=["course-mabadi-mantiq"])
     access_token: Optional[str] = None

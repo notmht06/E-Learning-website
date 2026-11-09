@@ -241,7 +241,7 @@ export function OtpVerificationForm({
               }}
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
+              pattern="[0-9۰-۹٠-٩]*"
               maxLength={1}
               value={digit ? toLocale(digit) : ''}
               onFocus={(e) => e.target.select()}

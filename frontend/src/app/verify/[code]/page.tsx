@@ -169,7 +169,7 @@ export default function CertificateVerifyPage({
               {/* Certificate Details */}
               <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-3.5 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">نام دانش‌پژوه:</span>
+                  <span className="text-zinc-500">نام دانشجو:</span>
                   <strong className="text-[#0C0D0E] dark:text-[#FAF8F5] font-bold text-sm">
                     {certData.student_name}
                   </strong>
@@ -250,7 +250,7 @@ export default function CertificateVerifyPage({
               {/* Certificate Provisional Details */}
               <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18191D] border border-[#E6E1D8] dark:border-[#22242A] space-y-3.5 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">نام دانش‌پژوه:</span>
+                  <span className="text-zinc-500">نام دانشجو:</span>
                   <strong className="text-[#0C0D0E] dark:text-[#FAF8F5] font-bold text-sm">
                     {certData.student_name}
                   </strong>

@@ -791,7 +791,7 @@ async def get_students_overview(
         total_spent = 0
         for o in (u.orders or []):
             o_dict = o.to_dict()
-            o_dict["customer_name"] = u.full_name or "دانش‌پژوه"
+            o_dict["customer_name"] = u.full_name or "دانشجو"
             o_dict["customer_phone"] = u.mobile
             user_orders.append(o_dict)
             all_orders_list.append(o_dict)
@@ -800,7 +800,7 @@ async def get_students_overview(
 
         students_list.append({
             "id": u.id,
-            "full_name": u.full_name or "دانش‌پژوه حیات",
+            "full_name": u.full_name or "دانشجوی حیات",
             "phone": u.mobile,
             "role": u.role,
             "created_at": u.created_at.isoformat() if u.created_at else None,

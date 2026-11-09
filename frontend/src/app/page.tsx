@@ -3,8 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
-import { BentoHero } from '@/components/BentoHero';
 import {
+  VibeFarsiHero,
+  VibeFarsiBento,
+  VibeFarsiMarquee,
+  VibeFarsiFAQ,
   CourseCategoryCarousel,
   MethodologyGuarantees,
   RoadmapBannerSection,
@@ -50,31 +53,40 @@ export default function HomePage() {
         onOpenCart={openCart}
       />
 
-      {/* 2. Main Content Layout (Sabzlearn-Inspired Scholastic Editorial Architecture) */}
-      <main className="flex-1 space-y-12 sm:space-y-16 pb-16">
-        {/* SECTION 1: Masterpiece Hero Banner & Instant Search */}
-        <BentoHero />
+      {/* 2. Main Content Layout (VibeFarsi-Inspired Scholastic Editorial Architecture) */}
+      <main className="flex-1 space-y-10 sm:space-y-14 pb-16">
+        {/* SECTION 1: Interactive RTL Hero with Live Mini Player, AI Prompt Typewriter & Segmented Syllabus */}
+        <VibeFarsiHero />
 
-        {/* SECTION 2: 8 Academic Branches Category Carousel (Sabzlearn-style) */}
+        {/* SECTION 2: Dual-Row RTL Marquee & Persian Numeral Counter Stats */}
+        <VibeFarsiMarquee />
+
+        {/* SECTION 3: Live Platform Bento Grid Showcase (VibeFarsi Component Blocks) */}
+        <VibeFarsiBento />
+
+        {/* SECTION 4: 8 Academic Branches Category Carousel */}
         <CourseCategoryCarousel />
 
-        {/* SECTION 3: Featured & Masterpiece Courses Catalog (Sabzlearn-style) */}
+        {/* SECTION 5: Featured & Masterpiece Courses Catalog */}
         <CourseCatalogBento
           courses={allCourses}
           categories={categories}
           onAddToCart={handleAddToBag}
         />
 
-        {/* SECTION 4: 6 Core Pillars of Instruction & Guarantees (Sabzlearn-style) */}
+        {/* SECTION 6: 6 Core Pillars of Instruction & Guarantees */}
         <MethodologyGuarantees />
 
-        {/* SECTION 5: Comprehensive Learning Roadmap Banner */}
+        {/* SECTION 7: Comprehensive Learning Roadmap Banner */}
         <RoadmapBannerSection />
 
-        {/* SECTION 6: Scholar Latest Research Articles & Treatises */}
+        {/* SECTION 8: Scholar Latest Research Articles & Treatises */}
         <LatestArticlesHomeSection />
 
-        {/* SECTION 7: Scholar Dispatch Newsletter Banner */}
+        {/* SECTION 9: Clean RTL FAQ Accordion */}
+        <VibeFarsiFAQ />
+
+        {/* SECTION 10: Scholar Dispatch Newsletter Banner */}
         <ScholarDispatchBento />
       </main>
 

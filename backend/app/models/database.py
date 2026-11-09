@@ -89,7 +89,7 @@ async def _seed_users_tx(session: AsyncSession):
                 full_name="Ali Mousavi",
                 hashed_password=hash_password(student_initial_password),
                 role="student",
-                wallet_balance="350,000 Tomans",
+                wallet_balance="0 تومان",
                 is_active=True,
             )
             session.add(student)
@@ -109,7 +109,7 @@ async def _seed_users_tx(session: AsyncSession):
             full_name="حجت الاسلام دکتر زنجیرزن حسینی",
             hashed_password=hash_password(admin_initial_password),
             role="admin",
-            wallet_balance="0 Tomans",
+            wallet_balance="0 تومان",
             is_active=True,
         )
         session.add(admin)

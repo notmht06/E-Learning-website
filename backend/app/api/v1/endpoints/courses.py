@@ -184,7 +184,7 @@ async def get_live_course_access(
                 detail="برای ورود به کلاس آنلاین ابتدا باید در این دوره ثبت‌نام فرمایید."
             )
 
-    user_display = user.get("full_name") or f"دانش‌پژوه {user.get('phone', '')[-4:]}"
+    user_display = user.get("full_name") or f"دانشجو {user.get('phone', '')[-4:]}"
     access_role_val = "admin" if user.get("role") == "admin" else "student"
 
     # Direct Skyroom One-Click Ticket Integration (per official Skyroom Webservice specifications)

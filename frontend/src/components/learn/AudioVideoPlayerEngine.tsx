@@ -1087,11 +1087,11 @@ export function AudioVideoPlayerEngine({
               <Settings className={`w-4 h-4 transition-transform duration-300 ease-out ${isSettingsOpen ? 'rotate-90 text-white' : 'rotate-0'}`} />
             </button>
 
-            {/* VideoJS-Style Frosted Glass Popover (Matching media_1793806628823_b788a0dc.png) */}
+            {/* VideoJS-Style Frosted Glass Popover */}
             {isSettingsOpen && (
               <div
-                dir="ltr"
-                className="absolute bottom-full mb-3 right-0 z-50 w-44 sm:w-48 bg-[#18181b]/90 backdrop-blur-2xl border border-white/15 rounded-2xl p-1.5 shadow-2xl text-white select-none origin-bottom-right transition-all duration-200 ease-out animate-in fade-in zoom-in-95 slide-in-from-bottom-2"
+                dir="rtl"
+                className="absolute bottom-full mb-3 left-0 sm:left-auto sm:right-0 z-50 w-48 sm:w-52 bg-[#18181b]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-1.5 shadow-2xl text-white select-none origin-bottom-right transition-all duration-200 ease-out animate-in fade-in zoom-in-95 slide-in-from-bottom-2 text-right"
               >
                 {/* Main Settings Menu */}
                 {settingsSubmenu === 'main' && (
@@ -1103,15 +1103,15 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('mode');
                       }}
-                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-left"
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-right"
                     >
                       <div className="flex items-center gap-2">
-                        {mediaMode === 'video' ? <Film className="w-3.5 h-3.5" /> : <Headphones className="w-3.5 h-3.5" />}
-                        <span>Mode</span>
+                        {mediaMode === 'video' ? <Film className="w-3.5 h-3.5 text-amber-400" /> : <Headphones className="w-3.5 h-3.5 text-amber-400" />}
+                        <span>حالت پخش</span>
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-white/60">
-                        <span>{mediaMode === 'video' ? 'Video' : 'Audio'}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        <span>{mediaMode === 'video' ? 'تصویر و صوت' : 'فقط صوت'}</span>
+                        <ChevronLeft className="w-3.5 h-3.5 text-white/40" />
                       </div>
                     </button>
 
@@ -1123,15 +1123,15 @@ export function AudioVideoPlayerEngine({
                           e.stopPropagation();
                           setSettingsSubmenu('quality');
                         }}
-                        className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-left"
+                        className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-right"
                       >
                         <div className="flex items-center gap-2">
-                          <Sliders className="w-3.5 h-3.5" />
-                          <span>Quality</span>
+                          <Sliders className="w-3.5 h-3.5 text-amber-400" />
+                          <span>کیفیت تصویر</span>
                         </div>
                         <div className="flex items-center gap-1 text-[11px] text-white/60">
-                          <span>{quality === 'auto' ? 'Auto' : quality}</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                          <span>{quality === 'auto' ? 'خودکار' : quality}</span>
+                          <ChevronLeft className="w-3.5 h-3.5 text-white/40" />
                         </div>
                       </button>
                     )}
@@ -1143,15 +1143,15 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('speed');
                       }}
-                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-left"
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-right"
                     >
                       <div className="flex items-center gap-2">
-                        <Gauge className="w-3.5 h-3.5" />
-                        <span>Speed</span>
+                        <Gauge className="w-3.5 h-3.5 text-amber-400" />
+                        <span>سرعت پخش</span>
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-white/60">
-                        <span>{speed === 1 ? 'Normal' : `${speed}x`}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        <span>{speed === 1 ? 'عادی (۱x)' : `${speed}x`}</span>
+                        <ChevronLeft className="w-3.5 h-3.5 text-white/40" />
                       </div>
                     </button>
 
@@ -1162,21 +1162,21 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('subtitles');
                       }}
-                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-left"
+                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-white/90 hover:text-white hover:bg-white/10 active:scale-98 rounded-xl transition-all duration-150 ease-out cursor-pointer text-right"
                     >
                       <div className="flex items-center gap-2">
-                        <Subtitles className="w-3.5 h-3.5" />
+                        <Subtitles className="w-3.5 h-3.5 text-amber-400" />
                         <span>زیرنویس</span>
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-white/60">
                         <span>{isSubtitleOn ? 'فارسی' : 'خاموش'}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        <ChevronLeft className="w-3.5 h-3.5 text-white/40" />
                       </div>
                     </button>
                   </div>
                 )}
 
-                {/* Submenu: Speed Selection (Exact match to screenshot) */}
+                {/* Submenu: Speed Selection */}
                 {settingsSubmenu === 'speed' && (
                   <div className="space-y-0.5 animate-in fade-in slide-in-from-right-2 duration-150 ease-out">
                     <button
@@ -1185,26 +1185,29 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('main');
                       }}
-                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-left border-b border-white/10 mb-1"
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-right border-b border-white/10 mb-1"
                     >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>Speed</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span>سرعت پخش</span>
                     </button>
-                    {SPEED_OPTIONS.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={(e) => handleSelectSpeed(s, e)}
-                        className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
-                          speed === s
-                            ? 'bg-white/15 text-white font-medium'
-                            : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
-                        }`}
-                      >
-                        <span>{s === 1 ? '1x' : `${s}x`}</span>
-                        {speed === s && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
-                      </button>
-                    ))}
+                    {SPEED_OPTIONS.map((s) => {
+                      const speedLabel = s === 1 ? 'عادی (۱x)' : s === 0.5 ? '۰.۵x (آهسته)' : s === 2 ? '۲x (سریع)' : `${s}x`;
+                      return (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={(e) => handleSelectSpeed(s, e)}
+                          className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
+                            speed === s
+                              ? 'bg-white/15 text-white font-medium'
+                              : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
+                          }`}
+                        >
+                          <span>{speedLabel}</span>
+                          {speed === s && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -1217,14 +1220,14 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('main');
                       }}
-                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-left border-b border-white/10 mb-1"
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-right border-b border-white/10 mb-1"
                     >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>Quality</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span>کیفیت تصویر</span>
                     </button>
                     {QUALITY_OPTIONS.map((q) => {
                       const qualityDetails: Record<VideoQuality, { label: string; sub: string }> = {
-                        auto: { label: 'Auto', sub: 'تطبیقی خودکار' },
+                        auto: { label: 'خودکار (Auto)', sub: 'تطبیقی' },
                         '1080p': { label: '1080p', sub: 'Full HD' },
                         '720p': { label: '720p', sub: 'HD' },
                         '480p': { label: '480p', sub: 'SD' },
@@ -1236,7 +1239,7 @@ export function AudioVideoPlayerEngine({
                           key={q}
                           type="button"
                           onClick={(e) => handleSelectQuality(q, e)}
-                          className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                          className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
                             isSelected
                               ? 'bg-white/15 text-white font-medium'
                               : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
@@ -1262,34 +1265,40 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('main');
                       }}
-                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-left border-b border-white/10 mb-1"
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-right border-b border-white/10 mb-1"
                     >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>Mode</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span>حالت پخش</span>
                     </button>
                     <button
                       type="button"
                       onClick={(e) => handleToggleMode('video', e)}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
                         mediaMode === 'video'
                           ? 'bg-white/15 text-white font-medium'
                           : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
                       }`}
                     >
-                      <span>Video</span>
-                      {mediaMode === 'video' && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                      <div className="flex items-center gap-2">
+                        <Film className="w-3.5 h-3.5 text-amber-400" />
+                        <span>تصویر و صوت</span>
+                      </div>
+                      {mediaMode === 'video' && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
                     </button>
                     <button
                       type="button"
                       onClick={(e) => handleToggleMode('audio', e)}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
                         mediaMode === 'audio'
                           ? 'bg-white/15 text-white font-medium'
                           : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
                       }`}
                     >
-                      <span>Audio only</span>
-                      {mediaMode === 'audio' && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                      <div className="flex items-center gap-2">
+                        <Headphones className="w-3.5 h-3.5 text-amber-400" />
+                        <span>فقط صوت</span>
+                      </div>
+                      {mediaMode === 'audio' && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
                     </button>
                   </div>
                 )}
@@ -1303,10 +1312,10 @@ export function AudioVideoPlayerEngine({
                         e.stopPropagation();
                         setSettingsSubmenu('main');
                       }}
-                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-left border-b border-white/10 mb-1"
+                      className="w-full px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 active:scale-98 rounded-lg transition-all duration-150 ease-out cursor-pointer text-right border-b border-white/10 mb-1"
                     >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>زیرنویس (Subtitles)</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span>زیرنویس فارسی</span>
                     </button>
                     <button
                       type="button"
@@ -1317,14 +1326,14 @@ export function AudioVideoPlayerEngine({
                         setSettingsSubmenu('main');
                         toast.info('زیرنویس غیرفعال شد');
                       }}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
                         !isSubtitleOn
                           ? 'bg-white/15 text-white font-medium'
                           : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
                       }`}
                     >
-                      <span>خاموش (Off)</span>
-                      {!isSubtitleOn && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                      <span>خاموش</span>
+                      {!isSubtitleOn && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
                     </button>
                     <button
                       type="button"
@@ -1335,14 +1344,14 @@ export function AudioVideoPlayerEngine({
                         setSettingsSubmenu('main');
                         toast.success('زیرنویس فارسی فعال شد');
                       }}
-                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-left ${
+                      className={`w-full px-3 py-1.5 flex items-center justify-between text-xs rounded-xl transition-all duration-150 ease-out cursor-pointer text-right ${
                         isSubtitleOn
                           ? 'bg-white/15 text-white font-medium'
                           : 'text-white/80 hover:text-white hover:bg-white/10 active:scale-98'
                       }`}
                     >
-                      <span>فارسی (Persian)</span>
-                      {isSubtitleOn && <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                      <span>فارسی</span>
+                      {isSubtitleOn && <Check className="w-3.5 h-3.5 text-amber-400 stroke-[2.5]" />}
                     </button>
                   </div>
                 )}
@@ -1356,8 +1365,8 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleTogglePiP}
               className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer"
-              title="Picture in Picture"
-              aria-label="Picture in Picture"
+              title="تصویر در تصویر"
+              aria-label="تصویر در تصویر"
             >
               <PictureInPicture className="w-4 h-4" />
             </button>
@@ -1368,8 +1377,8 @@ export function AudioVideoPlayerEngine({
             type="button"
             onClick={handleToggleFullscreen}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer"
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            title={isFullscreen ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
+            aria-label={isFullscreen ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
           >
             {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
           </button>

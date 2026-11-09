@@ -127,7 +127,7 @@ class AuthService:
             full_name=full_name or "دانشجوی حکمت",
             hashed_password=hashed_pwd,
             role=role or "student",
-            wallet_balance="50,000 Tomans",
+            wallet_balance="0 تومان",
             is_active=True,
         )
         db.add(new_user)
@@ -385,7 +385,7 @@ class AuthService:
                 full_name=full_name or "دانشجوی حکمت",
                 hashed_password=hashed_pwd,
                 role="student",
-                wallet_balance="50,000 Tomans",
+                wallet_balance="0 تومان",
                 is_active=True,
             )
             db.add(user)

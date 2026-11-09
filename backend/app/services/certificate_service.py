@@ -84,20 +84,20 @@ class CertificateService:
                 "valid": False,
                 "status": "in_progress",
                 "certificate_code": cert.certificate_code,
-                "student_name": user.full_name if (user and user.full_name) else "دانش‌پژوه حیات",
+                "student_name": user.full_name if (user and user.full_name) else "دانشجوی حیات",
                 "course_title": course_title,
                 "course_id": cert.course_id,
                 "score": cert.score,
                 "issued_at": cert.issued_at.isoformat() if cert.issued_at else "",
                 "institute": "مؤسسه علمی و پژوهشی حیات (حجت الاسلام دکتر زنجیرزن حسینی)",
-                "message": "این گواهی موقت است؛ دانش‌پژوه هنوز سرفصل‌های دوره را به پایان نرسانده است."
+                "message": "این گواهی موقت است؛ دانشجو هنوز سرفصل‌های دوره را به پایان نرسانده است."
             }
 
         return {
             "valid": True,
             "status": "verified",
             "certificate_code": cert.certificate_code,
-            "student_name": user.full_name if (user and user.full_name) else "دانش‌پژوه حیات",
+            "student_name": user.full_name if (user and user.full_name) else "دانشجوی حیات",
             "course_title": course_title,
             "course_id": cert.course_id,
             "score": cert.score,

@@ -138,7 +138,7 @@ export function AdminReviewsTab() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="جستجو در نام دانش‌پژوه، شماره تماس، عنوان دوره یا متن دیدگاه..."
+          placeholder="جستجو در نام دانشجو، شماره تماس، عنوان دوره یا متن دیدگاه..."
           className="flex-1 bg-transparent text-xs sm:text-sm outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-400"
         />
         {searchQuery && (
@@ -167,7 +167,7 @@ export function AdminReviewsTab() {
               <thead className="bg-zinc-50 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold">
                 <tr>
                   <th className="px-4 py-3 text-start">دوره</th>
-                  <th className="px-4 py-3 text-start">دانش‌پژوه</th>
+                  <th className="px-4 py-3 text-start">دانشجو</th>
                   <th className="px-4 py-3 text-center">امتیاز</th>
                   <th className="px-4 py-3 text-start">دیدگاه</th>
                   <th className="px-4 py-3 text-center">وضعیت کاربر</th>

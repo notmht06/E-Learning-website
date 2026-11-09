@@ -33,7 +33,7 @@ export function DashboardHeader({ activeTabTitle, userName }: DashboardHeaderPro
             <User className="w-4 h-4" />
           </div>
           <span className="text-zinc-700 dark:text-zinc-300 font-medium">
-            {userName || 'دانش‌پژوه حکمت'}
+            {userName || 'دانشجوی حکمت'}
           </span>
         </div>
       </div>

@@ -67,7 +67,7 @@ class LiveAccessResponse(BaseModel):
     schedule: str = Field(..., example="دوشنبه‌ها ساعت ۱۸:۰۰ الی ۱۹:۳۰")
     is_live_now: bool = Field(True, example=True)
     skyroom_url: str = Field(..., example="https://www.skyroom.online/ch/zanjirzan/sadra-ishraq-live")
-    student_display_name: str = Field(..., example="دانش‌پژوه ۴۵۶۷")
+    student_display_name: str = Field(..., example="دانشجو ۴۵۶۷")
     student_phone: Optional[str] = Field(None, example="09123456789")
     ticket_ttl_seconds: int = Field(300, example=300)
     access_role: str = Field("student", example="student")

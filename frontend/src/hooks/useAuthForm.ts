@@ -80,11 +80,6 @@ export function useAuthForm() {
     }
     const phoneErr = validatePhone(phone);
     if (phoneErr) newErrors.phone = phoneErr;
-    const pwdErr = validatePassword(password);
-    if (pwdErr) newErrors.password = pwdErr;
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'تکرار کلمه عبور با رمز عبور اصلی همخوانی ندارد.';
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

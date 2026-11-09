@@ -546,7 +546,7 @@ export function AdminRoadmapTab() {
                   <div className="space-y-1.5 bg-zinc-50 dark:bg-zinc-900/60 p-3 rounded-xl border border-zinc-200/60 dark:border-zinc-800">
                     <span className="text-[11px] font-bold text-zinc-500 flex items-center gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                      <span>دستاوردهای علمی دانش‌پژوه:</span>
+                      <span>دستاوردهای علمی دانشجو:</span>
                     </span>
                     <ul className="space-y-1 text-[11px] text-zinc-600 dark:text-zinc-300">
                       {stage.outcomes_fa?.map((outc, oIdx) => (
@@ -830,7 +830,7 @@ export function AdminRoadmapTab() {
               <div className="space-y-2 border-t border-zinc-200 dark:border-zinc-800 pt-3">
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>دستاوردهای علمی دانش‌پژوه</span>
+                  <span>دستاوردهای علمی دانشجو</span>
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -992,7 +992,7 @@ export function AdminRoadmapTab() {
                   value={faqA}
                   onChange={(e) => setFaqA(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 leading-relaxed"
-                  placeholder="پاسخ کامل و برهانی به پرسش دانش‌پژوهان..."
+                  placeholder="پاسخ کامل و برهانی به پرسش دانشجویان..."
                   required
                 />
               </div>

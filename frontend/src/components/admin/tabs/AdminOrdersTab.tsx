@@ -57,7 +57,7 @@ export function AdminOrdersTab() {
     if (serverOrders.length > 0) {
       return serverOrders.map((o: any) => ({
         id: o.order_id || o.id,
-        customer: o.customer_name || o.recipient_name || 'دانش‌پژوه حیات',
+        customer: o.customer_name || o.recipient_name || 'دانشجوی حیات',
         phone: o.customer_phone || o.recipient_phone || '—',
         item:
           Array.isArray(o.items) && o.items.length > 0
@@ -109,10 +109,10 @@ export function AdminOrdersTab() {
         <div>
           <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
             <Users className="w-5 h-5 text-[#8A532B] dark:text-[#C58B43]" />
-            <span>بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها</span>
+            <span>بانک اطلاعاتی دانشجویان و سوابق ثبت‌نام دوره‌ها</span>
           </h2>
           <p className="text-xs text-zinc-500 mt-1">
-            مشاهده پرونده هر دانش‌پژوه، تعداد دوره‌های ثبت‌نام‌شده، درصد پیشرفت جلسات و فاکتورها
+            مشاهده پرونده هر دانشجو، تعداد دوره‌های ثبت‌نام‌شده، درصد پیشرفت جلسات و فاکتورها
           </p>
         </div>
 
@@ -126,7 +126,7 @@ export function AdminOrdersTab() {
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
             }`}
           >
-            پروفایل دانش‌پژوهان ({toLocale(serverStudents.length)})
+            پروفایل دانشجویان ({toLocale(serverStudents.length)})
           </button>
           <button
             type="button"
@@ -149,7 +149,7 @@ export function AdminOrdersTab() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="جستجو بر اساس نام دانش‌پژوه، شماره موبایل، عنوان دوره یا شماره فاکتور..."
+          placeholder="جستجو بر اساس نام دانشجو، شماره موبایل، عنوان دوره یا شماره فاکتور..."
           className="w-full ps-11 pe-4 py-3 rounded-xl bg-white dark:bg-[#141518] border border-zinc-200 dark:border-zinc-800 text-xs outline-none focus:border-[#8A532B] transition-colors"
         />
       </div>
@@ -161,7 +161,7 @@ export function AdminOrdersTab() {
             <table className="w-full text-start text-xs">
               <thead className="bg-zinc-50/80 dark:bg-zinc-900/50 text-zinc-500 font-mono border-b border-zinc-200 dark:border-zinc-800">
                 <tr>
-                  <th className="py-3.5 px-4 font-normal text-start">نام دانش‌پژوه</th>
+                  <th className="py-3.5 px-4 font-normal text-start">نام دانشجو</th>
                   <th className="py-3.5 px-4 font-normal text-start">شماره تماس</th>
                   <th className="py-3.5 px-4 font-normal text-start">تعداد دوره‌های ثبت‌نامی</th>
                   <th className="py-3.5 px-4 font-normal text-start">آخرین دوره‌های فعال</th>
@@ -173,7 +173,7 @@ export function AdminOrdersTab() {
                 {filteredStudents.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-10 text-center text-zinc-400 text-xs">
-                      {isLoading ? 'در حال بارگذاری اطلاعات دانش‌پژوهان...' : 'هیچ دانش‌پژوهی با این مشخصات یافت نشد.'}
+                      {isLoading ? 'در حال بارگذاری اطلاعات دانشجویان...' : 'هیچ دانشجویی با این مشخصات یافت نشد.'}
                     </td>
                   </tr>
                 ) : (
@@ -236,7 +236,7 @@ export function AdminOrdersTab() {
               <thead className="bg-zinc-50/80 dark:bg-zinc-900/50 text-zinc-500 font-mono border-b border-zinc-200 dark:border-zinc-800">
                 <tr>
                   <th className="py-3.5 px-4 font-normal text-start">شماره فاکتور</th>
-                  <th className="py-3.5 px-4 font-normal text-start">نام دانش‌پژوه</th>
+                  <th className="py-3.5 px-4 font-normal text-start">نام دانشجو</th>
                   <th className="py-3.5 px-4 font-normal text-start">شماره موبایل</th>
                   <th className="py-3.5 px-4 font-normal text-start">دوره ثبت‌نام‌شده</th>
                   <th className="py-3.5 px-4 font-normal text-start">مبلغ</th>
@@ -296,7 +296,7 @@ export function AdminOrdersTab() {
             <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
               <div>
                 <span className="text-xs font-bold text-[#8A532B] dark:text-[#C58B43]">
-                  پرونده آموزشی و آمار دانش‌پژوه
+                  پرونده آموزشی و آمار دانشجو
                 </span>
                 <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mt-1">
                   {selectedStudent.full_name}
@@ -355,7 +355,7 @@ export function AdminOrdersTab() {
               </h4>
               {(selectedStudent.enrolled_courses || []).length === 0 ? (
                 <p className="text-xs text-zinc-400 py-6 text-center bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                  این دانش‌پژوه هنوز در هیچ دوره‌ای ثبت‌نام نکرده است.
+                  این دانشجو هنوز در هیچ دوره‌ای ثبت‌نام نکرده است.
                 </p>
               ) : (
                 <div className="space-y-2.5">

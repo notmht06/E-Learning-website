@@ -31,7 +31,7 @@ async def ask_question(
         course_id=req.course_id,
         chapter_id=req.chapter_id,
         user_id=user.get("id"),
-        user_name=user.get("full_name", "دانش‌پژوه حکمت"),
+        user_name=user.get("full_name", "دانشجوی حکمت"),
         title=req.title,
         question_text=req.question_text,
     )

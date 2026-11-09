@@ -314,12 +314,12 @@ export function DashboardSettingsTab() {
                   اعطاشده به پژوهشگر ارجمند:
                 </p>
                 <p className="text-base font-extrabold text-[#0C0D0E] dark:text-[#FAF8F5]">
-                  {fullName.trim() || 'دانش‌پژوه گرامی'}
+                  {fullName.trim() || 'دانشجوی گرامی'}
                 </p>
               </div>
 
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify px-1">
-                بدین‌وسیله گواهی می‌شود که نامبرده با موفقیت مباحث و سرفصل‌های تخصصی دوره را سپری کرده و حائز رتبه علمی شایسته گردیده است.
+                بدین‌وسیله گواهی می‌شود که نامبرده با موفقیت مباحث و سرفصل‌های تخصصی دوره را سپری کرده و حائز رتبه علمی شایسته شده است.
               </p>
 
               <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] text-zinc-500 font-mono">

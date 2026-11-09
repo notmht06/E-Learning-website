@@ -316,7 +316,7 @@ export function AdminSettingsTab() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">دانش‌پژوهان فعال</label>
+                  <label className="text-[11px] text-zinc-500 block mb-1">دانشجویان فعال</label>
                   <input
                     type="text"
                     value={formData.stat_students || ''}

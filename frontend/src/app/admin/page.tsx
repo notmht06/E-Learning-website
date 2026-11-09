@@ -51,10 +51,10 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     roadmap: 'استودیو مدیریت سیر مطالعاتی و مراحل علمی',
     categories: 'مدیریت موضوعات و شاخه‌های علمی',
     articles: 'مدیریت مقالات علمی و جستارها',
-    orders: 'بانک اطلاعاتی دانش‌پژوهان و سوابق ثبت‌نام دوره‌ها',
+    orders: 'بانک اطلاعاتی دانشجویان و سوابق ثبت‌نام دوره‌ها',
     drm: 'مرکز نظارت بر استریم و امنیت DRM',
     coupons: 'کدهای تخفیف و جوایز دوره‌ها',
-    reviews: 'مدیریت نظرات و امتیازهای دانش‌پژوهان',
+    reviews: 'مدیریت نظرات و امتیازهای دانشجویان',
     settings: 'تنظیمات سراسری سامانه',
   },
   ar: {
@@ -90,7 +90,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<AdminTab, string>> = {
     roadmap: 'سیر مطالعاتی و مراحل',
     categories: 'دسته‌بندی‌های علمی',
     articles: 'مقالات و رساله‌ها',
-    orders: 'دانش‌پژوهان و ثبت‌نام‌ها',
+    orders: 'دانشجویان و ثبت‌نام‌ها',
     drm: 'نشست‌ها و امنیت DRM',
     coupons: 'کدهای تخفیف و کوپن',
     reviews: 'نظرات و امتیازها',
@@ -155,7 +155,7 @@ export default function AdminPage() {
     return (
       <ShellAuthGate
         portalType="admin"
-        demoActionLabel={!user ? dict.ui_go_to_login : 'ورود به داشبورد دانش‌پژوه'}
+        demoActionLabel={!user ? dict.ui_go_to_login : 'ورود به داشبورد دانشجو'}
         onLogin={() => router.push(localizeHref(!user ? '/login?redirect=/admin' : '/dashboard'))}
       />
     );

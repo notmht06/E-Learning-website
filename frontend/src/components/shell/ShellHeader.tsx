@@ -37,7 +37,7 @@ export function ShellHeader({
   const defaultUserName = userName || (
     portalType === 'admin'
       ? (currentLang === 'en' ? 'Academic Council' : 'هیئت علمی حیات')
-      : (currentLang === 'en' ? 'Philosophy Student' : 'دانش‌پژوه حکمت')
+      : (currentLang === 'en' ? 'Philosophy Student' : 'دانشجوی حکمت')
   );
 
   return (

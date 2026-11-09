@@ -125,7 +125,7 @@ export function DashboardOverviewTab() {
     };
   });
 
-  const studentName = user?.name || user?.full_name || 'دانش‌پژوه گرامی';
+  const studentName = user?.name || user?.full_name || 'دانشجوی گرامی';
 
   return (
     <div className="space-y-6 text-start">
@@ -135,7 +135,7 @@ export function DashboardOverviewTab() {
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#8A532B]/10 text-[#8A532B] dark:bg-[#C58B43]/20 dark:text-[#C58B43]">
-                میز کار پژوهشی دانش‌پژوه
+                میز کار پژوهشی دانشجو
               </span>
               <span className="text-xs text-zinc-400">•</span>
               <span className="text-xs text-zinc-500 font-num">

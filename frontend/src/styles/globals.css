@@ -802,3 +802,30 @@ body {
 .animate-shine-rtl {
   animation: shine-rtl 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
+/* VibeFarsi Smooth RTL Marquee Animations */
+@keyframes marquee-rtl {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+@keyframes marquee-rtl-reverse {
+  0% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-rtl {
+  animation: marquee-rtl 38s linear infinite;
+}
+
+.animate-marquee-rtl-reverse {
+  animation: marquee-rtl-reverse 45s linear infinite;
+}
