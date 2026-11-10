@@ -72,6 +72,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   FORCE 100% LTR FOR VIDEOJS PLAYER & FULLSCREEN
+   ========================================================================== */
+.vjs-ltr-wrapper,
+.vjs-ltr-wrapper *,
+.vjs-ltr-wrapper:fullscreen,
+.vjs-ltr-wrapper *:fullscreen,
+:fullscreen .vjs-ltr-wrapper,
+:fullscreen .vjs-ltr-wrapper *,
+:fullscreen [class*="video-skin"],
+:fullscreen media-player,
+:fullscreen [data-theme] {
+  direction: ltr !important;
+}
+
 :root {
   --font-dana: 'Dana', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-vazirmatn: 'Dana', -apple-system, sans-serif;

@@ -155,7 +155,7 @@ export function OnlineClassesCalendarCard({ enrolledCourses }: OnlineClassesCale
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#8A532B] dark:bg-[#C58B43]" />
             <span className="text-[11px] font-mono font-bold text-[#8A532B] dark:text-[#C58B43]">
               کلاس‌های برخط اسکای‌روم و تقویم آموزشی
             </span>
