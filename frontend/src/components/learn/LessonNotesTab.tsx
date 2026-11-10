@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Copy, Check, BookOpen, Edit3, Save, Printer, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Copy, Check, BookOpen, Edit3, Save, Printer, Sparkles, Bold, Italic, Heading, List, Quote } from 'lucide-react';
 import { apiClient } from '@/services/apiClient';
 import { useLanguage } from '@/context/LanguageContext';
 import { triggerTactileHaptic } from '@/lib/haptics';
@@ -26,6 +26,38 @@ export function LessonNotesTab({
   const [isSaved, setIsSaved] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [copiedSummary, setCopiedSummary] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const applyMarkdownFormat = (prefix: string, suffix: string = '') => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = personalNotes.substring(start, end);
+    const before = personalNotes.substring(0, start);
+    const after = personalNotes.substring(end);
+    const placeholder = selected || 'متن نمونه';
+    const replacement = `${prefix}${placeholder}${suffix}`;
+    const nextVal = `${before}${replacement}${after}`;
+    setPersonalNotes(nextVal);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(storageKey, nextVal);
+        setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 2000);
+      } catch (err) {
+        console.debug('Failed to write notes:', err);
+      }
+    }
+    requestAnimationFrame(() => {
+      el.focus();
+      if (selected) {
+        el.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+      } else {
+        el.setSelectionRange(start + prefix.length, start + prefix.length + placeholder.length);
+      }
+    });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -213,14 +245,75 @@ export function LessonNotesTab({
           )}
         </div>
 
+        <div className="flex items-center gap-1 p-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] select-none">
+          <button
+            type="button"
+            title="ضخیم (**متن**)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              applyMarkdownFormat('**', '**');
+            }}
+            className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+          >
+            <Bold className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            title="مورب (*متن*)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              applyMarkdownFormat('*', '*');
+            }}
+            className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+          >
+            <Italic className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            title="تیتر (### تیتر)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              applyMarkdownFormat('### ', '');
+            }}
+            className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+          >
+            <Heading className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            title="فهرست (- مورد)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              applyMarkdownFormat('- ', '');
+            }}
+            className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+          >
+            <List className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            title="نقل‌قول (> متن)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              applyMarkdownFormat('> ', '');
+            }}
+            className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+          >
+            <Quote className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         <textarea
+          ref={textareaRef}
+          dir="rtl"
+          style={{ unicodeBidi: 'plaintext' }}
           value={personalNotes}
           onChange={handleNotesChange}
           placeholder={
             dict.learn_personal_notes_placeholder
           }
           rows={5}
-          className="w-full p-3.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-[#8A532B] transition placeholder:text-zinc-400 resize-y leading-relaxed"
+          className="w-full p-3.5 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-[#8A532B] transition placeholder:text-zinc-400 resize-y leading-relaxed font-dana"
         />
       </section>
     </div>

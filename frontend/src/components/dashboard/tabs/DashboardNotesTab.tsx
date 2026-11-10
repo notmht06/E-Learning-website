@@ -285,7 +285,7 @@ function parseSolarDate(str: string): Date | null {
                   type="text"
                   value={newCourse}
                   onChange={(e) => setNewCourse(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B]"
+                  dir="rtl" style={{ unicodeBidi: "plaintext" }} className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B] font-dana"
                 />
               </div>
 
@@ -300,7 +300,7 @@ function parseSolarDate(str: string): Date | null {
                   }
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B]"
+                  dir="rtl" style={{ unicodeBidi: "plaintext" }} className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B] font-dana"
                   required
                 />
               </div>
@@ -316,7 +316,7 @@ function parseSolarDate(str: string): Date | null {
                   }
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B]"
+                  dir="rtl" style={{ unicodeBidi: "plaintext" }} className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] text-xs outline-none focus:border-[#8A532B] font-dana"
                   required
                 />
               </div>

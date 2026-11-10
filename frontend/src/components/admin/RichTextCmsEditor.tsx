@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   Bold,
   Italic,
@@ -16,7 +16,6 @@ import {
   Image as ImageIcon,
   FileUp,
   Music,
-  Video,
   Table,
   Minus,
   Highlighter,
@@ -29,6 +28,7 @@ import {
   Undo2,
   Redo2,
   X,
+  RemoveFormatting,
 } from 'lucide-react';
 import { apiClient } from '@/services/apiClient';
 import { toast } from 'sonner';
@@ -51,30 +51,45 @@ export default function RichTextCmsEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
 
+  // Caret & Focus Management (Bug 1 & 2 Fixes)
+  const isFocusedRef = useRef(false);
+  const lastHtmlRef = useRef(value || '');
+  const savedRangeRef = useRef<Range | null>(null);
+
   const [isPreview, setIsPreview] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadLabel, setUploadLabel] = useState('');
   const [wordCount, setWordCount] = useState(0);
 
+  // Active Formatting State (Bug 4 Fix)
+  const [activeFormats, setActiveFormats] = useState<{
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    ul: boolean;
+    ol: boolean;
+    block: string;
+    alignRight: boolean;
+    alignCenter: boolean;
+    alignJustify: boolean;
+  }>({
+    bold: false,
+    italic: false,
+    underline: false,
+    ul: false,
+    ol: false,
+    block: 'p',
+    alignRight: false,
+    alignCenter: false,
+    alignJustify: false,
+  });
+
   // Link Dialog Modal State
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('https://');
 
-  // Initialize editor HTML when value changes externally
-  useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value || '';
-      updateMetrics(value || '');
-    }
-  }, [value]);
-
-  const resolveMediaUrl = (fileUrl: string) => {
-    const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1').replace(/\/api\/v1\/?$/, '');
-    return fileUrl.startsWith('/static/') ? `${apiOrigin}${fileUrl}` : fileUrl;
-  };
-
-  const updateMetrics = (htmlContent: string) => {
+  const updateMetrics = useCallback((htmlContent: string) => {
     const textOnly = htmlContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const words = textOnly ? textOnly.split(' ').length : 0;
     setWordCount(words);
@@ -84,35 +99,100 @@ export default function RichTextCmsEditor({
       const minsFa = String(mins).replace(/[0-9]/g, (d) => persianDigits[parseInt(d, 10)]);
       onAutoReadTime(`${minsFa} دقیقه مطالعه`);
     }
+  }, [onAutoReadTime]);
+
+  // Sync external `value` changes WITHOUT resetting cursor position while user is actively typing! (Bug 1 Fix)
+  useEffect(() => {
+    const el = editorRef.current;
+    if (!el) return;
+
+    const incoming = value || '';
+    if (!isFocusedRef.current && el.innerHTML !== incoming) {
+      el.innerHTML = incoming;
+      lastHtmlRef.current = incoming;
+      updateMetrics(incoming);
+    } else if (incoming === '' && lastHtmlRef.current !== '') {
+      el.innerHTML = '';
+      lastHtmlRef.current = '';
+      updateMetrics('');
+    }
+  }, [value, updateMetrics]);
+
+  const updateActiveFormats = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    try {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
+        savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+      }
+      setActiveFormats({
+        bold: document.queryCommandState('bold'),
+        italic: document.queryCommandState('italic'),
+        underline: document.queryCommandState('underline'),
+        ul: document.queryCommandState('insertUnorderedList'),
+        ol: document.queryCommandState('insertOrderedList'),
+        block: (document.queryCommandValue('formatBlock') || 'p').toLowerCase(),
+        alignRight: document.queryCommandState('justifyRight'),
+        alignCenter: document.queryCommandState('justifyCenter'),
+        alignJustify: document.queryCommandState('justifyFull'),
+      });
+    } catch {
+      // Ignore queryCommandState errors in unsupported contexts
+    }
+  }, []);
+
+  const restoreSelection = () => {
+    const el = editorRef.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    if (sel && savedRangeRef.current) {
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
+    }
   };
 
   const syncContent = () => {
-    if (!editorRef.current) return;
-    const html = editorRef.current.innerHTML;
-    onChange(html);
-    updateMetrics(html);
+    const el = editorRef.current;
+    if (!el) return;
+    const html = el.innerHTML === '<br>' ? '' : el.innerHTML;
+    if (html !== lastHtmlRef.current) {
+      lastHtmlRef.current = html;
+      onChange(html);
+      updateMetrics(html);
+    }
+    updateActiveFormats();
   };
 
   const exec = (command: string, arg: string = '') => {
     if (isPreview) return;
-    editorRef.current?.focus();
+    const el = editorRef.current;
+    if (!el) return;
+    el.focus();
     document.execCommand(command, false, arg);
     syncContent();
   };
 
+  const handleFormatBlock = (tag: string) => {
+    const currentBlock = activeFormats.block.replace(/[<>]/g, '');
+    const nextTag = currentBlock === tag.toLowerCase() ? 'p' : tag;
+    exec('formatBlock', `<${nextTag}>`);
+  };
+
   const insertHtmlAtCursor = (htmlSnippet: string) => {
-    if (!editorRef.current) return;
-    editorRef.current.focus();
+    const el = editorRef.current;
+    if (!el) return;
+    restoreSelection();
     const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
+    if (sel && sel.rangeCount > 0 && el.contains(sel.anchorNode)) {
       const range = sel.getRangeAt(0);
       range.deleteContents();
-      const el = document.createElement('div');
-      el.innerHTML = htmlSnippet;
+      const div = document.createElement('div');
+      div.innerHTML = htmlSnippet;
       const frag = document.createDocumentFragment();
       let node: ChildNode | null;
       let lastNode: ChildNode | null = null;
-      while ((node = el.firstChild)) {
+      while ((node = div.firstChild)) {
         lastNode = frag.appendChild(node);
       }
       range.insertNode(frag);
@@ -122,10 +202,24 @@ export default function RichTextCmsEditor({
         newRange.collapse(true);
         sel.removeAllRanges();
         sel.addRange(newRange);
+        savedRangeRef.current = newRange.cloneRange();
       }
     } else {
-      editorRef.current.innerHTML += htmlSnippet;
+      el.innerHTML += htmlSnippet;
     }
+    syncContent();
+  };
+
+  const resolveMediaUrl = (fileUrl: string) => {
+    const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1').replace(/\/api\/v1\/?$/, '');
+    return fileUrl.startsWith('/static/') ? `${apiOrigin}${fileUrl}` : fileUrl;
+  };
+
+  // Clean paste handler to prevent styles corruption (Bug 4 Fix)
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
     syncContent();
   };
 
@@ -148,8 +242,9 @@ export default function RichTextCmsEditor({
       `;
       insertHtmlAtCursor(figureHtml);
       toast.success('تصویر با موفقیت در متن درج شد.');
-    } catch (err: any) {
-      toast.error(err?.message || 'خطا در بارگذاری تصویر');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'خطا در بارگذاری تصویر';
+      toast.error(message);
     } finally {
       setIsUploading(false);
       setUploadLabel('');
@@ -185,8 +280,9 @@ export default function RichTextCmsEditor({
       `;
       insertHtmlAtCursor(fileCardHtml);
       toast.success('فایل ضمیمه در متن درج شد.');
-    } catch (err: any) {
-      toast.error(err?.message || 'خطا در بارگذاری فایل');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'خطا در بارگذاری فایل';
+      toast.error(message);
     } finally {
       setIsUploading(false);
       setUploadLabel('');
@@ -209,8 +305,9 @@ export default function RichTextCmsEditor({
         : `<div contenteditable="false" class="my-5 p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"><p class="text-xs font-bold mb-2 text-zinc-700 dark:text-zinc-300">فایل صوتی ضمیمه در متن:</p><audio controls src="${url}" class="w-full"></audio></div><p><br/></p>`;
       insertHtmlAtCursor(mediaHtml);
       toast.success('رسانه با موفقیت در متن درج شد.');
-    } catch (err: any) {
-      toast.error(err?.message || 'خطا در بارگذاری رسانه');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'خطا در بارگذاری رسانه';
+      toast.error(message);
     } finally {
       setIsUploading(false);
       setUploadLabel('');
@@ -253,9 +350,15 @@ export default function RichTextCmsEditor({
     insertHtmlAtCursor(tableHtml);
   };
 
+  const handleOpenLinkDialog = () => {
+    updateActiveFormats();
+    setIsLinkDialogOpen(true);
+  };
+
   const handleConfirmLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (linkUrl.trim()) {
+      restoreSelection();
       exec('createLink', linkUrl.trim());
       setIsLinkDialogOpen(false);
       setLinkUrl('https://');
@@ -277,14 +380,22 @@ export default function RichTextCmsEditor({
           `<figure class="my-6 text-center"><img src="${url}" alt="${file.name}" class="max-w-full h-auto mx-auto rounded-2xl shadow-md border border-zinc-200 dark:border-zinc-700" /></figure><p><br/></p>`
         );
         toast.success('تصویر رهاشده در متن درج شد.');
-      } catch (err: any) {
-        toast.error(err?.message || 'خطا در بارگذاری تصویر');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'خطا در بارگذاری تصویر';
+        toast.error(message);
       } finally {
         setIsUploading(false);
         setUploadLabel('');
       }
     }
   };
+
+  const btnBase =
+    'p-1.5 rounded-lg transition-colors flex items-center justify-center select-none cursor-pointer';
+  const btnInactive =
+    'text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 active:scale-95';
+  const btnActive =
+    'bg-[#8A532B]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/30 font-bold';
 
   return (
     <div
@@ -298,23 +409,29 @@ export default function RichTextCmsEditor({
       <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.zip,.pptx" onChange={handleAttachmentUpload} className="hidden" />
       <input ref={mediaInputRef} type="file" accept="audio/*,video/*" onChange={handleMediaUpload} className="hidden" />
 
-      {/* Top Rich Toolbar */}
+      {/* Top Rich Toolbar: EVERY button uses onMouseDown={(e) => e.preventDefault()} so editor retains focus (Bug 2 Fix) */}
       <div className="flex flex-wrap items-center justify-between gap-1.5 p-2 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 select-none">
         <div className="flex flex-wrap items-center gap-1">
           {/* Headings */}
           <button
             type="button"
-            onClick={() => exec('formatBlock', 'H2')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleFormatBlock('h2');
+            }}
             title="تیتر اصلی (H2)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.block.includes('h2') ? btnActive : btnInactive}`}
           >
             <Heading2 className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('formatBlock', 'H3')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleFormatBlock('h3');
+            }}
             title="تیتر فرعی (H3)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.block.includes('h3') ? btnActive : btnInactive}`}
           >
             <Heading3 className="w-4 h-4" />
           </button>
@@ -324,33 +441,45 @@ export default function RichTextCmsEditor({
           {/* Text Formatting */}
           <button
             type="button"
-            onClick={() => exec('bold')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('bold');
+            }}
             title="ضخیم (Bold)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.bold ? btnActive : btnInactive}`}
           >
             <Bold className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('italic')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('italic');
+            }}
             title="مورب (Italic)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.italic ? btnActive : btnInactive}`}
           >
             <Italic className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('underline')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('underline');
+            }}
             title="زیرخط‌دار"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.underline ? btnActive : btnInactive}`}
           >
             <Underline className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('hiliteColor', '#FEF08A')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('hiliteColor', '#FEF08A');
+            }}
             title="هایلایت"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[#8A532B] dark:text-[#C58B43] active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Highlighter className="w-4 h-4" />
           </button>
@@ -360,25 +489,34 @@ export default function RichTextCmsEditor({
           {/* Alignment */}
           <button
             type="button"
-            onClick={() => exec('justifyRight')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('justifyRight');
+            }}
             title="راست‌چین"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.alignRight ? btnActive : btnInactive}`}
           >
             <AlignRight className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('justifyCenter')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('justifyCenter');
+            }}
             title="وسط‌چین"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.alignCenter ? btnActive : btnInactive}`}
           >
             <AlignCenter className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('justifyFull')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('justifyFull');
+            }}
             title="تراز دوطرفه (Justify)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.alignJustify ? btnActive : btnInactive}`}
           >
             <AlignJustify className="w-4 h-4" />
           </button>
@@ -388,51 +526,82 @@ export default function RichTextCmsEditor({
           {/* Lists & Blocks */}
           <button
             type="button"
-            onClick={() => exec('insertUnorderedList')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('insertUnorderedList');
+            }}
             title="فهرست نقطه‌ای"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.ul ? btnActive : btnInactive}`}
           >
             <List className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('insertOrderedList')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('insertOrderedList');
+            }}
             title="فهرست شماره‌دار"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.ol ? btnActive : btnInactive}`}
           >
             <ListOrdered className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={insertPhilosophicalQuote}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              insertPhilosophicalQuote();
+            }}
             title="درج کادر نقل‌قول برهانی / روایی"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[#8A532B] dark:text-[#C58B43] active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${activeFormats.block.includes('blockquote') ? btnActive : btnInactive}`}
           >
             <Quote className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={insertComparisonTable}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              insertComparisonTable();
+            }}
             title="درج جدول مقایسه‌ای"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Table className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => setIsLinkDialogOpen(true)}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleOpenLinkDialog();
+            }}
             title="درج پیوند (Link)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Link2 className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('insertHorizontalRule')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('insertHorizontalRule');
+            }}
             title="خط جداکننده"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 active:scale-95 transition cursor-pointer"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Minus className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('removeFormat');
+              exec('formatBlock', '<p>');
+            }}
+            title="پاک کردن فرمت"
+            className={`${btnBase} ${btnInactive}`}
+          >
+            <RemoveFormatting className="w-4 h-4" />
           </button>
 
           <span className="w-px h-5 bg-zinc-200 dark:border-zinc-800 mx-0.5" />
@@ -440,9 +609,13 @@ export default function RichTextCmsEditor({
           {/* Multimedia Inline Upload Buttons */}
           <button
             type="button"
-            onClick={() => imageInputRef.current?.click()}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              updateActiveFormats();
+              imageInputRef.current?.click();
+            }}
             disabled={isUploading}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#8A532B] hover:bg-[#724320] text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition disabled:opacity-50"
           >
             <ImageIcon className="w-3.5 h-3.5" />
             <span>درج عکس در متن</span>
@@ -450,9 +623,13 @@ export default function RichTextCmsEditor({
 
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              updateActiveFormats();
+              fileInputRef.current?.click();
+            }}
             disabled={isUploading}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-700 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-700 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition disabled:opacity-50"
           >
             <FileUp className="w-3.5 h-3.5" />
             <span>درج فایل/PDF</span>
@@ -460,9 +637,13 @@ export default function RichTextCmsEditor({
 
           <button
             type="button"
-            onClick={() => mediaInputRef.current?.click()}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              updateActiveFormats();
+              mediaInputRef.current?.click();
+            }}
             disabled={isUploading}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-600 hover:bg-zinc-700 text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-600 hover:bg-zinc-700 text-white text-xs font-bold shadow-xs active:scale-95 cursor-pointer transition disabled:opacity-50"
           >
             <Music className="w-3.5 h-3.5" />
             <span>درج صوت/ویدیو</span>
@@ -473,17 +654,23 @@ export default function RichTextCmsEditor({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => exec('undo')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('undo');
+            }}
             title="بازگشت (Undo)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 active:scale-95 cursor-pointer transition"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Undo2 className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => exec('redo')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              exec('redo');
+            }}
             title="تکرار (Redo)"
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 active:scale-95 cursor-pointer transition"
+            className={`${btnBase} ${btnInactive}`}
           >
             <Redo2 className="w-4 h-4" />
           </button>
@@ -503,7 +690,7 @@ export default function RichTextCmsEditor({
             type="button"
             onClick={() => setIsFullscreen(!isFullscreen)}
             title={isFullscreen ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
-            className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 active:scale-95 cursor-pointer transition"
+            className={`${btnBase} ${btnInactive}`}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
@@ -518,11 +705,20 @@ export default function RichTextCmsEditor({
         </div>
       )}
 
-      {/* Editable Content Area */}
+      {/* Editable Content Area with Explicit RTL Typography Tailwind overrides (Bug 3 Fix) */}
       <div className={`relative ${isFullscreen ? 'flex-1 overflow-y-auto' : ''}`}>
         {isPreview ? (
           <div
-            className="p-6 min-h-[360px] prose dark:prose-invert max-w-none leading-[2.2] text-sm cms-rich-content"
+            className="p-6 min-h-[360px] prose dark:prose-invert max-w-none leading-[2.2] text-sm cms-rich-content
+              [&_h1]:text-2xl [&_h1]:font-black [&_h1]:my-3
+              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-2.5
+              [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:my-2
+              [&_p]:my-1.5
+              [&_ul]:list-disc [&_ul]:pr-6 [&_ul]:my-2
+              [&_ol]:list-decimal [&_ol]:pr-6 [&_ol]:my-2
+              [&_li]:my-1
+              [&_blockquote]:border-r-4 [&_blockquote]:border-[#8A532B] dark:[&_blockquote]:border-[#C58B43] [&_blockquote]:bg-[#8A532B]/5 dark:[&_blockquote]:bg-[#C58B43]/10 [&_blockquote]:pr-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote]:rounded-l-xl [&_blockquote]:font-semibold
+              [&_a]:text-[#8A532B] dark:[&_a]:text-[#C58B43] [&_a]:underline"
             dangerouslySetInnerHTML={{ __html: value || '<p class="text-zinc-400">متنی وارد نشده است.</p>' }}
           />
         ) : (
@@ -530,11 +726,31 @@ export default function RichTextCmsEditor({
             ref={editorRef}
             contentEditable
             suppressContentEditableWarning
+            dir="rtl"
+            onFocus={() => {
+              isFocusedRef.current = true;
+              updateActiveFormats();
+            }}
+            onBlur={() => {
+              isFocusedRef.current = false;
+              syncContent();
+            }}
             onInput={syncContent}
-            onBlur={syncContent}
+            onKeyUp={updateActiveFormats}
+            onMouseUp={updateActiveFormats}
+            onPaste={handlePaste}
             onDrop={handleDrop}
             data-placeholder={placeholder}
-            className="p-6 min-h-[360px] max-h-[600px] overflow-y-auto focus:outline-none text-zinc-900 dark:text-zinc-100 leading-[2.2] text-sm cms-rich-content empty:before:content-[attr(data-placeholder)] empty:before:text-zinc-400"
+            className="p-6 min-h-[360px] max-h-[600px] overflow-y-auto focus:outline-none text-zinc-900 dark:text-zinc-100 leading-[2.2] text-sm cms-rich-content empty:before:content-[attr(data-placeholder)] empty:before:text-zinc-400
+              [&_h1]:text-2xl [&_h1]:font-black [&_h1]:my-3
+              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-2.5
+              [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:my-2
+              [&_p]:my-1.5
+              [&_ul]:list-disc [&_ul]:pr-6 [&_ul]:my-2
+              [&_ol]:list-decimal [&_ol]:pr-6 [&_ol]:my-2
+              [&_li]:my-1
+              [&_blockquote]:border-r-4 [&_blockquote]:border-[#8A532B] dark:[&_blockquote]:border-[#C58B43] [&_blockquote]:bg-[#8A532B]/5 dark:[&_blockquote]:bg-[#C58B43]/10 [&_blockquote]:pr-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote]:rounded-l-xl [&_blockquote]:font-semibold
+              [&_a]:text-[#8A532B] dark:[&_a]:text-[#C58B43] [&_a]:underline"
           />
         )}
       </div>

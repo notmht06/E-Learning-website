@@ -12,4 +12,5 @@ export * from './FeedbackStates';
 export * from './Skeleton';
 export * from './CourseOutline';
 export * from './LessonNote';
+export * from './RichTextEditor';
 export * from '../LocalizedLink';
