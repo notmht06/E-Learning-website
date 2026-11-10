@@ -61,7 +61,7 @@ export function DashboardSidebar({
                 {dict.auth_tag_student}
               </span>
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate block">
-                پورتال دانشجویان
+                حساب کاربری
               </span>
             </div>
           )}

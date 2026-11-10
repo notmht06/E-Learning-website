@@ -42,7 +42,7 @@ const tabLocalization: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> 
   fa: {
     overview: 'پیشخوان پژوهشی دانشجو',
     courses: 'درس‌گفتارهای ثبت‌نام‌شده من',
-    ai: 'حکمت‌یار دوره‌های دانشجو (AI)',
+    ai: 'دستیار هوشمند درس',
     notes: 'دفتر یادداشت و حاشیه‌نگاری دروس',
     orders: 'فاکتورها و سوابق ثبت‌نام دوره‌ها',
     certificates: 'گواهی‌نامه‌های رسمی پایان دوره',
@@ -75,7 +75,7 @@ const navLabels: Record<'fa' | 'ar' | 'en', Record<DashboardTab, string>> = {
   fa: {
     overview: 'پیشخوان پژوهشی',
     courses: 'دوره‌های من',
-    ai: 'حکمت‌یار هوشمند (AI)',
+    ai: 'دستیار هوشمند',
     notes: 'دفتر یادداشت',
     orders: 'فاکتورها و ثبت‌نام',
     certificates: 'گواهی‌نامه‌ها',

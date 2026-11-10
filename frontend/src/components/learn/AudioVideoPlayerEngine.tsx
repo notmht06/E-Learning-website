@@ -854,7 +854,7 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleTogglePlay}
               className="w-14 h-14 rounded-full bg-[#8A532B] hover:bg-[#A36334] active:scale-95 text-[#FAF8F5] flex items-center justify-center shadow-xl transition cursor-pointer"
-              aria-label={isPlaying ? 'Pause' : 'Play'}
+              aria-label={isPlaying ? 'توقف' : 'پخش'}
             >
               {isPlaying ? (
                 <Pause className="w-6 h-6 fill-current" />
@@ -949,8 +949,8 @@ export function AudioVideoPlayerEngine({
             type="button"
             onClick={handleTogglePlay}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer"
-            title={isPlaying ? 'Pause' : 'Play'}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
+            title={isPlaying ? 'توقف' : 'پخش'}
+            aria-label={isPlaying ? 'توقف' : 'پخش'}
           >
             {isPlaying ? (
               <Pause className="w-4 h-4 fill-white text-white transition-transform" />
@@ -965,8 +965,8 @@ export function AudioVideoPlayerEngine({
               type="button"
               onClick={handleToggleMute}
               className="w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer"
-              title={isMuted ? 'Unmute' : 'Mute'}
-              aria-label={isMuted ? 'Unmute' : 'Mute'}
+              title={isMuted ? 'وصل صدا' : 'قطع صدا'}
+              aria-label={isMuted ? 'وصل صدا' : 'قطع صدا'}
             >
               {isMuted || volume === 0 ? (
                 <VolumeX className="w-4 h-4" />
@@ -982,7 +982,7 @@ export function AudioVideoPlayerEngine({
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
               className="w-0 group-hover/vol:w-16 focus:w-16 h-1 accent-white bg-white/30 rounded-full transition-all duration-200 ease-out cursor-pointer opacity-0 group-hover/vol:opacity-100 focus:opacity-100 ms-1"
-              aria-label="Volume"
+              aria-label="میزان صدا"
             />
           </div>
 
@@ -1063,7 +1063,7 @@ export function AudioVideoPlayerEngine({
               isSubtitleOn ? 'bg-amber-500/25 text-amber-300 border border-amber-500/40' : ''
             }`}
             title={isSubtitleOn ? 'غیرفعال‌سازی زیرنویس' : 'فعال‌سازی زیرنویس فارسی'}
-            aria-label="Subtitles toggle"
+            aria-label="زیرنویس فارسی"
           >
             <Subtitles className={`w-4 h-4 ${isSubtitleOn ? 'text-amber-300' : ''}`} />
           </button>
@@ -1081,8 +1081,8 @@ export function AudioVideoPlayerEngine({
               className={`w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/15 active:scale-90 hover:scale-105 transition-all duration-150 ease-out cursor-pointer ${
                 isSettingsOpen ? 'bg-white/20 text-white' : ''
               }`}
-              title="Settings"
-              aria-label="Settings"
+              title="تنظیمات پخش"
+              aria-label="تنظیمات پخش"
             >
               <Settings className={`w-4 h-4 transition-transform duration-300 ease-out ${isSettingsOpen ? 'rotate-90 text-white' : 'rotate-0'}`} />
             </button>

@@ -106,7 +106,7 @@ export function LessonNotesTab({
               </div>
               <div>
                 <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                  خلاصه تحلیلی جلسه (هوش مصنوعی حکمت‌یار)
+                  خلاصه تحلیلی جلسه (دستیار هوشمند)
                 </h3>
                 <span className="text-[10px] text-zinc-500 dark:text-zinc-400">استخراج خودکار از صوت و جزوه رسمی استاد</span>
               </div>

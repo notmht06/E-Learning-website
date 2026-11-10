@@ -146,7 +146,7 @@ function CoursesContent() {
       type_online: dict.catalog_type_online,
       search_ph: dict.catalog_search_courses_ph,
       all_subjects: 'همه شاخه‌ها',
-      empty_title: 'دوره‌ای با این مشخصات یافت نشد',
+      empty_title: 'دوره‌ای با این مشخصات پیدا نشد',
       empty_desc: 'لطفاً عبارات جستجو یا فیلترهای دیگر را امتحان کنید.',
       mobile_filter_btn: dict.catalog_filter_mobile_btn,
       sort_label: dict.catalog_sort_label,
