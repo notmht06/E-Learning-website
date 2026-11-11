@@ -73,18 +73,87 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   FORCE 100% LTR FOR VIDEOJS PLAYER & FULLSCREEN
+   FORCE 100% LTR & DANA TYPOGRAPHY FOR VIDEOJS PLAYER, PORTALS & FULLSCREEN
    ========================================================================== */
 .vjs-ltr-wrapper,
 .vjs-ltr-wrapper *,
 .vjs-ltr-wrapper:fullscreen,
 .vjs-ltr-wrapper *:fullscreen,
+.vjs-ltr-wrapper .video-controls-content,
+.vjs-ltr-wrapper .video-controls-primary,
+.vjs-ltr-wrapper .video-controls-secondary,
+.vjs-ltr-wrapper [class*="video-controls"],
+.vjs-ltr-wrapper media-control-bar,
+.vjs-ltr-wrapper [class*="control-bar"],
+.vjs-ltr-wrapper .media-skin,
 :fullscreen .vjs-ltr-wrapper,
 :fullscreen .vjs-ltr-wrapper *,
 :fullscreen [class*="video-skin"],
 :fullscreen media-player,
-:fullscreen [data-theme] {
+:fullscreen [data-theme],
+.media-menu-popup,
+.media-menu-popup *,
+.media-menu-resizable-popup,
+.media-menu-resizable-popup *,
+.media-menu-content,
+.media-menu-content *,
+[role="menu"],
+[role="menu"] *,
+[role="menuitem"],
+[role="menuitemradio"],
+media-settings-menu,
+media-menu,
+media-menu-items {
   direction: ltr !important;
+  font-family: var(--font-dana), 'Dana', sans-serif !important;
+}
+
+/* Strictly enforce LTR flex-direction row (neutralizing [dir="rtl"] * row-reverse in @videojs/react) */
+.vjs-ltr-wrapper .video-controls-content,
+.vjs-ltr-wrapper .video-controls-primary,
+.vjs-ltr-wrapper .video-controls-secondary,
+.vjs-ltr-wrapper [class*="video-controls"] {
+  flex-direction: row !important;
+  direction: ltr !important;
+}
+
+/* Hide native ugly Chromium ::cue subtitles (rendered via custom Dana overlay) */
+video::cue,
+::cue {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  color: transparent !important;
+  background: transparent !important;
+}
+
+/* Glassmorphic styling for Video.js media menu popups */
+.media-menu-popup,
+.media-menu-resizable-popup,
+.media-menu-content {
+  background-color: rgba(12, 13, 14, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.875rem !important;
+  color: #f4f4f6 !important;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6) !important;
+}
+
+.media-menu-trigger-item,
+.media-menu-radio-item {
+  color: #e4e4e7 !important;
+  font-size: 0.8125rem !important;
+  font-family: var(--font-dana), 'Dana', sans-serif !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.media-menu-trigger-item:hover,
+.media-menu-radio-item:hover,
+.media-menu-trigger-item:focus,
+.media-menu-radio-item:focus {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
 }
 
 :root {

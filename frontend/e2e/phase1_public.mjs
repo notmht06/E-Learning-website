@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 const BASE_URL = 'http://localhost:3000';
 
 async function runPhase1() {
-  console.log('=== [PHASE 1] Public Core, Navigation, Themes, Search & Catalog ===');
+  console.log('=== [PHASE 1] Public Core, Navigation, Themes, Search & Unified Categories ===');
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
@@ -54,14 +54,6 @@ async function runPhase1() {
       // Toggle back to keep consistency
       await themeBtn.click();
       await page.waitForTimeout(300);
-    } else {
-      console.log('Theme toggle button selector not found via aria-label, searching button icons...');
-      const iconBtn = await page.$('nav button:has(svg.lucide-moon, svg.lucide-sun)');
-      if (iconBtn) {
-        await iconBtn.click();
-        await page.waitForTimeout(500);
-        console.log('Theme toggle clicked via icon');
-      }
     }
 
     // 4. Test Cart Drawer Open/Close
@@ -72,7 +64,6 @@ async function runPhase1() {
       await page.waitForTimeout(1000);
       const isCartVisible = await page.isVisible('div[role="dialog"]');
       console.log(`Cart drawer opened: ${isCartVisible}`);
-      // Close cart by clicking the close button inside the dialog
       const dialogCloseBtn = await page.$('div[role="dialog"] button[aria-label="بستن"], div[role="dialog"] button:has(svg.lucide-x)');
       if (dialogCloseBtn) {
         await dialogCloseBtn.click();
@@ -118,21 +109,57 @@ async function runPhase1() {
     }
 
     // 7. Test Catalog Navigation to /courses
-    console.log('[1.7] Navigating to /courses...');
+    console.log('[1.7] Navigating to /courses and collecting disciplines...');
     await page.goto(`${BASE_URL}/courses`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(1500);
 
-    // Test course filter tabs
-    const filterTabs = await page.$$('button:has-text("همه"), button:has-text("حکمت"), button:has-text("منطق")');
-    console.log(`Found ${filterTabs.length} course category filter buttons`);
-    if (filterTabs.length > 1) {
-      await filterTabs[1].click();
+    const courseFilterTabs = await page.$$('button:has-text("همه"), button:has-text("فلسفه"), button:has-text("منطق")');
+    console.log(`Found ${courseFilterTabs.length} course category filter buttons`);
+    if (courseFilterTabs.length > 1) {
+      await courseFilterTabs[1].click();
       await page.waitForTimeout(800);
-      console.log('Clicked category filter tab');
+      console.log('Clicked course category filter tab');
     }
 
-    // 8. Test Course Detail Page
-    console.log('[1.8] Navigating to Course Detail page (/courses/course-falsafe-asfar-1)...');
+    // 8. Test /articles page and VERIFY Unified Categories with Courses!
+    console.log('[1.8] Navigating to /articles and verifying unified 8 academic disciplines...');
+    await page.goto(`${BASE_URL}/articles`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(1500);
+
+    const articleCategoryTabs = await page.$$eval('[role="tablist"] [role="tab"], div:has(> button:has-text("موضوع")) button', (buttons) =>
+      buttons.map((b) => b.textContent?.trim() || '')
+    );
+    console.log('Article category tabs found:', articleCategoryTabs);
+
+    const expectedDisciplines = ['همه', 'منطق', 'فلسفه', 'فقه', 'اصول', 'تفسیر', 'کلام', 'عرفان نظری', 'عرفان عملی'];
+    const matchedDisciplines = expectedDisciplines.filter((disc) =>
+      articleCategoryTabs.some((tabText) => tabText.includes(disc))
+    );
+    console.log(`Matched disciplines on /articles: ${matchedDisciplines.length} of ${expectedDisciplines.length}`);
+    if (matchedDisciplines.length < 5) {
+      throw new Error(`Articles page does not contain expected academic disciplines! Found: ${JSON.stringify(articleCategoryTabs)}`);
+    }
+
+    // Click philosophy topic and verify filter
+    const philosophyTab = await page.$('button[role="tab"]:has-text("فلسفه"), button:has-text("فلسفه")');
+    if (philosophyTab) {
+      await philosophyTab.click();
+      await page.waitForTimeout(800);
+      console.log('Clicked philosophy filter tab on /articles');
+      const filteredCards = await page.$$('a[href*="/articles/"]');
+      console.log(`Articles displayed under philosophy: ${filteredCards.length}`);
+    }
+
+    // Click all topics to reset
+    const allTab = await page.$('button[role="tab"]:has-text("همه"), button:has-text("همه")');
+    if (allTab) {
+      await allTab.click();
+      await page.waitForTimeout(500);
+      console.log('Reset filter to All topics on /articles');
+    }
+
+    // 9. Test Course Detail Page
+    console.log('[1.9] Navigating to Course Detail page (/courses/course-falsafe-asfar-1)...');
     await page.goto(`${BASE_URL}/courses/course-falsafe-asfar-1`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2000);
 
@@ -148,7 +175,6 @@ async function runPhase1() {
       console.log('Toggled first syllabus item');
     }
 
-    // Check CTA to learn page
     const learnBtn = await page.$('a[href*="/learn"]');
     console.log(`CTA to learn room found: ${Boolean(learnBtn)}`);
 

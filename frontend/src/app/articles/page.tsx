@@ -26,7 +26,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui';
-import { scholarlyArticlesDatabase, ScholarlyArticle } from '@/lib/data';
+import { scholarlyArticlesDatabase, ScholarlyArticle, CourseCategory, initialCategories } from '@/lib/data';
+import { useData } from '@/context/DataContext';
 import { getLocalizedArticle } from '@/lib/localization';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
@@ -35,46 +36,63 @@ import { triggerTactileHaptic } from '@/lib/haptics';
 
 export default function ArticlesPage() {
   const { currentLang, dict, toLocale, localizeHref } = useLanguage();
+  const { categories, articles: dataArticles } = useData();
   const { items: cartItems, isOpen: isCartOpen, openCart, closeCart, removeItem } = useCart();
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedArticle, setSelectedArticle] = useState<ScholarlyArticle | null>(null);
 
+  const allArticlesList = useMemo(() => {
+    return dataArticles && dataArticles.length > 0 ? dataArticles : scholarlyArticlesDatabase;
+  }, [dataArticles]);
+
+  const activeCategories: CourseCategory[] = useMemo(() => {
+    return categories && categories.length > 0 ? categories : initialCategories;
+  }, [categories]);
+
   const categoryOptions = useMemo(() => {
-    const totalCount = scholarlyArticlesDatabase.length;
-    const getCount = (catName: string) =>
-      scholarlyArticlesDatabase.filter(
-        (a) => a.category === catName || a.category_fa === catName
+    const totalCount = allArticlesList.length;
+    const getCount = (cat: CourseCategory) =>
+      allArticlesList.filter(
+        (a) =>
+          a.category === cat.name_fa ||
+          a.category === cat.name ||
+          a.category_fa === cat.name_fa ||
+          a.category === cat.slug
       ).length;
+
+    const allLabel =
+      dict.catalog_filter_all_categories || dict.ui_all_treatises || 'همه موضوعات';
+
+    const catItems = activeCategories.map((cat) => {
+      const label =
+        currentLang === 'en' && cat.name_en
+          ? cat.name_en
+          : currentLang === 'ar' && cat.name_ar
+          ? cat.name_ar
+          : cat.name_fa || cat.name;
+
+      return {
+        id: cat.name_fa || cat.name,
+        label,
+        count: getCount(cat),
+      };
+    });
 
     return [
       {
         id: 'all',
-        label: dict.catalog_filter_all_categories || dict.ui_all_treatises || 'همه موضوعات',
+        label: allLabel,
         count: totalCount,
       },
-      {
-        id: 'فلسفه',
-        label: dict.ui_philosophy,
-        count: getCount('فلسفه'),
-      },
-      {
-        id: 'منطق',
-        label: dict.ui_logic,
-        count: getCount('منطق'),
-      },
-      {
-        id: 'عرفان عملی',
-        label: dict.ui_spiritual_wayfaring,
-        count: getCount('عرفان عملی'),
-      },
+      ...catItems,
     ];
-  }, [currentLang, dict]);
+  }, [allArticlesList, activeCategories, currentLang, dict]);
 
   const articles = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return scholarlyArticlesDatabase.filter((art) => {
+    return allArticlesList.filter((art) => {
       const loc = getLocalizedArticle(art, currentLang);
       const title = (loc?.title || art.title_fa || art.title).toLowerCase();
       const abs = (loc?.abstract || art.abstract_fa || art.abstract).toLowerCase();
@@ -85,7 +103,7 @@ export default function ArticlesPage() {
         art.category_fa === selectedCategory;
       return matchesSearch && matchesCat;
     });
-  }, [search, selectedCategory, currentLang]);
+  }, [allArticlesList, search, selectedCategory, currentLang]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C0D0E] text-[#0C0D0E] dark:text-[#FAF8F5] transition-colors pb-10">
@@ -137,14 +155,14 @@ export default function ArticlesPage() {
               triggerTactileHaptic('tick');
               setSelectedCategory(val);
             }}
-            className="self-start sm:self-auto"
+            className="w-full sm:w-auto"
           >
-            <TabsList className="bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] p-1">
+            <TabsList className="bg-[#FAF8F5] dark:bg-[#0C0D0E] border border-[#E6E1D8] dark:border-[#22242A] p-1 flex-wrap h-auto gap-1">
               {categoryOptions.map((cat) => (
                 <TabsTrigger
                   key={cat.id}
                   value={cat.id}
-                  className="gap-1.5 text-xs font-bold"
+                  className="gap-1.5 text-xs font-bold px-3 py-1.5"
                 >
                   <span>{cat.label}</span>
                   <span className="text-[11px] font-mono opacity-60">

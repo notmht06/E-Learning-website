@@ -33,9 +33,8 @@ async function runPhase5() {
 
   try {
     // 1. Test Cart Storage & Cart Drawer
-    console.log('[5.1] Adding sample item to cart in localStorage...');
-    await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
-    await page.evaluate(() => {
+    console.log('[5.1] Pre-populating sample item in cart via addInitScript...');
+    await page.addInitScript(() => {
       const sampleItem = {
         id: 'course-falsafe-asfar-1',
         title: 'اسفار اربعه: سفر اول، امور عامه و اصالت وجود',
@@ -46,9 +45,9 @@ async function runPhase5() {
       const arr = [sampleItem];
       localStorage.setItem('zan_cart', JSON.stringify(arr));
       localStorage.setItem('zan_cart_items', JSON.stringify(arr));
-      window.dispatchEvent(new Event('zan_cart_sync'));
     });
-    await page.waitForTimeout(1000);
+    await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500);
 
     // Open Cart Modal
     console.log('Opening Cart Modal...');

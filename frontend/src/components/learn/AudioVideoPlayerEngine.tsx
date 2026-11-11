@@ -28,6 +28,14 @@ export interface AudioVideoPlayerEngineProps {
   onProgressSync?: (chapterId: number, percent: number, currentSec: number) => void;
 }
 
+const QUALITY_FILTERS: Record<string, string> = {
+  auto: 'none',
+  '1080p': 'none',
+  '720p': 'blur(0.4px) contrast(0.99)',
+  '480p': 'blur(1.1px) contrast(0.96)',
+  '360p': 'blur(2.2px) contrast(0.93)',
+};
+
 function formatVttTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -63,8 +71,14 @@ export function AudioVideoPlayerEngine({
   onChapterComplete,
   onProgressSync,
 }: AudioVideoPlayerEngineProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const noticeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const [isAudioOnly, setIsAudioOnly] = useState(false);
+  const [qualityNotice, setQualityNotice] = useState<string | null>(null);
+  const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
+  const [activeSubtitleText, setActiveSubtitleText] = useState<string>('');
 
   // Direct video URL resolver
   const isDirectVideo =
@@ -74,66 +88,81 @@ export function AudioVideoPlayerEngine({
     /\.(mp4|webm|m3u8|ogg|mov)(\?.*)?$/i.test(videoUrl || '');
 
   const baseSrc = isDirectVideo ? (videoUrl as string) : '/videos/sample_lecture.mp4';
-  const [currentVideoSrc, setCurrentVideoSrc] = useState<string>(baseSrc);
 
-  // Update baseSrc if props change
-  useEffect(() => {
-    setCurrentVideoSrc(baseSrc);
-  }, [baseSrc]);
+  // Subtitle Cues
+  const cues = useMemo(() => {
+    try {
+      return getCourseSubtitles(courseId || 'course-asfar', chapterId || 1, durationSeconds);
+    } catch {
+      return [];
+    }
+  }, [courseId, chapterId, durationSeconds]);
 
   // Generate WebVTT captions Data URI
-  const vttBlobUrl = useMemo(() => {
-    if (typeof window === 'undefined') return '';
+  const vttDataUri = useMemo(() => {
+    if (typeof window === 'undefined' || cues.length === 0) return '';
     try {
-      const cues = getCourseSubtitles(courseId || 'course-asfar', chapterId || 1, durationSeconds);
       const vtt = generateWebVTT(cues);
       return `data:text/vtt;charset=utf-8,${encodeURIComponent(vtt)}`;
     } catch {
       return '';
     }
-  }, [courseId, chapterId, durationSeconds]);
+  }, [cues]);
 
-  // Switch video stream quality preserving currentTime and playback state
-  const handleQualityChange = useCallback(
-    (newQuality: string) => {
-      const el = videoRef.current;
-      if (!el) return;
+  // Handle Quality Switch: apply visual resolution downscaling filter directly to <video>
+  // without resetting currentTime or pausing playback
+  const handleQualityChange = useCallback((newQuality: string) => {
+    const el = videoRef.current || containerRef.current?.querySelector('video');
+    if (!el) return;
 
-      const prevTime = el.currentTime;
-      const wasPlaying = !el.paused;
+    const filter = QUALITY_FILTERS[newQuality.toLowerCase()] || 'none';
+    el.style.filter = filter;
 
-      let nextSrc = baseSrc;
-      if (newQuality !== 'auto') {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
-        nextSrc = `${apiBase}/stream/video-quality?src=${encodeURIComponent(baseSrc)}&quality=${newQuality}`;
+    const label = newQuality === 'auto' ? 'کیفیت خودکار (Auto 1080p)' : `کیفیت ${newQuality}`;
+    setQualityNotice(label);
+
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => {
+      setQualityNotice(null);
+    }, 2500);
+
+    // Keep playing if it was playing
+    if (!el.paused) {
+      el.play().catch(() => {});
+    }
+  }, []);
+
+  // Sync textTrack modes and subtitle visibility
+  const syncTracks = useCallback(() => {
+    const el = videoRef.current || containerRef.current?.querySelector('video');
+    if (!el || !el.textTracks) return;
+
+    let hasActiveTrack = false;
+    for (let i = 0; i < el.textTracks.length; i++) {
+      const track = el.textTracks[i];
+      if (track.mode === 'showing') {
+        // Suppress native Chromium shadow DOM rendering in favor of custom Dana overlay
+        track.mode = 'hidden';
+        hasActiveTrack = true;
+      } else if (track.mode === 'hidden') {
+        hasActiveTrack = true;
       }
-
-      setCurrentVideoSrc(nextSrc);
-
-      const onCanPlay = () => {
-        el.currentTime = prevTime;
-        if (wasPlaying) {
-          el.play().catch(console.debug);
-        }
-        el.removeEventListener('canplay', onCanPlay);
-      };
-      el.addEventListener('canplay', onCanPlay, { once: true });
-    },
-    [baseSrc]
-  );
+    }
+    setIsCaptionsEnabled(hasActiveTrack);
+  }, []);
 
   // Attach Video.js videoRenditions and audioTracks polyfill to media element
   useEffect(() => {
-    const el = videoRef.current;
+    const el = videoRef.current || containerRef.current?.querySelector('video');
     if (!el) return;
 
     // 1. videoRenditions (Auto, 1080p, 720p, 480p, 360p)
     if (!(el as any).videoRenditions) {
       const renditions = [
-        { id: '1080p', width: 1920, height: 1080, bitrate: 4500000, selected: false },
-        { id: '720p', width: 1280, height: 720, bitrate: 2500000, selected: false },
-        { id: '480p', width: 854, height: 480, bitrate: 1200000, selected: false },
-        { id: '360p', width: 640, height: 360, bitrate: 600000, selected: false },
+        { id: '1080p', label: '1080p (Full HD)', width: 1920, height: 1080, bitrate: 4500000, selected: false },
+        { id: '720p', label: '720p (HD)', width: 1280, height: 720, bitrate: 2500000, selected: false },
+        { id: '480p', label: '480p (SD)', width: 854, height: 480, bitrate: 1200000, selected: false },
+        { id: '360p', label: '360p (بهینه)', width: 640, height: 360, bitrate: 600000, selected: false },
       ];
 
       class VideoRenditionList extends EventTarget {
@@ -194,8 +223,8 @@ export function AudioVideoPlayerEngine({
     // 2. audioTracks (Standard video+audio vs Audio Only)
     if (!(el as any).audioTracks) {
       const tracks = [
-        { id: 'video-audio', label: 'ویدیو و صوت (استاندارد)', kind: 'main', language: 'fa', enabled: true },
-        { id: 'audio-only', label: 'فقط صوت (مصرف بهینه)', kind: 'alternative', language: 'fa', enabled: false },
+        { id: 'video-audio', label: 'ویدیو و صوت', kind: 'main', language: 'fa', enabled: true },
+        { id: 'audio-only', label: 'فقط صوت', kind: 'alternative', language: 'fa', enabled: false },
       ];
 
       class AudioTrackList extends EventTarget {
@@ -230,14 +259,41 @@ export function AudioVideoPlayerEngine({
       (el as any).audioTracks = aList;
 
       aList.addEventListener('change', () => {
+        const media = videoRef.current || containerRef.current?.querySelector('video');
+        const wasPlaying = media ? !media.paused : false;
+        const prevTime = media ? media.currentTime : 0;
+
         const audioOnlyTrack = tracks.find((t) => t.id === 'audio-only');
-        setIsAudioOnly(Boolean(audioOnlyTrack?.enabled));
+        const isAudio = Boolean(audioOnlyTrack?.enabled);
+        setIsAudioOnly(isAudio);
+
+        if (media) {
+          media.currentTime = prevTime;
+          if (wasPlaying && media.paused) {
+            media.play().catch(() => {});
+          }
+        }
       });
+    }
+
+    // 3. textTracks change listener
+    if (el.textTracks) {
+      el.textTracks.addEventListener('change', syncTracks);
+      syncTracks();
     }
 
     // Signal loadstart so @videojs/core features discover and bind to videoRenditions and audioTracks
     el.dispatchEvent(new Event('loadstart'));
-  }, [handleQualityChange]);
+
+    return () => {
+      if (el.textTracks) {
+        el.textTracks.removeEventListener('change', syncTracks);
+      }
+      if (noticeTimerRef.current) {
+        clearTimeout(noticeTimerRef.current);
+      }
+    };
+  }, [handleQualityChange, syncTracks]);
 
   if (isLocked) {
     return (
@@ -255,6 +311,7 @@ export function AudioVideoPlayerEngine({
     if (initialPositionSec > 0 && e.currentTarget.currentTime < 1) {
       e.currentTarget.currentTime = initialPositionSec;
     }
+    syncTracks();
   };
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -264,6 +321,12 @@ export function AudioVideoPlayerEngine({
     if (dur > 0 && onProgressSync) {
       const pct = Math.min(100, Math.round((current / dur) * 100));
       onProgressSync(chapterId, pct, Math.floor(current));
+    }
+
+    // Sync active subtitle text
+    if (cues && cues.length > 0) {
+      const activeCue = cues.find((c) => current >= c.start && current <= c.end);
+      setActiveSubtitleText(activeCue ? activeCue.text.fa : '');
     }
   };
 
@@ -275,54 +338,104 @@ export function AudioVideoPlayerEngine({
 
   return (
     <div
+      ref={containerRef}
       dir="ltr"
       className="vjs-ltr-wrapper relative w-full overflow-hidden rounded-xl bg-black aspect-video select-none"
     >
-      {/* Audio Mode Overlay: shown inside frame when Audio Only is selected, with pointer-events-none so controls work */}
-      {isAudioOnly && (
-        <div className="absolute inset-0 z-0 flex flex-col items-center justify-center bg-[#0C0D0E]/95 text-white pointer-events-none select-none transition-opacity duration-300">
-          <div className="flex flex-col items-center gap-3 text-center px-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-lg">
-              <Headphones className="w-8 h-8 text-white/90" />
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm font-bold text-white/90 font-dana">{chapterTitle}</div>
-              <div className="text-xs text-white/60 font-dana">{instructorName}</div>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white/80 font-dana border border-white/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />
-              <span>پخش صوتی بهینه • صرفه‌جویی در مصرف اینترنت</span>
-            </div>
+      {/* 1. Sleek Top Glassmorphic Notification Pill */}
+      {qualityNotice && (
+        <div
+          id="player-quality-notice"
+          className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2"
+        >
+          <div
+            dir="rtl"
+            className="bg-black/85 backdrop-blur-md text-white text-xs px-3.5 py-1.5 rounded-full border border-white/15 shadow-xl font-dana flex items-center gap-2"
+            style={{ fontFamily: 'var(--font-dana), Dana, sans-serif' }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C58B43]" />
+            <span>{qualityNotice}</span>
           </div>
         </div>
       )}
 
+      {/* 2. Audio Mode Overlay: top title, empty center for big Play button, bottom waveform */}
+      {isAudioOnly && (
+        <div
+          id="audio-mode-overlay"
+          className="absolute inset-0 z-10 flex flex-col justify-between p-6 pb-20 bg-[#0C0D0E]/95 text-white pointer-events-none select-none transition-opacity duration-300"
+        >
+          {/* Top Header */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1 text-start">
+              <div className="text-sm sm:text-base font-bold text-white font-dana">{chapterTitle}</div>
+              <div className="text-xs text-zinc-400 font-dana">{instructorName}</div>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white/90 font-dana border border-white/15">
+              <Headphones className="w-3.5 h-3.5 text-[#C58B43]" />
+              <span>پخش صوتی بهینه</span>
+            </div>
+          </div>
+
+          {/* Center: COMPLETELY EMPTY so large play button in center is unobstructed */}
+          <div className="flex-1" />
+
+          {/* Bottom subtle waveform */}
+          <div className="flex items-center justify-center gap-1.5 opacity-60">
+            {[4, 8, 14, 20, 12, 18, 24, 16, 10, 6, 12, 20, 14, 8, 4].map((h, i) => (
+              <span
+                key={i}
+                className="w-1 bg-[#C58B43] rounded-full"
+                style={{ height: `${h}px` }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Custom Dana-Font Subtitle Overlay Pill */}
+      {isCaptionsEnabled && Boolean(activeSubtitleText) && !isAudioOnly && (
+        <div
+          id="custom-subtitle-overlay"
+          className="absolute bottom-16 left-0 right-0 flex justify-center pointer-events-none z-20 px-4 animate-in fade-in-0 duration-150"
+        >
+          <div
+            dir="rtl"
+            className="bg-black/85 backdrop-blur-md text-white px-4 py-1.5 rounded-lg text-sm md:text-base font-medium shadow-lg font-dana text-center max-w-xl transition-all duration-150 border border-white/15"
+            style={{ fontFamily: 'var(--font-dana), Dana, sans-serif' }}
+          >
+            {activeSubtitleText}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Official VideoSkin Video Player */}
       <VideoPlayer {...({ dir: 'ltr' } as any)} poster={poster}>
         <VideoSkin {...({ dir: 'ltr' } as any)} className="w-full aspect-video">
           <Video
             ref={videoRef}
             crossOrigin="anonymous"
             playsInline
-            src={currentVideoSrc}
+            src={baseSrc}
             className={`w-full h-full object-contain ${isAudioOnly ? 'opacity-0' : 'opacity-100'}`}
             onLoadedMetadata={handleLoadedMetadata}
             onTimeUpdate={handleTimeUpdate}
             onEnded={handleEnded}
           >
-            {vttBlobUrl && (
+            {vttDataUri && (
               <>
                 <track
                   kind="captions"
                   srcLang="fa"
                   label="فارسی"
                   default
-                  src={vttBlobUrl}
+                  src={vttDataUri}
                 />
                 <track
                   kind="subtitles"
                   srcLang="fa-academic"
                   label="فارسی (تقریر کامل)"
-                  src={vttBlobUrl}
+                  src={vttDataUri}
                 />
               </>
             )}

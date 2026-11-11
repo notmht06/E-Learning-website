@@ -37,7 +37,7 @@ export function AdminArticlesTab() {
   const [titleFa, setTitleFa] = useState('');
   const [titleAr, setTitleAr] = useState('');
   const [titleEn, setTitleEn] = useState('');
-  const [category, setCategory] = useState('حکمت متعالیه');
+  const [category, setCategory] = useState(categories[0]?.name_fa || 'فلسفه');
   const [author, setAuthor] = useState('حجت الاسلام دکتر زنجیرزن حسینی');
   const [abstractFa, setAbstractFa] = useState('');
   const [contentFa, setContentFa] = useState('');
@@ -78,7 +78,7 @@ export function AdminArticlesTab() {
     setTitleFa('');
     setTitleAr('');
     setTitleEn('');
-    setCategory(categories[0]?.name_fa || 'حکمت متعالیه');
+    setCategory(categories[0]?.name_fa || 'فلسفه');
     setAuthor('حجت الاسلام دکتر زنجیرزن حسینی');
     setAbstractFa('');
     setContentFa('');
@@ -92,7 +92,7 @@ export function AdminArticlesTab() {
     setTitleFa(art.title_fa || '');
     setTitleAr(art.title_ar || '');
     setTitleEn(art.title_en || '');
-    setCategory(art.category || 'حکمت متعالیه');
+    setCategory(art.category || categories[0]?.name_fa || 'فلسفه');
     setAuthor(art.author || 'حجت الاسلام دکتر زنجیرزن حسینی');
     setAbstractFa(art.abstract_fa || '');
     setContentFa(art.content_fa || '');
