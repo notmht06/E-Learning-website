@@ -81,26 +81,17 @@ export function AudioVideoPlayerEngine({
     setCurrentVideoSrc(baseSrc);
   }, [baseSrc]);
 
-  // Generate WebVTT captions Blob URL
+  // Generate WebVTT captions Data URI
   const vttBlobUrl = useMemo(() => {
     if (typeof window === 'undefined') return '';
     try {
       const cues = getCourseSubtitles(courseId || 'course-asfar', chapterId || 1, durationSeconds);
       const vtt = generateWebVTT(cues);
-      const blob = new Blob([vtt], { type: 'text/vtt;charset=utf-8' });
-      return URL.createObjectURL(blob);
+      return `data:text/vtt;charset=utf-8,${encodeURIComponent(vtt)}`;
     } catch {
       return '';
     }
   }, [courseId, chapterId, durationSeconds]);
-
-  useEffect(() => {
-    return () => {
-      if (vttBlobUrl) {
-        URL.revokeObjectURL(vttBlobUrl);
-      }
-    };
-  }, [vttBlobUrl]);
 
   // Switch video stream quality preserving currentTime and playback state
   const handleQualityChange = useCallback(
