@@ -49,6 +49,8 @@ export default function ArticlesPage() {
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [readTimeFilter, setReadTimeFilter] = useState<'all' | 'short' | 'deep'>('all');
+  const [onlyQuickAbstract, setOnlyQuickAbstract] = useState(false);
   const [sortBy, setSortBy] = useState('default');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<ScholarlyArticle | null>(null);
@@ -131,22 +133,46 @@ export default function ArticlesPage() {
             (c.name === selectedCategory || c.name_fa === selectedCategory || c.slug === selectedCategory) &&
             (c.name === art.category || c.name_fa === art.category || c.slug === art.category)
         );
-      return matchesSearch && matchesCat;
+
+      const rawMinutes = parseInt((art.readTime || '').replace(/[^\d]/g, '') || '10', 10);
+      const matchesReadTime =
+        readTimeFilter === 'all'
+          ? true
+          : readTimeFilter === 'short'
+          ? rawMinutes < 15
+          : rawMinutes >= 15;
+
+      const matchesAbstract = !onlyQuickAbstract || Boolean(art.abstract && art.abstract.length > 0);
+
+      return matchesSearch && matchesCat && matchesReadTime && matchesAbstract;
     });
 
     if (sortBy === 'newest') {
       return [...list].reverse();
     }
     return list;
-  }, [allArticlesList, search, selectedCategory, currentLang, activeCategories, sortBy]);
+  }, [
+    allArticlesList,
+    search,
+    selectedCategory,
+    readTimeFilter,
+    onlyQuickAbstract,
+    currentLang,
+    activeCategories,
+    sortBy,
+  ]);
 
   const activeFiltersCount =
     (selectedCategory !== 'all' ? 1 : 0) +
+    (readTimeFilter !== 'all' ? 1 : 0) +
+    (onlyQuickAbstract ? 1 : 0) +
     (search.trim() ? 1 : 0);
   const hasActiveFilters = activeFiltersCount > 0;
 
   const handleClearAllFilters = () => {
     setSelectedCategory('all');
+    setReadTimeFilter('all');
+    setOnlyQuickAbstract(false);
     setSearch('');
     setSortBy('default');
   };
@@ -287,6 +313,34 @@ export default function ArticlesPage() {
               </span>
             )}
 
+            {readTimeFilter !== 'all' && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 dark:border-[#C58B43]/30">
+                <span>
+                  زمان: {readTimeFilter === 'short' ? 'کوتاه (زیر ۱۵ دقیقه)' : 'عمیق (+۱۵ دقیقه)'}
+                </span>
+                <button
+                  onClick={() => setReadTimeFilter('all')}
+                  className="hover:opacity-75 cursor-pointer"
+                  aria-label="حذف فیلتر زمان"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
+            {onlyQuickAbstract && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#8A532B]/10 dark:bg-[#C58B43]/15 text-[#8A532B] dark:text-[#C58B43] border border-[#8A532B]/20 dark:border-[#C58B43]/30">
+                <span>دارای چکیده سریع</span>
+                <button
+                  onClick={() => setOnlyQuickAbstract(false)}
+                  className="hover:opacity-75 cursor-pointer"
+                  aria-label="حذف فیلتر چکیده"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
             {search.trim() && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                 <span>«{search.trim()}»</span>
@@ -417,6 +471,10 @@ export default function ArticlesPage() {
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
               articles={allArticlesList}
+              selectedReadTime={readTimeFilter}
+              onSelectReadTime={setReadTimeFilter}
+              onlyQuickAbstract={onlyQuickAbstract}
+              onToggleOnlyQuickAbstract={setOnlyQuickAbstract}
               onClearFilters={handleClearAllFilters}
               hasActiveFilters={hasActiveFilters}
             />

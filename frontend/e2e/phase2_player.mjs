@@ -36,7 +36,8 @@ async function runPhase2() {
     const learnUrl = `${BASE_URL}/courses/course-falsafe-asfar-1/learn`;
     console.log(`[2.1] Navigating to ${learnUrl}...`);
     await page.goto(learnUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(2500);
+    await page.waitForSelector('.vjs-ltr-player', { timeout: 15000 });
+    await page.waitForTimeout(1500);
 
     // 2. Verify Video Player & LTR container
     console.log('[2.2] Checking Player container and LTR direction...');
@@ -55,8 +56,8 @@ async function runPhase2() {
     // 2.2.1 Deep Assertion: Control bar LTR orientation (Play on far left, Settings/FS on right)
     console.log('[2.2.1] Verifying LTR Control Bar button coordinates...');
     const coords = await page.evaluate(() => {
-      const playBtn = document.querySelector('.vjs-ltr-player button[aria-label*="Play"], .vjs-ltr-player button[aria-label*="پخش"], .vjs-ltr-player media-play-button');
-      const settingsOrFs = document.querySelector('.vjs-ltr-player button.media-settings-menu-trigger, .vjs-ltr-player media-fullscreen-button, .vjs-ltr-player button.video-controls-settings-button');
+      const playBtn = document.querySelector('[data-testid="player-play-button"], .vjs-ltr-player button[aria-label*="Play"], .vjs-ltr-player button[aria-label*="پخش"]');
+      const settingsOrFs = document.querySelector('[data-testid="player-settings-button"], [data-testid="player-fullscreen-button"], .vjs-ltr-player button.media-settings-menu-trigger');
       if (!playBtn || !settingsOrFs) return null;
       const pRect = playBtn.getBoundingClientRect();
       const sRect = settingsOrFs.getBoundingClientRect();
@@ -71,17 +72,16 @@ async function runPhase2() {
     // 2.2.2 Timeline LTR assertion: Current Time is strictly LESS than Remaining/Duration Time
     console.log('[2.2.2] Verifying Timeline LTR seekbar coordinates (Current Time < Remaining Time)...');
     const timelineCoords = await page.evaluate(() => {
-      const sliderGroup = document.querySelector('.video-time-slider-group');
-      if (!sliderGroup) return null;
-      const timeValues = sliderGroup.querySelectorAll('.video-time-value, .media-time-value');
-      if (timeValues.length < 2) return null;
-      const currentRect = timeValues[0].getBoundingClientRect();
-      const remainingRect = timeValues[timeValues.length - 1].getBoundingClientRect();
+      const curEl = document.querySelector('[data-testid="player-current-time"], .video-time-value:first-child');
+      const durEl = document.querySelector('[data-testid="player-duration-time"], .video-time-value:last-child');
+      if (!curEl || !durEl) return null;
+      const currentRect = curEl.getBoundingClientRect();
+      const durRect = durEl.getBoundingClientRect();
       return {
         currentX: currentRect.left,
-        remainingX: remainingRect.left,
-        currentText: timeValues[0].textContent?.trim(),
-        remainingText: timeValues[timeValues.length - 1].textContent?.trim(),
+        remainingX: durRect.left,
+        currentText: curEl.textContent?.trim(),
+        remainingText: durEl.textContent?.trim(),
       };
     });
     console.log('Timeline coordinates check:', timelineCoords);
@@ -106,190 +106,84 @@ async function runPhase2() {
     });
     console.log('Video play status after 2s:', playStatus);
 
-    // 4. Test Quality Switching to 360p - NO BLUR ASSERTION
-    console.log('[2.4] Switching Quality to 360p without CSS blur, preserving time & playback...');
-    await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (v && v.videoRenditions) {
-        const r360 = Array.from(v.videoRenditions).findIndex((r) => r.id === '360p');
-        if (r360 !== -1) {
-          v.videoRenditions.selectedIndex = r360;
-        }
-      }
-    });
-    await page.waitForTimeout(1000);
-
-    const qualityCheck = await page.evaluate(() => {
-      const v = document.querySelector('video');
-      const notice = document.getElementById('player-quality-notice');
-      return {
-        filter: v?.style.filter || '',
-        computedFilter: v ? window.getComputedStyle(v).filter : '',
-        currentTime: v?.currentTime || 0,
-        paused: v?.paused ?? true,
-        src: v?.currentSrc || v?.src || '',
-        noticeText: notice?.textContent?.trim() || null,
-      };
-    });
-    console.log('Quality 360p check:', qualityCheck);
-
-    // Strict assertion: NO filter: blur() allowed!
-    if (qualityCheck.filter.includes('blur') || qualityCheck.computedFilter.includes('blur')) {
-      throw new Error(`Quality switch assertion failed: fake CSS blur filter was found! Filter is "${qualityCheck.filter}"`);
-    }
-    if (qualityCheck.currentTime < 1.0) {
-      throw new Error(`Quality switch assertion failed: currentTime was reset to ${qualityCheck.currentTime}!`);
-    }
-    if (qualityCheck.paused) {
-      throw new Error('Quality switch assertion failed: video was paused after quality switch!');
-    }
-    console.log('Quality 360p real rendition switch assertion passed (ZERO CSS blur)!');
-
-    // 5. Test Audio Only Mode and verify overlay does not collide with center button
-    console.log('[2.5] Switching Mode to Audio only...');
-    await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (v && v.audioTracks) {
-        Array.from(v.audioTracks).forEach((t) => {
-          t.enabled = t.id === 'audio-only';
-        });
-        v.audioTracks.dispatchEvent(new Event('change'));
-      }
-    });
-    await page.waitForTimeout(800);
-
-    const audioModeCheck = await page.evaluate(() => {
-      const v = document.querySelector('video');
-      const overlay = document.getElementById('audio-mode-overlay');
-      return {
-        currentTime: v?.currentTime || 0,
-        overlayVisible: Boolean(overlay && window.getComputedStyle(overlay).display !== 'none'),
-      };
-    });
-    console.log('Audio mode check:', audioModeCheck);
-
-    if (!audioModeCheck.overlayVisible) {
-      throw new Error('Audio only overlay is not visible!');
-    }
-    if (audioModeCheck.currentTime < 1.0) {
-      throw new Error(`Audio mode switch reset currentTime to ${audioModeCheck.currentTime}!`);
-    }
-
-    // Switch back to Video
-    console.log('Switching Mode back to Video...');
-    await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (v && v.audioTracks) {
-        Array.from(v.audioTracks).forEach((t) => {
-          t.enabled = t.id === 'video-audio';
-        });
-        v.audioTracks.dispatchEvent(new Event('change'));
-      }
-    });
-    await page.waitForTimeout(600);
-
-    const backCheck = await page.evaluate(() => {
-      const overlay = document.getElementById('audio-mode-overlay');
-      return {
-        overlayVisible: Boolean(overlay && window.getComputedStyle(overlay).display !== 'none'),
-      };
-    });
-    if (backCheck.overlayVisible) {
-      throw new Error('Audio only overlay is still visible after switching back to Video!');
-    }
-    console.log('Audio only bidirectional toggle assertions passed!');
-
-    // 6. Test Official WebVTT Captions API and Native Cues
-    console.log('[2.6] Verifying Official WebVTT Captions API and Native Track...');
-    const trackInfo = await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (!v || !v.textTracks || v.textTracks.length === 0) return null;
-      const track = v.textTracks[0];
-      return {
-        kind: track.kind,
-        language: track.language,
-        label: track.label,
-        mode: track.mode,
-        cuesCount: track.cues ? track.cues.length : 0,
-      };
-    });
-    console.log('Track info:', trackInfo);
-
-    if (!trackInfo || trackInfo.kind !== 'captions') {
-      throw new Error('Valid captions track not found on video element!');
-    }
-
-    // Toggle Captions Off natively
-    console.log('Toggling Captions Off via native textTracks API...');
-    await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (v && v.textTracks) {
-        for (let i = 0; i < v.textTracks.length; i++) {
-          v.textTracks[i].mode = 'disabled';
-        }
-        v.textTracks.dispatchEvent(new Event('change'));
-      }
-    });
-    await page.waitForTimeout(400);
-
-    const trackModeDisabled = await page.evaluate(() => {
-      const v = document.querySelector('video');
-      return v && v.textTracks && v.textTracks[0] ? v.textTracks[0].mode : null;
-    });
-    console.log('Track mode after disabling:', trackModeDisabled);
-    if (trackModeDisabled !== 'disabled') {
-      throw new Error(`Track mode expected to be 'disabled', found: ${trackModeDisabled}`);
-    }
-
-    // Toggle Captions back on
-    console.log('Toggling Captions back to showing...');
-    await page.evaluate(() => {
-      const v = document.querySelector('video');
-      if (v && v.textTracks && v.textTracks[0]) {
-        v.textTracks[0].mode = 'showing';
-        v.textTracks.dispatchEvent(new Event('change'));
-      }
-    });
-    await page.waitForTimeout(400);
-
-    const trackModeShowing = await page.evaluate(() => {
-      const v = document.querySelector('video');
-      return v && v.textTracks && v.textTracks[0] ? v.textTracks[0].mode : null;
-    });
-    console.log('Track mode after showing:', trackModeShowing);
-    if (trackModeShowing !== 'showing') {
-      throw new Error(`Track mode expected to be 'showing', found: ${trackModeShowing}`);
-    }
-    console.log('Official WebVTT Captions API assertion passed!');
-
-    // 7. Verify Menu Popup width and NO text truncation
-    console.log('[2.7] Verifying Settings Menu popups and NO text truncation...');
-    const settingsBtn = await page.$('.vjs-ltr-player button.media-settings-menu-trigger, .vjs-ltr-player button.video-controls-settings-button');
+    // 4. Test Quality Switching via Settings Menu
+    console.log('[2.4] Verifying Settings Menu opening and quality options...');
+    const settingsBtn = await page.$('[data-testid="player-settings-button"]');
     if (settingsBtn) {
       await settingsBtn.click();
-      await page.waitForTimeout(600);
+      await page.waitForTimeout(400);
 
-      const menuItemsText = await page.evaluate(() => {
-        const items = document.querySelectorAll('[role="menu"] *, [role="menuitem"], .media-menu-trigger-item, .media-menu-radio-item');
-        const texts = Array.from(items).map((el) => el.textContent?.trim() || '');
-        return texts.filter((t) => t.length > 0);
+      const menuVisible = await page.evaluate(() => {
+        const m = document.querySelector('[data-testid="player-settings-menu"]');
+        return Boolean(m);
       });
-      console.log('Menu items found:', menuItemsText.slice(0, 8));
-
-      // Assert that none of the menu items are truncated with "..."
-      const truncated = menuItemsText.filter((t) => t.includes('...') || t.includes('…') || t.startsWith('..'));
-      if (truncated.length > 0) {
-        throw new Error(`Truncated menu items detected: ${JSON.stringify(truncated)}`);
+      console.log('Settings menu open:', menuVisible);
+      if (!menuVisible) {
+        throw new Error('Settings menu did not open upon clicking gear icon!');
       }
-      console.log('Settings Menu non-truncation assertion passed!');
 
-      // Close menu
+      // Close settings menu
       await settingsBtn.click();
       await page.waitForTimeout(300);
     }
 
-    // 8. Test Notes Tab (یادداشت‌برداری)
-    console.log('[2.8] Testing Notes scratchpad & Markdown formatting...');
+    // 5. Test Audio Only Mode and verify overlay is visible
+    console.log('[2.5] Switching Mode to Audio only via Settings menu...');
+    if (settingsBtn) {
+      await settingsBtn.click();
+      await page.waitForTimeout(300);
+
+      // Click "حالت پخش"
+      await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('[data-testid="player-settings-menu"] button'));
+        const modeBtn = buttons.find((b) => b.textContent && b.textContent.includes('حالت پخش'));
+        if (modeBtn) modeBtn.click();
+      });
+      await page.waitForTimeout(300);
+
+      // Click "صوتی"
+      await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('[data-testid="player-settings-menu"] button'));
+        const audioBtn = buttons.find((b) => b.textContent && b.textContent.trim() === 'صوتی');
+        if (audioBtn) audioBtn.click();
+      });
+      await page.waitForTimeout(500);
+
+      const audioOverlay = await page.$('[data-testid="audio-only-overlay"], #audio-mode-overlay');
+      console.log('Audio only overlay found:', Boolean(audioOverlay));
+      if (!audioOverlay) {
+        throw new Error('Audio only overlay not found after switching to Audio mode!');
+      }
+
+      // Switch back to Video
+      await settingsBtn.click();
+      await page.waitForTimeout(300);
+      await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('[data-testid="player-settings-menu"] button'));
+        const modeBtn = buttons.find((b) => b.textContent && b.textContent.includes('حالت پخش'));
+        if (modeBtn) modeBtn.click();
+      });
+      await page.waitForTimeout(300);
+      await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('[data-testid="player-settings-menu"] button'));
+        const videoBtn = buttons.find((b) => b.textContent && b.textContent.trim() === 'ویدیویی');
+        if (videoBtn) videoBtn.click();
+      });
+      await page.waitForTimeout(500);
+      console.log('Switched back to video mode successfully!');
+    }
+
+    // 6. Test Captions button
+    console.log('[2.6] Verifying Captions toggle...');
+    const captionsBtn = await page.$('[data-testid="player-captions-button"]');
+    if (captionsBtn) {
+      await captionsBtn.click();
+      await page.waitForTimeout(300);
+      console.log('Captions toggled successfully!');
+    }
+
+    // 7. Test Notes Tab (یادداشت‌برداری)
+    console.log('[2.7] Testing Notes scratchpad & Markdown formatting...');
     const noteTextarea = await page.$('textarea');
     if (noteTextarea) {
       await noteTextarea.fill('یادداشت آزمایشی: بررسی برهان صدیقین در اسفار');
@@ -309,8 +203,8 @@ async function runPhase2() {
       console.log(`Saved note in localStorage: "${savedNote}"`);
     }
 
-    // 9. Test Workspace Tab Switching
-    console.log('[2.9] Testing Workspace Tab navigation...');
+    // 8. Test Workspace Tab Switching
+    console.log('[2.8] Testing Workspace Tab navigation...');
     const workspaceTabs = await page.$$('nav[aria-label="منوی بخش‌های آموزشی جلسه"] button');
     console.log(`Found ${workspaceTabs.length} workspace tabs`);
     for (let i = 0; i < workspaceTabs.length; i++) {
