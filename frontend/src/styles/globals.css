@@ -75,6 +75,8 @@
 /* ==========================================================================
    FORCE 100% LTR & DANA TYPOGRAPHY FOR VIDEOJS PLAYER, PORTALS & FULLSCREEN
    ========================================================================== */
+.vjs-ltr-player,
+.vjs-ltr-player *,
 .vjs-ltr-wrapper,
 .vjs-ltr-wrapper *,
 .vjs-ltr-wrapper:fullscreen,
@@ -86,62 +88,88 @@
 .vjs-ltr-wrapper media-control-bar,
 .vjs-ltr-wrapper [class*="control-bar"],
 .vjs-ltr-wrapper .media-skin,
+[data-media-player],
+[data-media-player] *,
+media-player,
+media-player *,
 :fullscreen .vjs-ltr-wrapper,
 :fullscreen .vjs-ltr-wrapper *,
 :fullscreen [class*="video-skin"],
 :fullscreen media-player,
-:fullscreen [data-theme],
-.media-menu-popup,
-.media-menu-popup *,
-.media-menu-resizable-popup,
-.media-menu-resizable-popup *,
-.media-menu-content,
-.media-menu-content *,
-[role="menu"],
-[role="menu"] *,
-[role="menuitem"],
-[role="menuitemradio"],
-media-settings-menu,
-media-menu,
-media-menu-items {
+:fullscreen [data-theme] {
   direction: ltr !important;
   font-family: var(--font-dana), 'Dana', sans-serif !important;
 }
 
 /* Strictly enforce LTR flex-direction row (neutralizing [dir="rtl"] * row-reverse in @videojs/react) */
-.vjs-ltr-wrapper .video-controls-content,
-.vjs-ltr-wrapper .video-controls-primary,
-.vjs-ltr-wrapper .video-controls-secondary,
-.vjs-ltr-wrapper [class*="video-controls"] {
+.vjs-ltr-player .video-time-slider-group,
+.vjs-ltr-wrapper .video-time-slider-group,
+.video-time-slider-group,
+.video-time-slider-group:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
   flex-direction: row !important;
   direction: ltr !important;
 }
 
-/* Hide native ugly Chromium ::cue subtitles (rendered via custom Dana overlay) */
-video::cue,
-::cue {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  color: transparent !important;
-  background: transparent !important;
+.vjs-ltr-player .video-controls-primary,
+.vjs-ltr-wrapper .video-controls-primary,
+.video-controls-primary,
+.video-controls-primary:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+  flex-direction: row !important;
+  direction: ltr !important;
 }
 
-/* Glassmorphic styling for Video.js media menu popups */
+.vjs-ltr-player .video-controls-content,
+.vjs-ltr-wrapper .video-controls-content,
+.video-controls-content {
+  flex-direction: row !important;
+  direction: ltr !important;
+}
+
+/* Official native Video.js / Browser WebVTT cue styling with authentic Dana Persian typography */
+video::cue,
+::cue {
+  font-family: var(--font-dana), 'Dana', Tahoma, sans-serif !important;
+  direction: rtl !important;
+  unicode-bidi: plaintext !important;
+  background-color: rgba(15, 23, 42, 0.82) !important;
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+}
+
+/* Glassmorphic styling for Video.js media menu popups with ample width preventing truncation */
 .media-menu-popup,
 .media-menu-resizable-popup,
-.media-menu-content {
-  background-color: rgba(12, 13, 14, 0.94) !important;
+.media-menu-content,
+[role="menu"],
+[data-media-menu],
+media-settings-menu,
+media-menu,
+media-menu-items {
+  min-width: 220px !important;
+  width: auto !important;
+  background-color: rgba(12, 13, 14, 0.96) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 0.875rem !important;
   color: #f4f4f6 !important;
   box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6) !important;
+  white-space: nowrap !important;
+  font-family: var(--font-dana), 'Dana', sans-serif !important;
+  direction: ltr !important;
 }
 
 .media-menu-trigger-item,
-.media-menu-radio-item {
+.media-menu-radio-item,
+[role="menuitem"],
+[role="menuitemradio"] {
+  min-width: 200px !important;
+  white-space: nowrap !important;
+  text-overflow: clip !important;
+  overflow: visible !important;
   color: #e4e4e7 !important;
   font-size: 0.8125rem !important;
   font-family: var(--font-dana), 'Dana', sans-serif !important;
@@ -151,7 +179,9 @@ video::cue,
 .media-menu-trigger-item:hover,
 .media-menu-radio-item:hover,
 .media-menu-trigger-item:focus,
-.media-menu-radio-item:focus {
+.media-menu-radio-item:focus,
+[role="menuitem"]:hover,
+[role="menuitemradio"]:hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
 }

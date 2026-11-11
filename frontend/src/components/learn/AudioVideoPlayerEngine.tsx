@@ -2,8 +2,11 @@
 
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Video, VideoPlayer, VideoSkin } from '@videojs/react/video';
+import { HlsVideo } from '@videojs/react/media/hls-video';
+import { I18nProvider } from '@videojs/react/i18n';
+import faLocale from '@videojs/core/i18n/locales/fa';
 import '@videojs/react/video/skin.css';
-import { Headphones } from 'lucide-react';
+import { Headphones, Video as VideoIcon } from 'lucide-react';
 import { getCourseSubtitles, SubtitleCue } from '@/lib/subtitles';
 import { SCHOLAR_NAME } from '@/lib/constants';
 import { LearningAccessGuard } from './LearningAccessGuard';
@@ -28,12 +31,27 @@ export interface AudioVideoPlayerEngineProps {
   onProgressSync?: (chapterId: number, percent: number, currentSec: number) => void;
 }
 
-const QUALITY_FILTERS: Record<string, string> = {
-  auto: 'none',
-  '1080p': 'none',
-  '720p': 'blur(0.4px) contrast(0.99)',
-  '480p': 'blur(1.1px) contrast(0.96)',
-  '360p': 'blur(2.2px) contrast(0.93)',
+// Resolution map for real multi-quality files without CSS blur
+const REAL_QUALITY_SOURCES: Record<string, string> = {
+  auto: '/videos/sample_lecture.mp4',
+  '1080p': '/videos/sample_lecture_1080p.mp4',
+  '720p': '/videos/sample_lecture_720p.mp4',
+  '480p': '/videos/sample_lecture_480p.mp4',
+  '360p': '/videos/sample_lecture_360p.mp4',
+};
+
+// Official Video.js Persian Translations
+const FA_TRANSLATIONS = {
+  ...faLocale,
+  menu: {
+    ...faLocale.menu,
+    quality: 'کیفیت',
+    speed: 'سرعت پخش',
+    captions: 'زیرنویس',
+    audio: 'حالت پخش',
+    off: 'خاموش',
+    auto: 'خودکار',
+  },
 };
 
 function formatVttTime(seconds: number): string {
@@ -44,12 +62,26 @@ function formatVttTime(seconds: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
 }
 
+// Generate WebVTT with explicit RTL markers to prevent reversed punctuation in Chromium
 function generateWebVTT(cues: SubtitleCue[]): string {
   let vtt = 'WEBVTT - درس‌گفتار استاد\n\n';
+  vtt += 'STYLE\n';
+  vtt += '::cue {\n';
+  vtt += '  direction: rtl;\n';
+  vtt += '  unicode-bidi: plaintext;\n';
+  vtt += '  font-family: Dana, Tahoma, sans-serif;\n';
+  vtt += '  background-color: rgba(15, 23, 42, 0.85);\n';
+  vtt += '  color: #ffffff;\n';
+  vtt += '  font-size: 1rem;\n';
+  vtt += '  line-height: 1.6;\n';
+  vtt += '  border-radius: 8px;\n';
+  vtt += '}\n\n';
+
   cues.forEach((cue) => {
     vtt += `${cue.id}\n`;
     vtt += `${formatVttTime(cue.start)} --> ${formatVttTime(cue.end)}\n`;
-    vtt += `${cue.text.fa}\n\n`;
+    // Wrap with RLE (\u202B) and PDF (\u202C) for flawless bidirectional punctuation
+    vtt += `\u202B${cue.text.fa}\u202C\n\n`;
   });
   return vtt;
 }
@@ -76,18 +108,26 @@ export function AudioVideoPlayerEngine({
   const noticeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [isAudioOnly, setIsAudioOnly] = useState(false);
+  const [selectedQuality, setSelectedQuality] = useState<string>('auto');
   const [qualityNotice, setQualityNotice] = useState<string | null>(null);
-  const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
-  const [activeSubtitleText, setActiveSubtitleText] = useState<string>('');
 
-  // Direct video URL resolver
+  // Check if source is an HLS multi-rendition stream (.m3u8)
+  const isHls = useMemo(() => {
+    return Boolean(videoUrl && videoUrl.toLowerCase().includes('.m3u8'));
+  }, [videoUrl]);
+
+  // Determine active video source based on quality or fallback
   const isDirectVideo =
     Boolean(videoUrl) &&
     !videoUrl?.includes('youtube.com') &&
     !videoUrl?.includes('youtu.be') &&
     /\.(mp4|webm|m3u8|ogg|mov)(\?.*)?$/i.test(videoUrl || '');
 
-  const baseSrc = isDirectVideo ? (videoUrl as string) : '/videos/sample_lecture.mp4';
+  const activeSrc = useMemo(() => {
+    if (isHls) return videoUrl as string;
+    if (isDirectVideo && videoUrl) return videoUrl;
+    return REAL_QUALITY_SOURCES[selectedQuality.toLowerCase()] || REAL_QUALITY_SOURCES.auto;
+  }, [isHls, isDirectVideo, videoUrl, selectedQuality]);
 
   // Subtitle Cues
   const cues = useMemo(() => {
@@ -98,7 +138,7 @@ export function AudioVideoPlayerEngine({
     }
   }, [courseId, chapterId, durationSeconds]);
 
-  // Generate WebVTT captions Data URI
+  // Generate WebVTT Data URI
   const vttDataUri = useMemo(() => {
     if (typeof window === 'undefined' || cues.length === 0) return '';
     try {
@@ -109,14 +149,13 @@ export function AudioVideoPlayerEngine({
     }
   }, [cues]);
 
-  // Handle Quality Switch: apply visual resolution downscaling filter directly to <video>
-  // without resetting currentTime or pausing playback
+  // Quality switch handler: switches real video source without resetting currentTime or pausing
   const handleQualityChange = useCallback((newQuality: string) => {
     const el = videoRef.current || containerRef.current?.querySelector('video');
-    if (!el) return;
+    const prevTime = el ? el.currentTime : 0;
+    const wasPlaying = el ? !el.paused : false;
 
-    const filter = QUALITY_FILTERS[newQuality.toLowerCase()] || 'none';
-    el.style.filter = filter;
+    setSelectedQuality(newQuality);
 
     const label = newQuality === 'auto' ? 'کیفیت خودکار (Auto 1080p)' : `کیفیت ${newQuality}`;
     setQualityNotice(label);
@@ -126,32 +165,45 @@ export function AudioVideoPlayerEngine({
       setQualityNotice(null);
     }, 2500);
 
-    // Keep playing if it was playing
-    if (!el.paused) {
-      el.play().catch(() => {});
+    // If changing source element, restore position
+    if (el) {
+      const handleRestored = () => {
+        if (prevTime > 0) {
+          el.currentTime = prevTime;
+        }
+        if (wasPlaying && el.paused) {
+          el.play().catch(() => {});
+        }
+        el.removeEventListener('loadedmetadata', handleRestored);
+      };
+      el.addEventListener('loadedmetadata', handleRestored, { once: true });
     }
   }, []);
 
-  // Sync textTrack modes and subtitle visibility
-  const syncTracks = useCallback(() => {
+  // Audio mode toggle handler
+  const handleToggleAudioOnly = useCallback((audioOnlyState: boolean) => {
     const el = videoRef.current || containerRef.current?.querySelector('video');
-    if (!el || !el.textTracks) return;
+    const prevTime = el ? el.currentTime : 0;
+    const wasPlaying = el ? !el.paused : false;
 
-    let hasActiveTrack = false;
-    for (let i = 0; i < el.textTracks.length; i++) {
-      const track = el.textTracks[i];
-      if (track.mode === 'showing') {
-        // Suppress native Chromium shadow DOM rendering in favor of custom Dana overlay
-        track.mode = 'hidden';
-        hasActiveTrack = true;
-      } else if (track.mode === 'hidden') {
-        hasActiveTrack = true;
+    setIsAudioOnly(audioOnlyState);
+
+    // Sync polyfilled audioTracks if present
+    if (el && (el as any).audioTracks) {
+      Array.from((el as any).audioTracks).forEach((t: any) => {
+        t.enabled = audioOnlyState ? t.id === 'audio-only' : t.id === 'video-audio';
+      });
+    }
+
+    if (el) {
+      el.currentTime = prevTime;
+      if (wasPlaying && el.paused) {
+        el.play().catch(() => {});
       }
     }
-    setIsCaptionsEnabled(hasActiveTrack);
   }, []);
 
-  // Attach Video.js videoRenditions and audioTracks polyfill to media element
+  // Polyfill videoRenditions and audioTracks so native Video.js menus populate seamlessly
   useEffect(() => {
     const el = videoRef.current || containerRef.current?.querySelector('video');
     if (!el) return;
@@ -223,8 +275,8 @@ export function AudioVideoPlayerEngine({
     // 2. audioTracks (Standard video+audio vs Audio Only)
     if (!(el as any).audioTracks) {
       const tracks = [
-        { id: 'video-audio', label: 'ویدیو و صوت', kind: 'main', language: 'fa', enabled: true },
-        { id: 'audio-only', label: 'فقط صوت', kind: 'alternative', language: 'fa', enabled: false },
+        { id: 'video-audio', label: 'ویدیو و صوت', kind: 'main', language: 'fa', enabled: !isAudioOnly },
+        { id: 'audio-only', label: 'فقط صوت', kind: 'alternative', language: 'fa', enabled: isAudioOnly },
       ];
 
       class AudioTrackList extends EventTarget {
@@ -259,41 +311,21 @@ export function AudioVideoPlayerEngine({
       (el as any).audioTracks = aList;
 
       aList.addEventListener('change', () => {
-        const media = videoRef.current || containerRef.current?.querySelector('video');
-        const wasPlaying = media ? !media.paused : false;
-        const prevTime = media ? media.currentTime : 0;
-
         const audioOnlyTrack = tracks.find((t) => t.id === 'audio-only');
         const isAudio = Boolean(audioOnlyTrack?.enabled);
-        setIsAudioOnly(isAudio);
-
-        if (media) {
-          media.currentTime = prevTime;
-          if (wasPlaying && media.paused) {
-            media.play().catch(() => {});
-          }
-        }
+        handleToggleAudioOnly(isAudio);
       });
-    }
-
-    // 3. textTracks change listener
-    if (el.textTracks) {
-      el.textTracks.addEventListener('change', syncTracks);
-      syncTracks();
     }
 
     // Signal loadstart so @videojs/core features discover and bind to videoRenditions and audioTracks
     el.dispatchEvent(new Event('loadstart'));
 
     return () => {
-      if (el.textTracks) {
-        el.textTracks.removeEventListener('change', syncTracks);
-      }
       if (noticeTimerRef.current) {
         clearTimeout(noticeTimerRef.current);
       }
     };
-  }, [handleQualityChange, syncTracks]);
+  }, [handleQualityChange, handleToggleAudioOnly, isAudioOnly]);
 
   if (isLocked) {
     return (
@@ -311,7 +343,6 @@ export function AudioVideoPlayerEngine({
     if (initialPositionSec > 0 && e.currentTarget.currentTime < 1) {
       e.currentTarget.currentTime = initialPositionSec;
     }
-    syncTracks();
   };
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -321,12 +352,6 @@ export function AudioVideoPlayerEngine({
     if (dur > 0 && onProgressSync) {
       const pct = Math.min(100, Math.round((current / dur) * 100));
       onProgressSync(chapterId, pct, Math.floor(current));
-    }
-
-    // Sync active subtitle text
-    if (cues && cues.length > 0) {
-      const activeCue = cues.find((c) => current >= c.start && current <= c.end);
-      setActiveSubtitleText(activeCue ? activeCue.text.fa : '');
     }
   };
 
@@ -340,9 +365,37 @@ export function AudioVideoPlayerEngine({
     <div
       ref={containerRef}
       dir="ltr"
-      className="vjs-ltr-wrapper relative w-full overflow-hidden rounded-xl bg-black aspect-video select-none"
+      className="vjs-ltr-player vjs-ltr-wrapper relative w-full overflow-hidden rounded-xl bg-black aspect-video select-none"
     >
-      {/* 1. Sleek Top Glassmorphic Notification Pill */}
+      {/* 1. Mode Switch Segmented Pill (Video + Audio vs Audio Only) */}
+      <div className="absolute top-4 left-4 z-20 flex items-center bg-black/60 backdrop-blur-md rounded-full border border-white/15 p-0.5 text-xs font-dana">
+        <button
+          type="button"
+          onClick={() => handleToggleAudioOnly(false)}
+          className={`px-3 py-1 rounded-full transition cursor-pointer flex items-center gap-1.5 ${
+            !isAudioOnly
+              ? 'bg-[#C58B43] text-white font-bold'
+              : 'text-zinc-300 hover:text-white'
+          }`}
+        >
+          <VideoIcon className="w-3.5 h-3.5" />
+          <span>ویدیو و صوت</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleToggleAudioOnly(true)}
+          className={`px-3 py-1 rounded-full transition cursor-pointer flex items-center gap-1.5 ${
+            isAudioOnly
+              ? 'bg-[#C58B43] text-white font-bold'
+              : 'text-zinc-300 hover:text-white'
+          }`}
+        >
+          <Headphones className="w-3.5 h-3.5" />
+          <span>فقط صوت</span>
+        </button>
+      </div>
+
+      {/* 2. Sleek Top Glassmorphic Quality Notification Pill */}
       {qualityNotice && (
         <div
           id="player-quality-notice"
@@ -359,14 +412,14 @@ export function AudioVideoPlayerEngine({
         </div>
       )}
 
-      {/* 2. Audio Mode Overlay: top title, empty center for big Play button, bottom waveform */}
+      {/* 3. Audio Mode Cover Overlay (z-10 pointer-events-none, never overlaps center play button) */}
       {isAudioOnly && (
         <div
           id="audio-mode-overlay"
           className="absolute inset-0 z-10 flex flex-col justify-between p-6 pb-20 bg-[#0C0D0E]/95 text-white pointer-events-none select-none transition-opacity duration-300"
         >
           {/* Top Header */}
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-4 mt-8">
             <div className="space-y-1 text-start">
               <div className="text-sm sm:text-base font-bold text-white font-dana">{chapterTitle}</div>
               <div className="text-xs text-zinc-400 font-dana">{instructorName}</div>
@@ -393,55 +446,56 @@ export function AudioVideoPlayerEngine({
         </div>
       )}
 
-      {/* 3. Custom Dana-Font Subtitle Overlay Pill */}
-      {isCaptionsEnabled && Boolean(activeSubtitleText) && !isAudioOnly && (
-        <div
-          id="custom-subtitle-overlay"
-          className="absolute bottom-16 left-0 right-0 flex justify-center pointer-events-none z-20 px-4 animate-in fade-in-0 duration-150"
-        >
-          <div
-            dir="rtl"
-            className="bg-black/85 backdrop-blur-md text-white px-4 py-1.5 rounded-lg text-sm md:text-base font-medium shadow-lg font-dana text-center max-w-xl transition-all duration-150 border border-white/15"
-            style={{ fontFamily: 'var(--font-dana), Dana, sans-serif' }}
-          >
-            {activeSubtitleText}
-          </div>
-        </div>
-      )}
-
-      {/* 4. Official VideoSkin Video Player */}
-      <VideoPlayer {...({ dir: 'ltr' } as any)} poster={poster}>
-        <VideoSkin {...({ dir: 'ltr' } as any)} className="w-full aspect-video">
-          <Video
-            ref={videoRef}
-            crossOrigin="anonymous"
-            playsInline
-            src={baseSrc}
-            className={`w-full h-full object-contain ${isAudioOnly ? 'opacity-0' : 'opacity-100'}`}
-            onLoadedMetadata={handleLoadedMetadata}
-            onTimeUpdate={handleTimeUpdate}
-            onEnded={handleEnded}
-          >
-            {vttDataUri && (
-              <>
-                <track
-                  kind="captions"
-                  srcLang="fa"
-                  label="فارسی"
-                  default
-                  src={vttDataUri}
-                />
-                <track
-                  kind="subtitles"
-                  srcLang="fa-academic"
-                  label="فارسی (تقریر کامل)"
-                  src={vttDataUri}
-                />
-              </>
+      {/* 4. Official Video.js Video Player with I18nProvider */}
+      <I18nProvider locale="fa" translations={FA_TRANSLATIONS as any}>
+        <VideoPlayer {...({ dir: 'ltr' } as any)} poster={poster}>
+          <VideoSkin {...({ dir: 'ltr' } as any)} className="w-full aspect-video">
+            {isHls ? (
+              <HlsVideo
+                ref={videoRef}
+                crossOrigin="anonymous"
+                playsInline
+                src={activeSrc}
+                className={`w-full h-full object-contain ${isAudioOnly ? 'opacity-0' : 'opacity-100'}`}
+                onLoadedMetadata={handleLoadedMetadata}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={handleEnded}
+              >
+                {vttDataUri && (
+                  <track
+                    kind="captions"
+                    srcLang="fa"
+                    label="فارسی"
+                    default
+                    src={vttDataUri}
+                  />
+                )}
+              </HlsVideo>
+            ) : (
+              <Video
+                ref={videoRef}
+                crossOrigin="anonymous"
+                playsInline
+                src={activeSrc}
+                className={`w-full h-full object-contain ${isAudioOnly ? 'opacity-0' : 'opacity-100'}`}
+                onLoadedMetadata={handleLoadedMetadata}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={handleEnded}
+              >
+                {vttDataUri && (
+                  <track
+                    kind="captions"
+                    srcLang="fa"
+                    label="فارسی"
+                    default
+                    src={vttDataUri}
+                  />
+                )}
+              </Video>
             )}
-          </Video>
-        </VideoSkin>
-      </VideoPlayer>
+          </VideoSkin>
+        </VideoPlayer>
+      </I18nProvider>
     </div>
   );
 }
