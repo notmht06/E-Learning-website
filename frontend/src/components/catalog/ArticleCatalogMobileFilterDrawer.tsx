@@ -7,6 +7,9 @@ import {
   RotateCcw,
   Check,
   ArrowUpDown,
+  Clock,
+  BookOpen,
+  FileText,
 } from 'lucide-react';
 import {
   Dialog,
@@ -27,6 +30,10 @@ interface ArticleCatalogMobileFilterDrawerProps {
   sortBy: string;
   onSelectSortBy: (sort: string) => void;
   articles: ScholarlyArticle[];
+  selectedReadTime?: 'all' | 'short' | 'deep';
+  onSelectReadTime?: (val: 'all' | 'short' | 'deep') => void;
+  onlyQuickAbstract?: boolean;
+  onToggleOnlyQuickAbstract?: (val: boolean) => void;
   filteredCount: number;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
@@ -43,6 +50,10 @@ export const ArticleCatalogMobileFilterDrawer: React.FC<
   sortBy,
   onSelectSortBy,
   articles,
+  selectedReadTime = 'all',
+  onSelectReadTime,
+  onlyQuickAbstract = false,
+  onToggleOnlyQuickAbstract,
   filteredCount,
   onClearFilters,
   hasActiveFilters,
@@ -50,11 +61,17 @@ export const ArticleCatalogMobileFilterDrawer: React.FC<
   const { currentLang, dict } = useLanguage();
 
   const t = {
-    mobile_title: dict.catalog_filter_mobile_title || 'فیلترهای پیشرفته',
+    mobile_title: dict.catalog_filter_mobile_title || 'فیلترهای مقالات',
     disciplines_title: dict.catalog_filter_disciplines_title || 'شاخه‌های علمی',
+    readtime_title: 'زمان و عمق مطالعه',
+    readtime_all: 'همه مقالات',
+    readtime_short: 'کوتاه (زیر ۱۵ دقیقه)',
+    readtime_deep: 'عمیق (+۱۵ دقیقه)',
+    access_title: 'دسترسی و چکیده',
+    quick_abstract_only: 'فقط مقالات دارای چکیده سریع',
     clear_all: dict.catalog_filter_clear_all || 'پاک کردن فیلترها',
     apply: dict.catalog_filter_mobile_apply || 'اعمال فیلترها',
-    show: dict.catalog_filter_show_courses || 'مشاهده',
+    show: dict.catalog_filter_show_courses || 'نمایش',
     all_disciplines: dict.catalog_filter_all_categories || dict.ui_all_treatises || 'همه موضوعات',
     sort_title: dict.catalog_sort_label || 'مرتب‌سازی:',
     sort_default: dict.catalog_sort_default || 'همه',
@@ -189,6 +206,98 @@ export const ArticleCatalogMobileFilterDrawer: React.FC<
               })}
             </div>
           </div>
+
+          {/* 3. Reading Time (زمان مطالعه) */}
+          {onSelectReadTime && (
+            <div className="space-y-2 pt-2 border-t border-[#E6E1D8] dark:border-[#24262D]">
+              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
+                {t.readtime_title}
+              </span>
+              <div className="grid grid-cols-3 gap-1 p-1 bg-zinc-100 dark:bg-[#1C1E22] rounded-xl text-center text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerTactileHaptic('tick');
+                    onSelectReadTime('all');
+                  }}
+                  className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+                    selectedReadTime === 'all'
+                      ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  {t.readtime_all}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerTactileHaptic('tick');
+                    onSelectReadTime('short');
+                  }}
+                  className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+                    selectedReadTime === 'short'
+                      ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  <Clock className="w-3 h-3 inline me-1" />
+                  {t.readtime_short}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerTactileHaptic('tick');
+                    onSelectReadTime('deep');
+                  }}
+                  className={`py-1.5 rounded-lg transition font-medium cursor-pointer ${
+                    selectedReadTime === 'deep'
+                      ? 'bg-white dark:bg-[#141518] text-[#8A532B] dark:text-[#C58B43] shadow-xs font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  <BookOpen className="w-3 h-3 inline me-1" />
+                  {t.readtime_deep}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 4. Quick Abstract Toggle (دسترسی و چکیده) */}
+          {onToggleOnlyQuickAbstract && (
+            <div className="space-y-3 pt-2 border-t border-[#E6E1D8] dark:border-[#24262D]">
+              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
+                {t.access_title}
+              </span>
+              <label className="flex items-center justify-between cursor-pointer group select-none">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-[#8A532B] dark:text-[#C58B43]" />
+                  <span className="text-xs text-zinc-700 dark:text-zinc-300">
+                    {t.quick_abstract_only}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={onlyQuickAbstract}
+                  onClick={() => {
+                    triggerTactileHaptic('tick');
+                    onToggleOnlyQuickAbstract(!onlyQuickAbstract);
+                  }}
+                  className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer ${
+                    onlyQuickAbstract
+                      ? 'bg-[#8A532B] dark:bg-[#C58B43]'
+                      : 'bg-zinc-300 dark:bg-zinc-700'
+                  }`}
+                >
+                  <span
+                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                      onlyQuickAbstract ? 'ltr:translate-x-4 rtl:-translate-x-4' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </label>
+            </div>
+          )}
         </div>
 
         {/* Sticky Action Footer */}

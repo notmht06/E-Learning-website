@@ -133,7 +133,6 @@ export default function ArticlesPage() {
             (c.name === selectedCategory || c.name_fa === selectedCategory || c.slug === selectedCategory) &&
             (c.name === art.category || c.name_fa === art.category || c.slug === art.category)
         );
-
       const rawMinutes = parseInt((art.readTime || '').replace(/[^\d]/g, '') || '10', 10);
       const matchesReadTime =
         readTimeFilter === 'all'
@@ -572,6 +571,10 @@ export default function ArticlesPage() {
         categories={activeCategories}
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
+        selectedReadTime={readTimeFilter}
+        onSelectReadTime={setReadTimeFilter}
+        onlyQuickAbstract={onlyQuickAbstract}
+        onToggleOnlyQuickAbstract={setOnlyQuickAbstract}
         sortBy={sortBy}
         onSelectSortBy={setSortBy}
         articles={allArticlesList}
