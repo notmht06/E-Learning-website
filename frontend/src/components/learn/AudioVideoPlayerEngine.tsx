@@ -317,18 +317,58 @@ export function AudioVideoPlayerEngine({
 
     // 2. audioTracks (Standard video+audio vs Audio Only)
     if (!(el as any).audioTracks) {
-      const tracks = [
-        { id: 'video-audio', label: 'ویدیو و صوت', kind: 'main', language: 'fa', enabled: true },
-        { id: 'audio-only', label: 'صوتی', kind: 'alternative', language: 'fa', enabled: false },
-      ];
+      class AudioTrack {
+        id: string;
+        label: string;
+        kind: string;
+        language: string;
+        private _enabled: boolean;
+        private _list: any;
+
+        constructor(
+          id: string,
+          label: string,
+          kind: string,
+          language: string,
+          enabled: boolean,
+          list: any
+        ) {
+          this.id = id;
+          this.label = label;
+          this.kind = kind;
+          this.language = language;
+          this._enabled = enabled;
+          this._list = list;
+        }
+
+        get enabled() {
+          return this._enabled;
+        }
+
+        set enabled(val: boolean) {
+          if (this._enabled !== val) {
+            this._enabled = val;
+            if (val && this._list?.tracks) {
+              this._list.tracks.forEach((t: any) => {
+                if (t !== this) {
+                  t._enabled = false;
+                }
+              });
+            }
+            this._list.dispatchEvent(new Event('change'));
+          }
+        }
+      }
 
       class AudioTrackList extends EventTarget {
-        tracks: any[];
+        tracks: AudioTrack[];
 
         constructor(list: any[]) {
           super();
-          this.tracks = list;
-          list.forEach((t, i) => {
+          this.tracks = list.map(
+            (r) => new AudioTrack(r.id, r.label, r.kind, r.language, r.enabled, this)
+          );
+          this.tracks.forEach((t, i) => {
             (this as any)[i] = t;
           });
         }
@@ -345,18 +385,29 @@ export function AudioVideoPlayerEngine({
           return this.tracks.findIndex(pred);
         }
 
+        some(pred: any) {
+          return this.tracks.some(pred);
+        }
+
         map(fn: any) {
           return this.tracks.map(fn);
         }
       }
 
-      const aList = new AudioTrackList(tracks);
+      const initialTracks = [
+        { id: 'video-audio', label: 'ویدیو و صوت', kind: 'main', language: 'fa', enabled: true },
+        { id: 'audio-only', label: 'صوتی', kind: 'alternative', language: 'fa', enabled: false },
+      ];
+
+      const aList = new AudioTrackList(initialTracks);
       (el as any).audioTracks = aList;
 
       aList.addEventListener('change', () => {
-        const audioOnlyTrack = tracks.find((t) => t.id === 'audio-only');
+        const audioOnlyTrack = aList.tracks.find((t) => t.id === 'audio-only');
         if (audioOnlyTrack?.enabled) {
           handleSwitchToAudio();
+        } else {
+          handleSwitchToVideo();
         }
       });
     }
@@ -370,6 +421,28 @@ export function AudioVideoPlayerEngine({
       }
     };
   }, [playerMode, handleQualityChange, handleSwitchToAudio]);
+
+  // Global click listener to catch menu clicks on 'صوتی' or 'ویدیو و صوت'
+  useEffect(() => {
+    const handleMenuClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const btn = target.closest('button, [role="menuitem"], [role="menuitemradio"], [data-part="menu-item"], .media-menu-radio-item');
+      if (btn) {
+        const text = btn.textContent?.trim() || '';
+        if (text === 'صوتی' || text.endsWith('صوتی') || text.includes('صوتی')) {
+          handleSwitchToAudio();
+        } else if (text === 'ویدیو و صوت' || text.includes('ویدیو و صوت') || text.includes('ویدیویی')) {
+          handleSwitchToVideo();
+        }
+      }
+    };
+
+    document.addEventListener('click', handleMenuClick, true);
+    return () => {
+      document.removeEventListener('click', handleMenuClick, true);
+    };
+  }, [handleSwitchToAudio, handleSwitchToVideo]);
 
   if (isLocked) {
     return (
