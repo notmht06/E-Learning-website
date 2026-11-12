@@ -32,24 +32,24 @@ export function TopAnnouncementBanner() {
 
   const content = {
     fa: {
-      badge: 'اطلاعیه رسمی کرسی درس خارج',
+      badge: '',
       message: siteConfig?.announcement_bar_text || 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی (سال تحصیلی ۱۴۰۵-۱۴۰۶)',
-      action: 'مشاهده سرفصل‌ها و نمونه صوت',
+      action: '',
     },
     ar: {
-      badge: 'إعلان كرسي البحث الخارج',
+      badge: '',
       message: 'بدء التسجيل للفصل الجديد في مباحث الحكمة المتعالية وشرح الأسفار الأربعة',
-      action: 'الاطلاع على المنهج والدروس النموذجية',
+      action: '',
     },
     en: {
-      badge: 'Official Seminary Announcement',
+      badge: '',
       message: 'Registration Open: Advanced Course in Transcendent Wisdom & Asfar al-Arba\'ah (Academic Year 2026-2027)',
-      action: 'View Syllabus & Sample Audio',
+      action: '',
     },
   }[currentLang] || {
-    badge: 'اطلاعیه رسمی کرسی درس خارج',
+    badge: '',
     message: siteConfig?.announcement_bar_text || 'آغاز ثبت‌نام ترم جدید درس خارج اسفار اربعه و مبانی حکمت صدرایی',
-    action: 'مشاهده سرفصل‌ها و نمونه صوت',
+    action: '',
   };
 
   return (
@@ -58,26 +58,30 @@ export function TopAnnouncementBanner() {
       className="relative z-50 bg-[#16120F] dark:bg-[#0A0B0C] border-b border-[#8A532B]/35 text-[#FAF8F5] py-2 px-3 sm:px-6 transition-[color,background-color,border-color,opacity,transform,box-shadow] duration-300"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 text-xs">
-        {/* Left Side: Badge + Announcement Text */}
+        {/* Left Side: Announcement Text (Badge rendered only if provided) */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#8A532B]/25 text-[#E6CA85] border border-[#8A532B]/40 text-[11px] font-bold shrink-0">
-            <span>{content.badge}</span>
-          </span>
+          {content.badge ? (
+            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#8A532B]/25 text-[#E6CA85] border border-[#8A532B]/40 text-[11px] font-bold shrink-0">
+              <span>{content.badge}</span>
+            </span>
+          ) : null}
 
           <p className="truncate text-zinc-200 text-[11px] sm:text-xs">
             {content.message}
           </p>
         </div>
 
-        {/* Right Side: Action Link + Close Button */}
+        {/* Right Side: Action Link (if provided) + Close Button */}
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          <Link
-            href={localizeHref('/courses/course-falsafe-asfar-1')}
-            className="inline-flex items-center gap-1 font-bold text-[#E6CA85] hover:text-white transition-colors text-[11px] sm:text-xs"
-          >
-            <span>{content.action}</span>
-            <ArrowLeft className={`w-3.5 h-3.5 ${isRtl ? 'rotate-0' : 'rotate-180'}`} />
-          </Link>
+          {content.action ? (
+            <Link
+              href={localizeHref('/courses/course-falsafe-asfar-1')}
+              className="inline-flex items-center gap-1 font-bold text-[#E6CA85] hover:text-white transition-colors text-[11px] sm:text-xs"
+            >
+              <span>{content.action}</span>
+              <ArrowLeft className={`w-3.5 h-3.5 ${isRtl ? 'rotate-0' : 'rotate-180'}`} />
+            </Link>
+          ) : null}
 
           <button
             type="button"

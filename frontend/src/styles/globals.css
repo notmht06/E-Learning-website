@@ -102,10 +102,15 @@ media-player *,
 }
 
 /* Strictly enforce LTR flex-direction row (neutralizing [dir="rtl"] * row-reverse in @videojs/react) */
+/* Strictly enforce LTR flex-direction row (neutralizing [dir="rtl"] * row-reverse in @videojs/react for both video and audio) */
 .vjs-ltr-player .video-time-slider-group,
 .vjs-ltr-wrapper .video-time-slider-group,
 .video-time-slider-group,
-.video-time-slider-group:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+.video-time-slider-group:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *),
+.vjs-ltr-player .audio-time-slider-group,
+.vjs-ltr-wrapper .audio-time-slider-group,
+.audio-time-slider-group,
+.audio-time-slider-group:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
   flex-direction: row !important;
   direction: ltr !important;
 }
@@ -113,14 +118,26 @@ media-player *,
 .vjs-ltr-player .video-controls-primary,
 .vjs-ltr-wrapper .video-controls-primary,
 .video-controls-primary,
-.video-controls-primary:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+.video-controls-primary:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *),
+.vjs-ltr-player .audio-controls-start,
+.vjs-ltr-wrapper .audio-controls-start,
+.audio-controls-start,
+.audio-controls-start:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
   flex-direction: row !important;
   direction: ltr !important;
 }
 
 .vjs-ltr-player .video-controls-content,
 .vjs-ltr-wrapper .video-controls-content,
-.video-controls-content {
+.video-controls-content,
+.vjs-ltr-player .audio-controls-content,
+.vjs-ltr-wrapper .audio-controls-content,
+.audio-controls-content,
+.audio-controls-content:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *),
+.vjs-ltr-player .audio-controls-end,
+.vjs-ltr-wrapper .audio-controls-end,
+.audio-controls-end,
+.audio-controls-end:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
   flex-direction: row !important;
   direction: ltr !important;
 }
@@ -141,15 +158,18 @@ video::cue,
 
 /* Glassmorphic styling for Video.js media menu popups with ample width preventing truncation */
 .media-menu-popup,
+.audio-settings-menu-popup,
 .media-menu-resizable-popup,
-.media-menu-content,
 [role="menu"],
 [data-media-menu],
 media-settings-menu,
 media-menu,
 media-menu-items {
-  min-width: 220px !important;
-  width: auto !important;
+  width: var(--media-menu-width, 220px) !important;
+  min-width: 200px !important;
+  max-width: var(--media-menu-available-width, 90vw) !important;
+  height: auto !important;
+  max-height: 80vh !important;
   background-color: rgba(12, 13, 14, 0.96) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
@@ -159,6 +179,14 @@ media-menu-items {
   box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6) !important;
   white-space: nowrap !important;
   font-family: var(--font-dana), 'Dana', sans-serif !important;
+  direction: ltr !important;
+  overflow: visible !important;
+}
+
+.media-menu-content {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 100% !important;
   direction: ltr !important;
 }
 
